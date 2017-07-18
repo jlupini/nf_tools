@@ -1,6 +1,10 @@
 # Instructions for Scripts
 
-**IMPORTANT:** Scripts now require up-to-date pseudo effects. To install these, you need to add the xml tags in the **`Pseudo-Effects.xml`** file to a file After Effects uses called **PresetEffects.xml**. This file can be found _inside_ the After Effects app file. Right click the .app and click “Show Package Contents”. In the window that opens, navigate to Contents > Resources and open PresetEffects.xml in a text editor (We like Sublime Text 3, which is a free download). You’ll see a large number of Effects, each one beginning with `&lt;Effect matchname…` and ending a few lines later with `</Effect>`. Copy and paste the contents of the Pseudo-Effects.xml file in this folder after the `<Effects>` tag on or around line 106, making sure to _replace previous versions of the relevant pseudo effects_ if you’re updating to a new version.
+### Installation
+
+AE will only recognize scripts in the `Scripts` directory in its application folder. To easily allow updating, we recommend using symlinks or aliases to the files in this repo. That way you can have the repo somewhere else on your drive, and when you update you don't have to copy over any scripts that changed.
+
+**IMPORTANT:** Scripts now require up-to-date pseudo effects. To install these, you need to add the xml tags in the **`Pseudo-Effects.xml`** file to a file After Effects uses called **`PresetEffects.xml`**. This file can be found _inside_ the After Effects app file. Right click the .app and click “Show Package Contents”. In the window that opens, navigate to Contents > Resources and open PresetEffects.xml in a text editor (We like Sublime Text 3, which is a free download). You’ll see a large number of Effects, each one beginning with `<Effect matchname…` and ending a few lines later with `</Effect>`. Copy and paste the contents of the Pseudo-Effects.xml file in this folder after the `<Effects>` tag on or around line 106, making sure to _replace previous versions of the relevant pseudo effects_ if you’re updating to a new version.
 
 ### Current Scripts
 
