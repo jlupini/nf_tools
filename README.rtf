@@ -1,0 +1,76 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red255\green39\blue18;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\csgenericrgb\c100000\c15294\c7059;\csgenericrgb\c0\c0\c0;}
+\margl1440\margr1440\vieww16060\viewh13980\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs72 \cf0 Instructions for Scripts\
+
+\b\fs24 \
+\cf2 IMPORTANT: 
+\b0 \cf3 Scripts marked with 
+\b\fs26 **
+\b0\fs24  require up-to-date pseudo effects. To install these, you need to add the xml tags in the 
+\b Pseudo-Effects.xml
+\b0  file to a file After Effects uses called 
+\b PresetEffects.xml
+\b0 . This file can be found 
+\i inside
+\i0  the After Effects app file. Right click the .app and click \'93Show Package Contents\'94. In the window that opens, navigate to Contents > Resources and open PresetEffects.xml in a text editor (We like Sublime Text 3, which is a free download). You\'92ll see a large number of Effects, each one beginning with \'93<Effect matchname\'85\'94 and ending a few lines later with </Effect>. Copy and paste the contents of the Pseudo-Effects.xml file in this folder after the <Effects> tag on or around line 106, making sure to 
+\i replace previous versions of the relevant pseudo effects 
+\i0 if you\'92re updating to a new version. Current Pseudo-Effects: 
+\b AV Highlighter
+\b0 .
+\b \cf2 \
+\cf0 \
+Create Comp from Audio
+\b0  - With an audio file selected in the project panel, run the script. It will create a comp with the same duration as, and containing, the audio file.\
+\
+
+\b Separate Audio by Markers 
+\b0 - Add markers to your audio layer where you want the divisions of parts to be, then run this script with the audio layer selected. A new folder called \'91Parts\'92 will be created, with the new part pre comps. These will be added to the timeline above the audio track, with their own audio muted to avoid doubling up. A zoomer will also be created for each layer.\
+\
+
+\b Nullify - 
+\b0 Create a null parent for the selected layers.\
+\
+
+\b **Setup Highlight Layer
+\b0  - Create a new shape layer, then click the pen tool and add a single line, across the first line you\'92ll want to highlight. With your shape layer selected, run this script. You\'92ll be asked to enter the number of highlight lines. Use the effect controls to adjust highlight color, thickness and spacing, as well as trim end percentages.
+\b \
+
+\b0 \
+
+\b Precompose PDF Pages 
+\b0 - Select all the PDF pages you want to precompose in the project panel, and run this script. It will precompose all selected assets, and put them in a new folder with the paper background layer. Your project must contain the root folder \'91Assets\'92 and a composition called \'91Paper BG\'92 for this script to work.\
+\
+
+\b Create Spotlight Layer
+\b0  - Draw a mask on the target layer, around the quote you want to spotlight (the last mask to have been created will be used). Then run this script, and a spotlight layer will be created above the target layer, with the same dimensions and position (and the target layer as its parent). In and out points are automatically set as markers, drag them to the appropriate positions. If you want to bring in/out the spotlight multiple times, just add more markers (every odd marker is an in point, every even marker is an out point). Effect controls will be created on the target layer for maximum Opacity and minimum Feather. The spotlight path is derived from the spotlight mask on the target layer, so you shouldn\'92t need to touch the spotlight layer itself (besides trimming it to reduce needless rendering).\
+\
+
+\b Citation Overlay
+\b0  - Adds a citation in the top right hand corner of the comp. Set the in/out points using the markers.\
+\
+
+\b **Bubble Up Highlights - 
+\b0  Run this with a pdf precomp selected to bubble highlight controls up into the parent.\
+\
+
+\b **PageInit 
+\b0 - Parents and resizes PDF Precomps. Select all page pre comps from a single paper and run the script. Adds a drop shadow to the bottom page (with the assumption that the page turn preset will add it to any pages above). Bubbles up controls from the child highlights to the parent layer.\
+\
+
+\b Emphasizer -
+\b0  Creates highlights, underlines, and circles. Create a new shape layer and draw a path in the shape you would like to emphasize, then run the script. Will only act on the most recently created shape within a shape layer. \
+\
+
+\b Resources for Scripting:\
+\
+{\field{\*\fldinst{HYPERLINK "http://docs.aenhancers.com/"}}{\fldrslt 
+\b0 http://docs.aenhancers.com/}}
+\b0 \
+{\field{\*\fldinst{HYPERLINK "http://www.redefinery.com/ae/fundamentals/"}}{\fldrslt http://www.redefinery.com/ae/fundamentals/}}\
+{\field{\*\fldinst{HYPERLINK "http://www.provideocoalition.com/after-effects-extendscript-training-complete-series/"}}{\fldrslt http://www.provideocoalition.com/after-effects-extendscript-training-complete-series/}}\
+{\field{\*\fldinst{HYPERLINK "http://blogs.adobe.com/wp-content/blogs.dir/48/files/2012/06/After-Effects-CS6-Scripting-Guide.pdf?file=2012/06/After-Effects-CS6-Scripting-Guide.pdf"}}{\fldrslt http://blogs.adobe.com/wp-content/blogs.dir/48/files/2012/06/After-Effects-CS6-Scripting-Guide.pdf?file=2012/06/After-Effects-CS6-Scripting-Guide.pdf}}}
