@@ -2,9 +2,15 @@
 
 ### Installation
 
-AE will only recognize scripts in the `Scripts` directory in its application folder. To easily allow updating, we recommend using symlinks or aliases to the files in this repo. That way you can have the repo somewhere else on your drive, and when you update you don't have to copy over any scripts that changed.
+AE will only recognize scripts in the `Scripts` directory in its application folder. To easily allow updating, we recommend using symlinks or aliases to the files in this repo. That way you can have the repo somewhere else on your drive, and when you update you don't have to copy over any scripts that changed. If the previous sentence sounds like nonsense to you, _ask for help_ since this step can be a little tricky.
 
 **IMPORTANT:** Scripts now require up-to-date pseudo effects. To install these, you need to add the xml tags in the **`Pseudo-Effects.xml`** file to a file After Effects uses called **`PresetEffects.xml`**. This file can be found _inside_ the After Effects app file. Right click the .app and click “Show Package Contents”. In the window that opens, navigate to Contents > Resources and open PresetEffects.xml in a text editor (We like Sublime Text 3, which is a free download). You’ll see a large number of Effects, each one beginning with `<Effect matchname…` and ending a few lines later with `</Effect>`. Copy and paste the contents of the Pseudo-Effects.xml file in this folder after the `<Effects>` tag on or around line 106, making sure to _replace previous versions of the relevant pseudo effects_ if you’re updating to a new version.
+
+### Current Droplets
+
+- **IconPrep** - Run this app and select the folder with your Noun Projet SVGs - sit back and watch it run (don't interfere with what's going on). It'll remove the author credit and convert each SVG to an AI file so After Effects can read it.
+
+- **IsolateAnnotations** - _You will need Adobe Acrobat installed for this app to work._ After you've pulled all the PDF pages into the `PDF Pages` folder, but before you import them to AE, run this script and select all the PDF pages when prompted. Once more, sit back and let it run. It will duplicate each PDF page, then use Acrobat to create a version with only the annotations. Import _all files (including the new ones that end in `annot.pdf`) in the `PDF Pages` folder into the corresponding folder in AE and, with them _all_ selected, run the `Precompose PDF Pages` script. This extra step is to create a guide layer for you to show the PDF highlights in AE so you can easily find quotes and boxes.
 
 ### Current Scripts
 

@@ -1,4 +1,5 @@
-﻿
+﻿//FIXME: Change to 'BubbleUpProperties', and include the functionality to bubble up the guide layer (code in nf_PageInit)
+
 //FIXME: Ask which highlights you want to capture
 
 var mainComp = app.project.activeItem;

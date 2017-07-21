@@ -3,18 +3,43 @@
 
     var selectedPages = app.project.selection;
     
-    var assetsFolder  = findFolderIn("Assets", app.project.rootFolder);
-    var targetFolder = assetsFolder.items.addFolder("PDF Precomps");
+    var assetsFolder  = findFolder("Assets", app.project.rootFolder);
+
+    var precompFolderName = "PDF Precomps";
+    var targetFolder = findFolder(precompFolderName, assetsFolder);
+    if (targetFolder == null) {
+        targetFolder = assetsFolder.items.addFolder(precompFolderName);
+    }
     
     var paperBG = findItem("Paper BG");
+    var contentPages = getContentPages(selectedPages);
    
     // Iterate through selected PDFs
-    for (var i = 0; i < selectedPages.length; i++) {
+    for (var i = 0; i < contentPages.length; i++) {
         
-        thisPage = selectedPages[i];
+        thisPage = contentPages[i];
         var newComp = createCompFromPageInFolder (thisPage, targetFolder, paperBG);
     }
+}
 
+// Returns non-annotation pages
+function getContentPages(selectedPages) {
+    var contentPages = [];
+    for (var i = selectedPages.length - 1; i >= 0; i--) {
+        var thisPage = selectedPages[i];
+        if (thisPage.name.indexOf("annot") == -1) {
+            contentPages.push(thisPage);
+        }
+    }
+    return contentPages;
+}
+
+// returns the annotation page for a content page, or null if none is found
+function getAnnotationPageFor(contentPage) {
+    var contentName = contentPage.name;
+    var extensionPosition = contentName.indexOf(".pdf");
+    var searchName = [contentName.slice(0, extensionPosition), "_annot", contentName.slice(extensionPosition)].join('');
+    return findItem(searchName);
 }
 
 // Crates a PDF Precomp from the given page and folder, returns it
@@ -30,10 +55,16 @@ function createCompFromPageInFolder(page, folder, background) {
     var pageLayer = newComp.layers.add(page);
     pageLayer.blendingMode = BlendingMode.MULTIPLY;
     pageLayer.collapseTransformation = true;
-    pageLayer.motionBlur = true;
+
+    var annotationPage = getAnnotationPageFor(page);
+    var annotationLayer = newComp.layers.add(annotationPage);
+    annotationLayer.blendingMode = BlendingMode.MULTIPLY;
+    annotationLayer.collapseTransformation = true;
+    annotationLayer.name = "Annotation Guide";
     
     var scaleFactor = width*100/page.width;
     pageLayer.transform.scale.setValue([scaleFactor, scaleFactor, scaleFactor]);
+    annotationLayer.transform.scale.setValue([scaleFactor, scaleFactor, scaleFactor]);
     
     var backgroundLayer = newComp.layers.add(background);
     backgroundLayer.moveToEnd();
@@ -45,7 +76,7 @@ function createCompFromPageInFolder(page, folder, background) {
 }
 
 // Given a string with the name of a folder to find and it's parent folder, findFolderIn returns the folderItem, or null of none is found.
-function findFolderIn(folderName, sourceFolderItem) {
+function findFolder(folderName, sourceFolderItem) {
     
     for (var i = 1; i <= sourceFolderItem.numItems; i++) {
         if (sourceFolderItem.item(i).name == folderName) {

@@ -1,5 +1,8 @@
-﻿//var audio = app.project.selection[0];
-//var newComp = app.project.items.addComp("MainComp", 1920, 1080, 1.0, audio.duration, 30);
+﻿// FIXME: Set maincomp BG color to white
+// FIXME: Add white solid below all part layers
+// FIXME: Add white solid above all part layers with standardized fade in/out
+// FIXME: Add adjustment layer with CC Vignette effect w/ strength set to 50% below top white solid layer
+// FIXME: Add a second or two of time before a marker in part comps
 
 app.beginUndoGroup("SetupMainComp");
 
