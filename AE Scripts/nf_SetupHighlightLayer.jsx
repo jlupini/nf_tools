@@ -31,9 +31,22 @@ function createHighlighter () {
 
     // Start to set properties
     shape1.property("Contents").property("Stroke 1").property("Stroke Width").expression = "effect(\"AV Highlighter\")(\"Thickness\")";
-    shape1.property("Contents").property("Stroke 1").property("Color").expression = "effect(\"AV Highlighter\")(\"Color\")";
     shape1.property("Contents").property("Trim Paths 1").property("Start").expression = "effect(\"AV Highlighter\")(\"Start Offset\")";
     highlightLayer.property("Transform").property("Opacity").expression = "effect(\"AV Highlighter\")(\"Opacity\")";
+
+    // Set colour property
+    var trimString = "";
+
+    trimString += "popup_val = effect(\"AV Highlighter\")(\"Highlight Colour\");";
+    trimString += "if (popup_val == 1) { [255, 221, 3, 255]/255; } ";
+    trimString += "else if (popup_val == 2) { [152, 218, 255, 255]/255; }";
+    trimString += "else if (popup_val == 3) { [236, 152, 255, 255]/255; }";
+    trimString += "else if (popup_val == 4) { [157, 255, 160, 255]/255; }";
+    trimString += "else if (popup_val == 5) { [255, 152, 202, 255]/255; }";
+    trimString += "else if (popup_val == 6) { [255, 175, 104, 255]/255; }";
+    trimString += "else {[255, 157, 157, 255]/255;};";
+
+    shape1.property("Contents").property("Stroke 1").property("Color").expression = trimString;
 
     var offsetString = "";
     offsetString += "[transform.position[0]+ effect(\"AV Highlighter\")(\"Offset\")[0],";
