@@ -39,7 +39,7 @@ for (var i = pagesToBubble.length - 1; i >= 0; i--) {
 			var newName = highlightLayersInPageComp[j].name + " Highlighter";
 			targetHighlighterEffect.name = newName;
 
-			var highlighterProperties = ["Spacing", "Thickness", "Color", "Start Offset", "Completion", "Offset", "Opacity"];
+			var highlighterProperties = ["Spacing", "Thickness", "Start Offset", "Completion", "Offset", "Opacity", "Highlight Colour"];
 
 			for (var l = highlighterProperties.length - 1; l >= 0; l--) {
 				
