@@ -20,7 +20,7 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 - **Nullify** - Create a null parent for the selected layers.
 
-- **Setup Highlight Layer** - Create a new shape layer, then click the pen tool and add a single line, across the first line you’ll want to highlight. With your shape layer selected, run this script. You’ll be asked to enter the number of highlight lines. Use the effect controls to adjust highlight color, thickness and spacing, as well as trim end percentages.
+- **Setup Highlight Layer** - Run on a PDF layer to create a new shape layer. Then click the pen tool and add a single line, across the first line you’ll want to highlight. With your shape layer selected, run this script again. You’ll be asked to enter the number of highlight lines. Use the effect controls to adjust highlight color, thickness and spacing, as well as trim end percentages. To create a new highlight layer, run this script on the PDF layer again to create another shape layer. 
 
 - **Precompose PDF Pages** - Select all the PDF pages you want to precompose in the project panel, and run this script. It will precompose all selected assets, and put them in a new folder with the paper background layer. Your project must contain the root folder ‘Assets’ and a composition called ‘Paper BG’ for this script to work.
 
