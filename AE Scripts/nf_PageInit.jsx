@@ -136,11 +136,12 @@ function bubbleUpGuideLayers(pagesToBubble) {
 
 		if (guideLayer) {
 
-			var opacityControl = guideLayer.property("Transform").property("Opacity");
+			var childGuideCheckbox = guideLayer.property("Effects").property("Guide Layer").property("Checkbox");
 
 			// FIXME: Make it so that the guide layer is visible if ANY of the parent layers have this enabled
 			// (basically take out this if statement and add to the existing expression each time you pageinit in a different place)
-			if (!opacityControl.expressionEnabled) {
+			if (!childGuideCheckbox.expressionEnabled) {
+
 
 				// Add checkbox to targetLayer
 				var effects = targetLayer.Effects;
@@ -149,13 +150,11 @@ function bubbleUpGuideLayers(pagesToBubble) {
 				checkbox.name = checkboxName;
 
 				// Set checkbox to match current opacity
-				if (opacityControl.value != 0) {
-					checkbox.property("Checkbox").setValue(1);
-				}
+				checkbox.property("Checkbox").setValue(childGuideCheckbox.value);
 
-				// Set opacity expression on guide layer
+				// Set childCheckbox expression on guide layer
 				var sourceExpression = "comp(\"" + mainComp.name + "\").layer(\"" + targetLayer.name + "\").effect(\"" + checkboxName + "\")(\"Checkbox\")*60";
-				opacityControl.expression = sourceExpression;
+				childGuideCheckbox.expression = sourceExpression;
 			}
 		}
 	}
@@ -200,7 +199,6 @@ function bubbleUpHighlights(pagesToBubble) {
 
 				var newName = highlightLayersInPageComp[j].name + " Highlighter";
 				targetHighlighterEffect.name = newName;
-
 				var highlighterProperties = ["Spacing", "Thickness", "Start Offset", "Completion", "Offset", "Opacity", "Highlight Colour"];
 
 				for (var l = highlighterProperties.length - 1; l >= 0; l--) {
