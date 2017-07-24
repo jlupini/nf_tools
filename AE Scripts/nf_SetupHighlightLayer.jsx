@@ -4,6 +4,8 @@ function createHighlighter () {
 
     app.beginUndoGroup("Create Highlight Layer");
 
+    // Note: to add/subtract or change the order of the highlight colour options, the pseudo effect in preset-effects.xml must be edited
+
     var highlightColorYELLOW = [255, 221,   3, 255];
     var highlightColorBLUE   = [152, 218, 255, 255];
     var highlightColorPURPLE = [236, 152, 255, 255];
@@ -17,7 +19,7 @@ function createHighlighter () {
                                  highlightColorPURPLE,
                                  highlightColorGREEN,
                                  highlightColorPINK,
-                                 highlightColorYELLOW,
+                                 highlightColorORANGE,
                                  highlightColorRED];
 
     var mainComp = app.project.activeItem;
