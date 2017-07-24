@@ -1,6 +1,26 @@
 ﻿createHighlighter();
+
 function createHighlighter () {
+
     app.beginUndoGroup("Create Highlight Layer");
+
+    // Note: to add/subtract or change the order of the highlight colour options, the pseudo effect in preset-effects.xml must be edited
+
+    var highlightColorYELLOW = [255, 221,   3, 255];
+    var highlightColorBLUE   = [152, 218, 255, 255];
+    var highlightColorPURPLE = [236, 152, 255, 255];
+    var highlightColorGREEN  = [157, 255, 160, 255];
+    var highlightColorPINK   = [255, 152, 202, 255];
+    var highlightColorORANGE = [255, 175, 104, 255];
+    var highlightColorRED    = [255, 157, 157, 255];
+
+    var highlightColorOptions = [highlightColorYELLOW,
+                                 highlightColorBLUE,
+                                 highlightColorPURPLE,
+                                 highlightColorGREEN,
+                                 highlightColorPINK,
+                                 highlightColorORANGE,
+                                 highlightColorRED];
 
     var mainComp = app.project.activeItem;
     var highlightLayer = mainComp.selectedLayers[0];
@@ -31,17 +51,32 @@ function createHighlighter () {
 
     // Start to set properties
     shape1.property("Contents").property("Stroke 1").property("Stroke Width").expression = "effect(\"AV Highlighter\")(\"Thickness\")";
-    shape1.property("Contents").property("Stroke 1").property("Color").expression = "effect(\"AV Highlighter\")(\"Color\")";
     shape1.property("Contents").property("Trim Paths 1").property("Start").expression = "effect(\"AV Highlighter\")(\"Start Offset\")";
     highlightLayer.property("Transform").property("Opacity").expression = "effect(\"AV Highlighter\")(\"Opacity\")";
+
+    // Set colour property based on variables at top of script
+    var trimString = "";
+    trimString += "popup_val = effect(\"AV Highlighter\")(\"Highlight Colour\");";
+    for (var i = 0; i < highlightColorOptions.length; i++) {
+        if (i != 0) {
+            trimString += "else ";
+        }
+        if (i != (highlightColorOptions.length - 1)) {
+            trimString += "if (popup_val == " + (i+1) + ") ";
+        }
+        trimString += "{ [" + highlightColorOptions[i].toString() + "]/255; } ";
+    }
+    trimString += ";";
+
+    shape1.property("Contents").property("Stroke 1").property("Color").expression = trimString;
 
     var offsetString = "";
     offsetString += "[transform.position[0]+ effect(\"AV Highlighter\")(\"Offset\")[0],";
     offsetString += " transform.position[1]+ effect(\"AV Highlighter\")(\"Offset\")[1]]";
     highlightLayer.property("Transform").property("Position").expression = offsetString;
+
     // Set the expression for line 1
     var trimString = "";
-
     trimString += "slider_val = effect(\"AV Highlighter\")(\"Completion\") / 10;";
     trimString += "start_offset = effect(\"AV Highlighter\")(\"Start Offset\");";
     trimString += "line_count = " + highlightLinesCount +";";
@@ -70,7 +105,6 @@ function createHighlighter () {
         newShape.property("Contents").property("Trim Paths 1").property("Start").expression = "";
         
         trimString = "";
-
         trimString += "slider_val = effect(\"AV Highlighter\")(\"Completion\") / 10;"; 
         trimString += "start_offset = effect(\"AV Highlighter\")(\"Start Offset\");";
         trimString += "line_count = " + highlightLinesCount +";";
@@ -92,10 +126,11 @@ function createHighlighter () {
 }
 
 function createShapeLayer(targetLayer) {
+
     var newShape = app.project.activeItem.layers.addShape();
     newShape.moveBefore(targetLayer);
     newShape.name = "Highlighter";
     newShape.parent = targetLayer;
     newShape.startTime = targetLayer.inPoint;
-    }
+}
 
