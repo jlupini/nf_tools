@@ -78,9 +78,9 @@ trimString += "d = thisComp.layer(\"" + nullParentLayer.name + "\").effect(\"" +
 trimString += "m = thisComp.layer(\"" + nullParentLayer.name + "\").marker.nearestKey(time);";
 trimString += "t = m.time;";
 trimString += "if (m.index%2){"; // For all in markers
-trimString += "  ease(time,t,t-d*thisComp.frameDuration,0,100);";
+trimString += "  ease(time,t,t+d*thisComp.frameDuration,0,100);";
 trimString += "  }else{"; // For all out markers
-trimString += "    ease(time,t,t+d*thisComp.frameDuration,100,0);";
+trimString += "    ease(time,t,t-d*thisComp.frameDuration,100,0);";
 trimString += "  }";
 trimString += "}else{";
 trimString += "  value;";
