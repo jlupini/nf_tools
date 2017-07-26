@@ -1,14 +1,11 @@
-﻿// FIXME: Set maincomp BG color to white
-// FIXME: Add white solid below all part layers
-// FIXME: Add white solid above all part layers with standardized fade in/out
-// FIXME: Add adjustment layer with CC Vignette effect w/ strength set to 50% below top white solid layer
-// FIXME: Add a second or two of time before a marker in part comps
+﻿// FIXME: Add a second or two of time before a marker in part comps
 
 app.beginUndoGroup("SetupMainComp");
 
 var audio = app.project.selection[0];
 var newName = audio.name.substr(0, audio.name.indexOf('.')) + " - MainComp";
-var newComp = app.project.items.addComp(newName, 1920, 1080, 1.0, audio.duration, 30);
+var compLength = audio.duration+3.5;
+var newComp = app.project.items.addComp(newName, 1920, 1080, 1.0, compLength, 30);
 newComp.layers.add(audio);
 
 var mainComp = newComp;
@@ -20,6 +17,11 @@ var markerStream = audioLayer.property("Marker");
 var markerCount = markerStream.numKeys;
 
 var endTime = mainComp.duration;
+
+// create new background layer
+var bgLayer = mainComp.layers.addSolid([1, 1, 1], "Background", 1920, 1080, 1);
+bgLayer.moveBefore(audioLayer);
+
 
 if (markerCount == 0)
 {
@@ -67,7 +69,7 @@ if (markerCount == 0)
             
             // Set part comp in and out points, with a 10-second handle at the end
             var newCompLayer = mainComp.layers.byName(compName);
-            newCompLayer.inPoint = prevTime;
+            newCompLayer.inPoint = prevTime - 3;
             newCompLayer.outPoint = currentTime + 10;
             
             // Disable audio
@@ -84,5 +86,24 @@ if (markerCount == 0)
 
     zoomer.remove();
 }
+
+// create vignette layer
+var vigLayer = mainComp.layers.addSolid([1, 1, 1], "Vignette", 1920, 1080, 1);
+vigLayer.property("Effects").addProperty("CC Vignette");
+vigLayer.blendingMode = BlendingMode.MULTIPLY;
+vigLayer.property("Effects").property("CC Vignette").property("Amount").setValueAtTime(0, 50);
+vigLayer.property("Transform").property("Opacity").setValueAtTime(0, 0);
+vigLayer.property("Transform").property("Opacity").setValueAtTime(0, 0);
+vigLayer.property("Transform").property("Opacity").setValueAtTime(0.5, 0);
+vigLayer.property("Transform").property("Opacity").setValueAtTime(1.5, 100);
+vigLayer.moveToBeginning;
+
+// create fade out layer
+var fadeLayer = mainComp.layers.addSolid([1, 1, 1], "Fade Out", 1920, 1080, 1);
+fadeLayer.property("Transform").property("Opacity").setValueAtTime(endTime-2.5, 0);
+fadeLayer.property("Transform").property("Opacity").setValueAtTime(endTime-0.5, 100);
+fadeLayer.moveToBeginning;
+
+
 
 app.endUndoGroup();
