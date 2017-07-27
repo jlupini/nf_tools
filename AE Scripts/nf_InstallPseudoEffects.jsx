@@ -1,15 +1,14 @@
 ﻿// Declare constants
-
+var avocadoBlockStart = "<!------- BEGIN AVOCADO PSEUDO-EFFECTS ----->";
+var avocadoBlockEnd = "<!------- END AVOCADO PSEUDO-EFFECTS ----->";
 
 // Declare global variables
 var currentVersion;
 var latestVersion;
 
-function installPseudoEffects()
-{
+function installPseudoEffects() {
 	var presetEffectResult = installPresetEffect();
-	switch (presetEffectResult)
-	{
+	switch (presetEffectResult) {
 		// Error
 		case 0:
 			alert("Sorry, the Avocado Pseudo-Effects could not be installed in PresetEffects.xml\n" +
@@ -24,10 +23,11 @@ function installPseudoEffects()
 			break;
 
 		// No need to install - Already on latest verions
+		// FIXME - Only show this when script is run manually
 		case 2:
-			alert("Latest version of Avocado Pseudo-Effects already installed (v" + latestVersion.toString() + ")!\n" +
-				  "To use scripts dependent on them, you must restart After Effects\n" +
-				  "(You do not need to run as Administrator anymore)");
+			// alert("Latest version of Avocado Pseudo-Effects already installed (v" + latestVersion.toString() + ")!\n" +
+			// 	  "To use scripts dependent on them, you must restart After Effects\n" +
+			// 	  "(You do not need to run as Administrator anymore)");
 			break;
 
 		// Installed latest version
@@ -39,20 +39,21 @@ function installPseudoEffects()
 	}
 }
 
-function searchText(regex, text)
-{
-	var searcher = new RegExp(regex, "i")
+function searchText(regex, text) {
+	var searcher = new RegExp(regex, "i");
 	return searcher.exec(text);
 }
 
-function replaceText(totalString, regex, replaceString)
-{
+function replaceText(totalString, regex, replaceString) {
 	var searcher= new RegExp(regex,"g");
 	return newString = totalString.replace(searcher, replaceString);
 }
 
-function installPresetEffect()
-{
+function replaceBetween(sourceString, startIndex, endIndex, injectionString) {
+    return sourceString.substring(0, startIndex) + injectionString + sourceString.substring(endIndex);
+}
+
+function installPresetEffect() {
 	var securitySetting = app.preferences.getPrefAsLong("Main Pref Section", "Pref_SCRIPTING_FILE_NETWORK_SECURITY");
 	if (securitySetting != 1) {
 		alert("This script requires the scripting security preference to be set.\n" +
@@ -69,18 +70,13 @@ function installPresetEffect()
 	var presetEffectFilePath;
 	var regexWin = "win";
 	var regexMac = "mac";
-	if (searchText("win", os) != null)
-    {
-         var appFolder = new Folder(Folder.appPackage.parent.absoluteURI).toString();        
+	if (searchText("win", os) != null) {
+        var appFolder = new Folder(Folder.appPackage.parent.absoluteURI).toString();        
 		presetEffectFilePath = (appFolder + "\\Support Files\\PresetEffects.xml");
-     }
-	else if (searchText("mac", os) != null)
-    {
-         var appFolder = new Folder(Folder.appPackage.absoluteURI).toString();
+    } else if (searchText("mac", os) != null) {
+        var appFolder = new Folder(Folder.appPackage.absoluteURI).toString();
 		presetEffectFilePath = (appFolder + "/Contents/Resources/PresetEffects.xml");
-        }
-	else
-	{
+    } else {
 		alert("Sorry, your operating system is not supported");
 		return false;
 	}
@@ -97,15 +93,20 @@ function installPresetEffect()
 	if (presetEffectFileText == "") {return 0;}
 
 	// Look for the Avocado PE Block
-	var avocadoBlockFound = searchText("BEGIN AVOCADO PSEUDO-EFFECTS", presetEffectFileText);
-	if (avocadoBlockFound) {
-		// Check the current version number
+	// FIXME: The variable avHighlighterSearch and the else block of this if statement is
+	//        for the sole purpose of upgrading everyone cleanly from the old, unversioned
+	//        pseudo-effects to these new versioned ones. Do a cleanup later plz
+	var avocadoStartSearch = searchText(avocadoBlockStart, presetEffectFileText);
+	var avHighlighterSearch;
+	if (avocadoStartSearch) {
+		// Check the current version number and finish up if we don't need to upgrade
 		currentVersion = getPseudoEffectVersion(presetEffectFileText);
 		latestVersion = latestPseudoEffects[0];
-
-		if (currentVersion >= latestVersion) {
-			return 2;
-		}
+		if (currentVersion >= latestVersion) {return 2;}
+	} else {
+		avHighlighterSearch = searchText("<Effect matchname=\"AV_Highlighter\"", presetEffectFileText);
+		currentVersion = 0;
+		latestVersion = latestPseudoEffects[0];
 	}
 
     // Either the current version is behind the latest, or we can't find the file
@@ -115,11 +116,29 @@ function installPresetEffect()
 	openCheck = presetEffectFile.open("w");
 	if (!openCheck) {return 0;}
 
-	var presetEffectText = latestPseudoEffects[1] + "\n</Effects>";
+	// Get the new Preset Effect Text for either an upgrade or fresh install
+	var newPresetEffectText;
+	// If we've already got the avo block in there, it's an upgrade
+	if (avocadoStartSearch) {
+		// Search for and replace the avo block in the existing PresetEffects with the new avoBlock
+		avocadoEndSearch = searchText(avocadoBlockEnd, presetEffectFileText);
+		newPresetEffectText = replaceBetween(presetEffectFileText, avocadoStartSearch.index, avocadoEndSearch.index + avocadoBlockEnd.length, latestPseudoEffects[1]);
+	} else if (avHighlighterSearch) {
+		// FIXME: This peice of the if statement can also be deleted once we're all upgraded
+		// We need to delete the effect block for the old AV Highlighter
+		var endSearchIndex = presetEffectFileText.indexOf("</Effect>", avHighlighterSearch.index) + "</Effect>".length;
+		var cleanedPresetEffectText = replaceBetween(presetEffectFileText, avHighlighterSearch.index, endSearchIndex, "");
+		var textToInject = latestPseudoEffects[1] + "\n</Effects>";
+		newPresetEffectText = replaceText(cleanedPresetEffectText, "</Effects>", textToInject);
 
-	// TODO WHEN I RETURN!!! - Right now it adds the latest pseudo effects After the existing ones! Need to erase the old block and plop in the new one
-	// Append our new effect directly before the end Effects tag
-	var newPresetEffectText = replaceText(presetEffectFileText, "</Effects>", presetEffectText);
+	} else {
+		// Not an upgrade
+		// Append our new effect directly before the end Effects tag
+		var textToInject = latestPseudoEffects[1] + "\n</Effects>";
+		newPresetEffectText = replaceText(presetEffectFileText, "</Effects>", textToInject);
+	}
+	
+	// Try writing the new PresetEffect Text to the file
 	var writeCheck = presetEffectFile.write(newPresetEffectText);
 	if (!writeCheck) {return 0;}
 	closeCheck = presetEffectFile.close();
@@ -127,7 +146,8 @@ function installPresetEffect()
 
 	// Script has installed. Return and let the user know that After Effects must be restarted now
 	// Return 3 if its an upgrade, 1 if its the first install
-	if (avocadoBlockFound) {
+	// FIXME: kill the or avHighlighter bit after we're all upgraded
+	if (avocadoStartSearch || avHighlighterSearch) {
 		return 3;
 	} else {
 		return 1;
@@ -165,6 +185,8 @@ function getPseudoEffectVersion(stringToSearch) {
 
 	var versionFlag = "AV-PE-Version";
 	var versionSearch = searchText(versionFlag, stringToSearch);
+	if (versionSearch == null) {return 0}
+
 	var versionStartIndex = versionSearch.index + versionFlag.length + 2;
 	var versionString = stringToSearch.slice(versionStartIndex).split("\"")[0];
 	var versionNumber = parseFloat(versionString);
