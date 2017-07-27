@@ -13,7 +13,7 @@ function installPseudoEffects() {
 		// Error
 		case 0:
 			alert("Sorry, the Avocado Pseudo-Effects could not be installed in PresetEffects.xml\n" +
-				  "You may need to change permissions on your After Effects application folder, or run After Effects as an Administrator.");
+				  "You may need to change permissions on the After Effects project folder, specifically the PresetEffects.xml file, or run After Effects as an Administrator.");
 			break;
 
 		// First Install
