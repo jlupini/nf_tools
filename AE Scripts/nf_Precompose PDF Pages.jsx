@@ -56,26 +56,29 @@ function createCompFromPageInFolder(page, folder, background) {
     pageLayer.blendingMode = BlendingMode.MULTIPLY;
     pageLayer.collapseTransformation = true;
 
-    var annotationPage = getAnnotationPageFor(page);
-    var annotationLayer = newComp.layers.add(annotationPage);
-    annotationLayer.blendingMode = BlendingMode.MULTIPLY;
-    annotationLayer.collapseTransformation = true;
-    annotationLayer.name = "Annotation Guide";
-
-    var effects = annotationLayer.Effects;
-    var checkbox = effects.addProperty("ADBE Checkbox Control");
-    var checkboxName = "Guide Layer";
-    checkbox.name = checkboxName;
-    checkbox.property("Checkbox").setValue(1);
-
-    // Set opacity expression on guide layer
-    var opacityControl = annotationLayer.property("Transform").property("Opacity");
-    var sourceExpression = "effect(\"Guide Layer\")(\"Checkbox\")*60";
-    opacityControl.expression = sourceExpression;
-    
     var scaleFactor = width*100/page.width;
     pageLayer.transform.scale.setValue([scaleFactor, scaleFactor, scaleFactor]);
-    annotationLayer.transform.scale.setValue([scaleFactor, scaleFactor, scaleFactor]);
+
+    var annotationPage = getAnnotationPageFor(page);
+    if (annotationPage) {
+        var annotationLayer = newComp.layers.add(annotationPage);
+        annotationLayer.blendingMode = BlendingMode.MULTIPLY;
+        annotationLayer.collapseTransformation = true;
+        annotationLayer.name = "Annotation Guide";
+
+        var effects = annotationLayer.Effects;
+        var checkbox = effects.addProperty("ADBE Checkbox Control");
+        var checkboxName = "Guide Layer";
+        checkbox.name = checkboxName;
+        checkbox.property("Checkbox").setValue(1);
+
+        // Set opacity expression on guide layer
+        var opacityControl = annotationLayer.property("Transform").property("Opacity");
+        var sourceExpression = "effect(\"Guide Layer\")(\"Checkbox\")*60";
+        opacityControl.expression = sourceExpression;
+
+        annotationLayer.transform.scale.setValue([scaleFactor, scaleFactor, scaleFactor]);
+    }
     
     var backgroundLayer = newComp.layers.add(background);
     backgroundLayer.moveToEnd();
