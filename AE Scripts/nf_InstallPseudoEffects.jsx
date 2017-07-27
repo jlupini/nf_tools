@@ -1,18 +1,40 @@
-﻿
+﻿// Declare constants
 
-function installLayerRepeater()
+
+// Declare global variables
+var currentVersion;
+var latestVersion;
+
+function installPseudoEffects()
 {
 	var presetEffectResult = installPresetEffect();
 	switch (presetEffectResult)
 	{
+		// Error
 		case 0:
-			alert("Sorry, the Layer Repeater could not be installed in PresetEffects.xml\nYou may need to run After Effects as Administrator.\nYou will only need to do this the first time you run this script.");
+			alert("Sorry, the Avocado Pseudo-Effects could not be installed in PresetEffects.xml\n" +
+				  "You may need to change permissions on your After Effects application folder, or run After Effects as an Administrator.");
 			break;
+
+		// First Install
 		case 1:
-			alert("Layer Repeater Installed!\nTo use it, you must restart After Effects and run this script again.\n(You do not need to run as Administrator anymore)");
+			alert("Avocado Pseudo-Effects installed (v" + latestVersion.toString() + ")!\n" +
+				  "To use scripts dependent on them, you must restart After Effects\n" +
+				  "(You do not need to run as Administrator anymore)");
 			break;
+
+		// No need to install - Already on latest verions
 		case 2:
-			alert("Layer Repeater Already Installed!\nTo use it, you must restart After Effects and run this script again.\n(You do not need to run as Administrator anymore)");
+			alert("Latest version of Avocado Pseudo-Effects already installed (v" + latestVersion.toString() + ")!\n" +
+				  "To use scripts dependent on them, you must restart After Effects\n" +
+				  "(You do not need to run as Administrator anymore)");
+			break;
+
+		// Installed latest version
+		case 3:
+			alert("Avocado Pseudo-Effects upgraded (v" + currentVersion.toString() + " --> " + latestVersion.toString() + ")!\n" +
+				  "To use scripts dependent on them, you must restart After Effects\n" +
+				  "(You do not need to run as Administrator anymore)");
 			break;
 	}
 }
@@ -27,50 +49,6 @@ function replaceText(totalString, regex, replaceString)
 {
 	var searcher= new RegExp(regex,"g");
 	return newString = totalString.replace(searcher, replaceString);
-}
-
-// we want this check to fail silently, since it will run before the gui is displayed in order to decide if the gui should show the "install" button or the Layer Repeater controls
-// any errors that occur will be displayed to the user once they hit the "Install" button
-function checkPresetEffect()
-{
-	var os = $.os;
-	var presetEffectFilePath;
-	var regexWin = "win";
-	var regexMac = "mac";
-	if (searchText("win", os) != null)
-    {
-         var appFolder = new Folder(Folder.appPackage.parent.absoluteURI).toString();        
-		presetEffectFilePath = (appFolder + "\\Support Files\\PresetEffects.xml");
-     }
-	else if (searchText("mac", os) != null)
-    {
-         var appFolder = new Folder(Folder.appPackage.absoluteURI).toString();
-		presetEffectFilePath = (appFolder + "/Contents/Resources/PresetEffects.xml");
-        }
-	else
-	{
-		//alert("Sorry, your operating system is not supported");
-		return false;
-	}
-
-	var presetEffectFile = new File(presetEffectFilePath);
-	var openCheck = presetEffectFile.open("r");
-	if (!openCheck)
-		{
-			//alert("Could not open "+presetEffectFilePath+"\nYou may need to run After Effects as Administrator.\nYou will only need to do this the first time you run this script.");
-			return 0;
-		}
-	presetEffectFileText = presetEffectFile.read();
-	if (presetEffectFileText == "")
-	{
-		//alert(presetEffectFilePath+" is empty. Sorry, Layer Repeater can not be installed/");
-		return 0;
-	}
-	var layerRepeaterFound = searchText("AV_Highlighter", presetEffectFileText);
-	if (layerRepeaterFound)
-		return 2;
-	else
-		return 0;
 }
 
 function installPresetEffect()
@@ -122,17 +100,12 @@ function installPresetEffect()
 	var avocadoBlockFound = searchText("BEGIN AVOCADO PSEUDO-EFFECTS", presetEffectFileText);
 	if (avocadoBlockFound) {
 		// Check the current version number
-		//$.bp();
-		var currentVersion = getPseudoEffectVersion(presetEffectFileText);
-		var latestVersion = latestPseudoEffects[0];
+		currentVersion = getPseudoEffectVersion(presetEffectFileText);
+		latestVersion = latestPseudoEffects[0];
 
 		if (currentVersion >= latestVersion) {
-			alert("up to date");
-			//$.bp();
 			return 2;
 		}
-		alert("not up to date");
-	
 	}
 
     // Either the current version is behind the latest, or we can't find the file
@@ -153,7 +126,12 @@ function installPresetEffect()
 	if (!closeCheck) {return 0;}
 
 	// Script has installed. Return and let the user know that After Effects must be restarted now
-	return 1;
+	// Return 3 if its an upgrade, 1 if its the first install
+	if (avocadoBlockFound) {
+		return 3;
+	} else {
+		return 1;
+	}
 }
 
 // Returns an array with the version number and content for the latest pseudo effects
@@ -193,21 +171,4 @@ function getPseudoEffectVersion(stringToSearch) {
 	return versionNumber;
 }
 
-function doStuff() {
-	installLayerRepeater();
-	// var makePresetEffectCheck = checkPresetEffect();
-	// switch(makePresetEffectCheck)
-	// {
-	// 	// 0: Layer Repeater not installed, 2: Already install, let's repeat some layers!
-	// 	// There is no case 1, because checkPresetEffect code matches installPresetEffect, and installPresetEffect returns 1 as soon as the preset effect has been installed
-	// 	// Returning 1 makes no sense when we are just checking to see if the preset effect is already installed, not actually installing it
-	// 	case 0:
-	// 		installLayerRepeater();
-	// 		break;
-	// 	case 2: 
-	// 		alert("Already Installed");
-	// 		break;
-	// }
-}
-
-doStuff();
+installPseudoEffects();
