@@ -4,7 +4,7 @@
 
 AE will only recognize scripts in the `Scripts` directory in its application folder. To easily allow updating, we recommend using symlinks or aliases to the files in this repo. That way you can have the repo somewhere else on your drive, and when you update you don't have to copy over any scripts that changed. If the previous sentence sounds like nonsense to you, _ask for help_ since this step can be a little tricky.
 
-**IMPORTANT:** Scripts now require up-to-date pseudo effects. To install these, you need to add the xml tags in the **`Pseudo-Effects.xml`** file to a file After Effects uses called **`PresetEffects.xml`**. This file can be found _inside_ the After Effects app file. Right click the .app and click “Show Package Contents”. In the window that opens, navigate to Contents > Resources and open PresetEffects.xml in a text editor (We like Sublime Text 3, which is a free download). You’ll see a large number of Effects, each one beginning with `<Effect matchname…` and ending a few lines later with `</Effect>`. Copy and paste the contents of the Pseudo-Effects.xml file in this folder after the `<Effects>` tag on or around line 106, making sure to _replace previous versions of the relevant pseudo effects_ if you’re updating to a new version.
+**IMPORTANT:** Scripts now require up-to-date pseudo effects. If you add an alias to the `InstallPseudoEffects.jsx` script in your `Scripts > Startup` folder, pseudo effects will be automatically updated whenever you open AE. See the notes for `InstallPseudoEffects` for more details.
 
 ### Current Droplets
 
@@ -13,6 +13,8 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 - **IsolateAnnotations** - _You will need Adobe Acrobat installed for this app to work._ After you've pulled all the PDF pages into the `PDF Pages` folder, but before you import them to AE, run this script and select all the PDF pages when prompted. Once more, sit back and let it run. It will duplicate each PDF page, then use Acrobat to create a version with only the annotations. Import _all files (including the new ones that end in `annot.pdf`) in the `PDF Pages` folder into the corresponding folder in AE and, with them _all_ selected, run the `Precompose PDF Pages` script. This extra step is to create a guide layer for you to show the PDF highlights in AE so you can easily find quotes and boxes.
 
 ### Current Scripts
+
+- **InstallPseudoEffects** - Put an alias to this script in the `Startup` folder inside your AE `Scripts` Folder. Whenever you open After Effects, the script will run and check to see if you have the latest versions of the pseudo-effects contained in `Pseudo-Effects.xml`. This script replaces the previous method of manually copying and pasting the pseudo effect code into the AE application package. If you install the script with AE already open, quit and reopen it so the script can run (or run it from the scripts menu, then restart). If the script runs silently, you were already running the latest versions. If an install or upgrade is made, you'll see an alert telling you to restart AE. Note for scripting: Do not change the comment flags in `Pseudo-Effects.xml`, except to increment the version number.
 
 - **Create Comp from Audio** - With an audio file selected in the project panel, run the script. It will create a comp with the same duration as, and containing, the audio file.
 
