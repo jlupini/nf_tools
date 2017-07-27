@@ -1,6 +1,7 @@
 ﻿// Declare constants
 var avocadoBlockStart = "<!------- BEGIN AVOCADO PSEUDO-EFFECTS ----->";
-var avocadoBlockEnd = "<!------- END AVOCADO PSEUDO-EFFECTS ----->";
+var avocadoBlockEnd   = "<!------- END AVOCADO PSEUDO-EFFECTS ----->";
+var versionFlag       = "AV-PE-Version";
 
 // Declare global variables
 var currentVersion;
@@ -183,7 +184,6 @@ function getLatestPseudoEffects() {
 // Returns the version from text passed in
 function getPseudoEffectVersion(stringToSearch) {
 
-	var versionFlag = "AV-PE-Version";
 	var versionSearch = searchText(versionFlag, stringToSearch);
 	if (versionSearch == null) {return 0}
 
