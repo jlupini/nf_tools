@@ -1,6 +1,6 @@
 ﻿// Declare constants
-var avocadoBlockStart = "<!------- BEGIN AVOCADO PSEUDO-EFFECTS ----->";
-var avocadoBlockEnd   = "<!------- END AVOCADO PSEUDO-EFFECTS ----->";
+var avocadoBlockStart = "<!-- BEGIN AVOCADO PSEUDO-EFFECTS -->";
+var avocadoBlockEnd   = "<!-- END AVOCADO PSEUDO-EFFECTS -->";
 var versionFlag       = "AV-PE-Version";
 
 // Declare global variables
