@@ -147,6 +147,7 @@ function buildEffect(effectDict) {
 
 	var highlightLayer = mainComp.selectedLayers[0];
 	highlightLayer.motionBlur = true;
+	highlightLayer.blendingMode = BlendingMode.MULTIPLY;
 	var latestShape = highlightLayer.property("Contents").property(1);
 
 	// Set fill, stroke, blend mode, cap, join
