@@ -45,13 +45,12 @@ function searchText(regex, text) {
 	return searcher.exec(text);
 }
 
-function replaceText(totalString, regex, replaceString) {
-	var searcher= new RegExp(regex,"g");
-	return newString = totalString.replace(searcher, replaceString);
-}
-
 function replaceBetween(sourceString, startIndex, endIndex, injectionString) {
     return sourceString.substring(0, startIndex) + injectionString + sourceString.substring(endIndex);
+}
+
+function injectString(sourceString, injectionString, index) {
+	return sourceString.slice(0, index) + injectionString + sourceString.slice(index);
 }
 
 function installPresetEffect() {
@@ -129,14 +128,13 @@ function installPresetEffect() {
 		// We need to delete the effect block for the old AV Highlighter
 		var endSearchIndex = presetEffectFileText.indexOf("</Effect>", avHighlighterSearch.index) + "</Effect>".length;
 		var cleanedPresetEffectText = replaceBetween(presetEffectFileText, avHighlighterSearch.index, endSearchIndex, "");
-		var textToInject = latestPseudoEffects[1] + "\n</Effects>";
-		newPresetEffectText = replaceText(cleanedPresetEffectText, "</Effects>", textToInject);
-
+		var injectionPointIndex = presetEffectFileText.indexOf("</Effects>");
+		newPresetEffectText = injectString(presetEffectFileText, latestPseudoEffects[1] + "\n", injectionPointIndex);
 	} else {
 		// Not an upgrade
 		// Append our new effect directly before the end Effects tag
-		var textToInject = latestPseudoEffects[1] + "\n</Effects>";
-		newPresetEffectText = replaceText(presetEffectFileText, "</Effects>", textToInject);
+		var injectionPointIndex = presetEffectFileText.indexOf("</Effects>");
+		newPresetEffectText = injectString(presetEffectFileText, latestPseudoEffects[1] + "\n", injectionPointIndex);
 	}
 	
 	// Try writing the new PresetEffect Text to the file
