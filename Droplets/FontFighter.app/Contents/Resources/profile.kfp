@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pdfpreflight version="15.0">
+	<package>
+		<id3>7902b8d639790b5300df4864db1da7c7</id3>
+		<pdfxoutintentlist>
+		</pdfxoutintentlist>
+		<iccprofilelist>
+		</iccprofilelist>
+		<ccpolicies>
+		</ccpolicies>
+		<occdsetups>
+		</occdsetups>
+		<curves>
+		</curves>
+		<fspolicies>
+		</fspolicies>
+		<resources>
+		</resources>
+		<variables>
+		</variables>
+		<conditions>
+		</conditions>
+		<rules>
+		</rules>
+		<rulesets>
+		</rulesets>
+		<fixups>
+			<fixup>
+				<id1>F2f5693677041d939b29dba84e2c0014b</id1>
+				<id2>F7e845377a10ef24b03a3f5678b40dbcd</id2>
+				<id3>0f2f38f94b8462204651bdb37d9efc1b</id3>
+				<id4>853ac21ed150eec73135b787b633681f</id4>
+				<name>F_7_Convertfontstooutlines</name>
+				<comment>F_7_Convertfontstooutlines</comment>
+				<flags user_units="0" scope="16" edit="1" visible="1" dict="1"></flags>
+				<fcfgs>
+					<fcfg>
+						<ffeat>ConvertFontsToOutlines</ffeat>
+						<fparams>
+						</fparams>
+					</fcfg>
+					<fcfg>
+						<ffeat></ffeat>
+						<fparams>
+						</fparams>
+					</fcfg>
+				</fcfgs>
+				<reportFailed></reportFailed>
+			</fixup>
+			<fixup>
+				<id1>F29b774fd1aaf36107bd32ec8c1a99d88</id1>
+				<id2>Fbd6e8ffed81259f030f0aeb4beda8fd2</id2>
+				<id3>dd8db38755c2ba9545b5c9203a948f32</id3>
+				<id4>69647f06839d0b7e7c2a19035eae6c29</id4>
+				<name>F_7_Embedmissingfonts</name>
+				<comment>F_7_Embedmissingfonts</comment>
+				<flags user_units="0" scope="16" edit="1" visible="1" dict="1"></flags>
+				<fcfgs>
+					<fcfg>
+						<ffeat>EmbedFonts</ffeat>
+						<fparams>
+							<fparam>ForVisibleAndInvisibleText</fparam>
+						</fparams>
+					</fcfg>
+					<fcfg>
+						<ffeat></ffeat>
+						<fparams>
+						</fparams>
+					</fcfg>
+				</fcfgs>
+				<reportFailed></reportFailed>
+			</fixup>
+		</fixups>
+		<fixupsets>
+			<fixupset>
+				<id1>Ub7019427623e8aef95faa18fdca9c967</id1>
+				<id2>U3036d7977b3a20e3dc3b920cf9fdd952</id2>
+				<id3>c4809ddf4f41fe4c70cb149c9a418259</id3>
+				<id4>a9a03cda283b82751adcca1db0640013</id4>
+				<name>UUUU_FIXUPSET_DEF_NAME</name>
+				<comment>UUUU_FIXUPSET_DEF_NAME</comment>
+				<flags edit="1" visible="1" dict="1"></flags>
+				<fixups>
+					<fixup>F2f5693677041d939b29dba84e2c0014b</fixup>
+					<fixup>F29b774fd1aaf36107bd32ec8c1a99d88</fixup>
+				</fixups>
+			</fixupset>
+		</fixupsets>
+		<actions>
+		</actions>
+		<profiles>
+			<profile>
+				<id1>Pecb56d5eea0e3bcb0419556f55ca0015</id1>
+				<id2>P7618f3df789607bc6987efedaf64be8a</id2>
+				<id3>58f264e0d23e71236374d6a03f2d35fc</id3>
+				<id4>dda242e8e1c5c8964057bbc40068d7ce</id4>
+				<name>P_7_Convertfontstooutlines</name>
+				<comment>P_7_Convertfontstooutlines</comment>
+				<flags edit="0" visible="1" dict="1"></flags>
+				<metalist>
+					<metadata>
+						<metakey>author</metakey>
+						<metavalue>Acrobat 12</metavalue>
+					</metadata>
+				</metalist>
+				<creation>D:20111021003612-07&apos;00&apos;</creation>
+				<modification>D:20170729022416-07&apos;00&apos;</modification>
+				<pdfstd>
+					<pdfx convert="0"></pdfx>
+					<pdfa convert="0"></pdfa>
+					<pdfe convert="0"></pdfe>
+					<outcond></outcond>
+					<trapped>0</trapped>
+					<oioptions>0</oioptions>
+				</pdfstd>
+				<pdfstdemb>
+					<pdfx convert="0"></pdfx>
+					<pdfa convert="0"></pdfa>
+					<pdfe convert="0"></pdfe>
+					<outcond></outcond>
+					<trapped>0</trapped>
+					<oioptions>0</oioptions>
+					<afrelationship set_relationship="0"></afrelationship>
+				</pdfstdemb>
+				<wizard>
+				</wizard>
+				<rulesets>
+				</rulesets>
+				<fixupsets>
+					<fixupset>Ub7019427623e8aef95faa18fdca9c967</fixupset>
+				</fixupsets>
+			</profile>
+		</profiles>
+		<metaprofs>
+		</metaprofs>
+		<profgroups>
+		</profgroups>
+	</package>
+</pdfpreflight>
