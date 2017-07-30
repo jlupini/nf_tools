@@ -150,7 +150,16 @@ function bubbleUpGuideLayers(pagesToBubble) {
 				checkbox.name = checkboxName;
 
 				// Set checkbox to match current opacity
-				checkbox.property("Checkbox").setValue(childGuideCheckbox.value);
+				// If guide layer is hidden, set the opacity to be 0
+				var newValue;
+				if (!guideLayer.enabled) {
+					guideLayer.enabled = true;
+					newValue = false;
+				} else {
+					newValue = childGuideCheckbox.value;
+				}
+
+				checkbox.property("Checkbox").setValue(newValue);
 
 				// Set childCheckbox expression on guide layer
 				var sourceExpression = "comp(\"" + mainComp.name + "\").layer(\"" + targetLayer.name + "\").effect(\"" + checkboxName + "\")(\"Checkbox\")*60";
