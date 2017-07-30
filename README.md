@@ -34,7 +34,7 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 - **PageInit** - Parents and resizes PDF Precomps. Select all page pre comps from a single paper and run the script. Adds a drop shadow to the bottom page (with the assumption that the page turn preset will add it to any pages above). Bubbles up controls (highlight and guide layer checkbox) from the child highlights to the parent layer. Note: Bubbled up controls can only be changed from the top level, so you can't change highlight parameters from within the pdf precomp anymore - all the highlight controls are effectively moved to the pdf precomp layer in the parent comp (`Part 1`, `Part 2`, etc).
 
-- **Emphasizer** - Creates highlights, underlines, and circles. Create a new shape layer and draw a path in the shape you would like to emphasize, then run the script. Will only act on the most recently created shape within a shape layer. 
+- **Emphasizer** - Creates emphasis effects Scribble (Chunky Highlight), PenLine (Circle/Underline), and Cylon. Run the script with the target layer selected (or selection if no target) to create the shape layer, then draw with the pen tool to setup the line for your shape. Will only act on the most recently created shape within a shape layer. 
 
 ### Resources for Scripting:
 

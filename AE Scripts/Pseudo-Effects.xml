@@ -1,5 +1,5 @@
 <!-- BEGIN AVOCADO PSEUDO-EFFECTS -->
-<!-- AV-PE-Version="0.5" -->
+<!-- AV-PE-Version="0.6" -->
 
 <Effect matchname="AV_Highlighter" name="$$$/AE/Preset/AVHighlighter=AV Highlighter">
 	<Slider name="$$$/AE/Preset/Spacing=Spacing" default="74" valid_min="0" valid_max="1000" slider_min="0" slider_max="100" precision="1"/>
@@ -9,6 +9,21 @@
 	<Point name="$$$/AE/Preset/Offset=Offset" default_x="0" default_y="0"/>
 	<Slider name="$$$/AE/Preset/Opacity=Opacity" default="100" valid_min="0" valid_max="100" slider_min="5" slider_max="100" precision="1"/>
 	<Popup name="$$$/AE/Preset/HighlightColour=Highlight Colour" popup_string="$$$/AE/Preset/AVHighlighter/Popup=Yellow|Blue|Purple|Green|Pink|Orange|Red" default="1"/>
+</Effect>
+
+<Effect matchname="AV_Scribble" name="$$$/AE/Preset/AV Scribble=AV Scribble">
+	<Slider name="$$$/AE/Preset/Thickness=Thickness" default="70" valid_min="0" valid_max="1000" slider_min="0" slider_max="100" precision="1"/>
+	<Color name="$$$/AE/Preset/Color=Color" default_red="63" default_green="202" default_blue="255"/>
+</Effect>
+
+<Effect matchname="AV_Pen_Line" name="$$$/AE/Preset/AV Pen Line=AV Pen Line">
+	<Slider name="$$$/AE/Preset/Thickness=Thickness" default="8" valid_min="0" valid_max="1000" slider_min="0" slider_max="100" precision="1"/>
+	<Color name="$$$/AE/Preset/Color=Color" default_red="150" default_green="0" default_blue="0"/>
+</Effect>
+
+<Effect matchname="AV_Cylon" name="$$$/AE/Preset/AV Cylon=AV Cylon">
+	<Slider name="$$$/AE/Preset/Thickness=Thickness" default="74" valid_min="0" valid_max="1000" slider_min="0" slider_max="100" precision="1"/>
+	<Color name="$$$/AE/Preset/Color=Color" default_red="255" default_green="221" default_blue="3"/>
 </Effect>
 
 <!-- END AVOCADO PSEUDO-EFFECTS -->
