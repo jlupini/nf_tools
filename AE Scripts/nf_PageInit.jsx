@@ -136,7 +136,11 @@ function bubbleUpGuideLayers(pagesToBubble) {
 
 		if (guideLayer) {
 
-			var childGuideCheckbox = guideLayer.property("Effects").property("Guide Layer").property("Checkbox");
+			var childGuideEffect = guideLayer.property("Effects").property("Guide Layer");
+			var childGuideCheckbox;
+			if (childGuideEffect) {
+				childGuideCheckbox = childGuideEffect.property("Checkbox");
+			}
 
 			// FIXME: Kill this (first part of if statement) eventually. It's temporary to handle running pageInit on pages precomped with old versions of precompose PDFs
 			if (!childGuideCheckbox) {
