@@ -138,9 +138,33 @@ function bubbleUpGuideLayers(pagesToBubble) {
 
 			var childGuideCheckbox = guideLayer.property("Effects").property("Guide Layer").property("Checkbox");
 
+			// FIXME: Kill this (first part of if statement) eventually. It's temporary to handle running pageInit on pages precomped with old versions of precompose PDFs
+			if (!childGuideCheckbox) {
+				// Add checkbox to targetLayer
+				var effects = targetLayer.Effects;
+				var checkbox = effects.addProperty("ADBE Checkbox Control");
+				var checkboxName = "Guide Layer";
+				checkbox.name = checkboxName;
+
+				// Set checkbox to match current opacity
+				// If guide layer is hidden, set the opacity to be 0
+				var newValue;
+				if (!guideLayer.enabled) {
+					guideLayer.enabled = true;
+					newValue = false;
+				} else {
+					newValue = true;
+				}
+
+				checkbox.property("Checkbox").setValue(newValue);
+
+				// Set childCheckbox expression on guide layer
+				var sourceExpression = "comp(\"" + mainComp.name + "\").layer(\"" + targetLayer.name + "\").effect(\"" + checkboxName + "\")(\"Checkbox\")*60";
+				guideLayer.property("Transform").property("Opacity").expression = sourceExpression;
+
 			// FIXME: Make it so that the guide layer is visible if ANY of the parent layers have this enabled
 			// (basically take out this if statement and add to the existing expression each time you pageinit in a different place)
-			if (!childGuideCheckbox.expressionEnabled) {
+			} else if (!childGuideCheckbox.expressionEnabled) {
 
 
 				// Add checkbox to targetLayer
