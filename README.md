@@ -1,5 +1,9 @@
 # Instructions for Scripts
 
+### What's New
+
+- **August 3, 2017** - Huge update to CreateSpotlightLayer. It now allows you to automatically create spotlights for highlights in the selected comp, and natively supports many different spotlight masks at once. In other words, no more keyframing mask paths! New version is **not** back-compatible with older spotlight layers. Can be used fine in the same project, but you shouldn't run it on anything that already has a spotlight layer (unless you're cool re-doing it with this slick new version). Updates Pseudo-Effects to version 0.71, so don't forget to restart After Effects after installing.
+
 ### Installation
 
 AE will only recognize scripts in the `Scripts` directory in its application folder. To easily allow updating, we recommend using symlinks or aliases to the files in this repo. That way you can have the repo somewhere else on your drive, and when you update you don't have to copy over any scripts that changed. If the previous sentence sounds like nonsense to you, _ask for help_ since this step can be a little tricky.
@@ -26,7 +30,7 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 - **Precompose PDF Pages** - Select all the PDF pages you want to precompose in the project panel, and run this script. It will precompose all selected assets, and put them in a new folder with the paper background layer. Your project must contain the root folder ‘Assets’ and a composition called ‘Paper BG’ for this script to work. If guide layers for each page are selected as well, the new comps will contain that guide layer, with a checkbox toggle for its opacity. Use the checkbox instead of the layer's visibility to show or hide it, since the visibility control is used in PageInit as well.
 
-- **Create Spotlight Layer** - Draw a mask on the target layer, around the quote you want to spotlight (the last mask to have been created will be used). Then run this script, and a spotlight layer will be created above the target layer, with the same dimensions and position (and the target layer as its parent). In and out points are automatically set as markers, drag them to the appropriate positions. If you want to bring in/out the spotlight multiple times, just add more markers (every odd marker is an in point, every even marker is an out point). Effect controls will be created on the target layer for maximum Opacity and minimum Feather. The spotlight path is derived from the spotlight mask on the target layer, so you shouldn’t need to touch the spotlight layer itself (besides trimming it to reduce needless rendering).
+- **Create Spotlight Layer** - Adds a spotlight layer (if none already exists) for the selected page, and allows you to either convert highlights on the page, or a custom-drawn mask on the layer, to a spotlight mask. The first time this script is run, it will generate a Spotlight layer which is actually creating the visible effect. For each spotlight mask you have on a page, the script will create a Span layer above the main Spotlight layer. The Span layer indicates the in and out points of that particular spotlight mask. If you need to make adjustments to the mask path itself, perform those adjustments to the mask on the Span layer. Main Spotlight layer needs to be active for the spotlight mask in a Span to work. Controls for opacity, duration of fadeIn/fadeOut and feather are on the relevant Span layer. If multiple Span layers overlap, try to make sure they have *more overlap than the duration setting* or you'll see an opacity jump halfway through the overlap area.
 
 - **Citation Overlay** - Adds a citation in the top right hand corner of the comp. Set the in/out points using the markers.
 
