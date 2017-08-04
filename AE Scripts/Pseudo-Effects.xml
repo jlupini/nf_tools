@@ -1,5 +1,5 @@
 <!-- BEGIN AVOCADO PSEUDO-EFFECTS -->
-<!-- AV-PE-Version="0.6" -->
+<!-- AV-PE-Version="0.71" -->
 
 <Effect matchname="AV_Highlighter" name="$$$/AE/Preset/AVHighlighter=AV Highlighter">
 	<Slider name="$$$/AE/Preset/Spacing=Spacing" default="74" valid_min="0" valid_max="1000" slider_min="0" slider_max="100" precision="1"/>
@@ -24,6 +24,12 @@
 <Effect matchname="AV_Cylon" name="$$$/AE/Preset/AV Cylon=AV Cylon">
 	<Slider name="$$$/AE/Preset/Thickness=Thickness" default="74" valid_min="0" valid_max="1000" slider_min="0" slider_max="100" precision="1"/>
 	<Color name="$$$/AE/Preset/Color=Color" default_red="255" default_green="221" default_blue="3"/>
+</Effect>
+
+<Effect matchname="AV_Spotlight" name="$$$/AE/Preset/AV Spotlight=AV Spotlight">
+	<Slider name="$$$/AE/Preset/Duration=Duration" default="60" valid_min="0" valid_max="100" slider_min="0" slider_max="100" precision="1"/>
+	<Slider name="$$$/AE/Preset/Feather=Feather" default="80" valid_min="0" valid_max="200" slider_min="0" slider_max="100" precision="1"/>
+	<Slider name="$$$/AE/Preset/Opacity=Opacity" default="35" valid_min="0" valid_max="100" slider_min="0" slider_max="100" precision="1"/>
 </Effect>
 
 <!-- END AVOCADO PSEUDO-EFFECTS -->

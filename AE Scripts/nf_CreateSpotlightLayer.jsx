@@ -1,150 +1,376 @@
-﻿function createSpotlightLayer() {
-    
-    app.beginUndoGroup("Create Spotlight Layer");
+(function() {
+  var absoluteScaleOfLayer, askForChoice, capitalizeFirstLetter, childrenOfSpotlight, createSpotlightLayer, featherExpression, getOnClickFunction, layerOpacityExpression, matchTransformAndParent, moveLatestMaskToSpotlightLayer, newSolid, sourceRectRelativeToComp, sourceRectsForHighlightsInTargetLayer, spotlightLayerMaskExpression, spotlightNameForLayer, toKeys, verticiesFromSourceRect;
 
-    var mainComp = app.project.activeItem;
-    var targetLayer = mainComp.selectedLayers[0];
-    
-    var spotlightName = newSpotlightNameForLayer(targetLayer);
+  if (app.nf == null) {
+    app.nf = {};
+  }
 
-    // Grab last Mask path
-    var spotlightMask = targetLayer.mask(targetLayer.mask.numProperties);
+  app.nf.temp = {
+    mainComp: app.project.activeItem,
+    spotlightColor: [0.0078, 0, 0.1216],
+    initialSpotlightStartOffset: -2,
+    initialSpotlightLength: 7
+  };
 
-
-    spotlightMask.name = spotlightName;
-    var spotlightPath = spotlightMask.maskPath;
-    
-    // create new solid
-    var spotlightLayer = mainComp.layers.addSolid([0.0078, 0, 0.1216], spotlightName, targetLayer.width, targetLayer.height, 1);
-    spotlightLayer.moveBefore(targetLayer);
-    
-    // Set layer properties
-    spotlightLayer.transform.rotation.setValue(targetLayer.transform.rotation.value);
-    spotlightLayer.transform.anchorPoint.setValue(targetLayer.transform.anchorPoint.value);
-    
-    // Hack to get the absolute position of the target layer
-    spotlightLayer.transform.position.expression = "L = thisComp.layer(\"" + targetLayer.name + "\"); L.toComp(L.anchorPoint);";
-    var targetPosition = spotlightLayer.transform.position;
-    spotlightLayer.transform.position.setValue(targetPosition.value);
-    spotlightLayer.transform.position.expression = "";
-    
-    // Hack to get the absolute scale of the target layer
-    spotlightLayer.transform.scale.setValue(absoluteScaleOfLayer (targetLayer));
-
-    var spotlightLayerMask = spotlightLayer.mask.addProperty("ADBE Mask Atom");
-    //spotlightLayerMask.maskPath.expression = "thisComp.layer(\"" + targetLayer.name + "\").mask(" + spotlightMask.propertyIndex + ").maskPath";
-    spotlightLayerMask.maskPath.setValue(spotlightPath.value);
-
-    spotlightLayerMask.maskMode = MaskMode.SUBTRACT;
-    
-    //spotlightMask.maskMode = MaskMode.NONE;
-    spotlightMask.remove();
-    
-    spotlightLayer.motionBlur = true;
-    //spotlightLayer.shy = true;
-    
-    //mainComp.hideShyLayers = true;
-    
-    // Create layer Controls
-    var effects = targetLayer.Effects;
-    
-    // Create opacity controls and expression
-    var trimString = "";
-    trimString += "if (thisComp.layer(\"" + spotlightLayer.name + "\").marker.numKeys > 0){";
-
-    slider = effects.addProperty("ADBE Slider Control");
-    slider.slider.setValue(35);
-    slider.name = spotlightName + " Opacity";
-
-    trimString += "o = thisComp.layer(\"" + targetLayer.name + "\").effect(\"" + slider.name  + "\")(\"Slider\");";
-
-    slider = effects.addProperty("ADBE Slider Control");
-    slider.slider.setValue(75);
-    slider.name = spotlightName + " Duration";
-
-    trimString += "d = thisComp.layer(\"" + targetLayer.name + "\").effect(\"" + slider.name  + "\")(\"Slider\");";
-    trimString += "  m = thisComp.layer(\"" + spotlightLayer.name + "\").marker.nearestKey(time);";
-    trimString += "  t = m.time;";
-    trimString += "  if (m.index%2){"; // For all in markers
-    trimString += "    ease(time,t,t+d*thisComp.frameDuration,0,o);";
-    trimString += "  }else{"; // For all out markers
-    trimString += "    ease(time,t,t-d*thisComp.frameDuration,o,0);";
-    trimString += "  }";
-    trimString += "}else{";
-    trimString += "  value;";
-    trimString += "}";
-    spotlightLayer.transform.opacity.expression = trimString;
-
-    // Create feather controls and expression
-    trimString = "";
-    trimString += "if (thisComp.layer(\"" + spotlightLayer.name + "\").marker.numKeys > 0){";
-    trimString += "d = thisComp.layer(\"" + targetLayer.name + "\").effect(\"" + slider.name  + "\")(\"Slider\");";
-    trimString += "  m = thisComp.layer(\"" + spotlightLayer.name + "\").marker.nearestKey(time);";
-    trimString += "t = m.time;";
-
-    slider = effects.addProperty("ADBE Slider Control");
-    slider.slider.setValue(80);
-    slider.name = spotlightName + " Feather";
-
-    trimString += "f = thisComp.layer(\"" + targetLayer.name + "\").effect(\"" + slider.name  + "\")(\"Slider\");";
-    trimString += "if (m.index%2){"; // For all in markers
-    trimString += "ease(time,t,t+d*thisComp.frameDuration,[300, 300],[f, f])";
-    trimString += "}else{"; // For all out markers
-    trimString += "ease(time,t,t-d*thisComp.frameDuration,[f, f],[300, 300])";
-    trimString += "}";
-    trimString += "}else{";
-    trimString += "value";
-    trimString += "}";
-
-    spotlightLayerMask.maskFeather.expression = trimString; 
-
-    spotlightLayer.parent = targetLayer;
-    spotlightLayer.startTime = targetLayer.startTime;
-    
-    targetLayer.selected = true;
-    spotlightLayer.selected = false;
-    //spotlightLayer.locked = true;
-
-    // Create in/out markers in target layer
-
-    var inMarker = new MarkerValue("Fade In"); 
-    spotlightLayer.property("Marker").setValueAtTime(mainComp.time, inMarker);
-
-    var outMarker = new MarkerValue("Fade Out"); 
-    spotlightLayer.property("Marker").setValueAtTime(mainComp.time+5, outMarker);
-
-
-}
-
-function newSpotlightNameForLayer(targetLayer) {
-    var layerName = targetLayer.name;
-    var shortName = layerName.substr(0, layerName.indexOf('.'));
-    var name = "Spotlight" + shortName;
-
-    if (targetLayer.mask(name) == null) {
-        return name;
-    } else {
-        for (var i = 2; i <= targetLayer.mask.numProperties; i++) {
-            var testName = name + " " + i;
-            if (targetLayer.mask(testName) == null) {
-                return testName;
-            }
-        }
+  askForChoice = function() {
+    var cancelButton, globals, highlightRect, highlightRects, radioButton, selectedLayer, useAllHighlightsButton, useNewMaskButton, useSelectedHighlightsButton, w;
+    globals = app.nf.temp;
+    selectedLayer = globals.mainComp.selectedLayers[0];
+    w = new Window('dialog', 'Add Spotlight');
+    w.alignChildren = 'left';
+    w.grp1 = w.add('panel', void 0, 'Create Spotlight from Mask', {
+      borderStyle: 'none'
+    });
+    w.grp1.alignChildren = 'left';
+    w.grp1.margins.top = 16;
+    useNewMaskButton = w.grp1.add("button", void 0, "Latest Mask on Selected Layer");
+    useNewMaskButton.onClick = getOnClickFunction(null, null, w);
+    highlightRects = sourceRectsForHighlightsInTargetLayer(selectedLayer);
+    if (highlightRects != null) {
+      w.grp2 = w.add('panel', void 0, 'Create Spotlight from Highlight', {
+        borderStyle: 'none'
+      });
+      w.grp2.alignChildren = 'left';
+      w.grp2.margins.top = 16;
+      useAllHighlightsButton = w.grp2.add('button', void 0, "All Active Highlights");
+      useAllHighlightsButton.onClick = getOnClickFunction(toKeys(highlightRects), highlightRects, w, true);
+      w.grp3 = w.grp2.add('group', void 0, void 0, void 0);
+      w.grp3.alignChildren = 'left';
+      w.grp3.orientation = 'column';
+      for (highlightRect in highlightRects) {
+        radioButton = w.grp3.add('checkbox', void 0, capitalizeFirstLetter(highlightRect));
+      }
+      useSelectedHighlightsButton = w.grp2.add('button', void 0, "Selected Highlights");
+      useSelectedHighlightsButton.onClick = getOnClickFunction(toKeys(highlightRects), highlightRects, w, true, w.grp3.children);
     }
-    return name;
-}
+    cancelButton = w.add('button', void 0, 'Cancel', {
+      name: 'cancel'
+    });
+    cancelButton.onClick = function() {
+      w.close();
+    };
+    return w.show();
+  };
 
-function absoluteScaleOfLayer(targetLayer) {
-    var scale = targetLayer.transform.scale.value;
-    var testLayer = targetLayer;
-    while (testLayer.parent != null) {
-        scale = [scale[0] * testLayer.parent.scale.value[0] / 100,
-                    scale[1] * testLayer.parent.scale.value[1] / 100,
-                    scale[2] * testLayer.parent.scale.value[2] / 100];
-        testLayer = testLayer.parent;
+  getOnClickFunction = function(name, sourceRect, w, multiple, choices) {
+    if (multiple == null) {
+      multiple = false;
+    }
+    if (choices == null) {
+      choices = null;
+    }
+    return function() {
+      var rectKeys, theRect, thisIndex;
+      if (choices != null) {
+        rectKeys = toKeys(sourceRect);
+      }
+      if (multiple) {
+        for (theRect in sourceRect) {
+          if (choices != null) {
+            thisIndex = rectKeys.indexOf(theRect);
+            if (choices[thisIndex].value) {
+              createSpotlightLayer(theRect, sourceRect[theRect]);
+            }
+          } else {
+            createSpotlightLayer(theRect, sourceRect[theRect]);
+          }
+        }
+      } else {
+        createSpotlightLayer(name, sourceRect);
+      }
+      w.hide();
+      return false;
+    };
+  };
+
+  toKeys = function(dict) {
+    var allKeys, key;
+    allKeys = [];
+    for (key in dict) {
+      allKeys.push(key);
+    }
+    return allKeys;
+  };
+
+  capitalizeFirstLetter = function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  sourceRectsForHighlightsInTargetLayer = function(targetLayer) {
+    var i, layerParent, sourceCompLayers, sourceHighlightLayers, sourceHighlightRects, theLayer;
+    sourceCompLayers = targetLayer.source.layers;
+    if (sourceCompLayers == null) {
+      return null;
+    }
+    sourceHighlightLayers = [];
+    sourceHighlightRects = {};
+    i = 1;
+    while (i <= sourceCompLayers.length) {
+      theLayer = sourceCompLayers[i];
+      if (theLayer instanceof ShapeLayer && theLayer.Effects.property(1).matchName === "AV_Highlighter") {
+        sourceHighlightLayers.push(theLayer);
+        layerParent = theLayer.parent;
+        theLayer.parent = null;
+        sourceHighlightRects[theLayer.name] = sourceRectRelativeToComp(theLayer);
+        sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value || 0;
+        theLayer.parent = layerParent;
+      }
+      i++;
+    }
+    return sourceHighlightRects;
+  };
+
+  verticiesFromSourceRect = function(rect) {
+    var v;
+    v = {
+      topLeft: [rect.left, rect.top],
+      topRight: [rect.left + rect.width, rect.top],
+      bottomRight: [rect.left + rect.width, rect.top + rect.height],
+      bottomLeft: [rect.left, rect.top + rect.height]
+    };
+    return [v.topLeft, v.bottomLeft, v.bottomRight, v.topRight];
+  };
+
+  sourceRectRelativeToComp = function(layer) {
+    var bottomRightPoint, rect, tempNull, topLeftPoint;
+    tempNull = layer.containingComp.layers.addNull();
+    tempNull.transform.position.expression = "rect = thisComp.layer(" + layer.index + ").sourceRectAtTime(time); a = thisComp.layer(" + layer.index + ").toComp(thisComp.layer(" + layer.index + ").transform.anchorPoint); [rect.left + a[0], rect.top + a[1]]";
+    topLeftPoint = tempNull.transform.position.value;
+    tempNull.transform.position.expression = "rect = thisComp.layer(" + layer.index + ").sourceRectAtTime(time); a = thisComp.layer(" + layer.index + ").toComp(thisComp.layer(" + layer.index + ").transform.anchorPoint); [rect.left + rect.width + a[0], rect.top + rect.height + a[1]]";
+    bottomRightPoint = tempNull.transform.position.value;
+    tempNull.remove();
+    return rect = {
+      left: topLeftPoint[0],
+      top: topLeftPoint[1],
+      width: bottomRightPoint[0] - topLeftPoint[0],
+      height: bottomRightPoint[1] - topLeftPoint[1]
+    };
+  };
+
+  createSpotlightLayer = function(sourceHighlightName, sourceHighlightRect) {
+    var children, dummyMask, effects, globals, newShape, spanLayer, spanMask, spanMaskPath, spanSolidProperties, spotlightControl, spotlightLayer, spotlightLayerMask, spotlightLayerMaskName, spotlightMaskShape, spotlightName, spotlightSolidProperties, targetLayer;
+    globals = app.nf.temp;
+    targetLayer = globals.mainComp.selectedLayers[0];
+    if (targetLayer instanceof ShapeLayer || targetLayer.nullLayer || (targetLayer.source instanceof FootageItem && targetLayer.source.mainSource instanceof SolidSource)) {
+      alert("Error\nPlease select the correct source layer\nDid you draw the mask on the existing spotlight layer by mistake?");
+    }
+    spotlightName = spotlightNameForLayer(targetLayer);
+    spotlightLayer = globals.mainComp.layers.byName(spotlightName);
+    if (spotlightLayer == null) {
+      spotlightSolidProperties = {
+        color: globals.spotlightColor,
+        name: spotlightName,
+        width: targetLayer.width,
+        height: targetLayer.height,
+        pixelAspect: 1,
+        layerAfter: targetLayer,
+        motionBlur: true,
+        startTime: targetLayer.inPoint
+      };
+      spotlightLayer = newSolid(spotlightSolidProperties);
+      matchTransformAndParent(spotlightLayer, targetLayer);
+    }
+    if (spotlightLayer.mask.numProperties === 0) {
+      dummyMask = spotlightLayer.mask.addProperty('ADBE Mask Atom');
+    }
+    if ((sourceHighlightName != null) && (sourceHighlightRect != null)) {
+      spotlightLayerMaskName = spotlightName + " - " + sourceHighlightName;
+      if (globals.mainComp.layer(spotlightLayerMaskName) != null) {
+        alert("Skipping duplicate of spotlight:\n'" + spotlightLayerMaskName + "'");
+        return;
+      }
+      spotlightLayerMask = spotlightLayer.mask.addProperty("Mask");
+      spotlightMaskShape = spotlightLayerMask.property("maskShape");
+      newShape = spotlightMaskShape.value;
+      newShape.vertices = verticiesFromSourceRect(sourceHighlightRect);
+      newShape.closed = true;
+      spotlightMaskShape.setValue(newShape);
+      spotlightLayerMask.maskMode = MaskMode.SUBTRACT;
+      spotlightLayerMask.maskExpansion.setValue(sourceHighlightRect.padding);
+      spotlightLayerMask.name = spotlightLayerMaskName;
+    } else {
+      spotlightLayerMask = moveLatestMaskToSpotlightLayer(spotlightLayer, targetLayer);
+      spotlightLayerMask.name = spotlightName + " - " + (spotlightLayer.mask.numProperties - 1);
+    }
+    spotlightLayer.selected = false;
+    spanSolidProperties = {
+      color: [0, 0, 1],
+      width: targetLayer.width,
+      height: targetLayer.height,
+      name: spotlightLayerMask.name,
+      layerAfter: spotlightLayer,
+      enabled: false,
+      startTime: globals.mainComp.time + globals.initialSpotlightStartOffset,
+      outPoint: globals.mainComp.time + globals.initialSpotlightStartOffset + globals.initialSpotlightLength
+    };
+    spanLayer = newSolid(spanSolidProperties);
+    matchTransformAndParent(spanLayer, spotlightLayer);
+    effects = spanLayer.Effects;
+    spotlightControl = effects.addProperty("AV_Spotlight");
+    spanMask = spanLayer.property('Masks').addProperty('Mask');
+    spanMaskPath = spanMask.property('Mask Path');
+    spanMaskPath.setValue(spotlightLayerMask.property('Mask Path').value);
+    spotlightLayerMask.property('Mask Path').expression = "thisComp.layer(\"" + spanLayer.name + "\").mask(1).maskPath";
+    children = childrenOfSpotlight(spotlightLayer);
+    spotlightLayer.transform.opacity.expression = layerOpacityExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children);
+    spanMask.maskFeather.expression = featherExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children);
+    spanMask.maskOpacity.expression = spotlightLayerMaskExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children);
+    spotlightLayerMask.maskFeather.expression = "thisComp.layer(\"" + spanLayer.name + "\").mask(1).maskFeather";
+    spotlightLayerMask.maskOpacity.expression = "thisComp.layer(\"" + spanLayer.name + "\").mask(1).maskOpacity";
+    spanLayer.selected = false;
+    targetLayer.selected = true;
+  };
+
+  spotlightLayerMaskExpression = function(targetLayer, spotlightLayer, spotlightControl, spanLayer, children) {
+    var trimString;
+    return trimString = "if (thisComp.layer(\"" + spanLayer.name + "\")){ d = thisComp.layer(\"" + spanLayer.name + "\").effect(\"" + spotlightControl.name + "\")(\"Duration\"); spotIn = thisComp.layer(\"" + spanLayer.name + "\").inPoint; spotOut = thisComp.layer(\"" + spanLayer.name + "\").outPoint; if (time < (spotIn+spotOut)/2) { ease(time,spotIn,spotIn + d * thisComp.frameDuration,0,100) } else { ease(time,spotOut - d * thisComp.frameDuration,spotOut,100,0) } } else { 0; }";
+  };
+
+  layerOpacityExpression = function(targetLayer, spotlightLayer, spotlightControl, spanLayer, children) {
+    var trimString;
+    return trimString = "var activeBabbies, d, endOfBlock, i, o, startOfBlock, theLayer, children, inLayer, outLayer; activeBabbies = []; children = " + children + "; for (i = 0; i < children.length; i++) { theLayer = thisComp.layer(children[i]); if (theLayer.inPoint <= time && theLayer.outPoint > time) { activeBabbies.push(theLayer); } } if (activeBabbies.length > 0) { startOfBlock = activeBabbies[0].inPoint; inLayer = activeBabbies[0]; endOfBlock = activeBabbies[0].outPoint; outLayer = activeBabbies[0]; for (i = 1; i < activeBabbies.length; i++) { if (activeBabbies[i].inPoint < startOfBlock) { startOfBlock = activeBabbies[i].inPoint; inLayer = activeBabbies[i]; } if (activeBabbies[i].outPoint > endOfBlock) { endOfBlock = activeBabbies[i].outPoint; outLayer = activeBabbies[i]; } } oIn = inLayer.effect(\"" + spotlightControl.name + "\")(\"Opacity\"); dIn = inLayer.effect(\"" + spotlightControl.name + "\")(\"Duration\"); oOut = outLayer.effect(\"" + spotlightControl.name + "\")(\"Opacity\"); dOut = outLayer.effect(\"" + spotlightControl.name + "\")(\"Duration\"); if (time < (endOfBlock + startOfBlock) / 2) { ease(time, startOfBlock, startOfBlock + dIn * thisComp.frameDuration, 0, oIn); } else { ease(time, endOfBlock - dOut * thisComp.frameDuration, endOfBlock, oOut, 0); } } else { 0 }";
+  };
+
+  featherExpression = function(targetLayer, spotlightLayer, spotlightControl, spanLayer, children) {
+    var trimString;
+    return trimString = "var activeBabbies, d, endOfBlock, i, o, startOfBlock, theLayer, children, inLayer, outLayer; activeBabbies = []; children = " + children + "; for (i = 0; i < children.length; i++) { theLayer = thisComp.layer(children[i]); if (theLayer.inPoint <= time && theLayer.outPoint > time) { activeBabbies.push(theLayer); } } if (activeBabbies.length > 0) { startOfBlock = activeBabbies[0].inPoint; inLayer = activeBabbies[0]; endOfBlock = activeBabbies[0].outPoint; outLayer = activeBabbies[0]; for (i = 1; i < activeBabbies.length; i++) { if (activeBabbies[i].inPoint < startOfBlock) { startOfBlock = activeBabbies[i].inPoint; inLayer = activeBabbies[i]; } if (activeBabbies[i].outPoint > endOfBlock) { endOfBlock = activeBabbies[i].outPoint; outLayer = activeBabbies[i]; } } fIn = inLayer.effect(\"" + spotlightControl.name + "\")(\"Feather\"); dIn = inLayer.effect(\"" + spotlightControl.name + "\")(\"Duration\"); fOut = outLayer.effect(\"" + spotlightControl.name + "\")(\"Feather\"); dOut = outLayer.effect(\"" + spotlightControl.name + "\")(\"Duration\"); if (time < (endOfBlock + startOfBlock) / 2) { ease(time, startOfBlock, startOfBlock + dIn * thisComp.frameDuration, [300, 300], [fIn, fIn]); } else { ease(time, endOfBlock - dOut * thisComp.frameDuration, endOfBlock, [fOut, fOut], [300, 300]); } } else { [300,300] }";
+  };
+
+  childrenOfSpotlight = function(spotlightLayer) {
+    var allLayers, childLayerArrayString, i, theLayer;
+    allLayers = app.nf.temp.mainComp.layers;
+    childLayerArrayString = "[";
+    i = 1;
+    while (i <= allLayers.length) {
+      theLayer = allLayers[i];
+      if (theLayer.parent === spotlightLayer) {
+        childLayerArrayString += "\"" + theLayer.name + "\"";
+        if (i < allLayers.length) {
+          childLayerArrayString += ",";
+        }
+      }
+      i++;
+    }
+    return childLayerArrayString += "]";
+  };
+
+  moveLatestMaskToSpotlightLayer = function(spotlightLayer, targetLayer) {
+    var spotlightLayerMask, spotlightMask;
+    spotlightMask = targetLayer.mask(targetLayer.mask.numProperties);
+    spotlightLayerMask = spotlightLayer.mask.addProperty('ADBE Mask Atom');
+    spotlightLayerMask.maskPath.setValue(spotlightMask.maskPath.value);
+    spotlightLayerMask.maskMode = MaskMode.SUBTRACT;
+    spotlightMask.remove();
+    return spotlightLayerMask;
+  };
+
+  matchTransformAndParent = function(newLayer, targetLayer) {
+    var j, len1, propertiesToCopy, property, targetParent;
+    targetParent = targetLayer.parent;
+    targetLayer.parent = null;
+    propertiesToCopy = ["rotation", "anchorPoint", "position", "scale"];
+    for (j = 0, len1 = propertiesToCopy.length; j < len1; j++) {
+      property = propertiesToCopy[j];
+      newLayer.transform[property].setValue(targetLayer.transform[property].value);
+    }
+    targetLayer.parent = targetParent;
+    newLayer.parent = targetLayer;
+    return newLayer;
+  };
+
+  newSolid = function(props) {
+    var newSolidLayer, ref, ref1, ref10, ref11, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+    props = {
+      color: (ref = props.color) != null ? ref : [0, 0, 0],
+      name: (ref1 = props.name) != null ? ref1 : "New Solid",
+      width: (ref2 = props.width) != null ? ref2 : app.nf.temp.mainComp.width,
+      height: (ref3 = props.height) != null ? ref3 : app.nf.temp.mainComp.height,
+      pixelAspect: (ref4 = props.pixelAspect) != null ? ref4 : 1,
+      layerAfter: (ref5 = props.layerAfter) != null ? ref5 : null,
+      layerBefore: (ref6 = props.layerBefore) != null ? ref6 : null,
+      motionBlur: (ref7 = props.motionBlur) != null ? ref7 : false,
+      parent: (ref8 = props.parent) != null ? ref8 : null,
+      enabled: props.enabled === false ? false : void 0,
+      startTime: (ref9 = props.startTime) != null ? ref9 : null,
+      outPoint: (ref10 = props.outPoint) != null ? ref10 : null,
+      inPoint: (ref11 = props.inPoint) != null ? ref11 : null
+    };
+    newSolidLayer = app.nf.temp.mainComp.layers.addSolid(props.color, props.name, props.width, props.height, props.pixelAspect);
+    if (props.layerAfter) {
+      newSolidLayer.moveBefore(props.layerAfter);
+    }
+    if (props.layerBefore) {
+      newSolidLayer.moveAfter(props.layerBefore);
+    }
+    if (props.parent) {
+      newSolidLayer.parent = props.parent;
+    }
+    if (props.startTime) {
+      newSolidLayer.startTime = props.startTime;
+    }
+    if (props.inPoint) {
+      newSolidLayer.inPoint = props.inPoint;
+    }
+    if (props.outPoint) {
+      newSolidLayer.outPoint = props.outPoint;
+    }
+    if (props.enabled === false) {
+      newSolidLayer.enabled = props.enabled;
+    }
+    return newSolidLayer;
+  };
+
+  spotlightNameForLayer = function(targetLayer) {
+    var layerName, name, shortName;
+    layerName = targetLayer.name;
+    shortName = layerName.substr(0, layerName.indexOf('.'));
+    return name = 'Spot - ' + shortName;
+  };
+
+  absoluteScaleOfLayer = function(targetLayer) {
+    var scale, testLayer;
+    scale = targetLayer.transform.scale.value;
+    testLayer = targetLayer;
+    while (testLayer.parent !== null) {
+      scale = [scale[0] * testLayer.parent.scale.value[0] / 100, scale[1] * testLayer.parent.scale.value[1] / 100, scale[2] * testLayer.parent.scale.value[2] / 100];
+      testLayer = testLayer.parent;
     }
     return scale;
-}
+  };
 
-createSpotlightLayer();
+  if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function(searchElement, fromIndex) {
+      var k, len, n, o;
+      k = void 0;
+      if (this === null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+      o = Object(this);
+      len = o.length >>> 0;
+      if (len === 0) {
+        return -1;
+      }
+      n = fromIndex | 0;
+      if (n >= len) {
+        return -1;
+      }
+      k = Math.max(n >= 0 ? n : len - Math.abs(n));
+      while (k < len) {
+        if (k in o && o[k] === searchElement) {
+          return k;
+        }
+        k++;
+      }
+      return -1;
+    };
+  }
 
+  app.beginUndoGroup('Create Spotlight Layer');
+
+  askForChoice();
+
+  app.endUndoGroup();
+
+  app.nf.temp = {};
+
+}).call(this);
