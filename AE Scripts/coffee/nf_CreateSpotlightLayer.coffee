@@ -48,6 +48,7 @@ askForChoice = ->
 
   w.show()
 
+# FIXME: The way this function takes in arguments is ridiculous. Combine sourceRect, multiple, and choices
 getOnClickFunction = (name, sourceRect, w, multiple = false, choices = null) ->
   ->
     rectKeys = nf.toKeys sourceRect if choices?
@@ -62,14 +63,6 @@ getOnClickFunction = (name, sourceRect, w, multiple = false, choices = null) ->
       createSpotlightLayer name, sourceRect
     w.hide()
     false
-
-verticiesFromSourceRect = (rect) ->
-  v =
-    topLeft: [rect.left, rect.top]
-    topRight: [rect.left + rect.width, rect.top]
-    bottomRight: [rect.left + rect.width, rect.top + rect.height]
-    bottomLeft: [rect.left, rect.top + rect.height]
-  return [v.topLeft, v.bottomLeft, v.bottomRight, v.topRight]
 
 createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
   targetLayer = nf.mainComp.selectedLayers[0]
@@ -108,7 +101,7 @@ createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
     spotlightLayerMask = spotlightLayer.mask.addProperty "Mask"
     spotlightMaskShape = spotlightLayerMask.property "maskShape"
     newShape = spotlightMaskShape.value
-    newShape.vertices = verticiesFromSourceRect sourceHighlightRect
+    newShape.vertices = nf.verticiesFromSourceRect sourceHighlightRect
     newShape.closed = true
     spotlightMaskShape.setValue newShape
     spotlightLayerMask.maskMode = MaskMode.SUBTRACT
@@ -160,6 +153,8 @@ createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
 
   return
 
+# FIXME: Stop spotlights from fading up and down mask opacity if they're the first or last in a block
+#        You'll want to port the activeBabbies and Block stuff from the spotlight layerOpacityExpression stuff below
 spotlightLayerMaskExpression = (targetLayer, spotlightLayer, spotlightControl, spanLayer, children) ->
   trimString = "var activeBabbies, d, endOfBlock, i, o, startOfBlock, theLayer, children, inLayer, outLayer;
 

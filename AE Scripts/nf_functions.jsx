@@ -4,6 +4,16 @@
 
   nf = {};
 
+  nf.pageParent = function(selectedLayer) {
+    if (selectedLayer.nullLayer) {
+      return selectedLayer;
+    }
+    if (selectedLayer.parent.nullLayer) {
+      return selectedLayer.parent;
+    }
+    return null;
+  };
+
   nf.capitalizeFirstLetter = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
@@ -25,6 +35,7 @@
         theLayer.parent = null;
         sourceHighlightRects[theLayer.name] = nf.sourceRectRelativeToComp(theLayer);
         sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value || 0;
+        sourceHighlightRects[theLayer.name].name = theLayer.name;
         theLayer.parent = layerParent;
       }
       i++;
@@ -48,6 +59,41 @@
     };
   };
 
+  nf.rectRelativeToComp = function(rect, layer, targetTime) {
+    var bottomRightPoint, newRect, topLeftPoint;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    topLeftPoint = nf.pointRelativeToComp([rect.left, rect.top], layer, targetTime);
+    bottomRightPoint = nf.pointRelativeToComp([rect.left + rect.width, rect.top + rect.height], layer, targetTime);
+    return newRect = {
+      left: topLeftPoint[0],
+      top: topLeftPoint[1],
+      width: bottomRightPoint[0] - topLeftPoint[0],
+      height: bottomRightPoint[1] - topLeftPoint[1]
+    };
+  };
+
+  nf.pointRelativeToComp = function(sourcePoint, layer, targetTime) {
+    var newPoint, tempNull;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    targetTime = targetTime != null ? targetTime : app.project.activeItem.time;
+    tempNull = nf.nullAtPointRelativeToComp(sourcePoint, layer);
+    newPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+    tempNull.remove();
+    return newPoint;
+  };
+
+  nf.nullAtPointRelativeToComp = function(sourcePoint, layer) {
+    var targetTime, tempNull;
+    targetTime = targetTime != null ? targetTime : app.project.activeItem.time;
+    tempNull = layer.containingComp.layers.addNull();
+    tempNull.transform.position.expression = "a = thisComp.layer(" + layer.index + ").toComp([" + sourcePoint[0] + ", " + sourcePoint[1] + "]); a";
+    return tempNull;
+  };
+
   nf.toKeys = function(dict) {
     var allKeys, key;
     allKeys = [];
@@ -55,6 +101,17 @@
       allKeys.push(key);
     }
     return allKeys;
+  };
+
+  nf.verticiesFromSourceRect = function(rect) {
+    var v;
+    v = {
+      topLeft: [rect.left, rect.top],
+      topRight: [rect.left + rect.width, rect.top],
+      bottomRight: [rect.left + rect.width, rect.top + rect.height],
+      bottomLeft: [rect.left, rect.top + rect.height]
+    };
+    return [v.topLeft, v.bottomLeft, v.bottomRight, v.topRight];
   };
 
   app.nf = nf;

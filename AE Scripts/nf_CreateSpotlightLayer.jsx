@@ -1,6 +1,6 @@
 (function() {
   #include "nf_functions.jsx";
-  var absoluteScaleOfLayer, askForChoice, childrenOfSpotlight, createSpotlightLayer, featherExpression, getOnClickFunction, globals, importedFunctions, layerOpacityExpression, matchTransformAndParent, moveLatestMaskToSpotlightLayer, newSolid, nf, spotlightLayerMaskExpression, spotlightNameForLayer, verticiesFromSourceRect;
+  var absoluteScaleOfLayer, askForChoice, childrenOfSpotlight, createSpotlightLayer, featherExpression, getOnClickFunction, globals, importedFunctions, layerOpacityExpression, matchTransformAndParent, moveLatestMaskToSpotlightLayer, newSolid, nf, spotlightLayerMaskExpression, spotlightNameForLayer;
 
   importedFunctions = app.nf;
 
@@ -83,17 +83,6 @@
     };
   };
 
-  verticiesFromSourceRect = function(rect) {
-    var v;
-    v = {
-      topLeft: [rect.left, rect.top],
-      topRight: [rect.left + rect.width, rect.top],
-      bottomRight: [rect.left + rect.width, rect.top + rect.height],
-      bottomLeft: [rect.left, rect.top + rect.height]
-    };
-    return [v.topLeft, v.bottomLeft, v.bottomRight, v.topRight];
-  };
-
   createSpotlightLayer = function(sourceHighlightName, sourceHighlightRect) {
     var childSpan, children, dummyMask, effects, j, len1, newShape, ref, spanLayer, spanMask, spanMaskPath, spanSolidProperties, spotlightControl, spotlightLayer, spotlightLayerMask, spotlightLayerMaskName, spotlightMaskShape, spotlightName, spotlightSolidProperties, targetLayer;
     targetLayer = nf.mainComp.selectedLayers[0];
@@ -128,7 +117,7 @@
       spotlightLayerMask = spotlightLayer.mask.addProperty("Mask");
       spotlightMaskShape = spotlightLayerMask.property("maskShape");
       newShape = spotlightMaskShape.value;
-      newShape.vertices = verticiesFromSourceRect(sourceHighlightRect);
+      newShape.vertices = nf.verticiesFromSourceRect(sourceHighlightRect);
       newShape.closed = true;
       spotlightMaskShape.setValue(newShape);
       spotlightLayerMask.maskMode = MaskMode.SUBTRACT;
