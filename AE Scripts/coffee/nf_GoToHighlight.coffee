@@ -1,8 +1,3 @@
-# Move _Parent_ OR Move Page
-# End Keyframe Only? (default no)
-# List of highlight colors
-
-
 `#include "nf_functions.jsx"`
 
 importedFunctions = app.nf
@@ -35,7 +30,9 @@ goToHighlight = (highlight, options) ->
 	positionProp = layerToMove.transform.position
 	scaleProp = layerToMove.transform.scale
 
-	# FIXME: Handle the MoveOnly option!!!
+	previousParent = layerToMove.parent if layerToMove.parent?
+	layerToMove.parent = null
+
 	now = nf.mainComp.time
 	if options.makeInKeyframe
 
@@ -60,6 +57,23 @@ goToHighlight = (highlight, options) ->
 			positionProp.setInterpolationTypeAtKey posKey, nf.easeType, nf.easeType
 			ease = new KeyframeEase(0, nf.easeWeight)
 			positionProp.setTemporalEaseAtKey posKey, [ease]
+	else if options.moveOnly
+
+		# Delete any Keyframes
+		didRemoveKeys = false
+		while positionProp.numKeys != 0
+			didRemoveKeys = true
+			positionProp.removeKey 1
+		while scaleProp.numKeys != 0
+			didRemoveKeys = true
+			scaleProp.removeKey 1
+		if didRemoveKeys
+			alert "Warning: The options you selected have caused the removal of one or more keyframes from the target layer. This is probably because you chose 'No Keyframes'."
+
+		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
+		scaleProp.setValue targetScale
+		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
+		positionProp.setValue targetPosition
 	else
 		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
 		scaleProp.setValueAtTime now, targetScale
@@ -74,6 +88,8 @@ goToHighlight = (highlight, options) ->
 		ease = new KeyframeEase(0, nf.easeWeight)
 		positionProp.setTemporalEaseAtKey posKey, [ease]
 		scaleProp.setTemporalEaseAtKey scaleKey, [ease, ease, ease]
+
+	layerToMove.parent = previousParent if previousParent?
 	
 getTargetPosition = (highlight, layerPosition, highlightPageLayer, targetTime = null) ->
 	highlightCenterPoint = nf.pointRelativeToComp [highlight.left + highlight.width / 2, highlight.top + highlight.height / 2], highlightPageLayer, targetTime
@@ -103,6 +119,8 @@ askForChoice = ->
 	durationValue = w.grp1.durGroup.add 'edittext', undefined, 2
 	durationValue.characters = 3
 
+	# FIXME: Add some padding options  or deal with really big or small highlights
+
 	radioGroupTargetLayer = w.grp1.add "panel", undefined, 'Target Layer'
 	radioGroupTargetLayer.alignChildren = 'left'
 	radioGroupTargetLayer.orientation = 'row'
@@ -114,9 +132,8 @@ askForChoice = ->
 	radioGroupKeyframes.alignChildren = 'left'
 	radioGroupKeyframes.orientation = 'row'
 	radioButtonInOut = radioGroupKeyframes.add "radiobutton", undefined, "In & Out"
-	# FIXME: Alert that this behavior is destructive if it will be:
-	radioButtonMoveOnly = radioGroupKeyframes.add "radiobutton", undefined, "Move Only"
 	radioButtonOneKF = radioGroupKeyframes.add "radiobutton", undefined, "One Keyframe"
+	radioButtonMoveOnly = radioGroupKeyframes.add "radiobutton", undefined, "No Keyframes (Move Only)"
 	radioButtonInOut.value = true
 
 	highlightRects = nf.sourceRectsForHighlightsInTargetLayer selectedLayer

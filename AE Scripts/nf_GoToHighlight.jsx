@@ -21,7 +21,7 @@
   nf = Object.assign(importedFunctions, globals);
 
   goToHighlight = function(highlight, options) {
-    var ease, highlightPageLayer, i, j, keyframeTimes, layerToMove, len, len1, now, posKey, positionProp, ref, ref1, ref2, ref3, results, scaleKey, scaleProp, selectedLayer, targetPosition, targetScale, theTime;
+    var didRemoveKeys, ease, highlightPageLayer, i, j, keyframeTimes, layerToMove, len, len1, now, posKey, positionProp, previousParent, ref, ref1, ref2, ref3, scaleKey, scaleProp, selectedLayer, targetPosition, targetScale, theTime;
     options = {
       movePageLayer: (ref = options.movePageLayer) != null ? ref : nf.defaultOptions.movePageLayer,
       makeInKeyframe: (ref1 = options.makeInKeyframe) != null ? ref1 : nf.defaultOptions.makeInKeyframe,
@@ -36,6 +36,10 @@
     }
     positionProp = layerToMove.transform.position;
     scaleProp = layerToMove.transform.scale;
+    if (layerToMove.parent != null) {
+      previousParent = layerToMove.parent;
+    }
+    layerToMove.parent = null;
     now = nf.mainComp.time;
     if (options.makeInKeyframe) {
       keyframeTimes = [now, now + options.duration];
@@ -50,15 +54,30 @@
       }
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]);
       positionProp.setValuesAtTimes(keyframeTimes, [positionProp.valueAtTime(now, false), targetPosition]);
-      results = [];
       for (j = 0, len1 = keyframeTimes.length; j < len1; j++) {
         theTime = keyframeTimes[j];
         posKey = positionProp.nearestKeyIndex(theTime);
         positionProp.setInterpolationTypeAtKey(posKey, nf.easeType, nf.easeType);
         ease = new KeyframeEase(0, nf.easeWeight);
-        results.push(positionProp.setTemporalEaseAtKey(posKey, [ease]));
+        positionProp.setTemporalEaseAtKey(posKey, [ease]);
       }
-      return results;
+    } else if (options.moveOnly) {
+      didRemoveKeys = false;
+      while (positionProp.numKeys !== 0) {
+        didRemoveKeys = true;
+        positionProp.removeKey(1);
+      }
+      while (scaleProp.numKeys !== 0) {
+        didRemoveKeys = true;
+        scaleProp.removeKey(1);
+      }
+      if (didRemoveKeys) {
+        alert("Warning: The options you selected have caused the removal of one or more keyframes from the target layer. This is probably because you chose 'No Keyframes'.");
+      }
+      targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
+      scaleProp.setValue(targetScale);
+      targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer);
+      positionProp.setValue(targetPosition);
     } else {
       targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
       scaleProp.setValueAtTime(now, targetScale);
@@ -70,7 +89,10 @@
       scaleProp.setInterpolationTypeAtKey(scaleKey, nf.easeType, nf.easeType);
       ease = new KeyframeEase(0, nf.easeWeight);
       positionProp.setTemporalEaseAtKey(posKey, [ease]);
-      return scaleProp.setTemporalEaseAtKey(scaleKey, [ease, ease, ease]);
+      scaleProp.setTemporalEaseAtKey(scaleKey, [ease, ease, ease]);
+    }
+    if (previousParent != null) {
+      return layerToMove.parent = previousParent;
     }
   };
 
@@ -122,8 +144,8 @@
     radioGroupKeyframes.alignChildren = 'left';
     radioGroupKeyframes.orientation = 'row';
     radioButtonInOut = radioGroupKeyframes.add("radiobutton", void 0, "In & Out");
-    radioButtonMoveOnly = radioGroupKeyframes.add("radiobutton", void 0, "Move Only");
     radioButtonOneKF = radioGroupKeyframes.add("radiobutton", void 0, "One Keyframe");
+    radioButtonMoveOnly = radioGroupKeyframes.add("radiobutton", void 0, "No Keyframes (Move Only)");
     radioButtonInOut.value = true;
     highlightRects = nf.sourceRectsForHighlightsInTargetLayer(selectedLayer);
     if (highlightRects != null) {
