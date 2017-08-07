@@ -60,6 +60,7 @@
         positionProp.setInterpolationTypeAtKey(posKey, nf.easeType, nf.easeType);
         ease = new KeyframeEase(0, nf.easeWeight);
         positionProp.setTemporalEaseAtKey(posKey, [ease]);
+        positionProp.setSpatialTangentsAtKey(posKey, [0, 0, 0]);
       }
     } else if (options.moveOnly) {
       didRemoveKeys = false;
@@ -90,10 +91,12 @@
       ease = new KeyframeEase(0, nf.easeWeight);
       positionProp.setTemporalEaseAtKey(posKey, [ease]);
       scaleProp.setTemporalEaseAtKey(scaleKey, [ease, ease, ease]);
+      positionProp.setSpatialTangentsAtKey(posKey, [0, 0, 0]);
     }
     if (previousParent != null) {
-      return layerToMove.parent = previousParent;
+      layerToMove.parent = previousParent;
     }
+    return selectedLayer.selected = true;
   };
 
   getTargetPosition = function(highlight, layerPosition, highlightPageLayer, targetTime) {

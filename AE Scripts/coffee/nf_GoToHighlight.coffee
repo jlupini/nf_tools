@@ -57,8 +57,8 @@ goToHighlight = (highlight, options) ->
 			positionProp.setInterpolationTypeAtKey posKey, nf.easeType, nf.easeType
 			ease = new KeyframeEase(0, nf.easeWeight)
 			positionProp.setTemporalEaseAtKey posKey, [ease]
+			positionProp.setSpatialTangentsAtKey posKey, [0,0,0] # This is needed to prevent the 'boomerang' bug
 	else if options.moveOnly
-
 		# Delete any Keyframes
 		didRemoveKeys = false
 		while positionProp.numKeys != 0
@@ -88,8 +88,10 @@ goToHighlight = (highlight, options) ->
 		ease = new KeyframeEase(0, nf.easeWeight)
 		positionProp.setTemporalEaseAtKey posKey, [ease]
 		scaleProp.setTemporalEaseAtKey scaleKey, [ease, ease, ease]
+		positionProp.setSpatialTangentsAtKey posKey, [0,0,0]
 
 	layerToMove.parent = previousParent if previousParent?
+	selectedLayer.selected = yes
 	
 getTargetPosition = (highlight, layerPosition, highlightPageLayer, targetTime = null) ->
 	highlightCenterPoint = nf.pointRelativeToComp [highlight.left + highlight.width / 2, highlight.top + highlight.height / 2], highlightPageLayer, targetTime
