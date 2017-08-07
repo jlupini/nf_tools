@@ -7,6 +7,7 @@ globals =
 	highlightWidthPercent: 85
 	easeType: KeyframeInterpolationType.BEZIER
 	easeWeight: 33
+	maxPageScale: 130
 	defaultOptions:
 		movePageLayer: no
 		makeInKeyframe: yes
@@ -38,16 +39,14 @@ goToHighlight = (highlight, options) ->
 
 		keyframeTimes = [now, now + options.duration]
 
-		# Do the scale keyframing first, since we'll need this to figure out the new position
-		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
+		targetScaleFactor = getTargetScaleFactor highlight, scaleProp.value, highlightPageLayer
+		targetScale = getTargetScaleUsingFactor scaleProp.value, targetScaleFactor
 		scaleProp.setValuesAtTimes keyframeTimes, [scaleProp.valueAtTime(now, false), targetScale]
-
 		nf.setSymmetricalTemporalEasingOnlyForProperties scaleProp, keyframeTimes, nf.easeType, nf.easeWeight, true
 
 		# Now that we've set the scale, we can get the location of the highlighter at that scale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]
 		positionProp.setValuesAtTimes keyframeTimes, [positionProp.valueAtTime(now, false), targetPosition]
-
 		nf.setSymmetricalTemporalEasingOnlyForProperties positionProp, keyframeTimes, nf.easeType, nf.easeWeight, true
 
 	else if options.moveOnly
@@ -62,12 +61,14 @@ goToHighlight = (highlight, options) ->
 		if didRemoveKeys
 			alert "Warning: The options you selected have caused the removal of one or more keyframes from the target layer. This is probably because you chose 'No Keyframes'."
 
-		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
+		targetScaleFactor = getTargetScaleFactor highlight, scaleProp.value, highlightPageLayer
+		targetScale = getTargetScaleUsingFactor scaleProp.value, targetScaleFactor
 		scaleProp.setValue targetScale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
 		positionProp.setValue targetPosition
 	else
-		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
+		targetScaleFactor = getTargetScaleFactor highlight, scaleProp.value, highlightPageLayer
+		targetScale = getTargetScaleUsingFactor scaleProp.value, targetScaleFactor
 		scaleProp.setValueAtTime now, targetScale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
 		positionProp.setValueAtTime now, targetPosition
@@ -76,20 +77,34 @@ goToHighlight = (highlight, options) ->
 
 	layerToMove.parent = previousParent if previousParent?
 	selectedLayer.selected = yes
+
+absoluteScaleOfLayer = (layer) ->
+	layerParent = layer.parent
+	layer.parent = null
+	absoluteScale = layer.transform.scale.value
+	layer.parent = layerParent
+	absoluteScale
 	
 getTargetPosition = (highlight, layerPosition, highlightPageLayer, targetTime = null) ->
 	highlightCenterPoint = nf.pointRelativeToComp [highlight.left + highlight.width / 2, highlight.top + highlight.height / 2], highlightPageLayer, targetTime
 	compCenterPoint = [nf.mainComp.width / 2, nf.mainComp.height / 2]
 	delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]]
 	targetPosition = [layerPosition[0] + delta[0], layerPosition[1] + delta[1]]
+	# FIXME: Don't let us land off the page
 	targetPosition
 
-getTargetScale = (highlight, layerScale, highlightPageLayer, targetTime = null) ->
+getTargetScaleUsingFactor = (initialScale, scaleFactor) ->
+	newScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor]
+
+getTargetScaleFactor = (highlight, layerScale, highlightPageLayer, targetTime = null) ->
 	highlightRectInContext = nf.rectRelativeToComp highlight, highlightPageLayer, targetTime
 	compWidth = nf.mainComp.width
 	targetHighlightWidth = nf.highlightWidthPercent / 100 * compWidth
 	scaleFactor = targetHighlightWidth / highlightRectInContext.width
-	newScale = [layerScale[0] * scaleFactor, layerScale[1] * scaleFactor]
+
+	# Adjust for max page scale
+	absoluteScale = absoluteScaleOfLayer highlightPageLayer
+	adjustedScaleFactor = if scaleFactor * absoluteScale[0] > nf.maxPageScale then nf.maxPageScale / absoluteScale[0] else scaleFactor
 
 askForChoice = ->
 	selectedLayer = nf.mainComp.selectedLayers[0]
@@ -100,10 +115,17 @@ askForChoice = ->
 	w.grp1.alignChildren = 'left'
 	w.grp1.margins.top = 16
 
-	w.grp1.durGroup = w.grp1.add 'group'
-	durationLabel = w.grp1.durGroup.add 'statictext {text: "Duration (seconds)", characters: 15, justify: "left"}'
+	w.grp1.durGroup = w.grp1.add 'panel', undefined, 'Duration and Size'
+	w.grp1.durGroup.orientation = 'row'
+	durationLabel = w.grp1.durGroup.add 'statictext {text: "Duration (seconds):", characters: 15, justify: "left"}'
 	durationValue = w.grp1.durGroup.add 'edittext', undefined, 2
 	durationValue.characters = 3
+	widthLabel = w.grp1.durGroup.add 'statictext {text: "Width (% of window):", characters: 16, justify: "left"}'
+	widthValue = w.grp1.durGroup.add 'edittext', undefined, nf.highlightWidthPercent
+	widthValue.characters = 3
+	maxScaleLabel = w.grp1.durGroup.add 'statictext {text: "Max Scale (%):", characters: 11, justify: "left"}'
+	maxScaleValue = w.grp1.durGroup.add 'edittext', undefined, nf.maxPageScale
+	maxScaleValue.characters = 4
 
 	# FIXME: Add some padding options  or deal with really big or small highlights
 
@@ -148,6 +170,8 @@ askForChoice = ->
 			moveOnly: radioButtonMoveOnly
 			oneKF: radioButtonOneKF
 		movePageLayer: radioButtonPageLayer
+		highlightWidthPercent: widthValue
+		maxScale: maxScaleValue
 
 	cancelButton.onClick = ->
 		w.close()
@@ -163,6 +187,9 @@ getOnClickFunction = (highlightRectObject, w) ->
 			moveOnly: nf.UIControls.keyframes.moveOnly.value
 			makeInKeyframe: nf.UIControls.keyframes.inOut.value
 			# oneKF: nf.UIControls.keyframes.oneKF.value
+
+		nf.maxPageScale = parseFloat(nf.UIControls.maxScale.text) ? nf.maxScaleValue
+		nf.highlightWidthPercent = parseFloat(nf.UIControls.highlightWidthPercent.text) ? nf.highlightWidthPercent
 
 		if not options.duration?
 			alert 'Invalid Duration!'

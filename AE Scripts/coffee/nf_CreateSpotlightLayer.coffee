@@ -380,18 +380,6 @@ spotlightNameForLayer = (targetLayer) ->
   shortName = layerName.substr(0, layerName.indexOf('.'))
   name = 'Spot - ' + shortName
 
-absoluteScaleOfLayer = (targetLayer) ->
-  scale = targetLayer.transform.scale.value
-  testLayer = targetLayer
-  while testLayer.parent != null
-    scale = [
-      scale[0] * testLayer.parent.scale.value[0] / 100
-      scale[1] * testLayer.parent.scale.value[1] / 100
-      scale[2] * testLayer.parent.scale.value[2] / 100
-    ]
-    testLayer = testLayer.parent
-  scale
-
 # Array.indexOf polyfill
 if !Array::indexOf
 

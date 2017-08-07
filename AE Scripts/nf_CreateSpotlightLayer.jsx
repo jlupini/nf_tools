@@ -1,6 +1,6 @@
 (function() {
   #include "nf_functions.jsx";
-  var absoluteScaleOfLayer, askForChoice, childrenOfSpotlight, createSpotlightLayer, featherExpression, getOnClickFunction, globals, importedFunctions, layerOpacityExpression, matchTransformAndParent, moveLatestMaskToSpotlightLayer, newSolid, nf, spotlightLayerMaskExpression, spotlightNameForLayer;
+  var askForChoice, childrenOfSpotlight, createSpotlightLayer, featherExpression, getOnClickFunction, globals, importedFunctions, layerOpacityExpression, matchTransformAndParent, moveLatestMaskToSpotlightLayer, newSolid, nf, spotlightLayerMaskExpression, spotlightNameForLayer;
 
   importedFunctions = app.nf;
 
@@ -270,17 +270,6 @@
     layerName = targetLayer.name;
     shortName = layerName.substr(0, layerName.indexOf('.'));
     return name = 'Spot - ' + shortName;
-  };
-
-  absoluteScaleOfLayer = function(targetLayer) {
-    var scale, testLayer;
-    scale = targetLayer.transform.scale.value;
-    testLayer = targetLayer;
-    while (testLayer.parent !== null) {
-      scale = [scale[0] * testLayer.parent.scale.value[0] / 100, scale[1] * testLayer.parent.scale.value[1] / 100, scale[2] * testLayer.parent.scale.value[2] / 100];
-      testLayer = testLayer.parent;
-    }
-    return scale;
   };
 
   if (!Array.prototype.indexOf) {

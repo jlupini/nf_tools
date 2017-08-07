@@ -1,6 +1,6 @@
 (function() {
   #include "nf_functions.jsx";
-  var askForChoice, getOnClickFunction, getTargetPosition, getTargetScale, globals, goToHighlight, importedFunctions, nf;
+  var absoluteScaleOfLayer, askForChoice, getOnClickFunction, getTargetPosition, getTargetScaleFactor, getTargetScaleUsingFactor, globals, goToHighlight, importedFunctions, nf;
 
   importedFunctions = app.nf;
 
@@ -10,6 +10,7 @@
     highlightWidthPercent: 85,
     easeType: KeyframeInterpolationType.BEZIER,
     easeWeight: 33,
+    maxPageScale: 130,
     defaultOptions: {
       movePageLayer: false,
       makeInKeyframe: true,
@@ -21,7 +22,7 @@
   nf = Object.assign(importedFunctions, globals);
 
   goToHighlight = function(highlight, options) {
-    var didRemoveKeys, highlightPageLayer, keyframeTimes, layerToMove, now, positionProp, previousParent, ref, ref1, ref2, ref3, scaleProp, selectedLayer, targetPosition, targetScale;
+    var didRemoveKeys, highlightPageLayer, keyframeTimes, layerToMove, now, positionProp, previousParent, ref, ref1, ref2, ref3, scaleProp, selectedLayer, targetPosition, targetScale, targetScaleFactor;
     options = {
       movePageLayer: (ref = options.movePageLayer) != null ? ref : nf.defaultOptions.movePageLayer,
       makeInKeyframe: (ref1 = options.makeInKeyframe) != null ? ref1 : nf.defaultOptions.makeInKeyframe,
@@ -43,7 +44,8 @@
     now = nf.mainComp.time;
     if (options.makeInKeyframe) {
       keyframeTimes = [now, now + options.duration];
-      targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
+      targetScaleFactor = getTargetScaleFactor(highlight, scaleProp.value, highlightPageLayer);
+      targetScale = getTargetScaleUsingFactor(scaleProp.value, targetScaleFactor);
       scaleProp.setValuesAtTimes(keyframeTimes, [scaleProp.valueAtTime(now, false), targetScale]);
       nf.setSymmetricalTemporalEasingOnlyForProperties(scaleProp, keyframeTimes, nf.easeType, nf.easeWeight, true);
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]);
@@ -62,12 +64,14 @@
       if (didRemoveKeys) {
         alert("Warning: The options you selected have caused the removal of one or more keyframes from the target layer. This is probably because you chose 'No Keyframes'.");
       }
-      targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
+      targetScaleFactor = getTargetScaleFactor(highlight, scaleProp.value, highlightPageLayer);
+      targetScale = getTargetScaleUsingFactor(scaleProp.value, targetScaleFactor);
       scaleProp.setValue(targetScale);
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer);
       positionProp.setValue(targetPosition);
     } else {
-      targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
+      targetScaleFactor = getTargetScaleFactor(highlight, scaleProp.value, highlightPageLayer);
+      targetScale = getTargetScaleUsingFactor(scaleProp.value, targetScaleFactor);
       scaleProp.setValueAtTime(now, targetScale);
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer);
       positionProp.setValueAtTime(now, targetPosition);
@@ -77,6 +81,15 @@
       layerToMove.parent = previousParent;
     }
     return selectedLayer.selected = true;
+  };
+
+  absoluteScaleOfLayer = function(layer) {
+    var absoluteScale, layerParent;
+    layerParent = layer.parent;
+    layer.parent = null;
+    absoluteScale = layer.transform.scale.value;
+    layer.parent = layerParent;
+    return absoluteScale;
   };
 
   getTargetPosition = function(highlight, layerPosition, highlightPageLayer, targetTime) {
@@ -91,8 +104,13 @@
     return targetPosition;
   };
 
-  getTargetScale = function(highlight, layerScale, highlightPageLayer, targetTime) {
-    var compWidth, highlightRectInContext, newScale, scaleFactor, targetHighlightWidth;
+  getTargetScaleUsingFactor = function(initialScale, scaleFactor) {
+    var newScale;
+    return newScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor];
+  };
+
+  getTargetScaleFactor = function(highlight, layerScale, highlightPageLayer, targetTime) {
+    var absoluteScale, adjustedScaleFactor, compWidth, highlightRectInContext, scaleFactor, targetHighlightWidth;
     if (targetTime == null) {
       targetTime = null;
     }
@@ -100,11 +118,12 @@
     compWidth = nf.mainComp.width;
     targetHighlightWidth = nf.highlightWidthPercent / 100 * compWidth;
     scaleFactor = targetHighlightWidth / highlightRectInContext.width;
-    return newScale = [layerScale[0] * scaleFactor, layerScale[1] * scaleFactor];
+    absoluteScale = absoluteScaleOfLayer(highlightPageLayer);
+    return adjustedScaleFactor = scaleFactor * absoluteScale[0] > nf.maxPageScale ? nf.maxPageScale / absoluteScale[0] : scaleFactor;
   };
 
   askForChoice = function() {
-    var cancelButton, durationLabel, durationValue, highlightRect, highlightRectObject, highlightRects, radioButton, radioButtonInOut, radioButtonMoveOnly, radioButtonOneKF, radioButtonPageLayer, radioButtonParentLayer, radioGroupKeyframes, radioGroupTargetLayer, selectedLayer, w;
+    var cancelButton, durationLabel, durationValue, highlightRect, highlightRectObject, highlightRects, maxScaleLabel, maxScaleValue, radioButton, radioButtonInOut, radioButtonMoveOnly, radioButtonOneKF, radioButtonPageLayer, radioButtonParentLayer, radioGroupKeyframes, radioGroupTargetLayer, selectedLayer, w, widthLabel, widthValue;
     selectedLayer = nf.mainComp.selectedLayers[0];
     w = new Window('dialog', 'Go To Highlight');
     w.alignChildren = 'left';
@@ -113,10 +132,17 @@
     });
     w.grp1.alignChildren = 'left';
     w.grp1.margins.top = 16;
-    w.grp1.durGroup = w.grp1.add('group');
-    durationLabel = w.grp1.durGroup.add('statictext {text: "Duration (seconds)", characters: 15, justify: "left"}');
+    w.grp1.durGroup = w.grp1.add('panel', void 0, 'Duration and Size');
+    w.grp1.durGroup.orientation = 'row';
+    durationLabel = w.grp1.durGroup.add('statictext {text: "Duration (seconds):", characters: 15, justify: "left"}');
     durationValue = w.grp1.durGroup.add('edittext', void 0, 2);
     durationValue.characters = 3;
+    widthLabel = w.grp1.durGroup.add('statictext {text: "Width (% of window):", characters: 16, justify: "left"}');
+    widthValue = w.grp1.durGroup.add('edittext', void 0, nf.highlightWidthPercent);
+    widthValue.characters = 3;
+    maxScaleLabel = w.grp1.durGroup.add('statictext {text: "Max Scale (%):", characters: 11, justify: "left"}');
+    maxScaleValue = w.grp1.durGroup.add('edittext', void 0, nf.maxPageScale);
+    maxScaleValue.characters = 4;
     radioGroupTargetLayer = w.grp1.add("panel", void 0, 'Target Layer');
     radioGroupTargetLayer.alignChildren = 'left';
     radioGroupTargetLayer.orientation = 'row';
@@ -157,7 +183,9 @@
         moveOnly: radioButtonMoveOnly,
         oneKF: radioButtonOneKF
       },
-      movePageLayer: radioButtonPageLayer
+      movePageLayer: radioButtonPageLayer,
+      highlightWidthPercent: widthValue,
+      maxScale: maxScaleValue
     };
     cancelButton.onClick = function() {
       w.close();
@@ -167,13 +195,15 @@
 
   getOnClickFunction = function(highlightRectObject, w) {
     return function() {
-      var name, options;
+      var name, options, ref, ref1;
       options = {
         movePageLayer: nf.UIControls.movePageLayer.value,
         duration: parseFloat(nf.UIControls.duration.text),
         moveOnly: nf.UIControls.keyframes.moveOnly.value,
         makeInKeyframe: nf.UIControls.keyframes.inOut.value
       };
+      nf.maxPageScale = (ref = parseFloat(nf.UIControls.maxScale.text)) != null ? ref : nf.maxScaleValue;
+      nf.highlightWidthPercent = (ref1 = parseFloat(nf.UIControls.highlightWidthPercent.text)) != null ? ref1 : nf.highlightWidthPercent;
       if (options.duration == null) {
         alert('Invalid Duration!');
         return false;
