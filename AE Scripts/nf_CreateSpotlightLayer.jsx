@@ -148,7 +148,7 @@
   };
 
   createSpotlightLayer = function(sourceHighlightName, sourceHighlightRect) {
-    var children, dummyMask, effects, globals, newShape, spanLayer, spanMask, spanMaskPath, spanSolidProperties, spotlightControl, spotlightLayer, spotlightLayerMask, spotlightLayerMaskName, spotlightMaskShape, spotlightName, spotlightSolidProperties, targetLayer;
+    var childSpan, children, dummyMask, effects, globals, j, len1, newShape, ref, spanLayer, spanMask, spanMaskPath, spanSolidProperties, spotlightControl, spotlightLayer, spotlightLayerMask, spotlightLayerMaskName, spotlightMaskShape, spotlightName, spotlightSolidProperties, targetLayer;
     globals = app.nf.temp;
     targetLayer = globals.mainComp.selectedLayers[0];
     if (targetLayer instanceof ShapeLayer || targetLayer.nullLayer || (targetLayer.source instanceof FootageItem && targetLayer.source.mainSource instanceof SolidSource)) {
@@ -212,9 +212,13 @@
     spanMaskPath.setValue(spotlightLayerMask.property('Mask Path').value);
     spotlightLayerMask.property('Mask Path').expression = "thisComp.layer(\"" + spanLayer.name + "\").mask(1).maskPath";
     children = childrenOfSpotlight(spotlightLayer);
-    spotlightLayer.transform.opacity.expression = layerOpacityExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children);
-    spanMask.maskFeather.expression = featherExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children);
-    spanMask.maskOpacity.expression = spotlightLayerMaskExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children);
+    spotlightLayer.transform.opacity.expression = layerOpacityExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children.string);
+    ref = children.array;
+    for (j = 0, len1 = ref.length; j < len1; j++) {
+      childSpan = ref[j];
+      childSpan.mask(1).maskFeather.expression = featherExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children.string);
+      childSpan.mask(1).maskOpacity.expression = spotlightLayerMaskExpression(targetLayer, spotlightLayer, spotlightControl, spanLayer, children.string);
+    }
     spotlightLayerMask.maskFeather.expression = "thisComp.layer(\"" + spanLayer.name + "\").mask(1).maskFeather";
     spotlightLayerMask.maskOpacity.expression = "thisComp.layer(\"" + spanLayer.name + "\").mask(1).maskOpacity";
     spanLayer.selected = false;
@@ -223,7 +227,7 @@
 
   spotlightLayerMaskExpression = function(targetLayer, spotlightLayer, spotlightControl, spanLayer, children) {
     var trimString;
-    return trimString = "if (thisComp.layer(\"" + spanLayer.name + "\")){ d = thisComp.layer(\"" + spanLayer.name + "\").effect(\"" + spotlightControl.name + "\")(\"Duration\"); spotIn = thisComp.layer(\"" + spanLayer.name + "\").inPoint; spotOut = thisComp.layer(\"" + spanLayer.name + "\").outPoint; if (time < (spotIn+spotOut)/2) { ease(time,spotIn,spotIn + d * thisComp.frameDuration,0,100) } else { ease(time,spotOut - d * thisComp.frameDuration,spotOut,100,0) } } else { 0; }";
+    return trimString = "var activeBabbies, d, endOfBlock, i, o, startOfBlock, theLayer, children, inLayer, outLayer; activeBabbies = []; children = " + children + "; for (i = 0; i < children.length; i++) { theLayer = thisComp.layer(children[i]); if (theLayer.inPoint <= time && theLayer.outPoint > time) { activeBabbies.push(theLayer); } } if (activeBabbies.length > 0) { startOfBlock = activeBabbies[0].inPoint; inLayer = activeBabbies[0]; endOfBlock = activeBabbies[0].outPoint; outLayer = activeBabbies[0]; for (i = 1; i < activeBabbies.length; i++) { if (activeBabbies[i].inPoint < startOfBlock) { startOfBlock = activeBabbies[i].inPoint; inLayer = activeBabbies[i]; } if (activeBabbies[i].outPoint > endOfBlock) { endOfBlock = activeBabbies[i].outPoint; outLayer = activeBabbies[i]; } } d = thisLayer.effect(\"" + spotlightControl.name + "\")(\"Duration\"); spotIn = thisLayer.inPoint; spotOut = thisLayer.outPoint; // If this layer is the opening of a block, don't fade in \n if ((thisLayer.index == inLayer.index || thisLayer.inPoint == inLayer.inPoint) && (time < (spotIn+spotOut)/2)) { 100 } else if (time < (spotIn+spotOut)/2) { ease(time,spotIn,spotIn + d * thisComp.frameDuration,0,100) } else if (thisLayer.index == outLayer.index) { 100 } else { ease(time,spotOut - d * thisComp.frameDuration,spotOut,100,0) } } else { 0 }";
   };
 
   layerOpacityExpression = function(targetLayer, spotlightLayer, spotlightControl, spanLayer, children) {
@@ -237,21 +241,27 @@
   };
 
   childrenOfSpotlight = function(spotlightLayer) {
-    var allLayers, childLayerArrayString, i, theLayer;
+    var allLayers, childLayerArray, childLayerArrayString, i, returnObject, theLayer;
     allLayers = app.nf.temp.mainComp.layers;
     childLayerArrayString = "[";
+    childLayerArray = [];
     i = 1;
     while (i <= allLayers.length) {
       theLayer = allLayers[i];
       if (theLayer.parent === spotlightLayer) {
         childLayerArrayString += "\"" + theLayer.name + "\"";
+        childLayerArray.push(theLayer);
         if (i < allLayers.length) {
           childLayerArrayString += ",";
         }
       }
       i++;
     }
-    return childLayerArrayString += "]";
+    childLayerArrayString += "]";
+    return returnObject = {
+      string: childLayerArrayString,
+      array: childLayerArray
+    };
   };
 
   moveLatestMaskToSpotlightLayer = function(spotlightLayer, targetLayer) {
