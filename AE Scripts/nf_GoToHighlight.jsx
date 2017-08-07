@@ -21,7 +21,7 @@
   nf = Object.assign(importedFunctions, globals);
 
   goToHighlight = function(highlight, options) {
-    var didRemoveKeys, ease, highlightPageLayer, i, j, keyframeTimes, layerToMove, len, len1, now, posKey, positionProp, previousParent, ref, ref1, ref2, ref3, scaleKey, scaleProp, selectedLayer, targetPosition, targetScale, theTime;
+    var didRemoveKeys, highlightPageLayer, keyframeTimes, layerToMove, now, positionProp, previousParent, ref, ref1, ref2, ref3, scaleProp, selectedLayer, targetPosition, targetScale;
     options = {
       movePageLayer: (ref = options.movePageLayer) != null ? ref : nf.defaultOptions.movePageLayer,
       makeInKeyframe: (ref1 = options.makeInKeyframe) != null ? ref1 : nf.defaultOptions.makeInKeyframe,
@@ -45,23 +45,10 @@
       keyframeTimes = [now, now + options.duration];
       targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
       scaleProp.setValuesAtTimes(keyframeTimes, [scaleProp.valueAtTime(now, false), targetScale]);
-      for (i = 0, len = keyframeTimes.length; i < len; i++) {
-        theTime = keyframeTimes[i];
-        scaleKey = scaleProp.nearestKeyIndex(theTime);
-        scaleProp.setInterpolationTypeAtKey(scaleKey, nf.easeType, nf.easeType);
-        ease = new KeyframeEase(0, nf.easeWeight);
-        scaleProp.setTemporalEaseAtKey(scaleKey, [ease, ease, ease]);
-      }
+      nf.setSymmetricalTemporalEasingOnlyForProperties(scaleProp, keyframeTimes, nf.easeType, nf.easeWeight, true);
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]);
       positionProp.setValuesAtTimes(keyframeTimes, [positionProp.valueAtTime(now, false), targetPosition]);
-      for (j = 0, len1 = keyframeTimes.length; j < len1; j++) {
-        theTime = keyframeTimes[j];
-        posKey = positionProp.nearestKeyIndex(theTime);
-        positionProp.setInterpolationTypeAtKey(posKey, nf.easeType, nf.easeType);
-        ease = new KeyframeEase(0, nf.easeWeight);
-        positionProp.setTemporalEaseAtKey(posKey, [ease]);
-        positionProp.setSpatialTangentsAtKey(posKey, [0, 0, 0]);
-      }
+      nf.setSymmetricalTemporalEasingOnlyForProperties(positionProp, keyframeTimes, nf.easeType, nf.easeWeight, true);
     } else if (options.moveOnly) {
       didRemoveKeys = false;
       while (positionProp.numKeys !== 0) {
@@ -84,14 +71,7 @@
       scaleProp.setValueAtTime(now, targetScale);
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer);
       positionProp.setValueAtTime(now, targetPosition);
-      posKey = positionProp.nearestKeyIndex(nf.mainComp.time);
-      scaleKey = scaleProp.nearestKeyIndex(nf.mainComp.time);
-      positionProp.setInterpolationTypeAtKey(posKey, nf.easeType, nf.easeType);
-      scaleProp.setInterpolationTypeAtKey(scaleKey, nf.easeType, nf.easeType);
-      ease = new KeyframeEase(0, nf.easeWeight);
-      positionProp.setTemporalEaseAtKey(posKey, [ease]);
-      scaleProp.setTemporalEaseAtKey(scaleKey, [ease, ease, ease]);
-      positionProp.setSpatialTangentsAtKey(posKey, [0, 0, 0]);
+      nf.setSymmetricalTemporalEasingOnlyForProperties([positionProp, scaleProp], nf.mainComp.time, nf.easeType, nf.easeWeight, true);
     }
     if (previousParent != null) {
       layerToMove.parent = previousParent;

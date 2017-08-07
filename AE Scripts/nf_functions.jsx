@@ -14,6 +14,60 @@
     return null;
   };
 
+  nf.setSymmetricalTemporalEasingOnlyForProperties = function(theProperties, keys, easeType, easeWeight, keysAsTimes) {
+    var ease, i, key, keyItem, length, ref, ref1, results, singleKey, singleProperty, spatialEaseArray, temporalEaseArray, theProperty;
+    if (keysAsTimes == null) {
+      keysAsTimes = false;
+    }
+    if (theProperties instanceof Array && keys instanceof Array) {
+      if (theProperties.length !== keys.length) {
+        return -1;
+      }
+    }
+    singleKey = null;
+    singleProperty = null;
+    if (theProperties instanceof Array && !(keys instanceof Array)) {
+      singleKey = keys;
+    }
+    if (keys instanceof Array && !(theProperties instanceof Array)) {
+      singleProperty = theProperties;
+    }
+    if (easeType == null) {
+      easeType = (ref = nf.easeType) != null ? ref : KeyframeInterpolationType.BEZIER;
+    }
+    if (easeWeight == null) {
+      easeWeight = (ref1 = nf.easeWeight) != null ? ref1 : 33;
+    }
+    i = 0;
+    length = singleProperty != null ? keys.length : theProperties.length;
+    results = [];
+    while (i < length) {
+      theProperty = singleProperty != null ? singleProperty : theProperties[i];
+      keyItem = singleKey != null ? singleKey : keys[i];
+      key = keysAsTimes ? theProperty.nearestKeyIndex(keyItem) : keyItem;
+      theProperty.setInterpolationTypeAtKey(key, easeType, easeType);
+      ease = new KeyframeEase(0, easeWeight);
+      temporalEaseArray = [ease];
+      if (theProperty.propertyValueType === PropertyValueType.TwoD) {
+        temporalEaseArray = [ease, ease];
+      } else if (theProperty.propertyValueType === PropertyValueType.ThreeD) {
+        temporalEaseArray = [ease, ease, ease];
+      }
+      theProperty.setTemporalEaseAtKey(key, temporalEaseArray);
+      spatialEaseArray = null;
+      if (theProperty.propertyValueType === PropertyValueType.TwoD_SPATIAL) {
+        spatialEaseArray = [0, 0];
+      } else if (theProperty.propertyValueType === PropertyValueType.ThreeD_SPATIAL) {
+        spatialEaseArray = [0, 0, 0];
+      }
+      if (spatialEaseArray != null) {
+        theProperty.setSpatialTangentsAtKey(key, spatialEaseArray);
+      }
+      results.push(i++);
+    }
+    return results;
+  };
+
   nf.capitalizeFirstLetter = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };

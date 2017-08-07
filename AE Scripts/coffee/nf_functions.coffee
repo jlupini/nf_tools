@@ -6,7 +6,51 @@ nf.pageParent = (selectedLayer) ->
   return selectedLayer if selectedLayer.nullLayer
   return selectedLayer.parent if selectedLayer.parent.nullLayer
   return null
-  
+
+# Adds Temporal easing (and removes spatial easing) for an array of properties, an array of key indexes, as well as an ease type and weight.
+# Keys can be delivered as indexes or times. If 
+nf.setSymmetricalTemporalEasingOnlyForProperties = (theProperties, keys, easeType, easeWeight, keysAsTimes = false) ->
+  if theProperties instanceof Array and keys instanceof Array
+    return -1 if theProperties.length isnt keys.length
+
+  singleKey = null
+  singleProperty = null
+  if theProperties instanceof Array and keys not instanceof Array
+    singleKey = keys
+  if keys instanceof Array and theProperties not instanceof Array
+    singleProperty = theProperties
+
+  if not easeType?
+    easeType = nf.easeType ? KeyframeInterpolationType.BEZIER
+  if not easeWeight?
+    easeWeight = nf.easeWeight ? 33
+
+  i = 0
+  length = if singleProperty? then keys.length else theProperties.length
+  while i < length
+    theProperty = if singleProperty? then singleProperty else theProperties[i]
+    keyItem = if singleKey? then singleKey else keys[i]
+    key = if keysAsTimes then theProperty.nearestKeyIndex keyItem else keyItem
+    theProperty.setInterpolationTypeAtKey key, easeType, easeType
+    ease = new KeyframeEase 0, easeWeight
+
+    temporalEaseArray = [ease]
+    if theProperty.propertyValueType is PropertyValueType.TwoD
+      temporalEaseArray = [ease, ease]
+    else if theProperty.propertyValueType is PropertyValueType.ThreeD
+      temporalEaseArray = [ease, ease, ease]
+
+    theProperty.setTemporalEaseAtKey key, temporalEaseArray
+
+    spatialEaseArray = null
+    if theProperty.propertyValueType is PropertyValueType.TwoD_SPATIAL
+      spatialEaseArray = [0,0]
+    else if theProperty.propertyValueType is PropertyValueType.ThreeD_SPATIAL
+      spatialEaseArray = [0,0,0]
+
+    theProperty.setSpatialTangentsAtKey key, spatialEaseArray if spatialEaseArray?
+
+    i++
 
 nf.capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase() + string.slice(1)

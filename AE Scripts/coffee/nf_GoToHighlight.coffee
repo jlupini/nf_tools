@@ -42,22 +42,14 @@ goToHighlight = (highlight, options) ->
 		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
 		scaleProp.setValuesAtTimes keyframeTimes, [scaleProp.valueAtTime(now, false), targetScale]
 
-		for theTime in keyframeTimes
-			scaleKey = scaleProp.nearestKeyIndex theTime
-			scaleProp.setInterpolationTypeAtKey scaleKey, nf.easeType, nf.easeType
-			ease = new KeyframeEase(0, nf.easeWeight)
-			scaleProp.setTemporalEaseAtKey scaleKey, [ease, ease, ease]
+		nf.setSymmetricalTemporalEasingOnlyForProperties scaleProp, keyframeTimes, nf.easeType, nf.easeWeight, true
 
 		# Now that we've set the scale, we can get the location of the highlighter at that scale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]
 		positionProp.setValuesAtTimes keyframeTimes, [positionProp.valueAtTime(now, false), targetPosition]
 
-		for theTime in keyframeTimes
-			posKey = positionProp.nearestKeyIndex theTime
-			positionProp.setInterpolationTypeAtKey posKey, nf.easeType, nf.easeType
-			ease = new KeyframeEase(0, nf.easeWeight)
-			positionProp.setTemporalEaseAtKey posKey, [ease]
-			positionProp.setSpatialTangentsAtKey posKey, [0,0,0] # This is needed to prevent the 'boomerang' bug
+		nf.setSymmetricalTemporalEasingOnlyForProperties positionProp, keyframeTimes, nf.easeType, nf.easeWeight, true
+
 	else if options.moveOnly
 		# Delete any Keyframes
 		didRemoveKeys = false
@@ -80,15 +72,7 @@ goToHighlight = (highlight, options) ->
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
 		positionProp.setValueAtTime now, targetPosition
 
-		# FIXME: Put all these eases into a function
-		posKey = positionProp.nearestKeyIndex nf.mainComp.time
-		scaleKey = scaleProp.nearestKeyIndex nf.mainComp.time
-		positionProp.setInterpolationTypeAtKey posKey, nf.easeType, nf.easeType
-		scaleProp.setInterpolationTypeAtKey scaleKey, nf.easeType, nf.easeType
-		ease = new KeyframeEase(0, nf.easeWeight)
-		positionProp.setTemporalEaseAtKey posKey, [ease]
-		scaleProp.setTemporalEaseAtKey scaleKey, [ease, ease, ease]
-		positionProp.setSpatialTangentsAtKey posKey, [0,0,0]
+		nf.setSymmetricalTemporalEasingOnlyForProperties [positionProp, scaleProp], nf.mainComp.time, nf.easeType, nf.easeWeight, true
 
 	layerToMove.parent = previousParent if previousParent?
 	selectedLayer.selected = yes
