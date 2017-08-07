@@ -12,13 +12,19 @@ globals =
 	highlightWidthPercent: 85
 	easeType: KeyframeInterpolationType.BEZIER
 	easeWeight: 33
+	defaultOptions:
+		movePageLayer: no
+		makeInKeyframe: yes
+		moveOnly: no
+		duration: 2
 nf = Object.assign importedFunctions, globals
 
 goToHighlight = (highlight, options) ->
 	options =
-		movePageLayer: options.movePageLayer ? no
-		makeInKeyframe: options.makeInKeyframe ? yes
-		duration: options.duration ? 1
+		movePageLayer: options.movePageLayer ? nf.defaultOptions.movePageLayer
+		makeInKeyframe: options.makeInKeyframe ? nf.defaultOptions.makeInKeyframe
+		moveOnly: options.moveOnly ? nf.defaultOptions.moveOnly
+		duration: options.duration ? nf.defaultOptions.duration
 
 	selectedLayer = nf.mainComp.selectedLayers[0]
 	highlightPageLayer = selectedLayer # FIXME: This will change once we support selecting the parent and moving ALL highlights in child pages
@@ -29,6 +35,7 @@ goToHighlight = (highlight, options) ->
 	positionProp = layerToMove.transform.position
 	scaleProp = layerToMove.transform.scale
 
+	# FIXME: Handle the MoveOnly option!!!
 	now = nf.mainComp.time
 	if options.makeInKeyframe
 
@@ -44,6 +51,7 @@ goToHighlight = (highlight, options) ->
 			ease = new KeyframeEase(0, nf.easeWeight)
 			scaleProp.setTemporalEaseAtKey scaleKey, [ease, ease, ease]
 
+		# Now that we've set the scale, we can get the location of the highlighter at that scale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]
 		positionProp.setValuesAtTimes keyframeTimes, [positionProp.valueAtTime(now, false), targetPosition]
 
@@ -53,8 +61,19 @@ goToHighlight = (highlight, options) ->
 			ease = new KeyframeEase(0, nf.easeWeight)
 			positionProp.setTemporalEaseAtKey posKey, [ease]
 	else
+		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
+		scaleProp.setValueAtTime now, targetScale
+		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
 		positionProp.setValueAtTime now, targetPosition
-		#scaleProp.setValueAtTime now, targetScale
+
+		# FIXME: Put all these eases into a function
+		posKey = positionProp.nearestKeyIndex nf.mainComp.time
+		scaleKey = scaleProp.nearestKeyIndex nf.mainComp.time
+		positionProp.setInterpolationTypeAtKey posKey, nf.easeType, nf.easeType
+		scaleProp.setInterpolationTypeAtKey scaleKey, nf.easeType, nf.easeType
+		ease = new KeyframeEase(0, nf.easeWeight)
+		positionProp.setTemporalEaseAtKey posKey, [ease]
+		scaleProp.setTemporalEaseAtKey scaleKey, [ease, ease, ease]
 	
 getTargetPosition = (highlight, layerPosition, highlightPageLayer, targetTime = null) ->
 	highlightCenterPoint = nf.pointRelativeToComp [highlight.left + highlight.width / 2, highlight.top + highlight.height / 2], highlightPageLayer, targetTime
@@ -75,15 +94,37 @@ askForChoice = ->
 	w = new Window('dialog', 'Go To Highlight')
 	w.alignChildren = 'left'
 
+	w.grp1 = w.add 'panel', undefined, 'Options', {borderStyle:'none'}
+	w.grp1.alignChildren = 'left'
+	w.grp1.margins.top = 16
+
+	w.grp1.durGroup = w.grp1.add 'group'
+	durationLabel = w.grp1.durGroup.add 'statictext {text: "Duration (seconds)", characters: 15, justify: "left"}'
+	durationValue = w.grp1.durGroup.add 'edittext', undefined, 2
+	durationValue.characters = 3
+
+	radioGroupTargetLayer = w.grp1.add "panel", undefined, 'Target Layer'
+	radioGroupTargetLayer.alignChildren = 'left'
+	radioGroupTargetLayer.orientation = 'row'
+	radioButtonParentLayer = radioGroupTargetLayer.add "radiobutton", undefined, "Page parent"
+	radioButtonPageLayer = radioGroupTargetLayer.add "radiobutton", undefined, "Page layer"
+	radioButtonParentLayer.value = true
+
+	radioGroupKeyframes = w.grp1.add "panel", undefined, "Keyframes"
+	radioGroupKeyframes.alignChildren = 'left'
+	radioGroupKeyframes.orientation = 'row'
+	radioButtonInOut = radioGroupKeyframes.add "radiobutton", undefined, "In & Out"
+	# FIXME: Alert that this behavior is destructive if it will be:
+	radioButtonMoveOnly = radioGroupKeyframes.add "radiobutton", undefined, "Move Only"
+	radioButtonOneKF = radioGroupKeyframes.add "radiobutton", undefined, "One Keyframe"
+	radioButtonInOut.value = true
+
 	highlightRects = nf.sourceRectsForHighlightsInTargetLayer selectedLayer
 	if highlightRects?
 		
 		w.grp2 = w.add 'panel', undefined, 'Highlights On Selected Page', {borderStyle:'none'}
 		w.grp2.alignChildren = 'left'
 		w.grp2.margins.top = 16
-
-		# useAllHighlightsButton = w.grp2.add 'button', undefined, "All Active Highlights"
-		# useAllHighlightsButton.onClick = getOnClickFunction toKeys(highlightRects), highlightRects, w, true
 
 		w.grp3 = w.grp2.add 'group', undefined, undefined, undefined
 		w.grp3.alignChildren = 'left'
@@ -97,6 +138,14 @@ askForChoice = ->
 
 	cancelButton = w.add('button', undefined, 'Cancel', name: 'cancel')
 
+	nf.UIControls =
+		duration: durationValue
+		keyframes:
+			inOut: radioButtonInOut
+			moveOnly: radioButtonMoveOnly
+			oneKF: radioButtonOneKF
+		movePageLayer: radioButtonPageLayer
+
 	cancelButton.onClick = ->
 		w.close()
 		return
@@ -106,9 +155,15 @@ askForChoice = ->
 getOnClickFunction = (highlightRectObject, w) ->
 	->
 		options =
-			movePageLayer: yes
-			makeInKeyframe: yes
-			duration: 1
+			movePageLayer: nf.UIControls.movePageLayer.value
+			duration: parseFloat(nf.UIControls.duration.text)
+			moveOnly: nf.UIControls.keyframes.moveOnly.value
+			makeInKeyframe: nf.UIControls.keyframes.inOut.value
+			# oneKF: nf.UIControls.keyframes.oneKF.value
+
+		if not options.duration?
+			alert 'Invalid Duration!'
+			return false
 
 		for name of highlightRectObject
 			goToHighlight highlightRectObject[name], options

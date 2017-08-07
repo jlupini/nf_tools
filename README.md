@@ -2,6 +2,8 @@
 
 ### What's New
 
+- **August 7, 2017** - Added a new script called GoToHighlight, which lets you automatically keyframe the movement of a page or its parent null to a given highlight. Run the script with a page layer selected, then pick options and click the button for the highlight you want to move to.
+
 - **August 3, 2017** - Huge update to CreateSpotlightLayer. It now allows you to automatically create spotlights for highlights in the selected comp, and natively supports many different spotlight masks at once. In other words, no more keyframing mask paths! New version is **not** back-compatible with older spotlight layers. Can be used fine in the same project, but you shouldn't run it on anything that already has a spotlight layer (unless you're cool re-doing it with this slick new version). Updates Pseudo-Effects to version 0.71, so don't forget to restart After Effects after installing.
 
 ### Installation
@@ -17,6 +19,8 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 - **IsolateAnnotations** - _You will need Adobe Acrobat installed for this app to work._ After you've pulled all the PDF pages into the `PDF Pages` folder, but before you import them to AE, run this script and select all the PDF pages when prompted. Once more, sit back and let it run. It will duplicate each PDF page, then use Acrobat to create a version with only the annotations. Import _all files (including the new ones that end in `annot.pdf`) in the `PDF Pages` folder into the corresponding folder in AE and, with them _all_ selected, run the `Precompose PDF Pages` script. This extra step is to create a guide layer for you to show the PDF highlights in AE so you can easily find quotes and boxes.
 
 ### Current Scripts
+
+- **GoToHighlight* - Lets you automatically keyframe the movement of a page or its parent null to a given highlight. Run the script with a page layer selected, then pick options and click the button for the highlight you want to move to.
 
 - **InstallPseudoEffects** - Put an alias to this script in the `Startup` folder inside your AE `Scripts` Folder. Whenever you open After Effects, the script will run and check to see if you have the latest versions of the pseudo-effects contained in `Pseudo-Effects.xml`. This script replaces the previous method of manually copying and pasting the pseudo effect code into the AE application package. If you install the script with AE already open, quit and reopen it so the script can run (or run it from the scripts menu, then restart). If the script runs silently, you were already running the latest versions. If an install or upgrade is made, you'll see an alert telling you to restart AE. Note for scripting: Do not change the comment flags in `Pseudo-Effects.xml`, except to increment the version number.
 

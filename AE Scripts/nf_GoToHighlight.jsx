@@ -9,17 +9,24 @@
     undoGroupName: 'Go To Highlight',
     highlightWidthPercent: 85,
     easeType: KeyframeInterpolationType.BEZIER,
-    easeWeight: 33
+    easeWeight: 33,
+    defaultOptions: {
+      movePageLayer: false,
+      makeInKeyframe: true,
+      moveOnly: false,
+      duration: 2
+    }
   };
 
   nf = Object.assign(importedFunctions, globals);
 
   goToHighlight = function(highlight, options) {
-    var ease, highlightPageLayer, i, j, keyframeTimes, layerToMove, len, len1, now, posKey, positionProp, ref, ref1, ref2, results, scaleKey, scaleProp, selectedLayer, targetPosition, targetScale, theTime;
+    var ease, highlightPageLayer, i, j, keyframeTimes, layerToMove, len, len1, now, posKey, positionProp, ref, ref1, ref2, ref3, results, scaleKey, scaleProp, selectedLayer, targetPosition, targetScale, theTime;
     options = {
-      movePageLayer: (ref = options.movePageLayer) != null ? ref : false,
-      makeInKeyframe: (ref1 = options.makeInKeyframe) != null ? ref1 : true,
-      duration: (ref2 = options.duration) != null ? ref2 : 1
+      movePageLayer: (ref = options.movePageLayer) != null ? ref : nf.defaultOptions.movePageLayer,
+      makeInKeyframe: (ref1 = options.makeInKeyframe) != null ? ref1 : nf.defaultOptions.makeInKeyframe,
+      moveOnly: (ref2 = options.moveOnly) != null ? ref2 : nf.defaultOptions.moveOnly,
+      duration: (ref3 = options.duration) != null ? ref3 : nf.defaultOptions.duration
     };
     selectedLayer = nf.mainComp.selectedLayers[0];
     highlightPageLayer = selectedLayer;
@@ -53,7 +60,17 @@
       }
       return results;
     } else {
-      return positionProp.setValueAtTime(now, targetPosition);
+      targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
+      scaleProp.setValueAtTime(now, targetScale);
+      targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer);
+      positionProp.setValueAtTime(now, targetPosition);
+      posKey = positionProp.nearestKeyIndex(nf.mainComp.time);
+      scaleKey = scaleProp.nearestKeyIndex(nf.mainComp.time);
+      positionProp.setInterpolationTypeAtKey(posKey, nf.easeType, nf.easeType);
+      scaleProp.setInterpolationTypeAtKey(scaleKey, nf.easeType, nf.easeType);
+      ease = new KeyframeEase(0, nf.easeWeight);
+      positionProp.setTemporalEaseAtKey(posKey, [ease]);
+      return scaleProp.setTemporalEaseAtKey(scaleKey, [ease, ease, ease]);
     }
   };
 
@@ -82,10 +99,32 @@
   };
 
   askForChoice = function() {
-    var cancelButton, highlightRect, highlightRectObject, highlightRects, radioButton, selectedLayer, w;
+    var cancelButton, durationLabel, durationValue, highlightRect, highlightRectObject, highlightRects, radioButton, radioButtonInOut, radioButtonMoveOnly, radioButtonOneKF, radioButtonPageLayer, radioButtonParentLayer, radioGroupKeyframes, radioGroupTargetLayer, selectedLayer, w;
     selectedLayer = nf.mainComp.selectedLayers[0];
     w = new Window('dialog', 'Go To Highlight');
     w.alignChildren = 'left';
+    w.grp1 = w.add('panel', void 0, 'Options', {
+      borderStyle: 'none'
+    });
+    w.grp1.alignChildren = 'left';
+    w.grp1.margins.top = 16;
+    w.grp1.durGroup = w.grp1.add('group');
+    durationLabel = w.grp1.durGroup.add('statictext {text: "Duration (seconds)", characters: 15, justify: "left"}');
+    durationValue = w.grp1.durGroup.add('edittext', void 0, 2);
+    durationValue.characters = 3;
+    radioGroupTargetLayer = w.grp1.add("panel", void 0, 'Target Layer');
+    radioGroupTargetLayer.alignChildren = 'left';
+    radioGroupTargetLayer.orientation = 'row';
+    radioButtonParentLayer = radioGroupTargetLayer.add("radiobutton", void 0, "Page parent");
+    radioButtonPageLayer = radioGroupTargetLayer.add("radiobutton", void 0, "Page layer");
+    radioButtonParentLayer.value = true;
+    radioGroupKeyframes = w.grp1.add("panel", void 0, "Keyframes");
+    radioGroupKeyframes.alignChildren = 'left';
+    radioGroupKeyframes.orientation = 'row';
+    radioButtonInOut = radioGroupKeyframes.add("radiobutton", void 0, "In & Out");
+    radioButtonMoveOnly = radioGroupKeyframes.add("radiobutton", void 0, "Move Only");
+    radioButtonOneKF = radioGroupKeyframes.add("radiobutton", void 0, "One Keyframe");
+    radioButtonInOut.value = true;
     highlightRects = nf.sourceRectsForHighlightsInTargetLayer(selectedLayer);
     if (highlightRects != null) {
       w.grp2 = w.add('panel', void 0, 'Highlights On Selected Page', {
@@ -106,6 +145,15 @@
     cancelButton = w.add('button', void 0, 'Cancel', {
       name: 'cancel'
     });
+    nf.UIControls = {
+      duration: durationValue,
+      keyframes: {
+        inOut: radioButtonInOut,
+        moveOnly: radioButtonMoveOnly,
+        oneKF: radioButtonOneKF
+      },
+      movePageLayer: radioButtonPageLayer
+    };
     cancelButton.onClick = function() {
       w.close();
     };
@@ -116,10 +164,15 @@
     return function() {
       var name, options;
       options = {
-        movePageLayer: true,
-        makeInKeyframe: true,
-        duration: 1
+        movePageLayer: nf.UIControls.movePageLayer.value,
+        duration: parseFloat(nf.UIControls.duration.text),
+        moveOnly: nf.UIControls.keyframes.moveOnly.value,
+        makeInKeyframe: nf.UIControls.keyframes.inOut.value
       };
+      if (options.duration == null) {
+        alert('Invalid Duration!');
+        return false;
+      }
       for (name in highlightRectObject) {
         goToHighlight(highlightRectObject[name], options);
       }
