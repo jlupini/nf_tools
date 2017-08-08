@@ -1,6 +1,6 @@
 (function() {
   #include "nf_functions.jsx";
-  var absoluteScaleOfLayer, askForChoice, getOnClickFunction, getTargetPosition, getTargetScaleFactor, getTargetScaleUsingFactor, globals, goToHighlight, importedFunctions, nf;
+  var absoluteScaleOfLayer, askForChoice, getOnClickFunction, getTargetPosition, getTargetPositionDelta, getTargetPositionUsingDelta, getTargetScale, getTargetScaleFactor, getTargetScaleUsingFactor, globals, goToHighlight, importedFunctions, nf;
 
   importedFunctions = app.nf;
 
@@ -22,7 +22,7 @@
   nf = Object.assign(importedFunctions, globals);
 
   goToHighlight = function(highlight, options) {
-    var didRemoveKeys, highlightPageLayer, keyframeTimes, layerToMove, now, positionProp, previousParent, ref, ref1, ref2, ref3, scaleProp, selectedLayer, targetPosition, targetScale, targetScaleFactor;
+    var didRemoveKeys, highlightPageLayer, keyframeTimes, layerToMove, now, positionProp, previousParent, ref, ref1, ref2, ref3, scaleProp, selectedLayer, targetPosition, targetScale;
     options = {
       movePageLayer: (ref = options.movePageLayer) != null ? ref : nf.defaultOptions.movePageLayer,
       makeInKeyframe: (ref1 = options.makeInKeyframe) != null ? ref1 : nf.defaultOptions.makeInKeyframe,
@@ -44,8 +44,7 @@
     now = nf.mainComp.time;
     if (options.makeInKeyframe) {
       keyframeTimes = [now, now + options.duration];
-      targetScaleFactor = getTargetScaleFactor(highlight, scaleProp.value, highlightPageLayer);
-      targetScale = getTargetScaleUsingFactor(scaleProp.value, targetScaleFactor);
+      targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
       scaleProp.setValuesAtTimes(keyframeTimes, [scaleProp.valueAtTime(now, false), targetScale]);
       nf.setSymmetricalTemporalEasingOnlyForProperties(scaleProp, keyframeTimes, nf.easeType, nf.easeWeight, true);
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]);
@@ -64,14 +63,12 @@
       if (didRemoveKeys) {
         alert("Warning: The options you selected have caused the removal of one or more keyframes from the target layer. This is probably because you chose 'No Keyframes'.");
       }
-      targetScaleFactor = getTargetScaleFactor(highlight, scaleProp.value, highlightPageLayer);
-      targetScale = getTargetScaleUsingFactor(scaleProp.value, targetScaleFactor);
+      targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
       scaleProp.setValue(targetScale);
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer);
       positionProp.setValue(targetPosition);
     } else {
-      targetScaleFactor = getTargetScaleFactor(highlight, scaleProp.value, highlightPageLayer);
-      targetScale = getTargetScaleUsingFactor(scaleProp.value, targetScaleFactor);
+      targetScale = getTargetScale(highlight, scaleProp.value, highlightPageLayer);
       scaleProp.setValueAtTime(now, targetScale);
       targetPosition = getTargetPosition(highlight, positionProp.value, highlightPageLayer);
       positionProp.setValueAtTime(now, targetPosition);
@@ -92,16 +89,53 @@
     return absoluteScale;
   };
 
+  getTargetScale = function(highlight, layerScale, highlightPageLayer, targetTime) {
+    var targetScale, targetScaleFactor;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    targetScaleFactor = getTargetScaleFactor(highlight, layerScale, highlightPageLayer, targetTime);
+    return targetScale = getTargetScaleUsingFactor(layerScale, targetScaleFactor);
+  };
+
   getTargetPosition = function(highlight, layerPosition, highlightPageLayer, targetTime) {
-    var compCenterPoint, delta, highlightCenterPoint, targetPosition;
+    var targetPosition, targetPositionDelta;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    targetPositionDelta = getTargetPositionDelta(highlight, layerPosition, highlightPageLayer, targetTime);
+    return targetPosition = getTargetPositionUsingDelta(layerPosition, targetPositionDelta);
+  };
+
+  getTargetPositionUsingDelta = function(initialPosition, delta) {
+    var targetPosition;
+    return targetPosition = [initialPosition[0] + delta[0], initialPosition[1] + delta[1]];
+  };
+
+  getTargetPositionDelta = function(highlight, layerPosition, highlightPageLayer, targetTime) {
+    var compCenterPoint, delta, highlightCenterPoint, rectAfterScale;
     if (targetTime == null) {
       targetTime = null;
     }
     highlightCenterPoint = nf.pointRelativeToComp([highlight.left + highlight.width / 2, highlight.top + highlight.height / 2], highlightPageLayer, targetTime);
     compCenterPoint = [nf.mainComp.width / 2, nf.mainComp.height / 2];
     delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]];
-    targetPosition = [layerPosition[0] + delta[0], layerPosition[1] + delta[1]];
-    return targetPosition;
+    rectAfterScale = nf.sourceRectToComp(highlightPageLayer, targetTime);
+    rectAfterScale.left += delta[0];
+    rectAfterScale.top += delta[1];
+    if (rectAfterScale.left > 0) {
+      delta[0] -= rectAfterScale.left;
+    }
+    if (rectAfterScale.top > 0) {
+      delta[1] -= rectAfterScale.top;
+    }
+    if (rectAfterScale.left + rectAfterScale.width < nf.mainComp.width) {
+      delta[0] += nf.mainComp.width - (rectAfterScale.left + rectAfterScale.width);
+    }
+    if (rectAfterScale.top + rectAfterScale.height < nf.mainComp.height) {
+      delta[1] += nf.mainComp.height - (rectAfterScale.top + rectAfterScale.height);
+    }
+    return delta;
   };
 
   getTargetScaleUsingFactor = function(initialScale, scaleFactor) {

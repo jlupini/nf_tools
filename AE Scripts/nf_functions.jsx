@@ -5,10 +5,11 @@
   nf = {};
 
   nf.pageParent = function(selectedLayer) {
+    var ref;
     if (selectedLayer.nullLayer) {
       return selectedLayer;
     }
-    if (selectedLayer.parent.nullLayer) {
+    if ((ref = selectedLayer.parent) != null ? ref.nullLayer : void 0) {
       return selectedLayer.parent;
     }
     return null;
@@ -87,7 +88,7 @@
         sourceHighlightLayers.push(theLayer);
         layerParent = theLayer.parent;
         theLayer.parent = null;
-        sourceHighlightRects[theLayer.name] = nf.sourceRectRelativeToComp(theLayer);
+        sourceHighlightRects[theLayer.name] = nf.sourceRectToComp(theLayer);
         sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value || 0;
         sourceHighlightRects[theLayer.name].name = theLayer.name;
         theLayer.parent = layerParent;
@@ -97,14 +98,24 @@
     return sourceHighlightRects;
   };
 
-  nf.sourceRectRelativeToComp = function(layer) {
-    var bottomRightPoint, rect, tempNull, topLeftPoint;
+  nf.sourceRectToComp = function(layer, targetTime, keepNull) {
+    var bottomRightPoint, expressionBase, rect, tempNull, topLeftPoint;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    if (keepNull == null) {
+      keepNull = false;
+    }
+    targetTime = targetTime != null ? targetTime : app.project.activeItem.time;
     tempNull = layer.containingComp.layers.addNull();
-    tempNull.transform.position.expression = "rect = thisComp.layer(" + layer.index + ").sourceRectAtTime(time); a = thisComp.layer(" + layer.index + ").toComp(thisComp.layer(" + layer.index + ").transform.anchorPoint); [rect.left + a[0], rect.top + a[1]]";
-    topLeftPoint = tempNull.transform.position.value;
-    tempNull.transform.position.expression = "rect = thisComp.layer(" + layer.index + ").sourceRectAtTime(time); a = thisComp.layer(" + layer.index + ").toComp(thisComp.layer(" + layer.index + ").transform.anchorPoint); [rect.left + rect.width + a[0], rect.top + rect.height + a[1]]";
-    bottomRightPoint = tempNull.transform.position.value;
-    tempNull.remove();
+    expressionBase = "rect = thisComp.layer(" + layer.index + ").sourceRectAtTime(time);";
+    tempNull.transform.position.expression = expressionBase + ("thisComp.layer(" + layer.index + ").toComp([rect.left, rect.top])");
+    topLeftPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+    tempNull.transform.position.expression = expressionBase + ("thisComp.layer(" + layer.index + ").toComp([rect.left + rect.width, rect.top + rect.height])");
+    bottomRightPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+    if (!keepNull) {
+      tempNull.remove();
+    }
     return rect = {
       left: topLeftPoint[0],
       top: topLeftPoint[1],

@@ -4,7 +4,7 @@ nf = {}
 # Utility Functions
 nf.pageParent = (selectedLayer) ->
   return selectedLayer if selectedLayer.nullLayer
-  return selectedLayer.parent if selectedLayer.parent.nullLayer
+  return selectedLayer.parent if selectedLayer.parent?.nullLayer
   return null
 
 # Adds Temporal easing (and removes spatial easing) for an array of properties, an array of key indexes, as well as an ease type and weight.
@@ -69,7 +69,7 @@ nf.sourceRectsForHighlightsInTargetLayer = (targetLayer) ->
 
       layerParent = theLayer.parent
       theLayer.parent = null
-      sourceHighlightRects[theLayer.name] = nf.sourceRectRelativeToComp theLayer
+      sourceHighlightRects[theLayer.name] = nf.sourceRectToComp theLayer
       sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value or 0
       sourceHighlightRects[theLayer.name].name = theLayer.name
       theLayer.parent = layerParent
@@ -77,17 +77,15 @@ nf.sourceRectsForHighlightsInTargetLayer = (targetLayer) ->
   sourceHighlightRects
 
 # Uses a null hack to get the sourceRect of a layer relative to the comp
-nf.sourceRectRelativeToComp = (layer) ->
+nf.sourceRectToComp = (layer, targetTime = null, keepNull = false) ->
+  targetTime = targetTime ? app.project.activeItem.time
   tempNull = layer.containingComp.layers.addNull()
-  tempNull.transform.position.expression = "rect = thisComp.layer(#{layer.index}).sourceRectAtTime(time);
-                                            a = thisComp.layer(#{layer.index}).toComp(thisComp.layer(#{layer.index}).transform.anchorPoint);
-                                            [rect.left + a[0], rect.top + a[1]]"
-  topLeftPoint = tempNull.transform.position.value
-  tempNull.transform.position.expression = "rect = thisComp.layer(#{layer.index}).sourceRectAtTime(time);
-                                            a = thisComp.layer(#{layer.index}).toComp(thisComp.layer(#{layer.index}).transform.anchorPoint);
-                                            [rect.left + rect.width + a[0], rect.top + rect.height + a[1]]"
-  bottomRightPoint = tempNull.transform.position.value
-  tempNull.remove()
+  expressionBase = "rect = thisComp.layer(#{layer.index}).sourceRectAtTime(time);"
+  tempNull.transform.position.expression = expressionBase + "thisComp.layer(#{layer.index}).toComp([rect.left, rect.top])"
+  topLeftPoint = tempNull.transform.position.valueAtTime targetTime, false
+  tempNull.transform.position.expression = expressionBase + "thisComp.layer(#{layer.index}).toComp([rect.left + rect.width, rect.top + rect.height])"
+  bottomRightPoint = tempNull.transform.position.valueAtTime targetTime, false
+  tempNull.remove() unless keepNull
   rect =
     left: topLeftPoint[0]
     top: topLeftPoint[1]

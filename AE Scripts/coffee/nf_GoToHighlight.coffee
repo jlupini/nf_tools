@@ -39,14 +39,14 @@ goToHighlight = (highlight, options) ->
 
 		keyframeTimes = [now, now + options.duration]
 
-		targetScaleFactor = getTargetScaleFactor highlight, scaleProp.value, highlightPageLayer
-		targetScale = getTargetScaleUsingFactor scaleProp.value, targetScaleFactor
+		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
 		scaleProp.setValuesAtTimes keyframeTimes, [scaleProp.valueAtTime(now, false), targetScale]
 		nf.setSymmetricalTemporalEasingOnlyForProperties scaleProp, keyframeTimes, nf.easeType, nf.easeWeight, true
 
 		# Now that we've set the scale, we can get the location of the highlighter at that scale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]
 		positionProp.setValuesAtTimes keyframeTimes, [positionProp.valueAtTime(now, false), targetPosition]
+
 		nf.setSymmetricalTemporalEasingOnlyForProperties positionProp, keyframeTimes, nf.easeType, nf.easeWeight, true
 
 	else if options.moveOnly
@@ -61,14 +61,12 @@ goToHighlight = (highlight, options) ->
 		if didRemoveKeys
 			alert "Warning: The options you selected have caused the removal of one or more keyframes from the target layer. This is probably because you chose 'No Keyframes'."
 
-		targetScaleFactor = getTargetScaleFactor highlight, scaleProp.value, highlightPageLayer
-		targetScale = getTargetScaleUsingFactor scaleProp.value, targetScaleFactor
+		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
 		scaleProp.setValue targetScale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
 		positionProp.setValue targetPosition
 	else
-		targetScaleFactor = getTargetScaleFactor highlight, scaleProp.value, highlightPageLayer
-		targetScale = getTargetScaleUsingFactor scaleProp.value, targetScaleFactor
+		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
 		scaleProp.setValueAtTime now, targetScale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
 		positionProp.setValueAtTime now, targetPosition
@@ -84,14 +82,38 @@ absoluteScaleOfLayer = (layer) ->
 	absoluteScale = layer.transform.scale.value
 	layer.parent = layerParent
 	absoluteScale
-	
+
+getTargetScale = (highlight, layerScale, highlightPageLayer, targetTime = null) ->
+	targetScaleFactor = getTargetScaleFactor highlight, layerScale, highlightPageLayer, targetTime
+	targetScale = getTargetScaleUsingFactor layerScale, targetScaleFactor
+
 getTargetPosition = (highlight, layerPosition, highlightPageLayer, targetTime = null) ->
+	targetPositionDelta = getTargetPositionDelta highlight, layerPosition, highlightPageLayer, targetTime
+	targetPosition = getTargetPositionUsingDelta layerPosition, targetPositionDelta
+
+getTargetPositionUsingDelta = (initialPosition, delta) ->
+	targetPosition = [initialPosition[0] + delta[0], initialPosition[1] + delta[1]]
+
+getTargetPositionDelta = (highlight, layerPosition, highlightPageLayer, targetTime = null) ->
 	highlightCenterPoint = nf.pointRelativeToComp [highlight.left + highlight.width / 2, highlight.top + highlight.height / 2], highlightPageLayer, targetTime
 	compCenterPoint = [nf.mainComp.width / 2, nf.mainComp.height / 2]
 	delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]]
-	targetPosition = [layerPosition[0] + delta[0], layerPosition[1] + delta[1]]
-	# FIXME: Don't let us land off the page
-	targetPosition
+
+	# Adjust to prevent falling off the page
+	rectAfterScale = nf.sourceRectToComp highlightPageLayer, targetTime
+	rectAfterScale.left += delta[0]
+	rectAfterScale.top += delta[1]
+
+	if rectAfterScale.left > 0
+		delta[0] -= rectAfterScale.left
+	if rectAfterScale.top > 0
+		delta[1] -= rectAfterScale.top
+	if rectAfterScale.left + rectAfterScale.width < nf.mainComp.width
+		delta[0] += nf.mainComp.width - (rectAfterScale.left + rectAfterScale.width)
+	if rectAfterScale.top + rectAfterScale.height < nf.mainComp.height
+		delta[1] += nf.mainComp.height - (rectAfterScale.top + rectAfterScale.height)
+
+	delta
 
 getTargetScaleUsingFactor = (initialScale, scaleFactor) ->
 	newScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor]
@@ -126,8 +148,6 @@ askForChoice = ->
 	maxScaleLabel = w.grp1.durGroup.add 'statictext {text: "Max Scale (%):", characters: 11, justify: "left"}'
 	maxScaleValue = w.grp1.durGroup.add 'edittext', undefined, nf.maxPageScale
 	maxScaleValue.characters = 4
-
-	# FIXME: Add some padding options  or deal with really big or small highlights
 
 	radioGroupTargetLayer = w.grp1.add "panel", undefined, 'Target Layer'
 	radioGroupTargetLayer.alignChildren = 'left'
