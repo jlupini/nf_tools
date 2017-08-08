@@ -1,17 +1,17 @@
-app.nf = {} if !app.nf?
-app.nf.temp =
+`#include "nf_functions.jsx"`
+
+importedFunctions = app.nf
+globals =
   mainComp: app.project.activeItem
   spotlightColor: [0.0078, 0, 0.1216]
   initialSpotlightStartOffset: -2
   initialSpotlightLength: 7
+nf = Object.assign importedFunctions, globals
 
 askForChoice = ->
-  globals = app.nf.temp
-  selectedLayer = globals.mainComp.selectedLayers[0]
+  selectedLayer = nf.mainComp.selectedLayers[0]
   w = new Window('dialog', 'Add Spotlight')
   w.alignChildren = 'left'
-
-  #w.add('statictext', undefined, '', {multiline: true})
 
   w.grp1 = w.add 'panel', undefined, 'Create Spotlight from Mask', {borderStyle:'none'}
   w.grp1.alignChildren = 'left'
@@ -20,7 +20,7 @@ askForChoice = ->
   useNewMaskButton = w.grp1.add "button", undefined, "Latest Mask on Selected Layer"
   useNewMaskButton.onClick = getOnClickFunction null, null, w
 
-  highlightRects = sourceRectsForHighlightsInTargetLayer selectedLayer
+  highlightRects = nf.sourceRectsForHighlightsInTargetLayer selectedLayer
   if highlightRects?
     
     w.grp2 = w.add 'panel', undefined, 'Create Spotlight from Highlight', {borderStyle:'none'}
@@ -28,18 +28,17 @@ askForChoice = ->
     w.grp2.margins.top = 16
 
     useAllHighlightsButton = w.grp2.add 'button', undefined, "All Active Highlights"
-    useAllHighlightsButton.onClick = getOnClickFunction toKeys(highlightRects), highlightRects, w, true
+    useAllHighlightsButton.onClick = getOnClickFunction nf.toKeys(highlightRects), highlightRects, w, true
 
     w.grp3 = w.grp2.add 'group', undefined, undefined, undefined
     w.grp3.alignChildren = 'left'
     w.grp3.orientation = 'column'
 
     for highlightRect of highlightRects
-      radioButton = w.grp3.add 'checkbox', undefined, capitalizeFirstLetter(highlightRect)
-      #radioButton.onClick = getOnClickFunction highlightRect, highlightRects[highlightRect], w
+      radioButton = w.grp3.add 'checkbox', undefined, nf.capitalizeFirstLetter(highlightRect)
 
     useSelectedHighlightsButton = w.grp2.add 'button', undefined, "Selected Highlights"
-    useSelectedHighlightsButton.onClick = getOnClickFunction toKeys(highlightRects), highlightRects, w, true, w.grp3.children
+    useSelectedHighlightsButton.onClick = getOnClickFunction nf.toKeys(highlightRects), highlightRects, w, true, w.grp3.children
 
   cancelButton = w.add('button', undefined, 'Cancel', name: 'cancel')
 
@@ -49,9 +48,10 @@ askForChoice = ->
 
   w.show()
 
+# FIXME: The way this function takes in arguments is ridiculous. Combine sourceRect, multiple, and choices
 getOnClickFunction = (name, sourceRect, w, multiple = false, choices = null) ->
   ->
-    rectKeys = toKeys sourceRect if choices?
+    rectKeys = nf.toKeys sourceRect if choices?
     if multiple
       for theRect of sourceRect
         if choices?
@@ -64,74 +64,18 @@ getOnClickFunction = (name, sourceRect, w, multiple = false, choices = null) ->
     w.hide()
     false
 
-toKeys = (dict) ->
-  allKeys = []
-  for key of dict
-    allKeys.push key
-  allKeys
-
-capitalizeFirstLetter = (string) ->
-  string.charAt(0).toUpperCase() + string.slice(1)
-
-sourceRectsForHighlightsInTargetLayer = (targetLayer) ->
-  sourceCompLayers = targetLayer.source.layers
-  return null if not sourceCompLayers?
-  sourceHighlightLayers = []
-  sourceHighlightRects = {}
-  i = 1
-  while i <= sourceCompLayers.length
-    theLayer = sourceCompLayers[i]
-    if theLayer instanceof ShapeLayer and theLayer.Effects.property(1).matchName is "AV_Highlighter"
-      sourceHighlightLayers.push theLayer
-
-      layerParent = theLayer.parent
-      theLayer.parent = null
-      sourceHighlightRects[theLayer.name] = sourceRectRelativeToComp theLayer
-      sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value or 0
-      theLayer.parent = layerParent
-    i++
-  sourceHighlightRects
-
-verticiesFromSourceRect = (rect) ->
-  v =
-    topLeft: [rect.left, rect.top]
-    topRight: [rect.left + rect.width, rect.top]
-    bottomRight: [rect.left + rect.width, rect.top + rect.height]
-    bottomLeft: [rect.left, rect.top + rect.height]
-  return [v.topLeft, v.bottomLeft, v.bottomRight, v.topRight]
-
-# Uses a null hack to get the sourceRect of a layer relative to the comp
-sourceRectRelativeToComp = (layer) ->
-  tempNull = layer.containingComp.layers.addNull()
-  tempNull.transform.position.expression = "rect = thisComp.layer(#{layer.index}).sourceRectAtTime(time);
-                                            a = thisComp.layer(#{layer.index}).toComp(thisComp.layer(#{layer.index}).transform.anchorPoint);
-                                            [rect.left + a[0], rect.top + a[1]]"
-  topLeftPoint = tempNull.transform.position.value
-  tempNull.transform.position.expression = "rect = thisComp.layer(#{layer.index}).sourceRectAtTime(time);
-                                            a = thisComp.layer(#{layer.index}).toComp(thisComp.layer(#{layer.index}).transform.anchorPoint);
-                                            [rect.left + rect.width + a[0], rect.top + rect.height + a[1]]"
-  bottomRightPoint = tempNull.transform.position.value
-  tempNull.remove()
-  rect =
-    left: topLeftPoint[0]
-    top: topLeftPoint[1]
-    width: bottomRightPoint[0] - topLeftPoint[0]
-    height: bottomRightPoint[1] - topLeftPoint[1]
-  
-
 createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
-  globals = app.nf.temp
-  targetLayer = globals.mainComp.selectedLayers[0]
+  targetLayer = nf.mainComp.selectedLayers[0]
   if targetLayer instanceof ShapeLayer or targetLayer.nullLayer or (targetLayer.source instanceof FootageItem and targetLayer.source.mainSource instanceof SolidSource)
     alert "Error\nPlease select the correct source layer\nDid you draw the mask on the existing spotlight layer by mistake?"
   spotlightName = spotlightNameForLayer(targetLayer)
-  spotlightLayer = globals.mainComp.layers.byName(spotlightName)
+  spotlightLayer = nf.mainComp.layers.byName(spotlightName)
 
   if not spotlightLayer?
 
     # create new solid
     spotlightSolidProperties =
-      color: globals.spotlightColor
+      color: nf.spotlightColor
       name: spotlightName
       width: targetLayer.width
       height: targetLayer.height
@@ -150,14 +94,14 @@ createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
 
     # Check if we have a highlight Dupe
     spotlightLayerMaskName = spotlightName + " - " + sourceHighlightName
-    if globals.mainComp.layer(spotlightLayerMaskName)?
+    if nf.mainComp.layer(spotlightLayerMaskName)?
       alert("Skipping duplicate of spotlight:\n'#{spotlightLayerMaskName}'")
       return
 
     spotlightLayerMask = spotlightLayer.mask.addProperty "Mask"
     spotlightMaskShape = spotlightLayerMask.property "maskShape"
     newShape = spotlightMaskShape.value
-    newShape.vertices = verticiesFromSourceRect sourceHighlightRect
+    newShape.vertices = nf.verticiesFromSourceRect sourceHighlightRect
     newShape.closed = true
     spotlightMaskShape.setValue newShape
     spotlightLayerMask.maskMode = MaskMode.SUBTRACT
@@ -177,8 +121,8 @@ createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
     name: spotlightLayerMask.name
     layerAfter: spotlightLayer
     enabled: no
-    startTime: globals.mainComp.time + globals.initialSpotlightStartOffset
-    outPoint: globals.mainComp.time + globals.initialSpotlightStartOffset + globals.initialSpotlightLength
+    startTime: nf.mainComp.time + nf.initialSpotlightStartOffset
+    outPoint: nf.mainComp.time + nf.initialSpotlightStartOffset + nf.initialSpotlightLength
   spanLayer = newSolid spanSolidProperties
   matchTransformAndParent spanLayer, spotlightLayer
 
@@ -209,6 +153,8 @@ createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
 
   return
 
+# FIXME: Stop spotlights from fading up and down mask opacity if they're the first or last in a block
+#        You'll want to port the activeBabbies and Block stuff from the spotlight layerOpacityExpression stuff below
 spotlightLayerMaskExpression = (targetLayer, spotlightLayer, spotlightControl, spanLayer, children) ->
   trimString = "var activeBabbies, d, endOfBlock, i, o, startOfBlock, theLayer, children, inLayer, outLayer;
 
@@ -367,7 +313,7 @@ featherExpression = (targetLayer, spotlightLayer, spotlightControl, spanLayer, c
                 }"
 
 childrenOfSpotlight = (spotlightLayer) ->
-  allLayers = app.nf.temp.mainComp.layers
+  allLayers = nf.mainComp.layers
   childLayerArrayString = "["
   childLayerArray = []
   i = 1
@@ -408,8 +354,8 @@ newSolid = (props) ->
   props =
     color: props.color ? [0,0,0]
     name: props.name ? "New Solid"
-    width: props.width ? app.nf.temp.mainComp.width
-    height: props.height ? app.nf.temp.mainComp.height
+    width: props.width ? nf.mainComp.width
+    height: props.height ? nf.mainComp.height
     pixelAspect: props.pixelAspect ? 1
     layerAfter: props.layerAfter ? null
     layerBefore: props.layerBefore ? null
@@ -419,7 +365,7 @@ newSolid = (props) ->
     startTime: props.startTime ? null
     outPoint: props.outPoint ? null
     inPoint: props.inPoint ? null
-  newSolidLayer = app.nf.temp.mainComp.layers.addSolid props.color, props.name, props.width, props.height, props.pixelAspect
+  newSolidLayer = nf.mainComp.layers.addSolid props.color, props.name, props.width, props.height, props.pixelAspect
   newSolidLayer.moveBefore props.layerAfter if props.layerAfter
   newSolidLayer.moveAfter props.layerBefore if props.layerBefore
   newSolidLayer.parent = props.parent if props.parent
@@ -433,18 +379,6 @@ spotlightNameForLayer = (targetLayer) ->
   layerName = targetLayer.name
   shortName = layerName.substr(0, layerName.indexOf('.'))
   name = 'Spot - ' + shortName
-
-absoluteScaleOfLayer = (targetLayer) ->
-  scale = targetLayer.transform.scale.value
-  testLayer = targetLayer
-  while testLayer.parent != null
-    scale = [
-      scale[0] * testLayer.parent.scale.value[0] / 100
-      scale[1] * testLayer.parent.scale.value[1] / 100
-      scale[2] * testLayer.parent.scale.value[2] / 100
-    ]
-    testLayer = testLayer.parent
-  scale
 
 # Array.indexOf polyfill
 if !Array::indexOf
@@ -470,4 +404,4 @@ if !Array::indexOf
 app.beginUndoGroup 'Create Spotlight Layer'
 askForChoice()
 app.endUndoGroup()
-app.nf.temp = {}
+app.nf = {}
