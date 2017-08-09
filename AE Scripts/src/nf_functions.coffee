@@ -1,4 +1,4 @@
-`#include "extendscript.prototypes.js"`
+`#include "lib/extendscript.prototypes.js"`
 nf = {}
 
 # Utility Functions
