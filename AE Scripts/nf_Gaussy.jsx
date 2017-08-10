@@ -20,7 +20,7 @@
     // Create blur controls and expression
 
     slider = effects.addProperty("ADBE Slider Control");
-    slider.slider.setValue(75);
+    slider.slider.setValue(25);
     slider.name = gaussyName + " Duration";
 
     trimString = "";
@@ -30,7 +30,7 @@
     trimString += "t = m.time;";
 
     slider = effects.addProperty("ADBE Slider Control");
-    slider.slider.setValue(35);
+    slider.slider.setValue(115);
     slider.name = gaussyName + " Blur";
 
     trimString += "f = thisComp.layer(\"" + gaussyLayer.name + "\").effect(\"" + slider.name  + "\")(\"Slider\");";

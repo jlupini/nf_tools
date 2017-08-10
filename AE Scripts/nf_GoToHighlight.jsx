@@ -1,6 +1,6 @@
 (function() {
   #include "nf_functions.jsx";
-  var absoluteScaleOfLayer, askForChoice, getOnClickFunction, getTargetPosition, getTargetPositionDelta, getTargetPositionUsingDelta, getTargetScale, getTargetScaleFactor, getTargetScaleUsingFactor, globals, goToHighlight, importedFunctions, nf;
+  var absoluteScaleOfLayer, askForChoice, getTargetPosition, getTargetPositionDelta, getTargetPositionUsingDelta, getTargetScale, getTargetScaleFactor, getTargetScaleUsingFactor, globals, goToHighlight, importedFunctions, nf;
 
   importedFunctions = app.nf;
 
@@ -15,26 +15,56 @@
       movePageLayer: false,
       makeInKeyframe: true,
       moveOnly: false,
-      duration: 2
+      duration: 3,
+      pageTurnDuration: 2
     }
   };
 
   nf = Object.assign(importedFunctions, globals);
 
   goToHighlight = function(highlight, options) {
-    var didRemoveKeys, highlightPageLayer, keyframeTimes, layerToMove, now, positionProp, previousParent, ref, ref1, ref2, ref3, scaleProp, selectedLayer, targetPosition, targetScale;
+    var activeLayer, didRemoveKeys, highlightPageLayer, highlightPageLayerActive, j, keyframeTimes, layerToMove, len, now, positionProp, possibleProblemLayer, previousParent, problemLayers, ref, ref1, ref2, ref3, ref4, ref5, relevantPages, scaleProp, selectedLayer, targetPosition, targetScale;
     options = {
       movePageLayer: (ref = options.movePageLayer) != null ? ref : nf.defaultOptions.movePageLayer,
       makeInKeyframe: (ref1 = options.makeInKeyframe) != null ? ref1 : nf.defaultOptions.makeInKeyframe,
       moveOnly: (ref2 = options.moveOnly) != null ? ref2 : nf.defaultOptions.moveOnly,
-      duration: (ref3 = options.duration) != null ? ref3 : nf.defaultOptions.duration
+      duration: (ref3 = options.duration) != null ? ref3 : nf.defaultOptions.duration,
+      pageTurnDuration: (ref4 = options.pageTurnDuration) != null ? ref4 : nf.defaultOptions.pageTurnDuration
     };
-    selectedLayer = nf.mainComp.selectedLayers[0];
-    highlightPageLayer = selectedLayer;
-    layerToMove = options.movePageLayer ? selectedLayer : nf.pageParent(selectedLayer);
+    selectedLayer = nf.state.selectedLayer;
+    highlightPageLayer = nf.state.highlightLayer;
+    activeLayer = nf.state.activeLayer;
+    relevantPages = nf.state.relevantPages;
+    layerToMove = options.movePageLayer ? highlightPageLayer : nf.pageParent(selectedLayer);
     if (layerToMove == null) {
       return alert("No Layer Parent Found!");
     }
+    highlightPageLayerActive = nf.pageLayerCanBeActive(highlightPageLayer);
+    if (activeLayer.index < highlightPageLayer.index) {
+      if (!highlightPageLayerActive) {
+        alert("Uh Oh, the layer with the highlight isn't visible and I don't know how to make it visible yet...");
+        return false;
+      }
+      problemLayers = [];
+      for (j = 0, len = relevantPages.length; j < len; j++) {
+        possibleProblemLayer = relevantPages[j];
+        if (nf.pageLayerCanBeActive(possibleProblemLayer.layer()) && (activeLayer.index < (ref5 = possibleProblemLayer.index) && ref5 < highlightPageLayer.index)) {
+          problemLayers.push(possibleProblemLayer);
+        }
+      }
+      if (problemLayers.length > 0) {
+        alert("Uh oh, I'm not smart enough to deal with a layer tangle this complicated yet...");
+        return false;
+      }
+      nf.turnPageAtTime(activeLayer, options.pageTurnDuration);
+    } else if (activeLayer.index > highlightPageLayer.index) {
+      if (nf.pageTurnStatus(highlightPageLayer) === nf.PageTurn.FLIPPEDUP) {
+        nf.turnPageAtTime(highlightPageLayer, options.pageTurnDuration);
+      } else {
+        alert("Uh Oh, I can see that I need to go to a layer above the currently visible one, but it's not flipped out of the way so I don't know what to do yet...");
+      }
+    }
+    nf.activeLayer = activeLayer = relevantPages[nf.activePageIndexInArray(relevantPages)];
     positionProp = layerToMove.transform.position;
     scaleProp = layerToMove.transform.scale;
     if (layerToMove.parent != null) {
@@ -144,7 +174,7 @@
   };
 
   getTargetScaleFactor = function(highlight, layerScale, highlightPageLayer, targetTime) {
-    var absoluteScale, adjustedScaleFactor, compWidth, highlightRectInContext, scaleFactor, targetHighlightWidth;
+    var absoluteScale, adjustedScaleFactor, calculatedScale, compWidth, highlightRectInContext, scaleFactor, targetHighlightWidth;
     if (targetTime == null) {
       targetTime = null;
     }
@@ -153,11 +183,19 @@
     targetHighlightWidth = nf.highlightWidthPercent / 100 * compWidth;
     scaleFactor = targetHighlightWidth / highlightRectInContext.width;
     absoluteScale = absoluteScaleOfLayer(highlightPageLayer);
-    return adjustedScaleFactor = scaleFactor * absoluteScale[0] > nf.maxPageScale ? nf.maxPageScale / absoluteScale[0] : scaleFactor;
+    calculatedScale = scaleFactor * absoluteScale[0];
+    if (calculatedScale > nf.maxPageScale) {
+      adjustedScaleFactor = nf.maxPageScale / absoluteScale[0];
+    } else if (calculatedScale < 50) {
+      adjustedScaleFactor = 50 / absoluteScale[0];
+    } else {
+      adjustedScaleFactor = scaleFactor;
+    }
+    return adjustedScaleFactor;
   };
 
   askForChoice = function() {
-    var cancelButton, durationLabel, durationValue, highlightRect, highlightRectObject, highlightRects, maxScaleLabel, maxScaleValue, radioButton, radioButtonInOut, radioButtonMoveOnly, radioButtonOneKF, radioButtonPageLayer, radioButtonParentLayer, radioGroupKeyframes, radioGroupTargetLayer, selectedLayer, w, widthLabel, widthValue;
+    var buttonGroup, cancelButton, durationLabel, durationValue, highlight, highlightName, i, maxScaleLabel, maxScaleValue, okButton, pageName, pageTurnLabel, pageTurnValue, radioButtonInOut, radioButtonMoveOnly, radioButtonOneKF, radioButtonPageLayer, radioButtonParentLayer, radioGroupKeyframes, radioGroupTargetLayer, selectedLayer, spacingGroup, thePage, tree, w, widthLabel, widthValue;
     selectedLayer = nf.mainComp.selectedLayers[0];
     w = new Window('dialog', 'Go To Highlight');
     w.alignChildren = 'left';
@@ -166,16 +204,21 @@
     });
     w.grp1.alignChildren = 'left';
     w.grp1.margins.top = 16;
-    w.grp1.durGroup = w.grp1.add('panel', void 0, 'Duration and Size');
+    w.grp1.durGroup = w.grp1.add('panel', void 0, 'Duration (seconds)');
     w.grp1.durGroup.orientation = 'row';
-    durationLabel = w.grp1.durGroup.add('statictext {text: "Duration (seconds):", characters: 15, justify: "left"}');
-    durationValue = w.grp1.durGroup.add('edittext', void 0, 2);
+    durationLabel = w.grp1.durGroup.add('statictext {text: "Movement Duration:", characters: 16, justify: "left"}');
+    durationValue = w.grp1.durGroup.add('edittext', void 0, nf.defaultOptions.duration);
     durationValue.characters = 3;
-    widthLabel = w.grp1.durGroup.add('statictext {text: "Width (% of window):", characters: 16, justify: "left"}');
-    widthValue = w.grp1.durGroup.add('edittext', void 0, nf.highlightWidthPercent);
+    pageTurnLabel = w.grp1.durGroup.add('statictext {text: "Page Turn Duration:", characters: 16, justify: "left"}');
+    pageTurnValue = w.grp1.durGroup.add('edittext', void 0, nf.defaultOptions.pageTurnDuration);
+    pageTurnValue.characters = 3;
+    w.grp1.sizeGroup = w.grp1.add('panel', void 0, 'Sizing');
+    w.grp1.sizeGroup.orientation = 'row';
+    widthLabel = w.grp1.sizeGroup.add('statictext {text: "Width (% of window):", characters: 16, justify: "left"}');
+    widthValue = w.grp1.sizeGroup.add('edittext', void 0, nf.highlightWidthPercent);
     widthValue.characters = 3;
-    maxScaleLabel = w.grp1.durGroup.add('statictext {text: "Max Scale (%):", characters: 11, justify: "left"}');
-    maxScaleValue = w.grp1.durGroup.add('edittext', void 0, nf.maxPageScale);
+    maxScaleLabel = w.grp1.sizeGroup.add('statictext {text: "Max Scale (%):", characters: 11, justify: "left"}');
+    maxScaleValue = w.grp1.sizeGroup.add('edittext', void 0, nf.maxPageScale);
     maxScaleValue.characters = 4;
     radioGroupTargetLayer = w.grp1.add("panel", void 0, 'Target Layer');
     radioGroupTargetLayer.alignChildren = 'left';
@@ -190,24 +233,40 @@
     radioButtonOneKF = radioGroupKeyframes.add("radiobutton", void 0, "One Keyframe");
     radioButtonMoveOnly = radioGroupKeyframes.add("radiobutton", void 0, "No Keyframes (Move Only)");
     radioButtonInOut.value = true;
-    highlightRects = nf.sourceRectsForHighlightsInTargetLayer(selectedLayer);
-    if (highlightRects != null) {
-      w.grp2 = w.add('panel', void 0, 'Highlights On Selected Page', {
-        borderStyle: 'none'
-      });
-      w.grp2.alignChildren = 'left';
-      w.grp2.margins.top = 16;
-      w.grp3 = w.grp2.add('group', void 0, void 0, void 0);
-      w.grp3.alignChildren = 'left';
-      w.grp3.orientation = 'column';
-      for (highlightRect in highlightRects) {
-        highlightRectObject = {};
-        highlightRectObject[highlightRect] = highlightRects[highlightRect];
-        radioButton = w.grp3.add('button', void 0, nf.capitalizeFirstLetter(highlightRect));
-        radioButton.onClick = getOnClickFunction(highlightRectObject, w);
+    nf.pageTree = nf.pageTreeForPaper(selectedLayer);
+    w.grp2 = w.add('panel', void 0, 'Highlights', {
+      borderStyle: 'none'
+    });
+    w.grp2.alignChildren = 'left';
+    w.grp2.margins.top = 16;
+    tree = w.grp2.add('treeview', [0, 0, 450, 250]);
+    nf.pageTree.node = tree.add('node', nf.pageTree.name);
+    i = 0;
+    while (i < nf.pageTree.pages.length) {
+      thePage = nf.pageTree.pages[i];
+      pageName = null;
+      if (thePage.active) {
+        pageName = thePage.name + " (Active Page)";
+      } else if (thePage.index === selectedLayer.index) {
+        pageName = thePage.name + " (Selected Page)";
+      } else {
+        pageName = thePage.name;
       }
+      thePage.node = nf.pageTree.node.add('node', pageName);
+      thePage.node.data = thePage;
+      for (highlightName in thePage.highlights) {
+        highlight = thePage.highlights[highlightName];
+        highlight.item = thePage.node.add('item', highlight.name);
+        highlight.item.data = highlight;
+      }
+      thePage.node.expanded = true;
+      i++;
     }
-    cancelButton = w.add('button', void 0, 'Cancel', {
+    nf.pageTree.node.expanded = true;
+    buttonGroup = w.add('group', void 0);
+    okButton = buttonGroup.add('button', void 0, 'Go To Highlight');
+    spacingGroup = buttonGroup.add('group', [0, 0, 280, 50]);
+    cancelButton = buttonGroup.add('button', void 0, 'Cancel', {
       name: 'cancel'
     });
     nf.UIControls = {
@@ -219,17 +278,11 @@
       },
       movePageLayer: radioButtonPageLayer,
       highlightWidthPercent: widthValue,
-      maxScale: maxScaleValue
+      maxScale: maxScaleValue,
+      tree: tree
     };
-    cancelButton.onClick = function() {
-      w.close();
-    };
-    return w.show();
-  };
-
-  getOnClickFunction = function(highlightRectObject, w) {
-    return function() {
-      var name, options, ref, ref1;
+    okButton.onClick = function() {
+      var highlightChoice, options, ref, ref1, ref2, ref3;
       options = {
         movePageLayer: nf.UIControls.movePageLayer.value,
         duration: parseFloat(nf.UIControls.duration.text),
@@ -242,12 +295,26 @@
         alert('Invalid Duration!');
         return false;
       }
-      for (name in highlightRectObject) {
-        goToHighlight(highlightRectObject[name], options);
+      if (((ref2 = nf.UIControls.tree.selection) != null ? ref2.data : void 0) && ((ref3 = nf.UIControls.tree.selection) != null ? ref3.type : void 0) === 'item') {
+        highlightChoice = nf.UIControls.tree.selection.data;
       }
-      w.hide();
-      return false;
+      if (highlightChoice == null) {
+        alert('Invalid Selection!');
+        return false;
+      }
+      nf.state = {
+        selectedLayer: nf.mainComp.selectedLayers[0],
+        highlightLayer: nf.UIControls.tree.selection.parent.data.layer(),
+        activeLayer: nf.pageTree.activePage,
+        relevantPages: nf.pageTree.pages
+      };
+      goToHighlight(highlightChoice, options);
+      return w.hide();
     };
+    cancelButton.onClick = function() {
+      w.close();
+    };
+    return w.show();
   };
 
   app.beginUndoGroup(nf.undoGroupName);

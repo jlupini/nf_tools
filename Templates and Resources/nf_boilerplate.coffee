@@ -5,10 +5,7 @@
 importedFunctions = app.nf
 globals =
 	mainComp: app.project.activeItem
-	undoGroupName: 'Go To Highlight'
-	spotlightColor: [0.0078, 0, 0.1216]
-	initialSpotlightStartOffset: -2
-	initialSpotlightLength: 7
+	undoGroupName: 'Script Title'
 nf = Object.assign importedFunctions, globals
 
 firstFunction = ->
