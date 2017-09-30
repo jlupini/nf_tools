@@ -1,136 +1,270 @@
-﻿createHighlighter();
+(function() {
+  #include "nf_functions.jsx";
+  var createHighlighter, createShapeLayer, createSplitterEffect, getChoice, getLineArray, globals, importedFunctions, indexOfClosestLineToPoint, main, nf, percentThroughLineAtPoint, splitHighlightAtPoint, splitHighlightLayer;
 
-function createHighlighter () {
+  importedFunctions = app.nf;
 
-    app.beginUndoGroup("Create Highlight Layer");
+  globals = {
+    mainComp: app.project.activeItem,
+    undoGroupName: 'Create Highlight Layer'
+  };
 
-    // Note: to add/subtract or change the order of the highlight colour options, the pseudo effect in preset-effects.xml must be edited
+  nf = Object.assign(importedFunctions, globals);
 
-    var highlightColorYELLOW = [255, 221,   3, 255];
-    var highlightColorBLUE   = [152, 218, 255, 255];
-    var highlightColorPURPLE = [236, 152, 255, 255];
-    var highlightColorGREEN  = [157, 255, 160, 255];
-    var highlightColorPINK   = [255, 152, 202, 255];
-    var highlightColorORANGE = [255, 175, 104, 255];
-    var highlightColorRED    = [255, 157, 157, 255];
-
-    var highlightColorOptions = [highlightColorYELLOW,
-                                 highlightColorBLUE,
-                                 highlightColorPURPLE,
-                                 highlightColorGREEN,
-                                 highlightColorPINK,
-                                 highlightColorORANGE,
-                                 highlightColorRED];
-
-    var mainComp = app.project.activeItem;
-    var highlightLayer = mainComp.selectedLayers[0];
-
-    if (!(highlightLayer instanceof ShapeLayer)) // If this is not being run on a shape layer, create one
-        {
-            createShapeLayer(highlightLayer);
-            return true;
-        }
-
-    var highlightLinesCount = parseInt(prompt("How many initial highlight lines would you like to create?"));
-
-    highlightLayer.name = "Highlighter";
-    highlightLayer.blendingMode = BlendingMode.MULTIPLY;
-    //highlightLayer.motionBlur = true;
-
-    var shape1 = highlightLayer.property("Contents").property("Shape 1");
-
-    // Remove the fill
-    shape1.property("Contents").property("Fill 1").remove();
-
-    // Add a trim
-    var trim1 = shape1.property("Contents").addProperty("ADBE Vector Filter - Trim");
-
-    // Create layer Controls
-    var effects = highlightLayer.Effects;
-    effects.addProperty("AV_Highlighter");
-
-    // Start to set properties
-    shape1.property("Contents").property("Stroke 1").property("Stroke Width").expression = "effect(\"AV Highlighter\")(\"Thickness\")";
-    shape1.property("Contents").property("Trim Paths 1").property("Start").expression = "effect(\"AV Highlighter\")(\"Start Offset\")";
-    highlightLayer.property("Transform").property("Opacity").expression = "effect(\"AV Highlighter\")(\"Opacity\")";
-
-    // Set colour property based on variables at top of script
-    var trimString = "";
-    trimString += "popup_val = effect(\"AV Highlighter\")(\"Highlight Colour\");";
-    for (var i = 0; i < highlightColorOptions.length; i++) {
-        if (i != 0) {
-            trimString += "else ";
-        }
-        if (i != (highlightColorOptions.length - 1)) {
-            trimString += "if (popup_val == " + (i+1) + ") ";
-        }
-        trimString += "{ [" + highlightColorOptions[i].toString() + "]/255; } ";
+  main = function() {
+    var highlightLayer, mainComp;
+    mainComp = app.project.activeItem;
+    highlightLayer = mainComp.selectedLayers[0];
+    if (nf.mainComp.selectedLayers.length > 1) {
+      return alert("Error!\nMore than one layer selected");
     }
-    trimString += ";";
+    if (!(highlightLayer instanceof ShapeLayer)) {
+      return createShapeLayer(highlightLayer);
+    } else if (highlightLayer.property("Effects").property("AV Highlighter") != null) {
+      if (highlightLayer.property("Effects").property("AV Highlighter").property("Spacing").expressionEnabled) {
+        return getChoice();
+      } else {
+        return splitHighlightLayer();
+      }
+    } else {
+      return createHighlighter();
+    }
+  };
 
-    shape1.property("Contents").property("Stroke 1").property("Color").expression = trimString;
+  getChoice = function() {
+    var cancelButton, disconnectButton, splitButton, w;
+    w = new Window('dialog');
+    w.alignChildren = 'left';
+    w.add('statictext', [0, 0, 300, 50], 'This highlight is connected to a parent composition.\rCreating a split will disconnect the highlight,\rso you will have to bubble it up again after.', {
+      multiline: true
+    });
+    splitButton = w.add('button', void 0, 'Split and Disconnect', {
+      name: 'split'
+    });
+    disconnectButton = w.add('button', void 0, 'Disconnect Only', {
+      name: 'disconnect'
+    });
+    cancelButton = w.add('button', void 0, 'Cancel', {
+      name: 'cancel'
+    });
+    splitButton.onClick = function() {
+      nf.disconnectBubbleupsInLayers(nf.mainComp.selectedLayers[0]);
+      splitHighlightLayer();
+      w.close();
+    };
+    disconnectButton.onClick = function() {
+      nf.disconnectBubbleupsInLayers(nf.mainComp.selectedLayers[0]);
+      w.close();
+    };
+    cancelButton.onClick = function() {
+      w.close();
+    };
+    return w.show();
+  };
 
-    var offsetString = "";
-    offsetString += "[transform.position[0]+ effect(\"AV Highlighter\")(\"Offset\")[0],";
-    offsetString += " transform.position[1]+ effect(\"AV Highlighter\")(\"Offset\")[1]]";
-    highlightLayer.property("Transform").property("Position").expression = offsetString;
+  createHighlighter = function() {
+    var effects, highlightColorBLUE, highlightColorGREEN, highlightColorORANGE, highlightColorOptions, highlightColorPINK, highlightColorPURPLE, highlightColorRED, highlightColorYELLOW, highlightLayer, highlightLinesCount, i, mainComp, newShape, offsetString, shape1, trim1, trimString;
+    highlightColorYELLOW = [255, 221, 3, 255];
+    highlightColorBLUE = [152, 218, 255, 255];
+    highlightColorPURPLE = [236, 152, 255, 255];
+    highlightColorGREEN = [157, 255, 160, 255];
+    highlightColorPINK = [255, 152, 202, 255];
+    highlightColorORANGE = [255, 175, 104, 255];
+    highlightColorRED = [255, 157, 157, 255];
+    highlightColorOptions = [highlightColorYELLOW, highlightColorBLUE, highlightColorPURPLE, highlightColorGREEN, highlightColorPINK, highlightColorORANGE, highlightColorRED];
+    mainComp = app.project.activeItem;
+    highlightLayer = mainComp.selectedLayers[0];
+    highlightLinesCount = parseInt(prompt('How many initial highlight lines would you like to create?'));
+    highlightLayer.name = 'Highlighter';
+    highlightLayer.blendingMode = BlendingMode.MULTIPLY;
+    shape1 = highlightLayer.property('Contents').property('Shape 1');
+    shape1.property('Contents').property('Fill 1').remove();
+    trim1 = shape1.property('Contents').addProperty('ADBE Vector Filter - Trim');
+    effects = highlightLayer.Effects;
+    effects.addProperty('AV_Highlighter');
+    shape1.property('Contents').property('Stroke 1').property('Stroke Width').expression = 'effect("AV Highlighter")("Thickness")';
+    shape1.property('Contents').property('Trim Paths 1').property('Start').expression = 'effect("AV Highlighter")("Start Offset")';
+    highlightLayer.property('Transform').property('Opacity').expression = 'effect("AV Highlighter")("Opacity")';
+    trimString = '';
+    trimString += 'popup_val = effect("AV Highlighter")("Highlight Colour");';
+    i = 0;
+    while (i < highlightColorOptions.length) {
+      if (i !== 0) {
+        trimString += 'else ';
+      }
+      if (i !== highlightColorOptions.length - 1) {
+        trimString += 'if (popup_val == ' + i + 1 + ') ';
+      }
+      trimString += '{ [' + highlightColorOptions[i].toString() + ']/255; } ';
+      i++;
+    }
+    trimString += ';';
+    shape1.property('Contents').property('Stroke 1').property('Color').expression = trimString;
+    offsetString = '';
+    offsetString += '[transform.position[0]+ effect("AV Highlighter")("Offset")[0],';
+    offsetString += ' transform.position[1]+ effect("AV Highlighter")("Offset")[1]]';
+    highlightLayer.property('Transform').property('Position').expression = offsetString;
+    shape1.property('Contents').property('Trim Paths 1').property('End').expression = nf.trimExpression(1, highlightLinesCount);
+    i = 2;
+    while (i <= highlightLinesCount) {
+      newShape = highlightLayer.property('Contents').property(1).duplicate();
+      newShape.property('Transform').property('Position').expression = '[content("Shape 1").transform.position[0], effect("AV Highlighter")("Spacing")*' + (i - 1) + ']';
+      newShape.property('Contents').property('Trim Paths 1').property('Start').expression = '';
+      newShape.property('Contents').property('Trim Paths 1').property('End').expression = nf.trimExpression(i, highlightLinesCount);
+      i++;
+    }
+  };
 
-    // Set the expression for line 1
-    var trimString = "";
-    trimString += "slider_val = effect(\"AV Highlighter\")(\"Completion\") / 10;";
-    trimString += "start_offset = effect(\"AV Highlighter\")(\"Start Offset\");";
-    trimString += "line_count = " + highlightLinesCount +";";
-    trimString += "this_line = " + 1 + ";";
-    trimString += "total_points = line_count * 100;";
-    trimString += "gross_points = total_points - start_offset; ";
-    trimString += "points_per_line = gross_points/line_count*100;";
-    trimString += "total_percent = (slider_val / 100 * gross_points + start_offset) / total_points * 100;";
-    trimString += "min_percent = 100/line_count*(this_line-1);";
-    trimString += "max_percent = 100/line_count*this_line;";
-
-    trimString += "if (total_percent <= min_percent) {0;} ";
-    trimString += "else if ( total_percent >= max_percent ) { 100; } ";
-    trimString += "else { (total_percent - min_percent) / (max_percent - min_percent) * 100; } ";
-
-    shape1.property("Contents").property("Trim Paths 1").property("End").expression = trimString;
-
-    // Make the additional lines
-    for (var i = 2; i <= highlightLinesCount; i++)
-    {
-        // Duplicate the shape and offset its position
-        var newShape = highlightLayer.property("Contents").property(1).duplicate();
-        newShape.property("Transform").property("Position").expression = "[content(\"Shape 1\").transform.position[0], effect(\"AV Highlighter\")(\"Spacing\")*" + (i-1) + "]";
-        
-        // Make the new slider and make it control the new shape's trim paths property
-        newShape.property("Contents").property("Trim Paths 1").property("Start").expression = "";
-        
-        trimString = "";
-        trimString += "slider_val = effect(\"AV Highlighter\")(\"Completion\") / 10;"; 
-        trimString += "start_offset = effect(\"AV Highlighter\")(\"Start Offset\");";
-        trimString += "line_count = " + highlightLinesCount +";";
-        trimString += "this_line = " + i + ";";
-        trimString += "total_points = line_count * 100;";
-        trimString += "gross_points = total_points - start_offset; ";
-        trimString += "points_per_line = gross_points/line_count*100;";
-        trimString += "total_percent = (slider_val / 100 * gross_points + start_offset) / total_points * 100;";
-        trimString += "min_percent = 100/line_count*(this_line-1);";
-        trimString += "max_percent = 100/line_count*this_line;";
-
-        trimString += "if (total_percent <= min_percent) {0;} ";
-        trimString += "else if ( total_percent >= max_percent ) { 100; } ";
-        trimString += "else { (total_percent - min_percent) / (max_percent - min_percent) * 100; } ";
-        
-        newShape.property("Contents").property("Trim Paths 1").property("End").expression = trimString;
-   
-   }
-}
-
-function createShapeLayer(targetLayer) {
-
-    var newShape = app.project.activeItem.layers.addShape();
+  createShapeLayer = function(targetLayer) {
+    var newShape;
+    newShape = app.project.activeItem.layers.addShape();
     newShape.moveBefore(targetLayer);
-    newShape.name = "Highlighter";
+    newShape.name = 'Highlighter';
     newShape.parent = targetLayer;
     newShape.startTime = targetLayer.inPoint;
-}
+  };
 
+  splitHighlightLayer = function() {
+    var j, layer, len, newLayers, results, splitterEffect, splitterPoint;
+    nf.selectedLayer = nf.mainComp.selectedLayers[0];
+    splitterEffect = nf.selectedLayer.property("Effects").property("Splitter");
+    if (splitterEffect == null) {
+      return createSplitterEffect();
+    }
+    splitterPoint = splitterEffect.property("Point").value;
+    newLayers = splitHighlightAtPoint(splitterPoint);
+    results = [];
+    for (j = 0, len = newLayers.length; j < len; j++) {
+      layer = newLayers[j];
+      layer.property("Effects").property("Splitter").remove();
+      results.push(layer.selected = true);
+    }
+    return results;
+  };
+
+  splitHighlightAtPoint = function(splitterPoint) {
+    var closestIndex, closestLine, firstShape, firstShapeName, firstShapePosition, highlighterEffect, highlighterSpacing, highlighterThickness, i, lineArray, lineCount, newHighlightLayer, newHighlightParentPosition, newHighlighterEffect, newLayers, originalHighlightLayer, originalHighlighterEffect, percentage;
+    lineArray = getLineArray();
+    closestIndex = indexOfClosestLineToPoint(splitterPoint, lineArray);
+    closestLine = lineArray[closestIndex];
+    percentage = percentThroughLineAtPoint(closestLine, splitterPoint);
+    highlighterEffect = nf.selectedLayer.property("Effects").property("AV Highlighter");
+    highlighterThickness = highlighterEffect.property("Thickness");
+    highlighterSpacing = highlighterEffect.property("Spacing");
+    if (highlighterThickness.value > highlighterSpacing.value + 1) {
+      highlighterThickness.setValue(highlighterSpacing.value + 1);
+    }
+    originalHighlightLayer = nf.selectedLayer;
+    newHighlightLayer = originalHighlightLayer.duplicate();
+    newHighlightLayer.moveAfter(originalHighlightLayer);
+    newHighlightParentPosition = closestLine.shape.property("Transform").property("Position").value;
+    lineCount = originalHighlightLayer.property("Contents").numProperties;
+    i = lineCount - 1;
+    while (i >= 0) {
+      if (i < closestIndex) {
+        originalHighlightLayer.property("Contents").property(i + 1).remove();
+      }
+      if (i > closestIndex) {
+        newHighlightLayer.property("Contents").property(i + 1).remove();
+      }
+      i--;
+    }
+    lineCount = newHighlightLayer.property("Contents").numProperties;
+    i = lineCount;
+    while (i >= 1) {
+      if (i === lineCount) {
+        firstShape = newHighlightLayer.property("Contents").property(i);
+        firstShapeName = firstShape.name;
+        firstShapePosition = firstShape.property("Transform").property("Position");
+        firstShapePosition.expression = "";
+        firstShapePosition.setValue(newHighlightParentPosition);
+        firstShape.property("Contents").property("Trim Paths 1").property("Start").expression = "effect(\"AV Highlighter\")(\"Start Offset\")";
+      } else {
+        newHighlightLayer.property("Contents").property(i).property("Transform").property("Position").expression = "[content(\"" + firstShapeName + "\").transform.position[0], content(\"" + firstShapeName + "\").transform.position[1] + effect(\"AV Highlighter\")(\"Spacing\")*" + (lineCount - i) + "]";
+      }
+      i--;
+    }
+    originalHighlighterEffect = originalHighlightLayer.property("Effects").property("AV Highlighter");
+    newHighlighterEffect = newHighlightLayer.property("Effects").property("AV Highlighter");
+    newHighlighterEffect.property("Start Offset").setValue(percentage * 100);
+    originalHighlighterEffect.property("End Offset").setValue((1 - percentage) * 100);
+    nf.fixTrimExpressionsForHighlightLayer(newHighlightLayer);
+    nf.fixTrimExpressionsForHighlightLayer(originalHighlightLayer);
+    newLayers = [originalHighlightLayer, newHighlightLayer];
+    return newLayers;
+  };
+
+  percentThroughLineAtPoint = function(line, point) {
+    var percent, pointX;
+    pointX = point[0];
+    percent = (pointX - line.relativeX) / line.length;
+    return percent;
+  };
+
+  getLineArray = function() {
+    var i, lineAdjustedStartPoint, lineArray, lineCount, lineEndPoint, lineLength, lineName, lineObj, linePath, lineRawY, lineRelativeAdjustedStartPoint, lineRelativeY, lineShape, lineStartPoint, lineStartRelativeX, lineVerticies, yOffsetValue;
+    lineCount = nf.selectedLayer.property("Contents").numProperties;
+    lineArray = [];
+    i = 1;
+    while (i <= lineCount) {
+      lineShape = nf.selectedLayer.property("Contents").property(i);
+      lineName = lineShape.name;
+      linePath = lineShape.property("Contents").property("Path 1").property("Path").value;
+      lineVerticies = linePath.vertices;
+      lineStartPoint = lineVerticies[0];
+      lineEndPoint = lineVerticies[1];
+      yOffsetValue = lineShape.property("Transform").property("Position").value[1];
+      lineAdjustedStartPoint = [lineStartPoint[0], lineStartPoint[1] + yOffsetValue];
+      lineRelativeAdjustedStartPoint = nf.pointRelativeToComp(lineAdjustedStartPoint, nf.selectedLayer);
+      lineRawY = lineAdjustedStartPoint[1];
+      lineRelativeY = lineRelativeAdjustedStartPoint[1];
+      lineStartRelativeX = lineRelativeAdjustedStartPoint[0];
+      lineLength = lineEndPoint[0] - lineStartPoint[0];
+      lineObj = {
+        name: lineName,
+        shape: lineShape,
+        path: linePath,
+        verticies: lineVerticies,
+        rawY: lineRawY,
+        relativeY: lineRelativeY,
+        relativeX: lineStartRelativeX,
+        length: lineLength,
+        yOffsetValue: yOffsetValue
+      };
+      lineArray.push(lineObj);
+      i++;
+    }
+    return lineArray;
+  };
+
+  createSplitterEffect = function() {
+    var splitterEffect;
+    splitterEffect = nf.selectedLayer.property("Effects").addProperty("ADBE Point Control");
+    splitterEffect.name = "Splitter";
+    return 1;
+  };
+
+  indexOfClosestLineToPoint = function(point, lineArray) {
+    var curr, diff, i, newDiff, testY;
+    testY = point[1];
+    curr = 0;
+    diff = Math.abs(testY - lineArray[0].relativeY);
+    i = 0;
+    while (i < lineArray.length) {
+      newDiff = Math.abs(testY - lineArray[i].relativeY);
+      if (newDiff < diff) {
+        diff = newDiff;
+        curr = i;
+      }
+      i++;
+    }
+    return curr;
+  };
+
+  app.beginUndoGroup(nf.undoGroupName);
+
+  main();
+
+  app.endUndoGroup();
+
+}).call(this);

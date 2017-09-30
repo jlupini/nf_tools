@@ -1,266 +1,337 @@
-﻿function initializePages() {
-    // Setup
-    app.beginUndoGroup("Initialize Pages");
-    var mainComp = app.project.activeItem;
-    var selectedLayers = mainComp.selectedLayers;
-    
+(function() {
+  #include "nf_functions.jsx";
+  var getBubblableObjects, getCancelFunction, globals, importedFunctions, initWithOptions, initializePages, nf, nullName, nullify, setDropShadowForLayer, setPosition, setSize, topmostLayer, zoom;
+
+  importedFunctions = app.nf;
+
+  globals = {
+    mainComp: app.project.activeItem,
+    undoGroupName: 'initialize Pages'
+  };
+
+  nf = Object.assign(importedFunctions, globals);
+
+  initializePages = function() {
+    var allHighlights, bubblableObjects, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, guideCheckboxes, guideDisconnectCheckboxes, guideDisconnectPanel, guideLayerPages, guidePanel, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, layer, len, mainComp, okButton, orphans, pageName, removeCheckbox, selectedLayers, tPanel, w;
+    mainComp = app.project.activeItem;
+    selectedLayers = mainComp.selectedLayers;
+    bubblableObjects = getBubblableObjects(selectedLayers);
+    allHighlights = bubblableObjects.highlights;
+    guideLayerPages = bubblableObjects.guideLayerPages;
+    w = new Window('dialog', 'Page Initialization');
+    w.alignChildren = 'left';
+    tPanel = w.add("tabbedpanel");
+    tPanel.alignChildren = ["fill", "fill"];
+    tPanel.preferredSize = [350, 300];
+    orphans = true;
+    for (j = 0, len = selectedLayers.length; j < len; j++) {
+      layer = selectedLayers[j];
+      if (layer.parent != null) {
+        orphans = false;
+      }
+    }
+    if (orphans) {
+      initTab = tPanel.add("tab", void 0, "Init Page");
+      initTab.alignChildren = "fill";
+      highlightPanel = initTab.add('panel', void 0, 'Highlights', {
+        borderStyle: 'none'
+      });
+      highlightPanel.alignChildren = 'left';
+      highlightPanel.margins.top = 16;
+      highlightCheckboxes = {};
+      for (highlightName in allHighlights) {
+        highlight = allHighlights[highlightName];
+        displayName = highlightName;
+        if (highlight.bubbled) {
+          if (highlight.broken !== "") {
+            displayName = highlightName + " (OVERRIDE/BROKEN)";
+          } else {
+            displayName = highlightName + " (OVERRIDE)";
+          }
+        } else if (highlight.broken !== "") {
+          displayName = highlightName + " (BROKEN)";
+        }
+        highlightCheckboxes[highlightName] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
+        highlightCheckboxes[highlightName].value = !highlight.bubbled;
+      }
+      guidePanel = initTab.add('panel', void 0, 'Guide Layers', {
+        borderStyle: 'none'
+      });
+      guidePanel.alignChildren = 'left';
+      guidePanel.margins.top = 16;
+      guideCheckboxes = {};
+      for (pageName in guideLayerPages) {
+        layer = guideLayerPages[pageName];
+        displayName = pageName;
+        if (layer.bubbled) {
+          if (layer.broken !== "") {
+            displayName = pageName + " (OVERRIDE/BROKEN)";
+          } else {
+            displayName = pageName + " (OVERRIDE)";
+          }
+        } else if (layer.broken !== "") {
+          displayName = pageName + " (BROKEN)";
+        }
+        guideCheckboxes[pageName] = guidePanel.add("checkbox {text: '" + displayName + "'}");
+        guideCheckboxes[pageName].value = true;
+      }
+      buttonGroup = initTab.add('group', void 0);
+      okButton = buttonGroup.add('button', void 0, 'Continue');
+      cancelButton = buttonGroup.add('button', void 0, 'Cancel', {
+        name: 'cancel'
+      });
+      cancelButton.onClick = getCancelFunction(w);
+      okButton.onClick = function() {
+        var checkbox, guideLayerChoices, highlightChoices, options;
+        highlightChoices = [];
+        for (highlightName in allHighlights) {
+          checkbox = highlightCheckboxes[highlightName];
+          highlight = allHighlights[highlightName];
+          if (checkbox.value === true) {
+            highlightChoices.push(highlight.name);
+          }
+        }
+        guideLayerChoices = [];
+        for (pageName in guideLayerPages) {
+          checkbox = guideCheckboxes[pageName];
+          if (checkbox.value === true) {
+            guideLayerChoices.push(pageName);
+          }
+        }
+        options = {
+          highlightChoices: highlightChoices,
+          guideLayerChoices: guideLayerChoices
+        };
+        initWithOptions(options);
+        return w.hide();
+      };
+    }
+    disconnectTab = tPanel.add("tab", void 0, "Disconnect Items");
+    disconnectTab.alignChildren = "fill";
+    disOptionsPanel = disconnectTab.add('panel', void 0, 'Options', {
+      borderStyle: 'none'
+    });
+    disOptionsPanel.alignChildren = 'left';
+    disOptionsPanel.margins.top = 16;
+    removeCheckbox = disOptionsPanel.add("checkbox {text: 'Also Remove Controls'}");
+    removeCheckbox.value = true;
+    highlightDisconnectPanel = disconnectTab.add('panel', void 0, 'Highlights', {
+      borderStyle: 'none'
+    });
+    highlightDisconnectPanel.alignChildren = 'left';
+    highlightDisconnectPanel.margins.top = 16;
+    highlightDisconnectCheckboxes = {};
+    for (highlightName in allHighlights) {
+      highlight = allHighlights[highlightName];
+      if (highlight.bubbled) {
+        highlightDisconnectCheckboxes[highlightName] = highlightDisconnectPanel.add("checkbox {text: '" + highlightName + "'}");
+        highlightDisconnectCheckboxes[highlightName].value = false;
+      }
+    }
+    guideDisconnectPanel = disconnectTab.add('panel', void 0, 'Guide Layers', {
+      borderStyle: 'none'
+    });
+    guideDisconnectPanel.alignChildren = 'left';
+    guideDisconnectPanel.margins.top = 16;
+    guideDisconnectCheckboxes = {};
+    for (pageName in guideLayerPages) {
+      layer = guideLayerPages[pageName];
+      if (layer.bubbled) {
+        guideDisconnectCheckboxes[pageName] = guideDisconnectPanel.add("checkbox {text: '" + pageName + "'}");
+        guideDisconnectCheckboxes[pageName].value = false;
+      }
+    }
+    disButtonGroup = disconnectTab.add('group', void 0);
+    disOkButton = disButtonGroup.add('button', void 0, 'Continue');
+    disCancelButton = disButtonGroup.add('button', void 0, 'Cancel', {
+      name: 'cancel'
+    });
+    disCancelButton.onClick = getCancelFunction(w);
+    disOkButton.onClick = function() {
+      var checkbox, guideLayerChoices, highlightChoices, highlighterEffect, layerContainingGuideLayer;
+      highlightChoices = [];
+      for (highlightName in allHighlights) {
+        checkbox = highlightDisconnectCheckboxes[highlightName];
+        if (checkbox != null) {
+          highlight = allHighlights[highlightName];
+          if (checkbox.value === true) {
+            highlightChoices.push(highlight.name);
+            if (removeCheckbox.value === true) {
+              highlighterEffect = highlight.layerInPart.property("Effects").property(highlightName + " Highlighter");
+              if (highlighterEffect != null) {
+                highlighterEffect.remove();
+              }
+            }
+          }
+        }
+      }
+      guideLayerChoices = [];
+      for (pageName in guideLayerPages) {
+        checkbox = guideDisconnectCheckboxes[pageName];
+        if (checkbox != null) {
+          if (checkbox.value === true) {
+            guideLayerChoices.push(pageName);
+            if (removeCheckbox.value === true) {
+              layerContainingGuideLayer = mainComp.layer(pageName);
+              if (layerContainingGuideLayer != null) {
+                layerContainingGuideLayer.property("Effects").property("Guide Layer").remove();
+              }
+            }
+          }
+        }
+      }
+      nf.disconnectBubbleupsInLayers(selectedLayers, guideLayerChoices.concat(highlightChoices));
+      return w.hide();
+    };
+    w.show();
+  };
+
+  getCancelFunction = function(w) {
+    return function() {
+      return w.close();
+    };
+  };
+
+  initWithOptions = function(options) {
+    var i, mainComp, name, newParent, selectedLayers, thisLayer, zoomer;
+    mainComp = app.project.activeItem;
+    selectedLayers = mainComp.selectedLayers;
     setSize(selectedLayers);
     setPosition(selectedLayers);
+    thisLayer = void 0;
+    i = 0;
+    while (i < selectedLayers.length) {
+      thisLayer = selectedLayers[i];
+      thisLayer.motionBlur = true;
+      setDropShadowForLayer(thisLayer);
+      i++;
+    }
+    name = nullName(selectedLayers[0]);
+    newParent = nullify(selectedLayers, name);
+    zoomer = zoom(newParent);
+    nf.bubbleUpHighlights(selectedLayers, options.highlightChoices);
+    return nf.bubbleUpGuideLayers(selectedLayers, options.guideLayerChoices);
+  };
 
-    var thisLayer;
-	for (var i = 0; i < selectedLayers.length; i++) {
-        thisLayer = selectedLayers[i];
+  getBubblableObjects = function(selectedLayers) {
+    var allHighlights, bubblableObjects, guideLayer, j, key, layer, layerHighlights, layersWithGuideLayer, len;
+    allHighlights = {};
+    layersWithGuideLayer = {};
+    for (j = 0, len = selectedLayers.length; j < len; j++) {
+      layer = selectedLayers[j];
+      layerHighlights = nf.sourceRectsForHighlightsInTargetLayer(layer);
+      for (key in layerHighlights) {
+        layerHighlights[key].layerInPart = layer;
+      }
+      allHighlights = Object.assign(allHighlights, layerHighlights);
+      guideLayer = layer.source.layers.byName('Annotation Guide');
+      if (guideLayer) {
+        layersWithGuideLayer[layer.name] = {
+          layer: guideLayer,
+          bubbled: guideLayer.Effects.property('Guide Layer').property('Checkbox').expressionEnabled,
+          broken: guideLayer.Effects.property("Guide Layer").property("Checkbox").expressionError
+        };
+      }
+    }
+    return bubblableObjects = {
+      highlights: allHighlights,
+      guideLayerPages: layersWithGuideLayer
+    };
+  };
 
-        // Add Motion Blur
-		thisLayer.motionBlur = true;
+  setDropShadowForLayer = function(layer) {
+    var dropShadow;
+    dropShadow = layer.property('Effects').addProperty('ADBE Drop Shadow');
+    dropShadow.property('Opacity').setValue(191.25);
+    dropShadow.property('Direction').setValue(0);
+    dropShadow.property('Distance').setValue(20);
+    dropShadow.property('Softness').setValue(300);
+  };
 
-		setDropShadowForLayer(thisLayer);
-	} 
+  setSize = function(selectedLayers) {
+    var i, thisLayer;
+    thisLayer = void 0;
+    i = 0;
+    while (i < selectedLayers.length) {
+      thisLayer = selectedLayers[i];
+      thisLayer.property('Transform').property('Scale').setValue([50, 50, 50]);
+      i++;
+    }
+  };
 
-    var name = nullName(selectedLayers[0]);
-    var newParent = nullify(selectedLayers, name);
-    var zoomer = zoom(newParent);
+  setPosition = function(selectedLayers) {
+    var i, layerHeight, newPosition, oldPosition, thisLayer;
+    thisLayer = void 0;
+    i = 0;
+    while (i < selectedLayers.length) {
+      thisLayer = selectedLayers[i];
+      layerHeight = thisLayer.height;
+      oldPosition = thisLayer.property('Transform').property('Position').value;
+      newPosition = oldPosition;
+      newPosition[1] = layerHeight / 4;
+      thisLayer.property('Transform').property('Position').setValue(newPosition);
+      i++;
+    }
+  };
 
-    bubbleUpHighlights(selectedLayers);
-    bubbleUpGuideLayers(selectedLayers);
-    
-    app.endUndoGroup();
+  nullName = function(selectedLayer) {
+    var fullName, newName;
+    fullName = selectedLayer.name;
+    newName = 'PDF ' + fullName.substr(0, fullName.indexOf('_'));
+    return newName;
+  };
 
-}
+  zoom = function(target) {
+    var zoomName, zoomer;
+    zoomName = 'Zoomer';
+    zoomer = app.project.activeItem.layer(zoomName);
+    if (zoomer === null) {
+      zoomer = app.project.activeItem.layer(zoomName.toLowerCase());
+    }
+    if (zoomer === null) {
+      zoomer = nullify([target], zoomName);
+    } else {
+      target.parent = zoomer;
+    }
+    return zoomer;
+  };
 
-function setDropShadowForLayer(layer) {
-	var dropShadow = layer.property("Effects").addProperty("ADBE Drop Shadow");
+  nullify = function(selectedLayers, nullName) {
+    var i, mainComp, newNull, thisLayer;
+    mainComp = app.project.activeItem;
+    newNull = mainComp.layers.addNull();
+    newNull.name = nullName;
+    newNull.moveBefore(topmostLayer(selectedLayers));
+    thisLayer = void 0;
+    i = 1;
+    while (i <= selectedLayers.length) {
+      thisLayer = selectedLayers[i - 1];
+      thisLayer.parent = newNull;
+      i++;
+    }
+    return newNull;
+  };
 
-	dropShadow.property("Opacity").setValue(191.25);
-	dropShadow.property("Direction").setValue(0);
-	dropShadow.property("Distance").setValue(20);
-	dropShadow.property("Softness").setValue(300);
-}
+  topmostLayer = function(layers) {
+    var i, lowestIndex, thisLayer;
+    lowestIndex = layers[0].index;
+    thisLayer = void 0;
+    i = 1;
+    while (i < layers.length) {
+      if (layers[i].index < lowestIndex) {
+        lowestIndex = layers[i].index;
+      }
+      i++;
+    }
+    return app.project.activeItem.layer(lowestIndex);
+  };
 
-function setSize(selectedLayers) {
+  app.beginUndoGroup(nf.undoGroupName);
 
-	var thisLayer;
-	for (var i = 0; i < selectedLayers.length; i++) {
-        thisLayer = selectedLayers[i];
-		thisLayer.property("Transform").property("Scale").setValue([50,50,50]);
-	} 
-}
+  initializePages();
 
-function setPosition(selectedLayers) {
+  app.endUndoGroup();
 
-	var thisLayer;
-	for (var i = 0; i < selectedLayers.length; i++) {
-        thisLayer = selectedLayers[i];
-		
-		var layerHeight = thisLayer.height;
-		var oldPosition = thisLayer.property("Transform").property("Position").value;
+  app.nf = {};
 
-		var newPosition = oldPosition;
-		newPosition[1] = layerHeight/4;
-
-		thisLayer.property("Transform").property("Position").setValue(newPosition);
-	} 
-}
-
-function nullName(selectedLayer) {
-	var fullName = selectedLayer.name;
-	var newName = fullName.substr(0, fullName.indexOf('_'));
-	return newName;
-}
-
-function zoom(target) {
-	var zoomName = "Zoomer";
-	var zoomer = app.project.activeItem.layer(zoomName);
-
-	if (zoomer == null) {
-		zoomer = app.project.activeItem.layer(zoomName.toLowerCase());
-	}
-
-	if (zoomer == null) {
-		zoomer = nullify([target], zoomName);
-	} else {
-		target.parent = zoomer;
-	}
-
-	return zoomer;
-}
-
-function nullify(selectedLayers, nullName) {
-
-	var mainComp = app.project.activeItem;
-
-	var newNull = mainComp.layers.addNull();
-
-	newNull.name = nullName;
-    
-    
-	newNull.moveBefore(topmostLayer(selectedLayers));
-
-	var thisLayer;
-	//$.write("new null: "+ newNull.name + "\n");
-	for (var i = 1; i <= selectedLayers.length; i++)
-	{
-	    thisLayer = selectedLayers[i-1];
-	    thisLayer.parent = newNull;
-	}
-   	return newNull;
-
-}
-
-function topmostLayer(layers) {
-	var lowestIndex = layers[0].index;
-
-	var thisLayer;
-	for (var i = 1; i < layers.length; i++)
-	{
-	    if (layers[i].index < lowestIndex) {
-	    	lowestIndex = layers[i].index;
-	    }
-	}
-
-	return app.project.activeItem.layer(lowestIndex);
-}
-
-function bubbleUpGuideLayers(pagesToBubble) {
-	var mainComp = app.project.activeItem;
-
-	for (var i = pagesToBubble.length - 1; i >= 0; i--) {
-
-		var targetLayer = pagesToBubble[i];
-		var targetComp = targetLayer.source;
-
-		// Look in selected comp
-		// Grab guide layer
-		var layersInPageComp = targetComp.layers;
-		var guideLayer = layersInPageComp.byName("Annotation Guide");
-
-		if (guideLayer) {
-
-			var childGuideCheckbox = guideLayer.property("Effects").property("Guide Layer").property("Checkbox");
-
-			// FIXME: Make it so that the guide layer is visible if ANY of the parent layers have this enabled
-			// (basically take out this if statement and add to the existing expression each time you pageinit in a different place)
-			if (!childGuideCheckbox.expressionEnabled) {
-
-
-				// Add checkbox to targetLayer
-				var effects = targetLayer.Effects;
-				var checkbox = effects.addProperty("ADBE Checkbox Control");
-				var checkboxName = "Guide Layer";
-				checkbox.name = checkboxName;
-
-				// Set checkbox to match current opacity
-				// If guide layer is hidden, set the opacity to be 0
-				var newValue;
-				if (!guideLayer.enabled) {
-					guideLayer.enabled = true;
-					newValue = false;
-				} else {
-					newValue = childGuideCheckbox.value;
-				}
-
-				checkbox.property("Checkbox").setValue(newValue);
-
-				// Set childCheckbox expression on guide layer
-				var sourceExpression = "comp(\"" + mainComp.name + "\").layer(\"" + targetLayer.name + "\").effect(\"" + checkboxName + "\")(\"Checkbox\")*60";
-				childGuideCheckbox.expression = sourceExpression;
-			}
-		}
-	}
-}
-
-function bubbleUpHighlights(pagesToBubble) {
-
-	//FIXME: Ask which highlights you want to capture
-
-	var mainComp = app.project.activeItem;
-
-	for (var i = pagesToBubble.length - 1; i >= 0; i--) {
-
-		var targetLayer = pagesToBubble[i];
-		var targetComp = targetLayer.source;
-
-		// Look in selected comp
-		// Grab Array of highlight layers
-		var layersInPageComp = targetComp.layers;
-		var highlightLayersInPageComp = [];
-		for (var k = layersInPageComp.length; k >= 1; k--) {
-
-			testLayer = layersInPageComp[k];
-			if (testLayer.property("Effects").property("AV Highlighter")) {
-				highlightLayersInPageComp.push(testLayer);
-			} else if (testLayer.property("Effects").property("Completion")) {
-				upgradeHighlightLayer(testLayer);
-				highlightLayersInPageComp.push(testLayer);
-			}
-		}
-
-		// Create layer Controls
-		var effects = targetLayer.Effects;
-		for (var j = highlightLayersInPageComp.length - 1; j >= 0; j--) {
-
-			// Add Controls
-			var sourceHighlighterEffect = highlightLayersInPageComp[j].property("Effects").property("AV Highlighter");
-
-			// Only do this if it's not already hooked up to another parent comp
-			if (!sourceHighlighterEffect.property("Completion").expressionEnabled) {
-				var targetHighlighterEffect = effects.addProperty("AV_Highlighter");
-
-				var newName = highlightLayersInPageComp[j].name + " Highlighter";
-				targetHighlighterEffect.name = newName;
-				var highlighterProperties = ["Spacing", "Thickness", "Start Offset", "Completion", "Offset", "Opacity", "Highlight Colour"];
-
-				for (var l = highlighterProperties.length - 1; l >= 0; l--) {
-					
-					var highlighterProperty = highlighterProperties[l];
-					var sourceHighlighterPropertyValue = sourceHighlighterEffect.property(highlighterProperty).value;
-					targetHighlighterEffect.property(highlighterProperty).setValue(sourceHighlighterPropertyValue);
-
-					var sourceExpression = "";
-					sourceExpression += "var offsetTime = comp(\"" + mainComp.name + "\").layer(\"" + targetLayer.name + "\").startTime;";
-					sourceExpression += "comp(\"" + mainComp.name + "\").layer(\"" + targetLayer.name + "\").effect(\"" + newName + "\")(\"" + highlighterProperty + "\")";
-					sourceExpression += ".valueAtTime(time+offsetTime)";
-					sourceHighlighterEffect.property(highlighterProperty).expression = sourceExpression;
-				}		
-			}
-		}
-	}
-}
-
-// Deprecate soon - Upgrades a highlight layer from the old style to the new, pseudo-effect style
-// Returns the highlight layer
-function upgradeHighlightLayer(highlightLayer) {
-
-	var mainComp = app.project.activeItem;
-
-	// Create layer Controls
-	var effects = highlightLayer.Effects;
-	effects.addProperty("AV_Highlighter");
-
-	var spacingSlider = effects.property("Spacing").property("Slider");
-	var thicknessSlider = effects.property("Thickness").property("Slider");
-	var colorPicker = effects.property("Color").property("Color");
-	var offsetSlider = effects.property("Start Offset").property("Slider");
-	var completionSlider = effects.property("Completion").property("Slider");
-
-	effects.property("AV Highlighter").property("Spacing").setValue(spacingSlider.value);
-	effects.property("AV Highlighter").property("Thickness").setValue(thicknessSlider.value);
-	effects.property("AV Highlighter").property("Color").setValue(colorPicker.value);
-	effects.property("AV Highlighter").property("Start Offset").setValue(offsetSlider.value);
-	effects.property("AV Highlighter").property("Completion").setValue(completionSlider.value);
-
-	spacingSlider.expression = "effect(\"AV Highlighter\")(\"Spacing\")";
-	thicknessSlider.expression = "effect(\"AV Highlighter\")(\"Thickness\")";
-	colorPicker.expression = "effect(\"AV Highlighter\")(\"Color\")";
-	offsetSlider.expression = "effect(\"AV Highlighter\")(\"Start Offset\")";
-	completionSlider.expression = "effect(\"AV Highlighter\")(\"Completion\")";
-
-	highlightLayer.property("Transform").property("Opacity").expression = "effect(\"AV Highlighter\")(\"Opacity\")";
-
-	var offsetString = "";
-	offsetString += "[transform.position[0]+ effect(\"AV Highlighter\")(\"Offset\")[0],";
-	offsetString += " transform.position[1]+ effect(\"AV Highlighter\")(\"Offset\")[1]]";
-	highlightLayer.property("Transform").property("Position").expression = offsetString;
-}
-
-initializePages();
+}).call(this);
