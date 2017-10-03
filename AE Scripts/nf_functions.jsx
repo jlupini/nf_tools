@@ -332,16 +332,18 @@
     i = 1;
     while (i <= sourceCompLayers.length) {
       theLayer = sourceCompLayers[i];
-      if (theLayer instanceof ShapeLayer && theLayer.Effects.property(1).matchName === "AV_Highlighter") {
-        sourceHighlightLayers.push(theLayer);
-        layerParent = theLayer.parent;
-        theLayer.parent = null;
-        sourceHighlightRects[theLayer.name] = nf.sourceRectToComp(theLayer);
-        sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value || 0;
-        sourceHighlightRects[theLayer.name].name = theLayer.name;
-        sourceHighlightRects[theLayer.name].bubbled = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionEnabled;
-        sourceHighlightRects[theLayer.name].broken = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionError;
-        theLayer.parent = layerParent;
+      if (theLayer.Effects.numProperties > 0) {
+        if (theLayer instanceof ShapeLayer && theLayer.Effects.property(1).matchName === "AV_Highlighter") {
+          sourceHighlightLayers.push(theLayer);
+          layerParent = theLayer.parent;
+          theLayer.parent = null;
+          sourceHighlightRects[theLayer.name] = nf.sourceRectToComp(theLayer);
+          sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value || 0;
+          sourceHighlightRects[theLayer.name].name = theLayer.name;
+          sourceHighlightRects[theLayer.name].bubbled = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionEnabled;
+          sourceHighlightRects[theLayer.name].broken = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionError;
+          theLayer.parent = layerParent;
+        }
       }
       i++;
     }
@@ -359,15 +361,17 @@
   };
 
   nf.sourceRectToComp = function(layer, targetTime, keepNull) {
-    var bottomRightPoint, expressionBase, rect, tempNull, topLeftPoint;
+    var bottomRightPoint, expressionBase, mainCompTime, rect, tempNull, topLeftPoint;
     if (targetTime == null) {
       targetTime = null;
     }
     if (keepNull == null) {
       keepNull = false;
     }
-    targetTime = targetTime != null ? targetTime : app.project.activeItem.time;
+    mainCompTime = app.project.activeItem.time;
+    targetTime = targetTime != null ? targetTime : mainCompTime;
     tempNull = layer.containingComp.layers.addNull();
+    app.project.activeItem.time = mainCompTime;
     expressionBase = "rect = thisComp.layer(" + layer.index + ").sourceRectAtTime(time);";
     tempNull.transform.position.expression = expressionBase + ("thisComp.layer(" + layer.index + ").toComp([rect.left, rect.top])");
     topLeftPoint = tempNull.transform.position.valueAtTime(targetTime, false);

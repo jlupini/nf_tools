@@ -260,17 +260,18 @@ nf.sourceRectsForHighlightsInTargetLayer = (targetLayer, includeTitlePage = fals
   i = 1
   while i <= sourceCompLayers.length
     theLayer = sourceCompLayers[i]
-    if theLayer instanceof ShapeLayer and theLayer.Effects.property(1).matchName is "AV_Highlighter"
-      sourceHighlightLayers.push theLayer
+    if theLayer.Effects.numProperties > 0
+      if theLayer instanceof ShapeLayer and theLayer.Effects.property(1).matchName is "AV_Highlighter"
+        sourceHighlightLayers.push theLayer
 
-      layerParent = theLayer.parent
-      theLayer.parent = null
-      sourceHighlightRects[theLayer.name] = nf.sourceRectToComp theLayer
-      sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value or 0
-      sourceHighlightRects[theLayer.name].name = theLayer.name
-      sourceHighlightRects[theLayer.name].bubbled = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionEnabled
-      sourceHighlightRects[theLayer.name].broken = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionError
-      theLayer.parent = layerParent
+        layerParent = theLayer.parent
+        theLayer.parent = null
+        sourceHighlightRects[theLayer.name] = nf.sourceRectToComp theLayer
+        sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value or 0
+        sourceHighlightRects[theLayer.name].name = theLayer.name
+        sourceHighlightRects[theLayer.name].bubbled = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionEnabled
+        sourceHighlightRects[theLayer.name].broken = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionError
+        theLayer.parent = layerParent
     i++
 
   if includeTitlePage
@@ -284,10 +285,15 @@ nf.sourceRectsForHighlightsInTargetLayer = (targetLayer, includeTitlePage = fals
 
   sourceHighlightRects
 
-# Uses a null hack to get the sourceRect of a layer relative to the comp
+# Uses a null hack to get the sourceRect of a layer relative to the comp. A targetTime passed in will
+# be the time of the comp the LAYER is in. Default is the mainCompTime
+# The Null hack seems to move the time of the maincomp sometimes so we need to keep it in line
 nf.sourceRectToComp = (layer, targetTime = null, keepNull = false) ->
-  targetTime = targetTime ? app.project.activeItem.time
+  mainCompTime = app.project.activeItem.time
+  targetTime = targetTime ? mainCompTime
   tempNull = layer.containingComp.layers.addNull()
+  # This line stops the mainComp time from jumping forward.
+  app.project.activeItem.time = mainCompTime
   expressionBase = "rect = thisComp.layer(#{layer.index}).sourceRectAtTime(time);"
   tempNull.transform.position.expression = expressionBase + "thisComp.layer(#{layer.index}).toComp([rect.left, rect.top])"
   topLeftPoint = tempNull.transform.position.valueAtTime targetTime, false
@@ -321,6 +327,7 @@ nf.pointRelativeToComp = (sourcePoint, layer, targetTime = null) ->
 # supplied point on a given layer.
 nf.nullAtPointRelativeToComp = (sourcePoint, layer) ->
   targetTime = targetTime ? app.project.activeItem.time
+  # FIXME: This may cause the time to jump forward, similarly to in sourceRectToComp. Need to investigate further
   tempNull = layer.containingComp.layers.addNull()
   tempNull.transform.position.expression = "a = thisComp.layer(#{layer.index}).toComp([#{sourcePoint[0]}, #{sourcePoint[1]}]);
                                             a"
