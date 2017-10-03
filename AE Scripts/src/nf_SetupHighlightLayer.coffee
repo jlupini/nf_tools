@@ -18,6 +18,10 @@ main = ->
 		createShapeLayer highlightLayer
 	else if highlightLayer.property("Effects").property("AV Highlighter")?
 		# If we're already on a working highlight...
+
+		# First of all, fix any expression issues if they exist. Exit if we fixed something
+		return if fixExpressionProblems(highlightLayer)
+
 		if highlightLayer.property("Effects").property("AV Highlighter").property("Spacing").expressionEnabled
 			# ...and it's connected to a parent comp... Ask for input
 			getChoice()
@@ -55,7 +59,25 @@ getChoice = ->
 
 	w.show()
 
-createHighlighter = ->
+# Tries to fix broken expressions. Basically inject code here if you need to upgrade or solve a problem migrating
+# Returns false if nothing was fixed, true if we repaired something
+fixExpressionProblems = (highlightLayer) ->
+	firstShapeColorExpression = highlightLayer.property("Contents").property(1).property("Contents").property("Stroke 1").property("Color").expression
+	return false unless firstShapeColorExpression?
+	if firstShapeColorExpression.indexOf("popup_val == 21") >= 0
+		# Replace the color expressions
+		numShapes = highlightLayer.property("Contents").numProperties
+		i = 1
+		while i <= numShapes
+			highlightLayer.property("Contents").property(i).property('Contents').property('Stroke 1').property('Color').expression = getColorExpression()
+			i++
+		alert "Just so you're in the loop...\nI fixed a broken expression on this highlight. Run the script again to do whatever you were trying to do just now..."
+		return true
+	return false
+
+
+# Creates and populates nf.highlightColorOptions
+initColorPresets = ->
 	# Note: to add/subtract or change the order of the highlight colour options, the pseudo effect in preset-effects.xml must be edited
 	highlightColorYELLOW = [255, 221, 3, 255]
 	highlightColorBLUE = [152, 218, 255, 255]
@@ -65,7 +87,7 @@ createHighlighter = ->
 	highlightColorORANGE = [255, 175, 104, 255]
 	highlightColorRED = [255, 157, 157, 255]
 
-	highlightColorOptions = [
+	nf.highlightColorOptions = [
 		highlightColorYELLOW
 		highlightColorBLUE
 		highlightColorPURPLE
@@ -74,6 +96,26 @@ createHighlighter = ->
 		highlightColorORANGE
 		highlightColorRED
 	]
+
+getColorExpression = ->
+	# FIXME Move this up to the top
+	initColorPresets()
+
+	# Set colour property based on variables at top of script
+	trimString = ''
+	trimString += 'popup_val = effect("AV Highlighter")("Highlight Colour");'
+	i = 0
+	while i < nf.highlightColorOptions.length
+		if i != 0
+			trimString += 'else '
+		if i != nf.highlightColorOptions.length - 1
+			trimString += 'if (popup_val == ' + (i + 1) + ') '
+		trimString += '{ [' + nf.highlightColorOptions[i].toString() + ']/255; } '
+		i++
+	trimString += ';'
+	return trimString
+
+createHighlighter = ->
 
 	mainComp = app.project.activeItem
 	highlightLayer = mainComp.selectedLayers[0]
@@ -100,19 +142,7 @@ createHighlighter = ->
 	shape1.property('Contents').property('Trim Paths 1').property('Start').expression = 'effect("AV Highlighter")("Start Offset")'
 	highlightLayer.property('Transform').property('Opacity').expression = 'effect("AV Highlighter")("Opacity")'
 
-	# Set colour property based on variables at top of script
-	trimString = ''
-	trimString += 'popup_val = effect("AV Highlighter")("Highlight Colour");'
-	i = 0
-	while i < highlightColorOptions.length
-		if i != 0
-			trimString += 'else '
-		if i != highlightColorOptions.length - 1
-			trimString += 'if (popup_val == ' + i + 1 + ') '
-		trimString += '{ [' + highlightColorOptions[i].toString() + ']/255; } '
-		i++
-	trimString += ';'
-	shape1.property('Contents').property('Stroke 1').property('Color').expression = trimString
+	shape1.property('Contents').property('Stroke 1').property('Color').expression = getColorExpression()
 
 	# Set the position string
 	offsetString = ''

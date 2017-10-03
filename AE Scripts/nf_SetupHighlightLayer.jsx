@@ -1,6 +1,6 @@
 (function() {
   #include "nf_functions.jsx";
-  var createHighlighter, createShapeLayer, createSplitterEffect, getChoice, getLineArray, globals, importedFunctions, indexOfClosestLineToPoint, main, nf, percentThroughLineAtPoint, splitHighlightAtPoint, splitHighlightLayer;
+  var createHighlighter, createShapeLayer, createSplitterEffect, fixExpressionProblems, getChoice, getColorExpression, getLineArray, globals, importedFunctions, indexOfClosestLineToPoint, initColorPresets, main, nf, percentThroughLineAtPoint, splitHighlightAtPoint, splitHighlightLayer;
 
   importedFunctions = app.nf;
 
@@ -21,6 +21,9 @@
     if (!(highlightLayer instanceof ShapeLayer)) {
       return createShapeLayer(highlightLayer);
     } else if (highlightLayer.property("Effects").property("AV Highlighter") != null) {
+      if (fixExpressionProblems(highlightLayer)) {
+        return;
+      }
       if (highlightLayer.property("Effects").property("AV Highlighter").property("Spacing").expressionEnabled) {
         return getChoice();
       } else {
@@ -62,8 +65,27 @@
     return w.show();
   };
 
-  createHighlighter = function() {
-    var effects, highlightColorBLUE, highlightColorGREEN, highlightColorORANGE, highlightColorOptions, highlightColorPINK, highlightColorPURPLE, highlightColorRED, highlightColorYELLOW, highlightLayer, highlightLinesCount, i, mainComp, newShape, offsetString, shape1, trim1, trimString;
+  fixExpressionProblems = function(highlightLayer) {
+    var firstShapeColorExpression, i, numShapes;
+    firstShapeColorExpression = highlightLayer.property("Contents").property(1).property("Contents").property("Stroke 1").property("Color").expression;
+    if (firstShapeColorExpression == null) {
+      return false;
+    }
+    if (firstShapeColorExpression.indexOf("popup_val == 21") >= 0) {
+      numShapes = highlightLayer.property("Contents").numProperties;
+      i = 1;
+      while (i <= numShapes) {
+        highlightLayer.property("Contents").property(i).property('Contents').property('Stroke 1').property('Color').expression = getColorExpression();
+        i++;
+      }
+      alert("Just so you're in the loop...\nI fixed a broken expression on this highlight. Run the script again to do whatever you were trying to do just now...");
+      return true;
+    }
+    return false;
+  };
+
+  initColorPresets = function() {
+    var highlightColorBLUE, highlightColorGREEN, highlightColorORANGE, highlightColorPINK, highlightColorPURPLE, highlightColorRED, highlightColorYELLOW;
     highlightColorYELLOW = [255, 221, 3, 255];
     highlightColorBLUE = [152, 218, 255, 255];
     highlightColorPURPLE = [236, 152, 255, 255];
@@ -71,7 +93,31 @@
     highlightColorPINK = [255, 152, 202, 255];
     highlightColorORANGE = [255, 175, 104, 255];
     highlightColorRED = [255, 157, 157, 255];
-    highlightColorOptions = [highlightColorYELLOW, highlightColorBLUE, highlightColorPURPLE, highlightColorGREEN, highlightColorPINK, highlightColorORANGE, highlightColorRED];
+    return nf.highlightColorOptions = [highlightColorYELLOW, highlightColorBLUE, highlightColorPURPLE, highlightColorGREEN, highlightColorPINK, highlightColorORANGE, highlightColorRED];
+  };
+
+  getColorExpression = function() {
+    var i, trimString;
+    initColorPresets();
+    trimString = '';
+    trimString += 'popup_val = effect("AV Highlighter")("Highlight Colour");';
+    i = 0;
+    while (i < nf.highlightColorOptions.length) {
+      if (i !== 0) {
+        trimString += 'else ';
+      }
+      if (i !== nf.highlightColorOptions.length - 1) {
+        trimString += 'if (popup_val == ' + (i + 1) + ') ';
+      }
+      trimString += '{ [' + nf.highlightColorOptions[i].toString() + ']/255; } ';
+      i++;
+    }
+    trimString += ';';
+    return trimString;
+  };
+
+  createHighlighter = function() {
+    var effects, highlightLayer, highlightLinesCount, i, mainComp, newShape, offsetString, shape1, trim1;
     mainComp = app.project.activeItem;
     highlightLayer = mainComp.selectedLayers[0];
     highlightLinesCount = parseInt(prompt('How many initial highlight lines would you like to create?'));
@@ -85,21 +131,7 @@
     shape1.property('Contents').property('Stroke 1').property('Stroke Width').expression = 'effect("AV Highlighter")("Thickness")';
     shape1.property('Contents').property('Trim Paths 1').property('Start').expression = 'effect("AV Highlighter")("Start Offset")';
     highlightLayer.property('Transform').property('Opacity').expression = 'effect("AV Highlighter")("Opacity")';
-    trimString = '';
-    trimString += 'popup_val = effect("AV Highlighter")("Highlight Colour");';
-    i = 0;
-    while (i < highlightColorOptions.length) {
-      if (i !== 0) {
-        trimString += 'else ';
-      }
-      if (i !== highlightColorOptions.length - 1) {
-        trimString += 'if (popup_val == ' + i + 1 + ') ';
-      }
-      trimString += '{ [' + highlightColorOptions[i].toString() + ']/255; } ';
-      i++;
-    }
-    trimString += ';';
-    shape1.property('Contents').property('Stroke 1').property('Color').expression = trimString;
+    shape1.property('Contents').property('Stroke 1').property('Color').expression = getColorExpression();
     offsetString = '';
     offsetString += '[transform.position[0]+ effect("AV Highlighter")("Offset")[0],';
     offsetString += ' transform.position[1]+ effect("AV Highlighter")("Offset")[1]]';
