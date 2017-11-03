@@ -12,7 +12,7 @@
 
 AE will only recognize scripts in the `Scripts` directory in its application folder. To easily allow updating, we recommend using symlinks or aliases to the files in this repo. That way you can have the repo somewhere else on your drive, and when you update you don't have to copy over any scripts that changed. If the previous sentence sounds like nonsense to you, _ask for help_ since this step can be a little tricky.
 
-**IMPORTANT:** Scripts now require up-to-date pseudo effects. If you add an alias to the `InstallPseudoEffects.jsx` script in your `Scripts > Startup` folder, pseudo effects will be automatically updated whenever you open AE. See the notes for `InstallPseudoEffects` for more details.
+**IMPORTANT:** Scripts now require up-to-date pseudo effects and the Before-Effects library. If you add an alias to the `nf_startup.jsx` script in your `Scripts > Startup` folder, pseudo effects will be automatically updated whenever you open AE. See the notes for `Startup` for more details.
 
 ### Current Droplets
 
