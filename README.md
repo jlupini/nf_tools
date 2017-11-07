@@ -22,7 +22,7 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 ### Current Scripts
 
-- **GoToHighlight** - Lets you automatically keyframe the movement of a page or its parent null to a given highlight. Run the script with a page layer selected, then pick options and click the button for the highlight you want to move to.
+- **GoToHighlight** - Lets you automatically keyframe the movement of a page or its parent null to a given highlight. Run the script with a page layer selected, then pick options and click the button for the highlight you want to move to. Select multiple layers to include a page turn effect.
 
 - **Startup** - Put an alias to this script in the `Startup` folder inside your AE `Scripts` Folder. Whenever you open After Effects, the script will automatically run any required scripts. Right now that means importing a library we use called `Before-Effects` and running the `InstallPseudoEffects` script.
 
