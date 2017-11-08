@@ -22,7 +22,7 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 ### Current Scripts
 
-- **GoToHighlight** - Lets you automatically keyframe the movement of a page or its parent null to a given highlight. Run the script with a page layer selected, then pick options and click the button for the highlight you want to move to. Select multiple layers to include a page turn effect.
+- **GoToHighlight** - Lets you automatically keyframe the movement of a page or its parent null to a given highlight. Run the script with a page layer selected, then pick options and click the button for the highlight you want to move to. A page turn effect is applied if you target a layer below the active page.
 
 - **Startup** - Put an alias to this script in the `Startup` folder inside your AE `Scripts` Folder. Whenever you open After Effects, the script will automatically run any required scripts. Right now that means importing a library we use called `Before-Effects` and running the `InstallPseudoEffects` script.
 
@@ -40,7 +40,7 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 - **Create Spotlight Layer** - Adds a spotlight layer (if none already exists) for the selected page, and allows you to either convert highlights on the page, or a custom-drawn mask on the layer, to a spotlight mask. The first time this script is run, it will generate a Spotlight layer which is actually creating the visible effect. For each spotlight mask you have on a page, the script will create a Span layer above the main Spotlight layer. The Span layer indicates the in and out points of that particular spotlight mask. If you need to make adjustments to the mask path itself, perform those adjustments to the mask on the Span layer. Main Spotlight layer needs to be active for the spotlight mask in a Span to work. Controls for opacity, duration of fadeIn/fadeOut and feather are on the relevant Span layer. If multiple Span layers overlap, try to make sure they have *more overlap than the duration setting* or you'll see an opacity jump halfway through the overlap area.
 
-- **Citation Overlay** - Adds a citation in the top right hand corner of the comp. Set the in/out points using the markers.
+- **Citation Overlay** - Adds a citation in the top right hand corner of the comp. To use, first select a page layer, then apply the script. In and out points will be represented by markers on the page layer's null parent. Note 1: additional markers on this layer will affect in/out fading. Note 2: ensure that there are no other layers that share a name with the null parent.
 
 - **Bubble Up Highlights** - Run this with a pdf precomp selected to bubble highlight controls up into the parent. Note: Bubbled up controls can only be changed from the top level, so you can't change highlight parameters from within the pdf precomp anymore - all the highlight controls are effectively moved to the pdf precomp layer in the parent comp (`Part 1`, `Part 2`, etc).
 
