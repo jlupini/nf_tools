@@ -48,7 +48,7 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 - **Emphasizer** - Creates emphasis effects Scribble (Chunky Highlight), PenLine (Circle/Underline), and Cylon. Run the script with the target layer selected (or selection if no target) to create the shape layer, then draw with the pen tool to setup the line for your shape. Will only act on the most recently created shape within a shape layer. 
 
-- **Gaussy** - Adds a gaussian blur effect. Instructions: run nf_gaussy.jsx on an adjustment layer. Adjust the in and out points using the markers. 
+- **Gaussy** - Adds a gaussian blur effect. Instructions: run nf_gaussy.jsx above the layers you want to blur. It will create a new adjustment layer with in and out points represented by markers that control the blur effect. 
 
 
 ### Resources for Scripting:
