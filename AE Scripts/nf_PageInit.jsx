@@ -332,6 +332,4 @@
 
   app.endUndoGroup();
 
-  app.nf = {};
-
 }).call(this);

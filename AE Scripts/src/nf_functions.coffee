@@ -10,6 +10,26 @@ nf.PageTurn =
   BROKEN: 500
 
 # Utility Functions
+
+# Looks for an item globally in the project
+nf.findItem = (itemName) ->
+  i = 1
+  while i <= app.project.items.length
+    thisItem = app.project.items[i]
+    if thisItem.name == itemName
+      return thisItem
+    i++
+  null
+
+# Given a string with the name of an item to find and it's parent folder, findItemIn returns the folderItem, or null of none is found.
+nf.findItemIn = (itemName, sourceFolderItem) ->
+  i = 1
+  while i <= sourceFolderItem.numItems
+    if sourceFolderItem.item(i).name == itemName
+      return sourceFolderItem.item(i)
+    i++
+  null
+
 nf.pageTreeForPaper = (sourceLayer) ->
 
   @layerObj = (layerName) ->

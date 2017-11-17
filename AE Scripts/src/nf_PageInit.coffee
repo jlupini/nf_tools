@@ -314,4 +314,4 @@ app.beginUndoGroup nf.undoGroupName
 initializePages()
 
 app.endUndoGroup()
-app.nf = {}
+# app.nf = {}

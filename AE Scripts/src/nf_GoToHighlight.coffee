@@ -312,4 +312,4 @@ askForChoice = ->
 app.beginUndoGroup nf.undoGroupName
 askForChoice()
 app.endUndoGroup()
-nf = {}
+# nf = {}
