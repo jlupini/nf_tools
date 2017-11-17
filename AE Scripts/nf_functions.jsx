@@ -12,6 +12,31 @@
     BROKEN: 500
   };
 
+  nf.findItem = function(itemName) {
+    var i, thisItem;
+    i = 1;
+    while (i <= app.project.items.length) {
+      thisItem = app.project.items[i];
+      if (thisItem.name === itemName) {
+        return thisItem;
+      }
+      i++;
+    }
+    return null;
+  };
+
+  nf.findItemIn = function(itemName, sourceFolderItem) {
+    var i;
+    i = 1;
+    while (i <= sourceFolderItem.numItems) {
+      if (sourceFolderItem.item(i).name === itemName) {
+        return sourceFolderItem.item(i);
+      }
+      i++;
+    }
+    return null;
+  };
+
   nf.pageTreeForPaper = function(sourceLayer) {
     var activePageIndex, allLayers, i, pageObject, pageParent, testLayer, tree;
     this.layerObj = function(layerName) {
