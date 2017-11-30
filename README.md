@@ -50,6 +50,8 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 - **Gaussy** - Adds a gaussian blur effect. Instructions: run nf_gaussy.jsx above the layers you want to blur. It will create a new adjustment layer with in and out points represented by markers that control the blur effect. 
 
+- **Setup Main Comp** - Creates sub-comps with zoomers based off your audio marker data, a vignette effect, a background, and a fade in/out at the head and tail of the main comp. To use, select your main audio track, and run `nf_SetupMainComp.jsx`.
+
 
 ### Resources for Scripting:
 
