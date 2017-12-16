@@ -199,13 +199,13 @@ nf.disconnectBubbleupsInLayers = (layers, names = null) ->
   bubbleupLayers = []
   for theLayer in layers
     if nf.isCompLayer theLayer
-        bubbleupLayers = bubbleupLayers.concat nf.layerCollectionToArray theLayer.source.layers
+        bubbleupLayers = bubbleupLayers.concat nf.collectionToArray theLayer.source.layers
     else
       bubbleupLayers.push theLayer
 
   for theLayer in bubbleupLayers
-    if not names? or names.indexOf(theLayer.name) > -1 or (names.indexOf(theLayer.containingComp.name) > -1 and theLayer.name.indexOf("Annotation") > -1)
-      effect = theLayer.effect("AV_Highlighter") or theLayer.effect("Guide Layer")
+    if not names? or names.indexOf(theLayer.name) > -1
+      effect = theLayer.effect("AV_Highlighter")
       propertyCount = effect?.numProperties
       i = 1
       while i < propertyCount and effect?
@@ -260,13 +260,17 @@ nf.setSymmetricalTemporalEasingOnlyForProperties = (theProperties, keys, easeTyp
 
     i++
 
-nf.layerCollectionToArray = (layerCollection) ->
+nf.collectionToArray = (collection) ->
   arr = []
   i = 1
-  while i <= layerCollection.length
-    arr.push layerCollection[i]
+  while i <= collection.length
+    arr.push collection[i]
     i++
   return arr
+
+# Just a shortcut
+nf.toArr = (collection) ->
+  return nf.collectionToArray collection
 
 nf.capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase() + string.slice(1)
@@ -426,47 +430,6 @@ nf.fixTrimExpressionsForHighlightLayer = (highlightLayer) ->
 
     i--
     lineNumber++
-
-nf.bubbleUpGuideLayers = (pagesToBubble, choices = null) ->
-  mainComp = app.project.activeItem
-  i = pagesToBubble.length - 1
-  while i >= 0
-    targetLayer = pagesToBubble[i]
-    targetComp = targetLayer.source
-    # Look in selected comp
-    # Grab guide layer
-    layersInPageComp = targetComp.layers
-    guideLayer = layersInPageComp.byName('Annotation Guide')
-    if guideLayer
-      childGuideCheckbox = guideLayer.property('Effects').property('Guide Layer').property('Checkbox')
-      # FIXME: Make it so that the guide layer is visible if ANY of the parent layers have this enabled
-      # (basically take out this if statement and add to the existing expression each time you pageinit in a different place) (I don't know if this will work...)
-      shouldBubble = no
-      if choices?
-        shouldBubble = choices.indexOf(targetLayer.name) >= 0
-      else
-        shouldBubble = !childGuideCheckbox.expressionEnabled 
-
-      if shouldBubble
-        # Add checkbox to targetLayer
-        effects = targetLayer.Effects
-        checkbox = effects.addProperty('ADBE Checkbox Control')
-        checkboxName = 'Guide Layer'
-        checkbox.name = checkboxName
-        # Set checkbox to match current opacity
-        # If guide layer is hidden, set the opacity to be 0
-        newValue = undefined
-        if !guideLayer.enabled
-          guideLayer.enabled = true
-          newValue = false
-        else
-          newValue = childGuideCheckbox.value
-        checkbox.property('Checkbox').setValue newValue
-        # Set childCheckbox expression on guide layer
-        sourceExpression = 'comp("' + mainComp.name + '").layer("' + targetLayer.name + '").effect("' + checkboxName + '")("Checkbox")*60'
-        childGuideCheckbox.expression = sourceExpression
-    i--
-  return
 
 # Bubble up the highlights in given layers.
 # By default, will bubble all unconnected highlights in the layers given.

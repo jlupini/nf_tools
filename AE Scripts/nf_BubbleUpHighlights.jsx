@@ -14,8 +14,7 @@
   main = function() {
     var pagesToBubble;
     pagesToBubble = nf.mainComp.selectedLayers;
-    nf.bubbleUpHighlights(pagesToBubble);
-    return nf.bubbleUpGuideLayers(pagesToBubble);
+    return nf.bubbleUpHighlights(pagesToBubble);
   };
 
   app.beginUndoGroup(nf.undoGroupName);

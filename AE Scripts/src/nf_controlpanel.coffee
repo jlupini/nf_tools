@@ -5,6 +5,7 @@
 importedFunctions = app.nf
 globals =
 	mainComp: app.project.activeItem
+	isDialog: no
 nf = Object.assign importedFunctions, globals
 
 panelTest = this
@@ -26,21 +27,23 @@ getPanelUI = ->
 	else
 		# not a panel (called from File > Scripts > Run)
 		# FIXME: This may not work dimensions-wise. Need to come back & fix
-		panel = new Window("palette", "NF Controls")
+		panelType = if nf.isDialog then "dialog" else "palette"
+		panel = new Window("dialog", "NF Controls")
 		nf.isUIPanel = no
 
-	panel.alignChildren = 'left'
+	panel.alignChildren = 'left' 
 
-	buttonPanel = panel.add 'panel', undefined, 'Buttons', {borderStyle:'none'}
+	buttonPanel = panel.add 'panel', undefined, 'Controls', {borderStyle:'none'}
 	buttonPanel.alignChildren = 'left'
 	buttonPanel.margins.top = 16
 
 	buttonGroup = buttonPanel.add 'group', undefined
 
-	fixExpressionErrorsButton = buttonGroup.add('button', undefined, 'Fix Expression Errors')
-	toggleGuideLayersButton = buttonGroup.add('button', undefined, 'Toggle Guide Layers')
+	# nf.fixExpressionErrorsButton = buttonGroup.add('button', undefined, 'Fix Expression Errors')
+	nf.toggleGuideLayersButton = buttonGroup.add('button', undefined, 'Toggle Guide Layers')
 
-	toggleGuideLayersButton.onClick = toggleGuideLayers()
+	nf.toggleGuideLayersButton.onClick = (w) ->
+		toggleGuideLayers()
 
 	# Layout + Resize handling
 	panel.layout.layout(true)
@@ -57,28 +60,78 @@ getPanelUI = ->
 
 	return panel
 
+videoProject =
+	precompsFolder: ->
+		return nf.findItem 'Precomps'
+	PDFPrecompsFolder: ->
+		return nf.findItem 'PDF Precomps'
+	partsFolder: ->
+		return nf.findItem 'Parts'
+
+# Guide Reference Object
+guideReference =
+	compName: 'Guide Reference'
+	layerName: 'Guide Visibility'
+	effectName: 'Guide Layer'
+
+	comp: ->
+		if videoProject.precompsFolder()?
+			return nf.findItemIn 'Guide Reference', videoProject.precompsFolder()
+		else
+			return null
+	layer: ->
+		return null unless @comp()?
+		layerCollection = @comp()?.layers
+		if layerCollection?.length == 0
+			alert("No layers in Guide Reference Comp")
+			return null
+		else
+			return layerCollection[1]
+	create: ->
+		return null if @comp()? or @layer()? or not videoProject.precompsFolder()?
+		videoProject.precompsFolder().items.addComp(@compName, 1920, 1080, 1.0, 1, 30)
+		@comp().layers.addNull()
+		@layer().name = @layerName
+
+		return @layer()
+	visible: ->
+		return @layer()?.enabled
+	setVisible: (newVisibility) ->
+		@layer()?.enabled = newVisibility
+		return @layer()
+
 toggleGuideLayers = ->
-	app.beginUndoGroup 'Toggle Guide Layers'
-
 	# First, check if this is an old project that needs to be upgraded
-
-	precompsFolder = nf.findItem 'Precomps'
-	guideReferenceComp = nf.findItemIn 'Guide Reference', precompsFolder if precompsFolder?
-
-	unless guideReferenceComp?
+	unless guideReference.comp()?
 		alert "Upgrading Guide Layers!\nThis project uses an older guide layer toggle style. Upgrading to the new version - This may take a minute."
-	# Prompt to upgrade
+		app.beginUndoGroup 'Toggle Guide Layers'
 
-	# Make one if none exists, with a single null layer called 'Guide Visibility'
+		guideReference.create()
 
-	# Now we're ready to clean house. Go to each of the page precomps and look at the Annotation Guide Layer
-	# If it has a 'Guide layer' effect, look at if it's connected to a part precomp.
-	# If it is, delete the PARENT effect.
-	# Delete the CHILD Effect
-	# Fix the (now broken) opacity expression to point to the guide precomp's null layer's 'enabled' state
+		# Get all the page precomps
+		pagePrecomps = nf.collectionToArray videoProject.PDFPrecompsFolder().items
+		# Get all the Annotation Guide Layers
+		for thePageComp in pagePrecomps
+			guideLayer = thePageComp.layers.byName "Annotation Guide"
+			# If it has a 'Guide layer' effect, delete it
+			if guideLayer?
+				guideEffect = guideLayer.property("Effects")?.property(guideReference.effectName)
+				guideEffect.remove() if guideEffect?
 
+				guideLayer.property("Transform").property("Opacity").expression = "comp(\"#{guideReference.compName}\").layer(\"#{guideReference.layerName}\").enabled * 60"
 
+		# Look for and delete all guide layer effects in part comps
+		parts = nf.toArr videoProject.partsFolder()?.items
+		for thePartComp in parts
+			partLayers = nf.toArr thePartComp.layers
+			for theLayer in partLayers
+				guideEffect = theLayer.property("Effects")?.property(guideReference.effectName)
+				guideEffect.remove() if guideEffect?
+		app.endUndoGroup()
 
+	# Toggle State
+	app.beginUndoGroup 'Toggle Guide Layers'
+	guideReference.setVisible !guideReference.visible()
 	app.endUndoGroup()
 
 main()
