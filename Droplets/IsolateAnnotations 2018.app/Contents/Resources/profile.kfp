@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pdfpreflight version="15.0">
+	<package>
+		<id3>b5bf6935bb550aaa4752558850bf6601</id3>
+		<pdfxoutintentlist>
+		</pdfxoutintentlist>
+		<iccprofilelist>
+		</iccprofilelist>
+		<ccpolicies>
+		</ccpolicies>
+		<occdsetups>
+		</occdsetups>
+		<curves>
+		</curves>
+		<fspolicies>
+		</fspolicies>
+		<resources>
+		</resources>
+		<variables>
+		</variables>
+		<conditions>
+			<condition>
+				<id1>C2e45ca677b7f814358fe403369479d9f</id1>
+				<id2>C73c8dfaa3d7830aaa882c4cea3c2a18c</id2>
+				<id3>71266f4ba450c6be217c409d93c0ef42</id3>
+				<id4>029b8cabe52180e55ed12ad5a12e6781</id4>
+				<name></name>
+				<comment></comment>
+				<flags user_units="1" edit="1" visible="1"></flags>
+				<atom>
+					<group>Group::CONTSTM</group>
+					<token>CONTSTM::ObjectIsInsideCropBox</token>
+					<operator>OP::is_true</operator>
+					<data>
+						<text>
+							<value></value>
+						</text>
+					</data>
+				</atom>
+			</condition>
+			<condition>
+				<id1>C663c455836113e390eb1e8812be5c14a</id1>
+				<id2>Ce78ba1956ef1720f0895f02f5f126ebc</id2>
+				<id3>c8b614d557d24602a2bda5dd452e86b8</id3>
+				<id4>386d75b9afdeec2d2e8eeececf8c30d9</id4>
+				<name>CC_ObjectIsAnImage</name>
+				<comment>CC_ObjectIsAnImage</comment>
+				<flags user_units="1" edit="1" visible="1" dict="1"></flags>
+				<atom>
+					<group>Group::CONTSTM</group>
+					<token>CONTSTM::IsImage</token>
+					<operator>OP::is_true</operator>
+					<data>
+						<text>
+							<value></value>
+						</text>
+					</data>
+				</atom>
+			</condition>
+		</conditions>
+		<rules>
+			<rule>
+				<id1>R66671e7c7b9912fad2056f791bb1e378</id1>
+				<id2>R7ac6bae2ef3be17468715b1c28ffaf96</id2>
+				<id3>4295742d4da4d6dc4fa53900487180d5</id3>
+				<id4>3b609e946eb965a01b14a3ea9dfd3de6</id4>
+				<name>Everything but annotations</name>
+				<comment></comment>
+				<flags analysis="49" condition_logic="0" ignore_objects="0" edit="1" visible="1"></flags>
+				<report_no_match></report_no_match>
+				<conditions>
+					<condition>C2e45ca677b7f814358fe403369479d9f</condition>
+				</conditions>
+			</rule>
+			<rule>
+				<id1>R698b98922655a8cc31c90ef4fd5d06b2</id1>
+				<id2>R60a0ab5970d1f4fe68ecea0d9699ea8b</id2>
+				<id3>58d1a525bae29f59cda905cdc0409018</id3>
+				<id4>8e509af5b164f0f29fd38b8f0b43c18c</id4>
+				<name>Is Image</name>
+				<comment></comment>
+				<flags analysis="17" condition_logic="0" ignore_objects="0" edit="1" visible="1"></flags>
+				<report_no_match></report_no_match>
+				<conditions>
+					<condition>C663c455836113e390eb1e8812be5c14a</condition>
+				</conditions>
+			</rule>
+		</rules>
+		<rulesets>
+		</rulesets>
+		<fixups>
+			<fixup>
+				<id1>F494961c0df885d107fb6fc81e380b986</id1>
+				<id2>Fc23d2f8429a22b5e7735e8649d163601</id2>
+				<id3>002dce7217c71a198398e16f9bedf3ea</id3>
+				<id4>56a6fda79c132253ad95ea43b90df877</id4>
+				<name>FFF_Flattenallannotationsintopagecontents</name>
+				<comment>FFF_Flattenallannotationsintopagecontents</comment>
+				<flags user_units="0" scope="16" edit="1" visible="1" dict="1"></flags>
+				<fcfgs>
+					<fcfg>
+						<ffeat>Annotation</ffeat>
+						<fparams>
+							<fparam>All</fparam>
+							<fparam>Flatten</fparam>
+							<fparam>All</fparam>
+						</fparams>
+					</fcfg>
+					<fcfg>
+						<ffeat></ffeat>
+						<fparams>
+						</fparams>
+					</fcfg>
+				</fcfgs>
+				<reportFailed></reportFailed>
+			</fixup>
+			<fixup>
+				<id1>F944e5c0e96d785ae241efb803fd03775</id1>
+				<id2>F1465c6d76c0ee022dcbe4960fb3356cb</id2>
+				<id3>0624997372aabe7e8e23873659b363d6</id3>
+				<id4>c73bc7e2b438adf725a330094824c3b6</id4>
+				<name>Remove Errything</name>
+				<comment></comment>
+				<flags user_units="1" scope="16" edit="1" visible="1"></flags>
+				<fcfgs>
+					<fcfg>
+						<ffeat>RemoveObjects</ffeat>
+						<fparams>
+							<fparam>PRCCUSTOMCHECK</fparam>
+						</fparams>
+					</fcfg>
+				</fcfgs>
+				<reportFailed></reportFailed>
+				<rules>
+					<metalists>
+						<metalist metaid="M512cc2bfa72fe1d225549305d7a7a3cd">
+							<metadata>
+								<metakey>CALS_CLM_REFRULE_IDX</metakey>
+								<metavalue>0</metavalue>
+							</metadata>
+						</metalist>
+					</metalists>
+					<rule metaid="M512cc2bfa72fe1d225549305d7a7a3cd">R66671e7c7b9912fad2056f791bb1e378</rule>
+				</rules>
+			</fixup>
+			<fixup>
+				<id1>F888c3954412978da7119b40170ef9a24</id1>
+				<id2>F06be87794167b2006d0cb3fd53429793</id2>
+				<id3>0a6af5f506ab2f1db7a12bb6ba2851dc</id3>
+				<id4>c84006e55fd4a3d591319de2595a0038</id4>
+				<name>Remove Images</name>
+				<comment></comment>
+				<flags user_units="1" scope="16" edit="1" visible="1"></flags>
+				<fcfgs>
+					<fcfg>
+						<ffeat>RemoveObjects</ffeat>
+						<fparams>
+							<fparam>PRCCUSTOMCHECK</fparam>
+						</fparams>
+					</fcfg>
+				</fcfgs>
+				<reportFailed></reportFailed>
+				<rules>
+					<metalists>
+						<metalist metaid="M9355cd78d7bbcd950a6abdc7158d537b">
+							<metadata>
+								<metakey>CALS_CLM_REFRULE_IDX</metakey>
+								<metavalue>0</metavalue>
+							</metadata>
+						</metalist>
+					</metalists>
+					<rule metaid="M9355cd78d7bbcd950a6abdc7158d537b">R698b98922655a8cc31c90ef4fd5d06b2</rule>
+				</rules>
+			</fixup>
+		</fixups>
+		<fixupsets>
+			<fixupset>
+				<id1>U04c2e0f5715bea128ecbc106cd81a23c</id1>
+				<id2>U39dce55efa95217184f5b8c97fed1986</id2>
+				<id3>79dc21821ba54993880893bee14da26c</id3>
+				<id4>cf290c03096409a58afd8e37d989ee7c</id4>
+				<name>UUUU_FIXUPSET_DEF_NAME</name>
+				<comment>UUUU_FIXUPSET_DEF_NAME</comment>
+				<flags edit="1" visible="1" dict="1"></flags>
+				<fixups>
+					<fixup>F494961c0df885d107fb6fc81e380b986</fixup>
+					<fixup>F944e5c0e96d785ae241efb803fd03775</fixup>
+					<fixup>F888c3954412978da7119b40170ef9a24</fixup>
+				</fixups>
+			</fixupset>
+		</fixupsets>
+		<actions>
+		</actions>
+		<profiles>
+			<profile>
+				<id1>Pcd82880702dc5293b3c22915adb611a6</id1>
+				<id2>P2404dcabb353624a9d288021db7341e2</id2>
+				<id3>77e5ff7dc21de55015e4581c88f11aeb</id3>
+				<id4>834e97dc6deea23ed4fdb0b4accd735f</id4>
+				<name>Remove Everything but Annotations</name>
+				<comment>Removes everything except for the Annotations</comment>
+				<flags edit="1" visible="1"></flags>
+				<metalist>
+					<metadata>
+						<metakey>author</metakey>
+						<metavalue>Jesse Lupini</metavalue>
+					</metadata>
+				</metalist>
+				<creation>D:20160907233505-08&apos;00&apos;</creation>
+				<modification>D:20171221191415-08&apos;00&apos;</modification>
+				<pdfstd>
+					<pdfx convert="0"></pdfx>
+					<pdfa convert="0"></pdfa>
+					<pdfe convert="0"></pdfe>
+					<outcond></outcond>
+					<trapped>0</trapped>
+					<oioptions>0</oioptions>
+				</pdfstd>
+				<pdfstdemb>
+					<pdfx convert="0"></pdfx>
+					<pdfa convert="0"></pdfa>
+					<pdfe convert="0"></pdfe>
+					<outcond></outcond>
+					<trapped>0</trapped>
+					<oioptions>0</oioptions>
+					<afrelationship set_relationship="0"></afrelationship>
+				</pdfstdemb>
+				<wizard>
+				</wizard>
+				<rulesets>
+				</rulesets>
+				<fixupsets>
+					<fixupset>U04c2e0f5715bea128ecbc106cd81a23c</fixupset>
+				</fixupsets>
+			</profile>
+		</profiles>
+		<metaprofs>
+		</metaprofs>
+		<profgroups>
+		</profgroups>
+	</package>
+</pdfpreflight>
