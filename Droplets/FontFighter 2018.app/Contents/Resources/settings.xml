@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pdfpreflight>
+	<prefs format="Batch Settings" version="1.0">
+		<setting id="3b5528259a2ccd9fb6ebd8d7d2772583" name="settings.xml" comment="" rating="0" count="0" lock="0" active="1">
+			<feat type="int">
+				<name>Feat_Droplet_SFA</name>
+				<value>0</value>
+			</feat>
+			<feat type="int">
+				<name>Feat_Droplet_SRT</name>
+				<value>0</value>
+			</feat>
+			<feat type="int">
+				<name>Feat_Droplet_SAT</name>
+				<value>0</value>
+			</feat>
+			<feat type="string">
+				<name>Feat_Droplet_SFO</name>
+				<value></value>
+			</feat>
+			<feat type="int">
+				<name>Feat_Droplet_EFA</name>
+				<value>0</value>
+			</feat>
+			<feat type="int">
+				<name>Feat_Droplet_ERT</name>
+				<value>0</value>
+			</feat>
+			<feat type="int">
+				<name>Feat_Droplet_EAT</name>
+				<value>0</value>
+			</feat>
+			<feat type="string">
+				<name>Feat_Droplet_EFO</name>
+				<value></value>
+			</feat>
+			<feat type="bool">
+				<name>Feat_Droplet_DRP</name>
+				<value>0</value>
+			</feat>
+			<feat type="bool">
+				<name>Feat_Droplet_DOF</name>
+				<value>0</value>
+			</feat>
+		</setting>
+	</prefs>
+</pdfpreflight>

@@ -48,7 +48,9 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 - **Emphasizer** - Creates emphasis effects Scribble (Chunky Highlight), PenLine (Circle/Underline), and Cylon. Run the script with the target layer selected (or selection if no target) to create the shape layer, then draw with the pen tool to setup the line for your shape. Will only act on the most recently created shape within a shape layer. 
 
-- **Gaussy** - Adds a gaussian blur effect. Instructions: run nf_gaussy.jsx above the layers you want to blur. It will create a new adjustment layer with in and out points represented by markers that control the blur effect. 
+- **Gaussy** - Adds a gaussian blur effect. Instructions: run nf_gaussy.jsx above the layers you want to blur. It will create a new adjustment layer with in and out points represented by markers that control the blur effect. Note: Gaussy only works on layers with unique names. So if you name a layer 'XYZ', apply Gaussy, and then duplicate layer XYZ, the effect will only apply to the upmost layer called 'XYZ'.
+
+- **Setup Main Comp** - Creates sub-comps with zoomers based off your audio marker data, a vignette effect, a background, and a fade in/out at the head and tail of the main comp. To use, select your main audio track, and run `nf_SetupMainComp.jsx`.
 
 
 ### Resources for Scripting:
