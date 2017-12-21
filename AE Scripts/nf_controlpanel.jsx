@@ -6,7 +6,7 @@
 
   globals = {
     mainComp: app.project.activeItem,
-    isDialog: false
+    debug: true
   };
 
   nf = Object.assign(importedFunctions, globals);
@@ -27,7 +27,7 @@
       panel = panelTest;
       nf.isUIPanel = true;
     } else {
-      panelType = nf.isDialog ? "dialog" : "palette";
+      panelType = nf.debug ? "dialog" : "palette";
       panel = new Window("dialog", "NF Controls");
       nf.isUIPanel = false;
     }
@@ -40,7 +40,7 @@
     buttonGroup = buttonPanel.add('group', void 0);
     nf.toggleGuideLayersButton = buttonGroup.add('button', void 0, 'Toggle Guide Layers');
     nf.toggleGuideLayersButton.onClick = function(w) {
-      return toggleGuideLayers();
+      return toggleGuideLayers(w);
     };
     panel.layout.layout(true);
     buttonGroup.minimumSize = buttonGroup.size;
@@ -113,7 +113,7 @@
     }
   };
 
-  toggleGuideLayers = function() {
+  toggleGuideLayers = function(w) {
     var guideEffect, guideLayer, i, j, k, len, len1, len2, pagePrecomps, partLayers, parts, ref, ref1, ref2, theLayer, thePageComp, thePartComp;
     if (guideReference.comp() == null) {
       alert("Upgrading Guide Layers!\nThis project uses an older guide layer toggle style. Upgrading to the new version - This may take a minute.");

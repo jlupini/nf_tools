@@ -5,7 +5,7 @@
 importedFunctions = app.nf
 globals =
 	mainComp: app.project.activeItem
-	isDialog: no
+	debug: yes # Change this flag when you need to add breakpoints to this as a dialog
 nf = Object.assign importedFunctions, globals
 
 panelTest = this
@@ -27,7 +27,7 @@ getPanelUI = ->
 	else
 		# not a panel (called from File > Scripts > Run)
 		# FIXME: This may not work dimensions-wise. Need to come back & fix
-		panelType = if nf.isDialog then "dialog" else "palette"
+		panelType = if nf.debug then "dialog" else "palette"
 		panel = new Window("dialog", "NF Controls")
 		nf.isUIPanel = no
 
@@ -43,7 +43,7 @@ getPanelUI = ->
 	nf.toggleGuideLayersButton = buttonGroup.add('button', undefined, 'Toggle Guide Layers')
 
 	nf.toggleGuideLayersButton.onClick = (w) ->
-		toggleGuideLayers()
+		toggleGuideLayers w
 
 	# Layout + Resize handling
 	panel.layout.layout(true)
@@ -100,7 +100,7 @@ guideReference =
 		@layer()?.enabled = newVisibility
 		return @layer()
 
-toggleGuideLayers = ->
+toggleGuideLayers = (w) ->
 	# First, check if this is an old project that needs to be upgraded
 	unless guideReference.comp()?
 		alert "Upgrading Guide Layers!\nThis project uses an older guide layer toggle style. Upgrading to the new version - This may take a minute."
