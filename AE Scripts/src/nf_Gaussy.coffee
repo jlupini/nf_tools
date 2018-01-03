@@ -4,9 +4,6 @@ importedFunctions = app.nf
 globals =
 	mainComp: app.project.activeItem
 	undoGroupName: 'Create Gaussy Layer'
-	defaults:
-		duration: 25
-		blur: 115
 nf = Object.assign importedFunctions, globals
 
 createGaussyLayer = ->
@@ -18,39 +15,24 @@ createGaussyLayer = ->
 	gaussyLayer.adjustmentLayer = true
 	gaussyLayer.moveBefore targetLayer
 
-	gaussianBlur = gaussyLayer.property('Effects').addProperty('Gaussian Blur')
-	gaussianBlur.property('Repeat Edge Pixels').setValue true
-	
-	# Create layer Controls
 	effects = gaussyLayer.Effects
-	
-	# Create blur controls and expression
-	slider = effects.addProperty('ADBE Slider Control')
-	slider.slider.setValue nf.defaults.duration
-	slider.name = gaussyName + ' Duration'
+	effects.addProperty "AV_Gaussy"
 
-	trimString = "if (thisComp.layer(\"#{gaussyLayer.name}\").marker.numKeys > 0) {\n
-										d = thisComp.layer(\"#{gaussyLayer.name}\").effect(\"#{slider.name}\")(\"Slider\");\n
-										m = thisComp.layer(\"#{gaussyLayer.name}\").marker.nearestKey(time);\n
-										t = m.time;\n"
+	gaussianBlur = effects.addProperty('Gaussian Blur')
+	gaussianBlur.property('Repeat Edge Pixels').setValue true
 
-	slider = effects.addProperty('ADBE Slider Control')
-	slider.slider.setValue nf.defaults.blur
-	slider.name = gaussyName + ' Blur'
+	# Generate the expression
+	markerExpressionModel =
+		layer: gaussyLayer
+		duration:
+			effect: "AV Gaussy"
+			subEffect: "Duration"
+		valueB:
+			effect: "AV Gaussy"
+			subEffect: "Blurriness"
+	markerExpression = nf.markerDrivenExpression(markerExpressionModel)
+	gaussyLayer.property('Effects').property('Gaussian Blur').property('Blurriness').expression = markerExpression
 
-	trimString += "    f = thisComp.layer(\"#{gaussyLayer.name}\").effect(\"#{slider.name}\")(\"Slider\");\n
-										 if (m.index%2) {\n
-												 // For all in markers\n
-												 ease(time,t,t+d*thisComp.frameDuration,0,f)\n
-										 } else {\n
-												 // For all out markers\n
-												 ease(time,t,t-d*thisComp.frameDuration,f,0)\n
-										 }\n
-								 } else {\n
-										 value\n
-								 }"
-
-	gaussyLayer.property('Effects').property('Gaussian Blur').property('Blurriness').expression = trimString
 	gaussyLayer.startTime = targetLayer.startTime
 	targetLayer.selected = true
 	gaussyLayer.selected = false
@@ -62,14 +44,32 @@ createGaussyLayer = ->
 	gaussyLayer.property('Marker').setValueAtTime nf.mainComp.time + 5, outMarker
 
 	# Add Desaturation
-	hueSatEffect = effects.addProperty "ADBE HUE SATURATION"
-	masterSaturation = hueSatEffect.property(4)
-	masterLightness = hueSatEffect.property(5)
+	hueSatEffect = effects.addProperty "ADBE Color Balance (HLS)"
+	masterSaturation = hueSatEffect.property("Saturation")
+	masterLightness = hueSatEffect.property("Lightness")
 
-	masterSaturation.setValue(-90)
-	masterLightness.setValue(50)
+	# Generate the expressions
+	markerExpressionModel =
+		layer: gaussyLayer
+		duration:
+			effect: "AV Gaussy"
+			subEffect: "Duration"
+		valueB:
+			effect: "AV Gaussy"
+			subEffect: "Saturation"
+	markerExpression = nf.markerDrivenExpression(markerExpressionModel)
+	masterSaturation.expression = markerExpression
 
-	# FIXME: Create function that returns general expression and set it up with the hue/sat. Possibly create a pseudo effect for it
+	markerExpressionModel =
+		layer: gaussyLayer
+		duration:
+			effect: "AV Gaussy"
+			subEffect: "Duration"
+		valueB:
+			effect: "AV Gaussy"
+			subEffect: "Lightness"
+	markerExpression = nf.markerDrivenExpression(markerExpressionModel)
+	masterLightness.expression = markerExpression
 
 	return
 

@@ -6,34 +6,35 @@
 
   globals = {
     mainComp: app.project.activeItem,
-    undoGroupName: 'Create Gaussy Layer',
-    defaults: {
-      duration: 25,
-      blur: 115
-    }
+    undoGroupName: 'Create Gaussy Layer'
   };
 
   nf = Object.assign(importedFunctions, globals);
 
   createGaussyLayer = function() {
-    var effects, gaussianBlur, gaussyLayer, gaussyName, hueSatEffect, inMarker, masterLightness, masterSaturation, outMarker, slider, targetLayer, trimString;
+    var effects, gaussianBlur, gaussyLayer, gaussyName, hueSatEffect, inMarker, markerExpression, markerExpressionModel, masterLightness, masterSaturation, outMarker, targetLayer;
     targetLayer = nf.mainComp.selectedLayers[0];
     gaussyName = newGaussyNameForLayer(targetLayer);
     gaussyLayer = nf.mainComp.layers.addSolid([1, 1, 1], gaussyName, targetLayer.width, targetLayer.height, 1);
     gaussyLayer.adjustmentLayer = true;
     gaussyLayer.moveBefore(targetLayer);
-    gaussianBlur = gaussyLayer.property('Effects').addProperty('Gaussian Blur');
-    gaussianBlur.property('Repeat Edge Pixels').setValue(true);
     effects = gaussyLayer.Effects;
-    slider = effects.addProperty('ADBE Slider Control');
-    slider.slider.setValue(nf.defaults.duration);
-    slider.name = gaussyName + ' Duration';
-    trimString = "if (thisComp.layer(\"" + gaussyLayer.name + "\").marker.numKeys > 0) {\n d = thisComp.layer(\"" + gaussyLayer.name + "\").effect(\"" + slider.name + "\")(\"Slider\");\n m = thisComp.layer(\"" + gaussyLayer.name + "\").marker.nearestKey(time);\n t = m.time;\n";
-    slider = effects.addProperty('ADBE Slider Control');
-    slider.slider.setValue(nf.defaults.blur);
-    slider.name = gaussyName + ' Blur';
-    trimString += "    f = thisComp.layer(\"" + gaussyLayer.name + "\").effect(\"" + slider.name + "\")(\"Slider\");\n if (m.index%2) {\n // For all in markers\n ease(time,t,t+d*thisComp.frameDuration,0,f)\n } else {\n // For all out markers\n ease(time,t,t-d*thisComp.frameDuration,f,0)\n }\n } else {\n value\n }";
-    gaussyLayer.property('Effects').property('Gaussian Blur').property('Blurriness').expression = trimString;
+    effects.addProperty("AV_Gaussy");
+    gaussianBlur = effects.addProperty('Gaussian Blur');
+    gaussianBlur.property('Repeat Edge Pixels').setValue(true);
+    markerExpressionModel = {
+      layer: gaussyLayer,
+      duration: {
+        effect: "AV Gaussy",
+        subEffect: "Duration"
+      },
+      valueB: {
+        effect: "AV Gaussy",
+        subEffect: "Blurriness"
+      }
+    };
+    markerExpression = nf.markerDrivenExpression(markerExpressionModel);
+    gaussyLayer.property('Effects').property('Gaussian Blur').property('Blurriness').expression = markerExpression;
     gaussyLayer.startTime = targetLayer.startTime;
     targetLayer.selected = true;
     gaussyLayer.selected = false;
@@ -41,11 +42,35 @@
     gaussyLayer.property('Marker').setValueAtTime(nf.mainComp.time, inMarker);
     outMarker = new MarkerValue('Blur Out');
     gaussyLayer.property('Marker').setValueAtTime(nf.mainComp.time + 5, outMarker);
-    hueSatEffect = effects.addProperty("ADBE HUE SATURATION");
-    masterSaturation = hueSatEffect.property(4);
-    masterLightness = hueSatEffect.property(5);
-    masterSaturation.setValue(-90);
-    masterLightness.setValue(50);
+    hueSatEffect = effects.addProperty("ADBE Color Balance (HLS)");
+    masterSaturation = hueSatEffect.property("Saturation");
+    masterLightness = hueSatEffect.property("Lightness");
+    markerExpressionModel = {
+      layer: gaussyLayer,
+      duration: {
+        effect: "AV Gaussy",
+        subEffect: "Duration"
+      },
+      valueB: {
+        effect: "AV Gaussy",
+        subEffect: "Saturation"
+      }
+    };
+    markerExpression = nf.markerDrivenExpression(markerExpressionModel);
+    masterSaturation.expression = markerExpression;
+    markerExpressionModel = {
+      layer: gaussyLayer,
+      duration: {
+        effect: "AV Gaussy",
+        subEffect: "Duration"
+      },
+      valueB: {
+        effect: "AV Gaussy",
+        subEffect: "Lightness"
+      }
+    };
+    markerExpression = nf.markerDrivenExpression(markerExpressionModel);
+    masterLightness.expression = markerExpression;
   };
 
   newGaussyNameForLayer = function(targetLayer) {
