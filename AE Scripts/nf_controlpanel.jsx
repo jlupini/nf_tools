@@ -117,7 +117,7 @@
     var guideEffect, guideLayer, i, j, k, len, len1, len2, pagePrecomps, partLayers, parts, ref, ref1, ref2, theLayer, thePageComp, thePartComp;
     if (guideReference.comp() == null) {
       alert("Upgrading Guide Layers!\nThis project uses an older guide layer toggle style. Upgrading to the new version - This may take a minute.");
-      app.beginUndoGroup('Toggle Guide Layers');
+      app.beginUndoGroup('Upgrading Guide Layers');
       guideReference.create();
       pagePrecomps = nf.collectionToArray(videoProject.PDFPrecompsFolder().items);
       for (i = 0, len = pagePrecomps.length; i < len; i++) {
@@ -143,6 +143,7 @@
           }
         }
       }
+      alert("All done upgrading!");
       app.endUndoGroup();
     }
     app.beginUndoGroup('Toggle Guide Layers');

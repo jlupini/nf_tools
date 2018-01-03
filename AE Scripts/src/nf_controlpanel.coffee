@@ -104,7 +104,7 @@ toggleGuideLayers = (w) ->
 	# First, check if this is an old project that needs to be upgraded
 	unless guideReference.comp()?
 		alert "Upgrading Guide Layers!\nThis project uses an older guide layer toggle style. Upgrading to the new version - This may take a minute."
-		app.beginUndoGroup 'Toggle Guide Layers'
+		app.beginUndoGroup 'Upgrading Guide Layers'
 
 		guideReference.create()
 
@@ -127,6 +127,8 @@ toggleGuideLayers = (w) ->
 			for theLayer in partLayers
 				guideEffect = theLayer.property("Effects")?.property(guideReference.effectName)
 				guideEffect.remove() if guideEffect?
+
+		alert "All done upgrading!"
 		app.endUndoGroup()
 
 	# Toggle State
