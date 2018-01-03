@@ -318,6 +318,69 @@
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
+  nf.isNonEmptyString = function(unknownVariable) {
+    if (((typeof unknownVariable !== "undefined") && (typeof unknownVariable.valueOf() === "string")) && (unknownVariable.length > 0)) {
+      return true;
+    }
+    return false;
+  };
+
+  nf.markerDrivenExpression = function(model) {
+    var defaults, durationString, generalValueExpression, layerName, term, trimString, valueAString, valueBString;
+    term = ";\n";
+    defaults = {
+      duration: "30",
+      valueA: "0",
+      valueB: "0",
+      subEffect: "Slider"
+    };
+    generalValueExpression = function(key) {
+      var effectName, expressionString, subEffectName, subModel;
+      subModel = model[key];
+      expressionString = "";
+      if (subModel != null) {
+        if (subModel.value != null) {
+          expressionString += subModel.value;
+        } else if (subModel.effect != null) {
+          if (nf.isNonEmptyString(subModel.effect)) {
+            effectName = subModel.effect;
+          } else {
+            effectName = subModel.effect.name;
+          }
+          if (subModel.subEffect != null) {
+            if (nf.isNonEmptyString(subModel.subEffect)) {
+              subEffectName = subModel.subEffect;
+            } else {
+              subEffectName = subModel.subEffect.name;
+            }
+          } else {
+            subEffectName = defaults.subEffect;
+          }
+          expressionString += "thisComp.layer(\"" + layerName + "\").effect(\"" + effectName + "\")(\"" + subEffectName + "\")";
+        } else {
+          expressionString += defaults[key];
+        }
+      } else {
+        expressionString += defaults[key];
+      }
+      expressionString += term;
+      return expressionString;
+    };
+    if (!((model.layer != null) && (model.duration != null))) {
+      return alert("Error\nNo layer or duration specified in nf.markerDrivenExpression!");
+    }
+    if (nf.isNonEmptyString(model.layer)) {
+      layerName = model.layer;
+    } else {
+      layerName = model.layer.name;
+    }
+    durationString = generalValueExpression("duration");
+    valueAString = generalValueExpression("valueA");
+    valueBString = generalValueExpression("valueB");
+    trimString = "if (thisComp.layer(\"" + layerName + "\").marker.numKeys > 0) {\n d = " + durationString + " m = thisComp.layer(\"" + layerName + "\").marker.nearestKey(time);\n t = m.time;\n valueA = " + valueAString + " valueB = " + valueBString + " \n if (m.index%2) {\n // For all in markers\n ease(time,t,t+d*thisComp.frameDuration,valueA,valueB)\n } else {\n // For all out markers\n ease(time,t,t-d*thisComp.frameDuration,valueB,valueA)\n }\n } else {\n value\n }";
+    return trimString;
+  };
+
   nf.sourceRectsForHighlightsInTargetLayer = function(targetLayer, includeTitlePage) {
     var i, layerParent, ref, sourceCompLayers, sourceHighlightLayers, sourceHighlightRects, theLayer;
     if (includeTitlePage == null) {

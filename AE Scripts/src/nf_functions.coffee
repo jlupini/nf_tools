@@ -251,6 +251,97 @@ nf.layerCollectionToArray = (layerCollection) ->
 nf.capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase() + string.slice(1)
 
+# true if variable exists, is a string, and has a length greater than zero
+nf.isNonEmptyString = (unknownVariable) ->
+  if (((typeof unknownVariable != "undefined") && (typeof unknownVariable.valueOf() == "string")) && (unknownVariable.length > 0))
+    return true
+  return false
+
+# Returns an expression that adjusts a property based on markers. Default property values are zero
+#
+# model =
+#   layer (Required. Either a layer name or layer object)
+#   duration?: (if this is missing, defaults to 30 frames)
+#     value? (in frames)
+#     effect? (this needs to be a string)
+#     subEffect?(this needs to be a string)
+#   valueA?:
+#     value?
+#     effect? (this needs to be a string)
+#     subEffect? (this needs to be a string)
+#   valueB?:
+#     value?
+#     effect? (this needs to be a string)
+#     subEffect? (this needs to be a string)
+# FIXME: Check for if effects are actual effects or strings
+nf.markerDrivenExpression = (model) ->
+  term = ";\n"
+  defaults =
+    duration: "30"
+    valueA: "0"
+    valueB: "0"
+    subEffect: "Slider"
+
+  # Returns the expression to access a property given a key to a value in the model
+  generalValueExpression = (key) ->
+    subModel = model[key]
+    expressionString = ""
+    if subModel?
+      if subModel.value?
+        expressionString += subModel.value
+      else if subModel.effect?
+        if nf.isNonEmptyString(subModel.effect)
+          effectName = subModel.effect
+        else
+          effectName = subModel.effect.name
+        if subModel.subEffect?
+          if nf.isNonEmptyString(subModel.subEffect)
+            subEffectName = subModel.subEffect
+          else
+            subEffectName = subModel.subEffect.name
+        else
+          subEffectName = defaults.subEffect
+        expressionString += "thisComp.layer(\"#{layerName}\").effect(\"#{effectName}\")(\"#{subEffectName}\")"
+      else
+        expressionString += defaults[key]
+    else
+      expressionString += defaults[key]
+    expressionString += term
+    return expressionString
+
+  unless model.layer? and model.duration?
+    return alert "Error\nNo layer or duration specified in nf.markerDrivenExpression!"
+
+  # Get the layer name from the layer object if it's not a string
+  if nf.isNonEmptyString(model.layer)
+    layerName = model.layer
+  else
+    layerName = model.layer.name
+
+  durationString = generalValueExpression "duration"
+  valueAString = generalValueExpression "valueA"
+  valueBString = generalValueExpression "valueB"
+
+  trimString = "if (thisComp.layer(\"#{layerName}\").marker.numKeys > 0) {\n
+                    d = #{durationString}
+                    m = thisComp.layer(\"#{layerName}\").marker.nearestKey(time);\n
+                    t = m.time;\n
+                    valueA = #{valueAString}
+                    valueB = #{valueBString}
+                    \n
+                    if (m.index%2) {\n
+                      // For all in markers\n
+                      ease(time,t,t+d*thisComp.frameDuration,valueA,valueB)\n
+                    } else {\n
+                      // For all out markers\n
+                      ease(time,t,t-d*thisComp.frameDuration,valueB,valueA)\n
+                    }\n
+                } else {\n
+                  value\n
+                }"
+
+  return trimString
+
 # Returns an array where each item is an object containing position data for each highlight in the target page layer
 nf.sourceRectsForHighlightsInTargetLayer = (targetLayer, includeTitlePage = false) ->
   sourceCompLayers = targetLayer.source?.layers
