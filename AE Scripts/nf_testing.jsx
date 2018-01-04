@@ -1,6 +1,6 @@
 (function() {
   #include "nf_functions.jsx";
-  var clear, globals, importedFunctions, main, nf;
+  var globals, importedFunctions, main, nf;
 
   importedFunctions = app.nf;
 
@@ -12,29 +12,31 @@
 
   nf = Object.assign(importedFunctions, globals);
 
-  clear = function() {
-    return nf.disconnectBubbleupsInLayers(app.project.activeItem.selectedLayers);
-  };
-
   main = function() {
-    var highlight, highlightName, i, pageTree, thePage, tree, w;
-    pageTree = nf.pageTreeForPaper(nf.selectedLayer);
-    w = new Window('dialog');
-    tree = w.add('treeview', [0, 0, 250, 350]);
-    pageTree.node = tree.add('node', pageTree.name);
-    i = 0;
-    while (i < pageTree.pages.length) {
-      thePage = pageTree.pages[i];
-      thePage.node = pageTree.node.add('node', thePage.name);
-      for (highlightName in thePage.highlights) {
-        highlight = thePage.highlights[highlightName];
-        highlight.item = thePage.node.add('item', highlight.name);
+    var allKeys, i, ins, insArr, instructionString, key, keyTime, layer, marker, numKeys, property, results;
+    instructionString = "66 gunderlineq|URL 38-10 Does Cell Phone Radiation Cause Cancer?|23|19gq|expand|expand|f2|circle u|y|expand|b|expand|17bq|gunderline|u|23yq|g|expand|underline “faster reaction time”|20|y|30|underline “biopositive”|g|expand|back to 20y then t3|9|y|29|f1|g|6|g|expand|15|21|y|21y|expand|expand|b|1bq|expand|";
+    insArr = instructionString.split("|");
+    layer = nf.selectedLayer;
+    property = layer.property("Text").property("Source Text");
+    numKeys = property.numKeys;
+    allKeys = (function() {
+      var j, ref, results;
+      results = [];
+      for (key = j = 1, ref = numKeys; 1 <= ref ? j <= ref : j >= ref; key = 1 <= ref ? ++j : --j) {
+        results.push(property.keyTime(key));
       }
-      thePage.node.expanded = true;
-      i++;
+      return results;
+    })();
+    i = 0;
+    results = [];
+    while (i < numKeys) {
+      keyTime = allKeys[i];
+      ins = insArr[i];
+      marker = new MarkerValue(ins);
+      layer.property('Marker').setValueAtTime(keyTime, marker);
+      results.push(i++);
     }
-    pageTree.node.expanded = true;
-    return w.show();
+    return results;
   };
 
   app.beginUndoGroup(nf.undoGroupName);

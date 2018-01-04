@@ -9,9 +9,6 @@ globals =
 	selectedLayer: app.project.activeItem.selectedLayers[0];
 nf = Object.assign importedFunctions, globals
 
-clear = ->
-	nf.disconnectBubbleupsInLayers(app.project.activeItem.selectedLayers)
-
 # buildTree = (doc, tree) ->
 #   styles = doc.paragraphStyles.everyItem().getElements()
 #   i = 0
@@ -27,35 +24,21 @@ clear = ->
 #   return
 
 main = ->
-	# nf.turnPageAtTime app.project.activeItem.selectedLayers[0]
-	pageTree = nf.pageTreeForPaper nf.selectedLayer
+	instructionString = "66 gunderlineq|URL 38-10 Does Cell Phone Radiation Cause Cancer?|23|19gq|expand|expand|f2|circle u|y|expand|b|expand|17bq|gunderline|u|23yq|g|expand|underline “faster reaction time”|20|y|30|underline “biopositive”|g|expand|back to 20y then t3|9|y|29|f1|g|6|g|expand|15|21|y|21y|expand|expand|b|1bq|expand|"
+	insArr = instructionString.split("|")
+	layer = nf.selectedLayer
+	property = layer.property("Text").property("Source Text")
+	numKeys = property.numKeys
 
-	w = new Window('dialog')
-	tree = w.add 'treeview', [0, 0, 250, 350]
-
-	pageTree.node = tree.add 'node', pageTree.name
+	allKeys = (property.keyTime(key) for key in [1..numKeys])
 
 	i = 0
-	while i < pageTree.pages.length
-		thePage = pageTree.pages[i]
-		thePage.node = pageTree.node.add 'node', thePage.name
-		for highlightName of thePage.highlights
-			highlight = thePage.highlights[highlightName]
-			highlight.item = thePage.node.add 'item', highlight.name
-		thePage.node.expanded = yes
+	while i < numKeys
+		keyTime = allKeys[i]
+		ins = insArr[i]
+		marker = new MarkerValue(insArr)
+		layer.property('Marker').setValueAtTime keyTime, marker
 		i++
-	pageTree.node.expanded = yes
-
-	# mammals = tree.add('node', 'Mammals')
-	# mammals.add 'item', 'cats'
-	# mammals.add 'item', 'dogs'
-	# insects = tree.add('node', 'Insects')
-	# insects.add 'item', 'ants'
-	# insects.add 'item', 'bees'
-	# insects.add 'item', 'flies'
-	# mammals.expanded = true
-	# insects.expanded = true
-	w.show()
 
 app.beginUndoGroup nf.undoGroupName
 
