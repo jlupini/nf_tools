@@ -6,7 +6,7 @@
 
   globals = {
     mainComp: app.project.activeItem,
-    debug: true
+    debug: false
   };
 
   nf = Object.assign(importedFunctions, globals);
@@ -143,7 +143,7 @@
           }
         }
       }
-      alert("All done upgrading!");
+      alert("All done upgrading!\nIf you see expression errors, it's possible that you have PDF Page Comps out of the PDF Precomps folder. If that happens, hit undo, then try moving them there and running the script again.");
       app.endUndoGroup();
     }
     app.beginUndoGroup('Toggle Guide Layers');

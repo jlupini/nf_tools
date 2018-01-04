@@ -5,7 +5,7 @@
 importedFunctions = app.nf
 globals =
 	mainComp: app.project.activeItem
-	debug: yes # Change this flag when you need to add breakpoints to this as a dialog
+	debug: no # Change this flag when you need to add breakpoints to this as a dialog
 nf = Object.assign importedFunctions, globals
 
 panelTest = this
@@ -128,7 +128,7 @@ toggleGuideLayers = (w) ->
 				guideEffect = theLayer.property("Effects")?.property(guideReference.effectName)
 				guideEffect.remove() if guideEffect?
 
-		alert "All done upgrading!"
+		alert "All done upgrading!\nIf you see expression errors, it's possible that you have PDF Page Comps out of the PDF Precomps folder. If that happens, hit undo, then try moving them there and running the script again."
 		app.endUndoGroup()
 
 	# Toggle State
