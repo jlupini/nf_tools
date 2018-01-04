@@ -14,6 +14,8 @@ AE will only recognize scripts in the `Scripts` directory in its application fol
 
 **IMPORTANT:** Scripts now require up-to-date pseudo effects and the Before-Effects library. If you add an alias to the `nf_startup.jsx` script in your `Scripts > Startup` folder, pseudo effects will be automatically updated whenever you open AE. See the notes for `Startup` for more details.
 
+**Setting up submodules:** To update the Before Effects submodule you may simply write: `git submodule update --recursive --remote ` (and add an `--init` if needed). However, this doesn't work you may need to manually add the Before Effects submodule. To do this, first delete the Before Effects folder (which, if recently cloned this repo, should be empty). Then write `git submodule add https://github.com/jlupini/Before-Effects.git <path to where Before Effects should be located relative to your pwd>`.
+
 ### Current Droplets
 
 - **IconPrep** - Run this app and select the folder with your Noun Projet SVGs - sit back and watch it run (don't interfere with what's going on). It'll remove the author credit and convert each SVG to an AI file so After Effects can read it.
