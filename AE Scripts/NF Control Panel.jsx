@@ -40,7 +40,8 @@
     buttonGroup = buttonPanel.add('group', void 0);
     nf.toggleGuideLayersButton = buttonGroup.add('button', void 0, 'Toggle Guide Layers');
     nf.toggleGuideLayersButton.onClick = function(w) {
-      return toggleGuideLayers(w);
+      toggleGuideLayers(w);
+      return this.active = false;
     };
     panel.layout.layout(true);
     buttonGroup.minimumSize = buttonGroup.size;

@@ -44,6 +44,7 @@ getPanelUI = ->
 
 	nf.toggleGuideLayersButton.onClick = (w) ->
 		toggleGuideLayers w
+		@active = false
 
 	# Layout + Resize handling
 	panel.layout.layout(true)
