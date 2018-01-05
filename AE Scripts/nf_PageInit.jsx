@@ -12,12 +12,11 @@
   nf = Object.assign(importedFunctions, globals);
 
   initializePages = function() {
-    var allHighlights, bubblableObjects, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, guideCheckboxes, guideDisconnectCheckboxes, guideDisconnectPanel, guideLayerPages, guidePanel, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, layer, len, mainComp, okButton, orphans, pageName, removeCheckbox, selectedLayers, tPanel, w;
+    var allHighlights, bubblableObjects, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, layer, len, mainComp, okButton, orphans, removeCheckbox, selectedLayers, tPanel, w;
     mainComp = app.project.activeItem;
     selectedLayers = mainComp.selectedLayers;
     bubblableObjects = getBubblableObjects(selectedLayers);
     allHighlights = bubblableObjects.highlights;
-    guideLayerPages = bubblableObjects.guideLayerPages;
     w = new Window('dialog', 'Page Initialization');
     w.alignChildren = 'left';
     tPanel = w.add("tabbedpanel");
@@ -54,27 +53,6 @@
         highlightCheckboxes[highlightName] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
         highlightCheckboxes[highlightName].value = !highlight.bubbled;
       }
-      guidePanel = initTab.add('panel', void 0, 'Guide Layers', {
-        borderStyle: 'none'
-      });
-      guidePanel.alignChildren = 'left';
-      guidePanel.margins.top = 16;
-      guideCheckboxes = {};
-      for (pageName in guideLayerPages) {
-        layer = guideLayerPages[pageName];
-        displayName = pageName;
-        if (layer.bubbled) {
-          if (layer.broken !== "") {
-            displayName = pageName + " (OVERRIDE/BROKEN)";
-          } else {
-            displayName = pageName + " (OVERRIDE)";
-          }
-        } else if (layer.broken !== "") {
-          displayName = pageName + " (BROKEN)";
-        }
-        guideCheckboxes[pageName] = guidePanel.add("checkbox {text: '" + displayName + "'}");
-        guideCheckboxes[pageName].value = true;
-      }
       buttonGroup = initTab.add('group', void 0);
       okButton = buttonGroup.add('button', void 0, 'Continue');
       cancelButton = buttonGroup.add('button', void 0, 'Cancel', {
@@ -82,7 +60,7 @@
       });
       cancelButton.onClick = getCancelFunction(w);
       okButton.onClick = function() {
-        var checkbox, guideLayerChoices, highlightChoices, options;
+        var checkbox, highlightChoices, options;
         highlightChoices = [];
         for (highlightName in allHighlights) {
           checkbox = highlightCheckboxes[highlightName];
@@ -91,16 +69,8 @@
             highlightChoices.push(highlight.name);
           }
         }
-        guideLayerChoices = [];
-        for (pageName in guideLayerPages) {
-          checkbox = guideCheckboxes[pageName];
-          if (checkbox.value === true) {
-            guideLayerChoices.push(pageName);
-          }
-        }
         options = {
-          highlightChoices: highlightChoices,
-          guideLayerChoices: guideLayerChoices
+          highlightChoices: highlightChoices
         };
         initWithOptions(options);
         return w.hide();
@@ -128,19 +98,6 @@
         highlightDisconnectCheckboxes[highlightName].value = false;
       }
     }
-    guideDisconnectPanel = disconnectTab.add('panel', void 0, 'Guide Layers', {
-      borderStyle: 'none'
-    });
-    guideDisconnectPanel.alignChildren = 'left';
-    guideDisconnectPanel.margins.top = 16;
-    guideDisconnectCheckboxes = {};
-    for (pageName in guideLayerPages) {
-      layer = guideLayerPages[pageName];
-      if (layer.bubbled) {
-        guideDisconnectCheckboxes[pageName] = guideDisconnectPanel.add("checkbox {text: '" + pageName + "'}");
-        guideDisconnectCheckboxes[pageName].value = false;
-      }
-    }
     disButtonGroup = disconnectTab.add('group', void 0);
     disOkButton = disButtonGroup.add('button', void 0, 'Continue');
     disCancelButton = disButtonGroup.add('button', void 0, 'Cancel', {
@@ -148,7 +105,7 @@
     });
     disCancelButton.onClick = getCancelFunction(w);
     disOkButton.onClick = function() {
-      var checkbox, guideLayerChoices, highlightChoices, highlighterEffect, layerContainingGuideLayer;
+      var checkbox, highlightChoices, highlighterEffect;
       highlightChoices = [];
       for (highlightName in allHighlights) {
         checkbox = highlightDisconnectCheckboxes[highlightName];
@@ -165,22 +122,7 @@
           }
         }
       }
-      guideLayerChoices = [];
-      for (pageName in guideLayerPages) {
-        checkbox = guideDisconnectCheckboxes[pageName];
-        if (checkbox != null) {
-          if (checkbox.value === true) {
-            guideLayerChoices.push(pageName);
-            if (removeCheckbox.value === true) {
-              layerContainingGuideLayer = mainComp.layer(pageName);
-              if (layerContainingGuideLayer != null) {
-                layerContainingGuideLayer.property("Effects").property("Guide Layer").remove();
-              }
-            }
-          }
-        }
-      }
-      nf.disconnectBubbleupsInLayers(selectedLayers, guideLayerChoices.concat(highlightChoices));
+      nf.disconnectBubbleupsInLayers(selectedLayers, highlightChoices);
       return w.hide();
     };
     w.show();
@@ -209,33 +151,24 @@
     name = nullName(selectedLayers[0]);
     newParent = nullify(selectedLayers, name);
     zoomer = zoom(newParent);
-    nf.bubbleUpHighlights(selectedLayers, options.highlightChoices);
-    return nf.bubbleUpGuideLayers(selectedLayers, options.guideLayerChoices);
+    return nf.bubbleUpHighlights(selectedLayers, options.highlightChoices);
   };
 
   getBubblableObjects = function(selectedLayers) {
-    var allHighlights, bubblableObjects, guideLayer, j, key, layer, layerHighlights, layersWithGuideLayer, len;
+    var allHighlights, bubblableObjects, j, key, layer, layerHighlights, len;
     allHighlights = {};
-    layersWithGuideLayer = {};
     for (j = 0, len = selectedLayers.length; j < len; j++) {
       layer = selectedLayers[j];
       layerHighlights = nf.sourceRectsForHighlightsInTargetLayer(layer);
-      for (key in layerHighlights) {
-        layerHighlights[key].layerInPart = layer;
-      }
-      allHighlights = Object.assign(allHighlights, layerHighlights);
-      guideLayer = layer.source.layers.byName('Annotation Guide');
-      if (guideLayer) {
-        layersWithGuideLayer[layer.name] = {
-          layer: guideLayer,
-          bubbled: guideLayer.Effects.property('Guide Layer').property('Checkbox').expressionEnabled,
-          broken: guideLayer.Effects.property("Guide Layer").property("Checkbox").expressionError
-        };
+      if (layerHighlights != null) {
+        for (key in layerHighlights) {
+          layerHighlights[key].layerInPart = layer;
+        }
+        allHighlights = Object.assign(allHighlights, layerHighlights);
       }
     }
     return bubblableObjects = {
-      highlights: allHighlights,
-      guideLayerPages: layersWithGuideLayer
+      highlights: allHighlights
     };
   };
 
@@ -331,7 +264,5 @@
   initializePages();
 
   app.endUndoGroup();
-
-  app.nf = {};
 
 }).call(this);

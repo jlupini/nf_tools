@@ -252,15 +252,15 @@
     for (m = 0, len = layers.length; m < len; m++) {
       theLayer = layers[m];
       if (nf.isCompLayer(theLayer)) {
-        bubbleupLayers = bubbleupLayers.concat(nf.layerCollectionToArray(theLayer.source.layers));
+        bubbleupLayers = bubbleupLayers.concat(nf.collectionToArray(theLayer.source.layers));
       } else {
         bubbleupLayers.push(theLayer);
       }
     }
     for (n = 0, len1 = bubbleupLayers.length; n < len1; n++) {
       theLayer = bubbleupLayers[n];
-      if ((names == null) || names.indexOf(theLayer.name) > -1 || (names.indexOf(theLayer.containingComp.name) > -1 && theLayer.name.indexOf("Annotation") > -1)) {
-        effect = theLayer.effect("AV_Highlighter") || theLayer.effect("Guide Layer");
+      if ((names == null) || names.indexOf(theLayer.name) > -1) {
+        effect = theLayer.effect("AV_Highlighter");
         propertyCount = effect != null ? effect.numProperties : void 0;
         i = 1;
         while (i < propertyCount && (effect != null)) {
@@ -333,15 +333,19 @@
     return results;
   };
 
-  nf.layerCollectionToArray = function(layerCollection) {
+  nf.collectionToArray = function(collection) {
     var arr, i;
     arr = [];
     i = 1;
-    while (i <= layerCollection.length) {
-      arr.push(layerCollection[i]);
+    while (i <= collection.length) {
+      arr.push(collection[i]);
       i++;
     }
     return arr;
+  };
+
+  nf.toArr = function(collection) {
+    return nf.collectionToArray(collection);
   };
 
   nf.capitalizeFirstLetter = function(string) {
@@ -581,47 +585,6 @@
       results.push(lineNumber++);
     }
     return results;
-  };
-
-  nf.bubbleUpGuideLayers = function(pagesToBubble, choices) {
-    var checkbox, checkboxName, childGuideCheckbox, effects, guideLayer, i, layersInPageComp, mainComp, newValue, shouldBubble, sourceExpression, targetComp, targetLayer;
-    if (choices == null) {
-      choices = null;
-    }
-    mainComp = app.project.activeItem;
-    i = pagesToBubble.length - 1;
-    while (i >= 0) {
-      targetLayer = pagesToBubble[i];
-      targetComp = targetLayer.source;
-      layersInPageComp = targetComp.layers;
-      guideLayer = layersInPageComp.byName('Annotation Guide');
-      if (guideLayer) {
-        childGuideCheckbox = guideLayer.property('Effects').property('Guide Layer').property('Checkbox');
-        shouldBubble = false;
-        if (choices != null) {
-          shouldBubble = choices.indexOf(targetLayer.name) >= 0;
-        } else {
-          shouldBubble = !childGuideCheckbox.expressionEnabled;
-        }
-        if (shouldBubble) {
-          effects = targetLayer.Effects;
-          checkbox = effects.addProperty('ADBE Checkbox Control');
-          checkboxName = 'Guide Layer';
-          checkbox.name = checkboxName;
-          newValue = void 0;
-          if (!guideLayer.enabled) {
-            guideLayer.enabled = true;
-            newValue = false;
-          } else {
-            newValue = childGuideCheckbox.value;
-          }
-          checkbox.property('Checkbox').setValue(newValue);
-          sourceExpression = 'comp("' + mainComp.name + '").layer("' + targetLayer.name + '").effect("' + checkboxName + '")("Checkbox")*60';
-          childGuideCheckbox.expression = sourceExpression;
-        }
-      }
-      i--;
-    }
   };
 
   nf.bubbleUpHighlights = function(pagesToBubble, choices) {

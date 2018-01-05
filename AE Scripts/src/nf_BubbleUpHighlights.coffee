@@ -10,7 +10,6 @@ main = ->
 	pagesToBubble = nf.mainComp.selectedLayers
 
 	nf.bubbleUpHighlights pagesToBubble
-	nf.bubbleUpGuideLayers pagesToBubble
 
 app.beginUndoGroup nf.undoGroupName
 

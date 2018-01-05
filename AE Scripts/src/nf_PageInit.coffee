@@ -13,7 +13,6 @@ initializePages = ->
 
 	bubblableObjects = getBubblableObjects selectedLayers
 	allHighlights = bubblableObjects.highlights
-	guideLayerPages = bubblableObjects.guideLayerPages
 
 	# Present UI
 	w = new Window('dialog', 'Page Initialization')
@@ -62,25 +61,6 @@ initializePages = ->
 			highlightCheckboxes[highlightName] = highlightPanel.add "checkbox {text: '#{displayName}'}"
 			highlightCheckboxes[highlightName].value = not highlight.bubbled
 
-		# Guide Layers
-		guidePanel = initTab.add 'panel', undefined, 'Guide Layers', {borderStyle:'none'}
-		guidePanel.alignChildren = 'left'
-		guidePanel.margins.top = 16
-
-		guideCheckboxes = {}
-		for pageName of guideLayerPages
-			layer = guideLayerPages[pageName]
-			displayName = pageName
-			if layer.bubbled
-				if layer.broken isnt ""
-					displayName = pageName + " (OVERRIDE/BROKEN)"
-				else
-					displayName = pageName + " (OVERRIDE)"
-			else if layer.broken isnt ""
-				displayName = pageName + " (BROKEN)"
-			guideCheckboxes[pageName] = guidePanel.add "checkbox {text: '#{displayName}'}"
-			guideCheckboxes[pageName].value = on
-
 		buttonGroup = initTab.add 'group', undefined
 		okButton = buttonGroup.add('button', undefined, 'Continue')
 		cancelButton = buttonGroup.add('button', undefined, 'Cancel', name: 'cancel')
@@ -93,14 +73,8 @@ initializePages = ->
 				highlight = allHighlights[highlightName]
 				highlightChoices.push highlight.name if checkbox.value is true
 
-			guideLayerChoices = []
-			for pageName of guideLayerPages
-				checkbox = guideCheckboxes[pageName]
-				guideLayerChoices.push pageName if checkbox.value is true
-
 			options =
 				highlightChoices: highlightChoices
-				guideLayerChoices: guideLayerChoices
 
 			initWithOptions options
 
@@ -129,18 +103,6 @@ initializePages = ->
 			highlightDisconnectCheckboxes[highlightName] = highlightDisconnectPanel.add "checkbox {text: '#{highlightName}'}"
 			highlightDisconnectCheckboxes[highlightName].value = off
 
-	# Guide Layers
-	guideDisconnectPanel = disconnectTab.add 'panel', undefined, 'Guide Layers', {borderStyle:'none'}
-	guideDisconnectPanel.alignChildren = 'left'
-	guideDisconnectPanel.margins.top = 16
-
-	guideDisconnectCheckboxes = {}
-	for pageName of guideLayerPages
-		layer = guideLayerPages[pageName]
-		if layer.bubbled
-			guideDisconnectCheckboxes[pageName] = guideDisconnectPanel.add "checkbox {text: '#{pageName}'}"
-			guideDisconnectCheckboxes[pageName].value = off
-
 	disButtonGroup = disconnectTab.add 'group', undefined
 	disOkButton = disButtonGroup.add('button', undefined, 'Continue')
 	disCancelButton = disButtonGroup.add('button', undefined, 'Cancel', name: 'cancel')
@@ -152,7 +114,6 @@ initializePages = ->
 	# nf.UIControls =
 	# 	duration: durationValue
 	# 	highlights: highlightCheckboxes
-	# 	guideLayers: guideCheckboxes
 
 	disOkButton.onClick = ->
 
@@ -168,19 +129,7 @@ initializePages = ->
 						highlighterEffect.remove() if highlighterEffect?
 						# FIXME: Find the control and remove it if we're disconnecting from an instance of the page in another part comp
 
-		guideLayerChoices = []
-		for pageName of guideLayerPages
-			checkbox = guideDisconnectCheckboxes[pageName]
-			if checkbox?
-				if checkbox.value is true
-					guideLayerChoices.push pageName
-					if removeCheckbox.value is yes
-						layerContainingGuideLayer = mainComp.layer(pageName)
-						layerContainingGuideLayer.property("Effects").property("Guide Layer").remove() if layerContainingGuideLayer?
-						# FIXME: Find the control and remove it if we're disconnecting from an instance of the page in another part comp
-
-
-		nf.disconnectBubbleupsInLayers selectedLayers, guideLayerChoices.concat(highlightChoices)
+		nf.disconnectBubbleupsInLayers selectedLayers, highlightChoices
 
 		w.hide()
 
@@ -210,30 +159,21 @@ initWithOptions = (options) ->
 	newParent = nullify(selectedLayers, name)
 	zoomer = zoom(newParent)
 	nf.bubbleUpHighlights selectedLayers, options.highlightChoices
-	nf.bubbleUpGuideLayers selectedLayers, options.guideLayerChoices
 	# FIXME: When we disconnect with an OVERRIDE, we should warn or offer to remove the overridden controls
 	# FIXME: Anytime we disconnect a broken bubbleup, we should copy the current values back to the OG one
 
 getBubblableObjects = (selectedLayers) ->
-	# Get all the highlights and guideLayers in selected layers
+	# Get all the highlights in selected layers
 	allHighlights = {}
-	layersWithGuideLayer = {}
 	for layer in selectedLayers
 		layerHighlights = nf.sourceRectsForHighlightsInTargetLayer layer
-		for key of layerHighlights
-			layerHighlights[key].layerInPart = layer
-		allHighlights = Object.assign allHighlights, layerHighlights
-
-		guideLayer = layer.source.layers.byName 'Annotation Guide'
-		if guideLayer
-			layersWithGuideLayer[layer.name] =
-				layer: guideLayer
-				bubbled: guideLayer.Effects.property('Guide Layer').property('Checkbox').expressionEnabled
-				broken: guideLayer.Effects.property("Guide Layer").property("Checkbox").expressionError
+		if layerHighlights?
+			for key of layerHighlights
+				layerHighlights[key].layerInPart = layer
+			allHighlights = Object.assign allHighlights, layerHighlights
 
 	bubblableObjects =
 		highlights: allHighlights
-		guideLayerPages: layersWithGuideLayer
 
 setDropShadowForLayer = (layer) ->
 	dropShadow = layer.property('Effects').addProperty('ADBE Drop Shadow')
@@ -314,4 +254,4 @@ app.beginUndoGroup nf.undoGroupName
 initializePages()
 
 app.endUndoGroup()
-app.nf = {}
+# app.nf = {}

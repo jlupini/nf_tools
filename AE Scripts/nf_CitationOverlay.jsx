@@ -1,4 +1,6 @@
-﻿// Setup
+﻿// FIXME: Put citation precomps in their own folder
+
+// Setup
 app.beginUndoGroup("CitationOverlay");
 var mainComp = app.project.activeItem;
 var selectedLayer = mainComp.selectedLayers;

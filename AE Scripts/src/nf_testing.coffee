@@ -63,4 +63,4 @@ app.beginUndoGroup nf.undoGroupName
 main()
 
 app.endUndoGroup()
-app.nf = {}
+# app.nf = {}

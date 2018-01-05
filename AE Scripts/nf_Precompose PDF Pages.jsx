@@ -90,6 +90,7 @@ function createCompFromPageInFolder(page, folder, background) {
 }
 
 // Given a string with the name of a folder to find and it's parent folder, findFolderIn returns the folderItem, or null of none is found.
+// FIXME: Replace this with the version in nf.functions when you convert to coffee
 function findFolder(folderName, sourceFolderItem) {
     
     for (var i = 1; i <= sourceFolderItem.numItems; i++) {
@@ -100,6 +101,7 @@ function findFolder(folderName, sourceFolderItem) {
     return null;
 }
 
+// FIXME: Replace this with the version in nf.functions when you convert to coffee
 function findItem(itemName) {
     
     for (var i = 1; i <= app.project.items.length; i++) {

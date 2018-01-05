@@ -404,4 +404,4 @@ if !Array::indexOf
 app.beginUndoGroup 'Create Spotlight Layer'
 askForChoice()
 app.endUndoGroup()
-app.nf = {}
+# app.nf = {}

@@ -17,4 +17,4 @@ app.beginUndoGroup nf.undoGroupName
 firstFunction()
 
 app.endUndoGroup()
-app.nf = {}
+# app.nf = {}
