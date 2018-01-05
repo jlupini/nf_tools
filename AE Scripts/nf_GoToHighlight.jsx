@@ -16,6 +16,7 @@
       duration: 3,
       reduceMotion: true,
       pageTurnDuration: 2,
+      endAfterTurn: true,
       maxPageScale: 115
     }
   };
@@ -23,13 +24,14 @@
   nf = Object.assign(importedFunctions, globals);
 
   goToHighlight = function(highlight, options) {
-    var activeLayer, didRemoveKeys, highlightPageLayer, highlightPageLayerActive, j, keyframeTimes, layerToMove, len, now, positionProp, possibleProblemLayer, previousParent, problemLayers, reduceMotionOptions, ref, ref1, ref2, ref3, ref4, ref5, relevantPages, scaleProp, selectedLayer, targetPosition, targetScale;
+    var activeLayer, didRemoveKeys, highlightPageLayer, highlightPageLayerActive, j, keyframeTimes, layerToMove, len, now, pageTurnTime, positionProp, possibleProblemLayer, previousParent, problemLayers, reduceMotionOptions, ref, ref1, ref2, ref3, ref4, ref5, ref6, relevantPages, scaleProp, selectedLayer, targetPosition, targetScale;
     options = {
       reduceMotion: (ref = options.reduceMotion) != null ? ref : nf.defaultOptions.reduceMotion,
       duration: (ref1 = options.duration) != null ? ref1 : nf.defaultOptions.duration,
       pageTurnDuration: (ref2 = options.pageTurnDuration) != null ? ref2 : nf.defaultOptions.pageTurnDuration,
       animatePage: (ref3 = options.animatePage) != null ? ref3 : nf.defaultOptions.animatePage,
-      maxPageScale: (ref4 = options.maxPageScale) != null ? ref4 : nf.defaultOptions.maxPageScale
+      maxPageScale: (ref4 = options.maxPageScale) != null ? ref4 : nf.defaultOptions.maxPageScale,
+      endAfterTurn: (ref5 = options.endAfterTurn) != null ? ref5 : nf.defaultOptions.endAfterTurn
     };
     selectedLayer = nf.state.selectedLayer;
     highlightPageLayer = nf.state.highlightLayer;
@@ -49,7 +51,7 @@
         problemLayers = [];
         for (j = 0, len = relevantPages.length; j < len; j++) {
           possibleProblemLayer = relevantPages[j];
-          if (nf.pageLayerCanBeActive(possibleProblemLayer.layer()) && (activeLayer.index < (ref5 = possibleProblemLayer.index) && ref5 < highlightPageLayer.index)) {
+          if (nf.pageLayerCanBeActive(possibleProblemLayer.layer()) && (activeLayer.index < (ref6 = possibleProblemLayer.index) && ref6 < highlightPageLayer.index)) {
             problemLayers.push(possibleProblemLayer);
           }
         }
@@ -65,7 +67,11 @@
           };
           goToHighlight(highlight, reduceMotionOptions);
         }
-        nf.turnPageAtTime(activeLayer, options.pageTurnDuration, app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration));
+        pageTurnTime = app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration);
+        nf.turnPageAtTime(activeLayer, options.pageTurnDuration, pageTurnTime);
+        if (options.endAfterTurn) {
+          activeLayer.outPoint = pageTurnTime + options.pageTurnDuration;
+        }
       } else if (activeLayer.index > highlightPageLayer.index) {
         if (nf.pageTurnStatus(highlightPageLayer) === nf.PageTurn.FLIPPEDUP) {
           nf.turnPageAtTime(highlightPageLayer, options.pageTurnDuration, app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration));
@@ -199,7 +205,7 @@
   };
 
   askForChoice = function() {
-    var buttonGroup, cancelButton, checkboxReduceMotion, durationLabel, durationValue, groupAdditionalOptions, highlight, highlightName, i, maxScaleLabel, maxScaleValue, okButton, pageName, pageTurnLabel, pageTurnValue, radioButtonPageLayer, radioButtonShouldAnimate, radioGroupAnimationType, selectedLayer, spacingGroup, thePage, tree, w, widthLabel, widthValue;
+    var buttonGroup, cancelButton, checkboxEndAfterTurn, checkboxReduceMotion, durationLabel, durationValue, groupAdditionalOptions, highlight, highlightName, i, maxScaleLabel, maxScaleValue, okButton, pageName, pageTurnLabel, pageTurnValue, radioButtonPageLayer, radioButtonShouldAnimate, radioGroupAnimationType, selectedLayer, spacingGroup, thePage, tree, w, widthLabel, widthValue;
     selectedLayer = nf.mainComp.selectedLayers[0];
     w = new Window('dialog', 'Go To Highlight');
     w.alignChildren = 'left';
@@ -236,6 +242,8 @@
     groupAdditionalOptions.orientation = 'row';
     checkboxReduceMotion = groupAdditionalOptions.add("checkbox", void 0, "Reduce motion on cross-page moves");
     checkboxReduceMotion.value = nf.defaultOptions.reduceMotion;
+    checkboxEndAfterTurn = groupAdditionalOptions.add("checkbox", void 0, "End layer after turn");
+    checkboxEndAfterTurn.value = nf.defaultOptions.endAfterTurn;
     nf.pageTree = nf.pageTreeForPaper(selectedLayer);
     w.grp2 = w.add('panel', void 0, 'Highlights', {
       borderStyle: 'none'
@@ -277,6 +285,7 @@
       animatePage: radioButtonShouldAnimate,
       highlightWidthPercent: widthValue,
       maxScale: maxScaleValue,
+      endAfterTurn: checkboxEndAfterTurn,
       reduceMotion: checkboxReduceMotion,
       tree: tree
     };
@@ -286,7 +295,8 @@
         duration: parseFloat(nf.UIControls.duration.text),
         animatePage: nf.UIControls.animatePage.value,
         reduceMotion: nf.UIControls.reduceMotion.value,
-        maxPageScale: parseFloat(nf.UIControls.maxScale.text)
+        maxPageScale: parseFloat(nf.UIControls.maxScale.text),
+        endAfterTurn: nf.UIControls.endAfterTurn.value
       };
       nf.highlightWidthPercent = (ref = parseFloat(nf.UIControls.highlightWidthPercent.text)) != null ? ref : nf.highlightWidthPercent;
       if (options.maxPageScale == null) {

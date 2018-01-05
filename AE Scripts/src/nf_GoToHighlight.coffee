@@ -13,6 +13,7 @@ globals =
 		duration: 3
 		reduceMotion: yes
 		pageTurnDuration: 2
+		endAfterTurn: yes
 		maxPageScale: 115
 nf = Object.assign importedFunctions, globals
 
@@ -23,6 +24,7 @@ goToHighlight = (highlight, options) ->
 		pageTurnDuration: options.pageTurnDuration ? nf.defaultOptions.pageTurnDuration
 		animatePage: options.animatePage ? nf.defaultOptions.animatePage
 		maxPageScale: options.maxPageScale ? nf.defaultOptions.maxPageScale
+		endAfterTurn: options.endAfterTurn ? nf.defaultOptions.endAfterTurn
 
 	selectedLayer = nf.state.selectedLayer
 	highlightPageLayer = nf.state.highlightLayer
@@ -71,7 +73,11 @@ goToHighlight = (highlight, options) ->
 				goToHighlight(highlight, reduceMotionOptions)
 
 			# Great!, now we've dealt with problem layers, so let's turn our activeLayer out of the way.
-			nf.turnPageAtTime activeLayer, options.pageTurnDuration, app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration)
+			pageTurnTime = app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration)
+			nf.turnPageAtTime activeLayer, options.pageTurnDuration, pageTurnTime
+
+			if options.endAfterTurn
+				activeLayer.outPoint = pageTurnTime + options.pageTurnDuration
 
 		else if activeLayer.index > highlightPageLayer.index
 			# Our target layer is above, but for some reason isn't active
@@ -232,6 +238,8 @@ askForChoice = ->
 	groupAdditionalOptions.orientation = 'row'
 	checkboxReduceMotion = groupAdditionalOptions.add "checkbox", undefined, "Reduce motion on cross-page moves"
 	checkboxReduceMotion.value = nf.defaultOptions.reduceMotion
+	checkboxEndAfterTurn = groupAdditionalOptions.add "checkbox", undefined, "End layer after turn"
+	checkboxEndAfterTurn.value = nf.defaultOptions.endAfterTurn
 
 	nf.pageTree = nf.pageTreeForPaper selectedLayer
 
@@ -273,6 +281,7 @@ askForChoice = ->
 		animatePage: radioButtonShouldAnimate
 		highlightWidthPercent: widthValue
 		maxScale: maxScaleValue
+		endAfterTurn: checkboxEndAfterTurn
 		reduceMotion: checkboxReduceMotion
 		tree: tree
 
@@ -282,6 +291,7 @@ askForChoice = ->
 			animatePage: nf.UIControls.animatePage.value
 			reduceMotion: nf.UIControls.reduceMotion.value
 			maxPageScale: parseFloat(nf.UIControls.maxScale.text)
+			endAfterTurn: nf.UIControls.endAfterTurn.value
 
 		nf.highlightWidthPercent = parseFloat(nf.UIControls.highlightWidthPercent.text) ? nf.highlightWidthPercent
 
