@@ -6,13 +6,14 @@
 
   globals = {
     mainComp: app.project.activeItem,
-    undoGroupName: 'initialize Pages'
+    undoGroupName: 'initialize Pages',
+    animationDuration: 1.85
   };
 
   nf = Object.assign(importedFunctions, globals);
 
   initializePages = function() {
-    var allHighlights, bubblableObjects, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, layer, len, mainComp, okButton, orphans, removeCheckbox, selectedLayers, tPanel, w;
+    var allHighlights, animatePageCheckbox, bubblableObjects, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, layer, len, mainComp, okButton, optionsPanel, orphans, removeCheckbox, selectedLayers, tPanel, w;
     mainComp = app.project.activeItem;
     selectedLayers = mainComp.selectedLayers;
     bubblableObjects = getBubblableObjects(selectedLayers);
@@ -32,6 +33,13 @@
     if (orphans) {
       initTab = tPanel.add("tab", void 0, "Init Page");
       initTab.alignChildren = "fill";
+      optionsPanel = initTab.add('panel', void 0, 'Options', {
+        borderStyle: 'none'
+      });
+      optionsPanel.alignChildren = 'left';
+      optionsPanel.margins.top = 16;
+      animatePageCheckbox = optionsPanel.add("checkbox", void 0, "Animate In First Page");
+      animatePageCheckbox.value = true;
       highlightPanel = initTab.add('panel', void 0, 'Highlights', {
         borderStyle: 'none'
       });
@@ -70,7 +78,8 @@
           }
         }
         options = {
-          highlightChoices: highlightChoices
+          highlightChoices: highlightChoices,
+          animatePage: animatePageCheckbox.value
         };
         initWithOptions(options);
         return w.hide();
@@ -135,7 +144,7 @@
   };
 
   initWithOptions = function(options) {
-    var i, mainComp, name, newParent, selectedLayers, thisLayer, zoomer;
+    var i, j, layer, len, mainComp, name, newParent, results, selectedLayers, thisLayer, topLayer, zoomer;
     mainComp = app.project.activeItem;
     selectedLayers = mainComp.selectedLayers;
     setSize(selectedLayers);
@@ -151,7 +160,28 @@
     name = nullName(selectedLayers[0]);
     newParent = nullify(selectedLayers, name);
     zoomer = zoom(newParent);
-    return nf.bubbleUpHighlights(selectedLayers, options.highlightChoices);
+    nf.bubbleUpHighlights(selectedLayers, options.highlightChoices);
+    if (options.animatePage) {
+      topLayer = topmostLayer(selectedLayers);
+      nf.animatePage({
+        page: topLayer,
+        type: nf.AnimationType.SLIDE,
+        position: nf.Position.RIGHT,
+        direction: nf.Direction.IN,
+        duration: nf.animationDuration,
+        easeFunction: nf.EaseFunction.PAGESLIDEEASE
+      });
+      results = [];
+      for (j = 0, len = selectedLayers.length; j < len; j++) {
+        layer = selectedLayers[j];
+        if (layer.index !== topLayer.index) {
+          results.push(layer.inPoint = topLayer.inPoint + nf.animationDuration);
+        } else {
+          results.push(void 0);
+        }
+      }
+      return results;
+    }
   };
 
   getBubblableObjects = function(selectedLayers) {

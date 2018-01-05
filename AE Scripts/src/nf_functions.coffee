@@ -9,6 +9,34 @@ nf.PageTurn =
   NOPAGETURN: 400
   BROKEN: 500
 
+nf.AnimationType = 
+  SLIDE: 100
+  FADE: 200
+
+nf.Position = 
+  TOP: 100
+  RIGHT: 200
+  BOTTOM: 300
+  LEFT: 400
+
+nf.Direction =
+  IN: 100
+  OUT: 200
+
+nf.EaseFunction =
+  LINEAR: 100
+  PAGESLIDEEASE: 150
+  # EASEINSINE: 200
+  # EASEOUTSINE: 250
+  # EASEINOUTSINE: 275
+  # EASEINQUAD: 300
+  # EASEOUTQUAD: 350
+  # EASEINOUTQUAD: 375
+  # EASEINQUINT: 400
+  # EASEOUTQUINT: 250
+  # EASEINOUTQUINT: 275
+
+
 # Utility Functions
 
 # Looks for an item globally in the project
@@ -32,6 +60,131 @@ nf.findItemIn = (itemName, sourceFolderItem) ->
       return sourceFolderItem.item(i)
     i++
   null
+
+# Animates a page in or out with specified params
+nf.animatePage = (model) ->
+
+  # FIXME: Move all this ew stuff to a generalized thing
+  ew_getPathToEasingFolder = ->
+    folderObj = new Folder(new File($.fileName).parent.fsName + '/lib/' + "easingExpressions")
+    folderObj
+
+  ew_readFile = (filename) ->
+    the_code = undefined
+    easing_folder = ew_getPathToEasingFolder()
+    file_handle = new File(easing_folder.fsName + '/' + filename)
+    if !file_handle.exists
+      throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + easing_folder.fsName + '\'. \n\nPlease refer to the installation guide and try installing again, or go to:\n\nhttp://aescripts.com/ease-and-wizz/\n\nfor more info.')
+    try
+      file_handle.open 'r'
+      the_code = file_handle.read()
+    catch e
+      throw new Error('I couldn\'t read the easing equation file: ' + e)
+    finally
+      file_handle.close()
+    the_code
+
+  ew_setProps = (selectedProperties, expressionCode) ->
+    # selectedProperties = app.project.activeItem.selectedProperties
+    numOfChangedProperties = 0
+    currentProperty = undefined
+    i = undefined
+    # retain the whitespace
+    expressionCode = expressionCode.replace(/\n\n/g, '\n \n')
+    i = 0
+    while i < selectedProperties.length
+      currentProperty = selectedProperties[i]
+      if currentProperty.numKeys >= 2 and currentProperty.canSetExpression
+        # don't do anything if we can't set an expression
+        # likewise if there aren't at least two keyframes
+        currentProperty.expression = expressionCode
+        numOfChangedProperties += 1
+      i += 1
+    # easingType = ease_and_wizz.easingList.selection.text
+    # clearOutput()
+    # if numOfChangedProperties == 1
+    #   writeLn 'Applied "' + easingType + '" to 1 property.'
+    # else
+    #   writeLn 'Applied "' + easingType + '" to ' + numOfChangedProperties + ' properties.'
+    return
+
+  return null unless model.page?
+  model =
+    page: model.page
+    type: model.type ? nf.AnimationType.SLIDE
+    position: model.position ? nf.Position.RIGHT
+    direction: model.direction ? nf.Direction.IN
+    duration: model.duration ? 1
+    easeFunction: model.easeFunction ? nf.EaseFunction.LINEAR
+    shadowBuffer: model.shadowBuffer ? 350
+
+  if model.direction is nf.Direction.IN
+    duration = model.duration
+    inPoint = model.page.inPoint
+    outPoint = model.page.outPoint
+  else
+    # NOTE: IN and OUT points are REVERSED in this case. Be careful.
+    duration = model.duration * -1
+    inPoint = model.page.outPoint
+    outPoint = model.page.inPoint
+
+  if model.type is nf.AnimationType.SLIDE
+
+    positionProperty = model.page.transform.position
+    oldPosition = positionProperty.value
+    
+    rect = nf.sourceRectToComp(model.page, inPoint)
+    mainComp = app.project.activeItem
+
+    rect =
+      top: rect.top
+      left: rect.left
+      right: rect.left + rect.width
+      bottom: rect.top + rect.height
+      width: rect.width
+      height: rect.height
+
+    if model.position is nf.Position.RIGHT
+      # How far to the right do we need to move the page to get it off that side?
+      # To do that, rect.left >= to mainComp.width
+      diffX = mainComp.width - rect.left + model.shadowBuffer
+      diffY = 0
+    else if model.position is nf.Position.LEFT
+      # need to make rect.right <= 0
+      diffX = 0 - rect.right - model.shadowBuffer
+      diffY = 0
+    else if model.position is nf.Position.TOP
+      # need to make rect.bottom <= 0
+      diffY = 0 - rect.bottom - model.shadowBuffer
+      diffX = 0
+    else
+      # BOTTOM, so need to make rect.top >= mainComp.height
+      diffY = mainComp.height - rect.top + model.shadowBuffer
+      diffX = 0
+
+    newPosition = [oldPosition[0] + diffX, oldPosition[1] + diffY, oldPosition[2]]
+    positionProperty.setValuesAtTimes [inPoint, inPoint + model.duration], [newPosition, oldPosition]
+
+    inKeyIdx = positionProperty.nearestKeyIndex inPoint
+    outKeyIdx = positionProperty.nearestKeyIndex outPoint
+
+    # Easing
+    unless model.easeFunction is nf.EaseFunction.LINEAR
+      # FIXME: Add all the other eases and make this one right.... maybe gotta do spatial?
+      if model.easeFunction is nf.EaseFunction.PAGESLIDEEASE
+        # easeIn1 = new KeyframeEase(0, 50)
+        # easeOut1 = new KeyframeEase(0.75, 85)
+        # easeIn2 = new KeyframeEase(0, 100)
+        # easeOut2 = new KeyframeEase(0, 0.1)
+        # positionProperty.setTemporalEaseAtKey inKeyIdx, [easeIn1], [easeOut1]
+        # positionProperty.setTemporalEaseAtKey outKeyIdx, [easeIn2], [easeOut2]
+
+        easingEquation = ew_readFile("quint-out-easeandwizz-start-only.txt")
+        ew_setProps [positionProperty], easingEquation
+
+  else if model.type is nf.AnimationType.FADE
+    # FIXME: Handle this case
+    return null
 
 nf.pageTreeForPaper = (sourceLayer) ->
 
@@ -160,7 +313,6 @@ nf.addPageTurnEffects = (page) ->
   dropShadowEffect.property("Direction").setValue 125
   dropShadowEffect.property("Distance").setValue 20
   dropShadowEffect.property("Softness").setValue 300
-
 
   page
   
