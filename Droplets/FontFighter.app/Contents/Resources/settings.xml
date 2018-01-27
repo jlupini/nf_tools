@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <pdfpreflight>
 	<prefs format="Batch Settings" version="1.0">
-		<setting id="73da800dba3fbf83b2e020a26055a9e9" name="settings.xml" comment="" rating="0" count="0" lock="0" active="1">
+		<setting id="3b5528259a2ccd9fb6ebd8d7d2772583" name="settings.xml" comment="" rating="0" count="0" lock="0" active="1">
 			<feat type="int">
 				<name>Feat_Droplet_SFA</name>
 				<value>0</value>
