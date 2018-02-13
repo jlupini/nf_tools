@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <pdfpreflight version="15.0">
 	<package>
-		<id3>81f479d40e584478dc4f93b2297a76ce</id3>
+		<id3>212aab25da4c2f6fca06835b9b5769dd</id3>
 		<pdfxoutintentlist>
 		</pdfxoutintentlist>
 		<iccprofilelist>
@@ -20,10 +20,10 @@
 		</variables>
 		<conditions>
 			<condition>
-				<id1>C9e5b572500fab57af27bba2577246e55</id1>
+				<id1>C77b056b1e5fe70d6a4df899fb6aab157</id1>
 				<id2>C73c8dfaa3d7830aaa882c4cea3c2a18c</id2>
-				<id3>abf00b76b7cbb88fa5fd892f22fd5ed0</id3>
-				<id4>cc069c6be75d6e2a9579b48871e02c80</id4>
+				<id3>33f53192cfa89544b709df5077341ad8</id3>
+				<id4>b4b409bd1b2e60be6807c78dfc3721ee</id4>
 				<name></name>
 				<comment></comment>
 				<flags user_units="1" edit="1" visible="1"></flags>
@@ -39,10 +39,10 @@
 				</atom>
 			</condition>
 			<condition>
-				<id1>C091f9d14076d776a1b9808962abf5e94</id1>
+				<id1>Cb69bba8d94565ebed359b1151454b638</id1>
 				<id2>Ce78ba1956ef1720f0895f02f5f126ebc</id2>
-				<id3>6963c606cee4e49224361f023145656c</id3>
-				<id4>ca4462cf75d2c3bcbaefe56e01f521b1</id4>
+				<id3>d01f5fba42ef5ddfba7aa62378e51552</id3>
+				<id4>c3bc0103d13960a0ec9caf85c241fbb2</id4>
 				<name>CC_ObjectIsAnImage</name>
 				<comment>CC_ObjectIsAnImage</comment>
 				<flags user_units="1" edit="1" visible="1" dict="1"></flags>
@@ -60,29 +60,29 @@
 		</conditions>
 		<rules>
 			<rule>
-				<id1>R4f37c4d673e646a5acf70c63919b6244</id1>
+				<id1>Rf916f7990e3f1ad8e8e6fea5307fc214</id1>
 				<id2>R7ac6bae2ef3be17468715b1c28ffaf96</id2>
-				<id3>2dc4d57b23494170fc14b851dbb23e56</id3>
-				<id4>47daf2adbebfd9286aeab049f6bfabbb</id4>
+				<id3>7f20ca82dd7e674e43d0a2a087bae86a</id3>
+				<id4>e6d1941f3d3425894ff6e15aef525c7b</id4>
 				<name>Everything but annotations</name>
 				<comment></comment>
 				<flags analysis="49" condition_logic="0" ignore_objects="0" edit="1" visible="1"></flags>
 				<report_no_match></report_no_match>
 				<conditions>
-					<condition>C9e5b572500fab57af27bba2577246e55</condition>
+					<condition>C77b056b1e5fe70d6a4df899fb6aab157</condition>
 				</conditions>
 			</rule>
 			<rule>
-				<id1>Rfed5dfad94df10c74a3ae43b1153b9c1</id1>
+				<id1>R7f715869a11ba8a22b91a4d842d85652</id1>
 				<id2>R60a0ab5970d1f4fe68ecea0d9699ea8b</id2>
-				<id3>f6519066235899ed40a5ed34ebe9fce4</id3>
-				<id4>4077346b3553cab06ab8fccc701ccded</id4>
+				<id3>fc65a9dbf02fd2202c6bfbaeced46ad1</id3>
+				<id4>cf971e4f961d9895ebf08a78bb4467e4</id4>
 				<name>Is Image</name>
 				<comment></comment>
 				<flags analysis="17" condition_logic="0" ignore_objects="0" edit="1" visible="1"></flags>
 				<report_no_match></report_no_match>
 				<conditions>
-					<condition>C091f9d14076d776a1b9808962abf5e94</condition>
+					<condition>Cb69bba8d94565ebed359b1151454b638</condition>
 				</conditions>
 			</rule>
 		</rules>
@@ -90,10 +90,10 @@
 		</rulesets>
 		<fixups>
 			<fixup>
-				<id1>F922cc4ff46faa6ef28fe15a66e04f09a</id1>
+				<id1>Fa3daa8f0aba855a8533b70573dfc7ccd</id1>
 				<id2>Fc23d2f8429a22b5e7735e8649d163601</id2>
-				<id3>5ed3f6db747b6aadf68a58e2b5225c2a</id3>
-				<id4>ba5136dd06961306bfada0df2f4a4566</id4>
+				<id3>1511be507082ac35aac7dcef683cc1b7</id3>
+				<id4>a17c611852ebeb9146016014f57c185f</id4>
 				<name>FFF_Flattenallannotationsintopagecontents</name>
 				<comment>FFF_Flattenallannotationsintopagecontents</comment>
 				<flags user_units="0" scope="16" edit="1" visible="1" dict="1"></flags>
@@ -115,10 +115,10 @@
 				<reportFailed></reportFailed>
 			</fixup>
 			<fixup>
-				<id1>Ffeab3b3750d51df4273c54407584944c</id1>
+				<id1>F7cf1575b030e3374f350c1e53925c43e</id1>
 				<id2>F1465c6d76c0ee022dcbe4960fb3356cb</id2>
-				<id3>919a832ad98a8aaf70478a6eb4c561de</id3>
-				<id4>5a74712a6d87969c0f4b2304b2cfcd4c</id4>
+				<id3>06828740ded4f4976e27c828bcabcde6</id3>
+				<id4>9366fafecb3594fa316f2e4d6706341b</id4>
 				<name>Remove Errything</name>
 				<comment></comment>
 				<flags user_units="1" scope="16" edit="1" visible="1"></flags>
@@ -133,21 +133,21 @@
 				<reportFailed></reportFailed>
 				<rules>
 					<metalists>
-						<metalist metaid="Ma5d77db709155852ad88858dc1d8f05a">
+						<metalist metaid="M3b30859139bf0f407978f3e2389f3b43">
 							<metadata>
 								<metakey>CALS_CLM_REFRULE_IDX</metakey>
 								<metavalue>0</metavalue>
 							</metadata>
 						</metalist>
 					</metalists>
-					<rule metaid="Ma5d77db709155852ad88858dc1d8f05a">R4f37c4d673e646a5acf70c63919b6244</rule>
+					<rule metaid="M3b30859139bf0f407978f3e2389f3b43">Rf916f7990e3f1ad8e8e6fea5307fc214</rule>
 				</rules>
 			</fixup>
 			<fixup>
-				<id1>Fbaff83bcf1567d9451ed719be25fbabe</id1>
+				<id1>F789555345337aae7a494b722a2517ff0</id1>
 				<id2>F06be87794167b2006d0cb3fd53429793</id2>
-				<id3>b1213fc7ce67f1c42ce8500b7fd96fc9</id3>
-				<id4>226a64180e39b3e893e2a9e97248e1e7</id4>
+				<id3>e42d26c0e10397f2e75623545a0852f0</id3>
+				<id4>3c556caf047d381b3daa0a0bd2ecf7bb</id4>
 				<name>Remove Images</name>
 				<comment></comment>
 				<flags user_units="1" scope="16" edit="1" visible="1"></flags>
@@ -162,30 +162,30 @@
 				<reportFailed></reportFailed>
 				<rules>
 					<metalists>
-						<metalist metaid="M65b2b7ee6e9451c787571f111bc00759">
+						<metalist metaid="M878738c8175aa297c999e86a2ba762d5">
 							<metadata>
 								<metakey>CALS_CLM_REFRULE_IDX</metakey>
 								<metavalue>0</metavalue>
 							</metadata>
 						</metalist>
 					</metalists>
-					<rule metaid="M65b2b7ee6e9451c787571f111bc00759">Rfed5dfad94df10c74a3ae43b1153b9c1</rule>
+					<rule metaid="M878738c8175aa297c999e86a2ba762d5">R7f715869a11ba8a22b91a4d842d85652</rule>
 				</rules>
 			</fixup>
 		</fixups>
 		<fixupsets>
 			<fixupset>
-				<id1>Ud37b2e5701062cf8bea7fb0401c319ac</id1>
+				<id1>U42313ec6a62d6fdc0e33ef8e96e12e2b</id1>
 				<id2>U39dce55efa95217184f5b8c97fed1986</id2>
-				<id3>d0c5a8926c16f3b6f9d88d78185b509e</id3>
-				<id4>5880e52d6d4de71accea13dfa5167042</id4>
+				<id3>69b8da9b8530909346fb504e227200f9</id3>
+				<id4>c35d90a7ce2250230e3e4c600133fa58</id4>
 				<name>UUUU_FIXUPSET_DEF_NAME</name>
 				<comment>UUUU_FIXUPSET_DEF_NAME</comment>
 				<flags edit="1" visible="1" dict="1"></flags>
 				<fixups>
-					<fixup>F922cc4ff46faa6ef28fe15a66e04f09a</fixup>
-					<fixup>Ffeab3b3750d51df4273c54407584944c</fixup>
-					<fixup>Fbaff83bcf1567d9451ed719be25fbabe</fixup>
+					<fixup>Fa3daa8f0aba855a8533b70573dfc7ccd</fixup>
+					<fixup>F7cf1575b030e3374f350c1e53925c43e</fixup>
+					<fixup>F789555345337aae7a494b722a2517ff0</fixup>
 				</fixups>
 			</fixupset>
 		</fixupsets>
@@ -193,10 +193,10 @@
 		</actions>
 		<profiles>
 			<profile>
-				<id1>Pc867fa9c0fbdadd6972cc9abdc622685</id1>
+				<id1>P388a5719d95a4efe4f9a18481d6499a3</id1>
 				<id2>P2404dcabb353624a9d288021db7341e2</id2>
-				<id3>a087c3ebce166191354b0ac52815e4aa</id3>
-				<id4>6e5f99f03f04ca446a7ad26f2da8f82c</id4>
+				<id3>6c2668fd8a7c3530950357a2f3705013</id3>
+				<id4>56553c80c9a93713bd051cd2631bb18f</id4>
 				<name>Remove Everything but Annotations</name>
 				<comment>Removes everything except for the Annotations</comment>
 				<flags edit="1" visible="1"></flags>
@@ -206,8 +206,8 @@
 						<metavalue>Jesse Lupini</metavalue>
 					</metadata>
 				</metalist>
-				<creation>D:20160907083505-07&apos;00&apos;</creation>
-				<modification>D:20170720224010-07&apos;00&apos;</modification>
+				<creation>D:20160907233505-08&apos;00&apos;</creation>
+				<modification>D:20180127012609-08&apos;00&apos;</modification>
 				<pdfstd>
 					<pdfx convert="0"></pdfx>
 					<pdfa convert="0"></pdfa>
@@ -230,7 +230,7 @@
 				<rulesets>
 				</rulesets>
 				<fixupsets>
-					<fixupset>Ud37b2e5701062cf8bea7fb0401c319ac</fixupset>
+					<fixupset>U42313ec6a62d6fdc0e33ef8e96e12e2b</fixupset>
 				</fixupsets>
 			</profile>
 		</profiles>
