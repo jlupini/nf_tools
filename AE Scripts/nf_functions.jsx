@@ -12,6 +12,28 @@
     BROKEN: 500
   };
 
+  nf.AnimationType = {
+    SLIDE: 100,
+    FADE: 200
+  };
+
+  nf.Position = {
+    TOP: 100,
+    RIGHT: 200,
+    BOTTOM: 300,
+    LEFT: 400
+  };
+
+  nf.Direction = {
+    IN: 100,
+    OUT: 200
+  };
+
+  nf.EaseFunction = {
+    LINEAR: 100,
+    PAGESLIDEEASE: 150
+  };
+
   nf.findItem = function(itemName) {
     var i, thisItem;
     i = 1;
@@ -40,6 +62,110 @@
       i++;
     }
     return null;
+  };
+
+  nf.animatePage = function(model) {
+    var diffX, diffY, duration, easingEquation, ew_getPathToEasingFolder, ew_readFile, ew_setProps, inKeyIdx, inPoint, mainComp, newPosition, oldPosition, outKeyIdx, outPoint, positionProperty, rect, ref, ref1, ref2, ref3, ref4, ref5;
+    ew_getPathToEasingFolder = function() {
+      var folderObj;
+      folderObj = new Folder(new File($.fileName).parent.fsName + '/lib/' + "easingExpressions");
+      return folderObj;
+    };
+    ew_readFile = function(filename) {
+      var e, easing_folder, file_handle, the_code;
+      the_code = void 0;
+      easing_folder = ew_getPathToEasingFolder();
+      file_handle = new File(easing_folder.fsName + '/' + filename);
+      if (!file_handle.exists) {
+        throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + easing_folder.fsName + '\'. \n\nPlease refer to the installation guide and try installing again, or go to:\n\nhttp://aescripts.com/ease-and-wizz/\n\nfor more info.');
+      }
+      try {
+        file_handle.open('r');
+        the_code = file_handle.read();
+      } catch (error) {
+        e = error;
+        throw new Error('I couldn\'t read the easing equation file: ' + e);
+      } finally {
+        file_handle.close();
+      }
+      return the_code;
+    };
+    ew_setProps = function(selectedProperties, expressionCode) {
+      var currentProperty, i, numOfChangedProperties;
+      numOfChangedProperties = 0;
+      currentProperty = void 0;
+      i = void 0;
+      expressionCode = expressionCode.replace(/\n\n/g, '\n \n');
+      i = 0;
+      while (i < selectedProperties.length) {
+        currentProperty = selectedProperties[i];
+        if (currentProperty.numKeys >= 2 && currentProperty.canSetExpression) {
+          currentProperty.expression = expressionCode;
+          numOfChangedProperties += 1;
+        }
+        i += 1;
+      }
+    };
+    if (model.page == null) {
+      return null;
+    }
+    model = {
+      page: model.page,
+      type: (ref = model.type) != null ? ref : nf.AnimationType.SLIDE,
+      position: (ref1 = model.position) != null ? ref1 : nf.Position.RIGHT,
+      direction: (ref2 = model.direction) != null ? ref2 : nf.Direction.IN,
+      duration: (ref3 = model.duration) != null ? ref3 : 1,
+      easeFunction: (ref4 = model.easeFunction) != null ? ref4 : nf.EaseFunction.LINEAR,
+      shadowBuffer: (ref5 = model.shadowBuffer) != null ? ref5 : 350
+    };
+    if (model.direction === nf.Direction.IN) {
+      duration = model.duration;
+      inPoint = model.page.inPoint;
+      outPoint = model.page.outPoint;
+    } else {
+      duration = model.duration * -1;
+      inPoint = model.page.outPoint;
+      outPoint = model.page.inPoint;
+    }
+    if (model.type === nf.AnimationType.SLIDE) {
+      positionProperty = model.page.transform.position;
+      oldPosition = positionProperty.value;
+      rect = nf.sourceRectToComp(model.page, inPoint);
+      mainComp = app.project.activeItem;
+      rect = {
+        top: rect.top,
+        left: rect.left,
+        right: rect.left + rect.width,
+        bottom: rect.top + rect.height,
+        width: rect.width,
+        height: rect.height
+      };
+      if (model.position === nf.Position.RIGHT) {
+        diffX = mainComp.width - rect.left + model.shadowBuffer;
+        diffY = 0;
+      } else if (model.position === nf.Position.LEFT) {
+        diffX = 0 - rect.right - model.shadowBuffer;
+        diffY = 0;
+      } else if (model.position === nf.Position.TOP) {
+        diffY = 0 - rect.bottom - model.shadowBuffer;
+        diffX = 0;
+      } else {
+        diffY = mainComp.height - rect.top + model.shadowBuffer;
+        diffX = 0;
+      }
+      newPosition = [oldPosition[0] + diffX, oldPosition[1] + diffY, oldPosition[2]];
+      positionProperty.setValuesAtTimes([inPoint, inPoint + model.duration], [newPosition, oldPosition]);
+      inKeyIdx = positionProperty.nearestKeyIndex(inPoint);
+      outKeyIdx = positionProperty.nearestKeyIndex(outPoint);
+      if (model.easeFunction !== nf.EaseFunction.LINEAR) {
+        if (model.easeFunction === nf.EaseFunction.PAGESLIDEEASE) {
+          easingEquation = ew_readFile("quint-out-easeandwizz-start-only.txt");
+          return ew_setProps([positionProperty], easingEquation);
+        }
+      }
+    } else if (model.type === nf.AnimationType.FADE) {
+      return null;
+    }
   };
 
   nf.pageTreeForPaper = function(sourceLayer) {

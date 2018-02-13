@@ -4,74 +4,93 @@ importedFunctions = app.nf
 globals =
 	mainComp: app.project.activeItem
 	undoGroupName: 'Go To Highlight'
+	pageTurnAnticipation: 0.25 # Percent of the page turn to put before the start point of the animation
 	highlightWidthPercent: 85
 	easeType: KeyframeInterpolationType.BEZIER
 	easeWeight: 33
-	maxPageScale: 130
 	defaultOptions:
-		movePageLayer: no
-		makeInKeyframe: yes
-		moveOnly: no
+		animatePage: yes
 		duration: 3
+		reduceMotion: yes
 		pageTurnDuration: 2
+		endAfterTurn: yes
+		maxPageScale: 115
 nf = Object.assign importedFunctions, globals
 
 goToHighlight = (highlight, options) ->
 	options =
-		movePageLayer: options.movePageLayer ? nf.defaultOptions.movePageLayer
-		makeInKeyframe: options.makeInKeyframe ? nf.defaultOptions.makeInKeyframe
-		moveOnly: options.moveOnly ? nf.defaultOptions.moveOnly
+		reduceMotion: options.reduceMotion ? nf.defaultOptions.reduceMotion
 		duration: options.duration ? nf.defaultOptions.duration
 		pageTurnDuration: options.pageTurnDuration ? nf.defaultOptions.pageTurnDuration
+		animatePage: options.animatePage ? nf.defaultOptions.animatePage
+		maxPageScale: options.maxPageScale ? nf.defaultOptions.maxPageScale
+		endAfterTurn: options.endAfterTurn ? nf.defaultOptions.endAfterTurn
 
 	selectedLayer = nf.state.selectedLayer
 	highlightPageLayer = nf.state.highlightLayer
 	activeLayer = nf.state.activeLayer
 	relevantPages = nf.state.relevantPages
-	layerToMove = if options.movePageLayer then highlightPageLayer else nf.pageParent(selectedLayer)
+	layerToMove = if options.animatePage then nf.pageParent(selectedLayer) else highlightPageLayer 
 
 	return alert "No Layer Parent Found!" if not layerToMove?
 
-	# Determine if we need to do some page turning or other voodoo
-	# FIXME: Right now we're assuming no one's mucked it up by changing the in and out points, should handle this possibility
-	highlightPageLayerActive = nf.pageLayerCanBeActive highlightPageLayer
-	if activeLayer.index < highlightPageLayer.index
-		# There is an active layer covering up (above) the target layer, so we need to get rid of it
+	if options.animatePage
+		# Determine if we need to do some page turning or other voodoo
+		# FIXME: Right now we're assuming no one's mucked it up by changing the in and out points, should handle this possibility
+		highlightPageLayerActive = nf.pageLayerCanBeActive highlightPageLayer
+		if activeLayer.index < highlightPageLayer.index
+			# There is an active layer covering up (above) the target layer, so we need to get rid of it
 
-		if not highlightPageLayerActive
-			# We need to get our layer active
-			# FIXME: I'm not dealing with this yet
-			alert "Uh Oh, the layer with the highlight isn't visible and I don't know how to make it visible yet..."
-			return false
-			# DEAL WITH PROBLEMS HERE
+			if not highlightPageLayerActive
+				# We need to get our layer active
+				# FIXME: I'm not dealing with this yet
+				alert "Uh Oh, the layer with the highlight isn't visible and I don't know how to make it visible yet..."
+				return false
+				# DEAL WITH PROBLEMS HERE
 
-		# How many active page layers are between us and the active layer?
-		problemLayers = []
-		for possibleProblemLayer in relevantPages
-			if nf.pageLayerCanBeActive(possibleProblemLayer.layer()) and activeLayer.index < possibleProblemLayer.index < highlightPageLayer.index
-				problemLayers.push possibleProblemLayer
-		# Now we've got an array of problem layers
-		# FIXME: Not gonna deal with this yet
-		if problemLayers.length > 0
-			alert "Uh oh, I'm not smart enough to deal with a layer tangle this complicated yet..."
-			return false
-		# DEAL WITH PROBLEM LAYERS HERE
+			# How many active page layers are between us and the active layer?
+			problemLayers = []
+			for possibleProblemLayer in relevantPages
+				if nf.pageLayerCanBeActive(possibleProblemLayer.layer()) and activeLayer.index < possibleProblemLayer.index < highlightPageLayer.index
+					problemLayers.push possibleProblemLayer
+			# Now we've got an array of problem layers
+			# FIXME: Not gonna deal with this yet
+			if problemLayers.length > 0
+				alert "Uh oh, I'm not smart enough to deal with a layer tangle this complicated yet..."
+				return false
+			# DEAL WITH PROBLEM LAYERS HERE
 
-		# Great!, now we've dealt with problem layers, so let's turn our activeLayer out of the way
-		nf.turnPageAtTime activeLayer, options.pageTurnDuration
+			# Since this is a multi-page move, we need to check if we have to reduce motion
+			if options.reduceMotion
+				# for now, we can only reduce motion if there are no keyframes on the target page.
+				# FIXME: Catch this ^
+				# FIXME: Support this if there are keyframes on the target page
+				reduceMotionOptions =
+					reduceMotion: no
+					animatePage: no
+					maxPageScale: options.maxPageScale * 0.8
 
-	else if activeLayer.index > highlightPageLayer.index
-		# Our target layer is above, but for some reason isn't active
+				goToHighlight(highlight, reduceMotionOptions)
 
-		# Is it because the page is folded up?
-		if nf.pageTurnStatus(highlightPageLayer) is nf.PageTurn.FLIPPEDUP
-			# Let's fold it back down!
-			nf.turnPageAtTime highlightPageLayer, options.pageTurnDuration
-		else
-			# There are many reasons we could be here - figure out what's going on
-			# FIXME: I haven't done this yet
-			alert "Uh Oh, I can see that I need to go to a layer above the currently visible one, but it's not flipped out of the way so I don't know what to do yet..."
-		
+			# Great!, now we've dealt with problem layers, so let's turn our activeLayer out of the way.
+			pageTurnTime = app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration)
+			nf.turnPageAtTime activeLayer, options.pageTurnDuration, pageTurnTime
+
+			if options.endAfterTurn
+				activeLayer.outPoint = pageTurnTime + options.pageTurnDuration
+
+		else if activeLayer.index > highlightPageLayer.index
+			# Our target layer is above, but for some reason isn't active
+
+			# Is it because the page is folded up?
+			if nf.pageTurnStatus(highlightPageLayer) is nf.PageTurn.FLIPPEDUP
+				# Let's fold it back down!
+				nf.turnPageAtTime highlightPageLayer, options.pageTurnDuration, app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration)
+			else
+				# There are many reasons we could be here - figure out what's going on
+				# FIXME: I haven't done this yet
+				alert "Uh Oh, I can see that I need to go to a layer above the currently visible one, but it's not flipped out of the way so I don't know what to do yet..."
+			
 		
 	# All clear, proceed as normal after re-evaluating the active layer
 	nf.activeLayer = activeLayer = relevantPages[nf.activePageIndexInArray(relevantPages)]
@@ -83,11 +102,12 @@ goToHighlight = (highlight, options) ->
 	layerToMove.parent = null
 
 	now = nf.mainComp.time
-	if options.makeInKeyframe
+
+	if options.animatePage
 
 		keyframeTimes = [now, now + options.duration]
 
-		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
+		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer, options.maxPageScale
 		scaleProp.setValuesAtTimes keyframeTimes, [scaleProp.valueAtTime(now, false), targetScale]
 		nf.setSymmetricalTemporalEasingOnlyForProperties scaleProp, keyframeTimes, nf.easeType, nf.easeWeight, true
 
@@ -97,7 +117,7 @@ goToHighlight = (highlight, options) ->
 
 		nf.setSymmetricalTemporalEasingOnlyForProperties positionProp, keyframeTimes, nf.easeType, nf.easeWeight, true
 
-	else if options.moveOnly
+	else
 		# Delete any Keyframes
 		didRemoveKeys = false
 		while positionProp.numKeys != 0
@@ -107,19 +127,12 @@ goToHighlight = (highlight, options) ->
 			didRemoveKeys = true
 			scaleProp.removeKey 1
 		if didRemoveKeys
-			alert "Warning: The options you selected have caused the removal of one or more keyframes from the target layer. This is probably because you chose 'No Keyframes'."
+			alert "Warning: The options you selected have caused the removal of one or more keyframes from the target layer. This is probably because you chose 'Move Only'."
 
-		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
+		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer, options.maxPageScale
 		scaleProp.setValue targetScale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
 		positionProp.setValue targetPosition
-	else
-		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer
-		scaleProp.setValueAtTime now, targetScale
-		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer
-		positionProp.setValueAtTime now, targetPosition
-
-		nf.setSymmetricalTemporalEasingOnlyForProperties [positionProp, scaleProp], nf.mainComp.time, nf.easeType, nf.easeWeight, true
 
 	layerToMove.parent = previousParent if previousParent?
 	selectedLayer.selected = yes
@@ -131,8 +144,8 @@ absoluteScaleOfLayer = (layer) ->
 	layer.parent = layerParent
 	absoluteScale
 
-getTargetScale = (highlight, layerScale, highlightPageLayer, targetTime = null) ->
-	targetScaleFactor = getTargetScaleFactor highlight, layerScale, highlightPageLayer, targetTime
+getTargetScale = (highlight, layerScale, highlightPageLayer, maxScale, targetTime = null) ->
+	targetScaleFactor = getTargetScaleFactor highlight, layerScale, highlightPageLayer, maxScale, targetTime
 	targetScale = getTargetScaleUsingFactor layerScale, targetScaleFactor
 
 getTargetPosition = (highlight, layerPosition, highlightPageLayer, targetTime = null) ->
@@ -166,7 +179,7 @@ getTargetPositionDelta = (highlight, layerPosition, highlightPageLayer, targetTi
 getTargetScaleUsingFactor = (initialScale, scaleFactor) ->
 	newScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor]
 
-getTargetScaleFactor = (highlight, layerScale, highlightPageLayer, targetTime = null) ->
+getTargetScaleFactor = (highlight, layerScale, highlightPageLayer, maxScale, targetTime = null) ->
 	highlightRectInContext = nf.rectRelativeToComp highlight, highlightPageLayer, targetTime
 	compWidth = nf.mainComp.width
 	targetHighlightWidth = nf.highlightWidthPercent / 100 * compWidth
@@ -175,8 +188,8 @@ getTargetScaleFactor = (highlight, layerScale, highlightPageLayer, targetTime = 
 	# Adjust for max page scale
 	absoluteScale = absoluteScaleOfLayer highlightPageLayer
 	calculatedScale = scaleFactor * absoluteScale[0]
-	if calculatedScale > nf.maxPageScale
-		adjustedScaleFactor = nf.maxPageScale / absoluteScale[0]
+	if calculatedScale > maxScale
+		adjustedScaleFactor = maxScale / absoluteScale[0]
 	else if calculatedScale < 50
 		adjustedScaleFactor = 50 / absoluteScale[0]
 	else
@@ -209,23 +222,24 @@ askForChoice = ->
 	widthValue = w.grp1.sizeGroup.add 'edittext', undefined, nf.highlightWidthPercent
 	widthValue.characters = 3
 	maxScaleLabel = w.grp1.sizeGroup.add 'statictext {text: "Max Scale (%):", characters: 11, justify: "left"}'
-	maxScaleValue = w.grp1.sizeGroup.add 'edittext', undefined, nf.maxPageScale
+	maxScaleValue = w.grp1.sizeGroup.add 'edittext', undefined, nf.defaultOptions.maxPageScale
 	maxScaleValue.characters = 4
 
-	radioGroupTargetLayer = w.grp1.add "panel", undefined, 'Target Layer'
-	radioGroupTargetLayer.alignChildren = 'left'
-	radioGroupTargetLayer.orientation = 'row'
-	radioButtonParentLayer = radioGroupTargetLayer.add "radiobutton", undefined, "Page parent"
-	radioButtonPageLayer = radioGroupTargetLayer.add "radiobutton", undefined, "Page layer"
-	radioButtonParentLayer.value = true
+	radioGroupAnimationType = w.grp1.add "panel", undefined, 'Animation Type'
+	radioGroupAnimationType.alignChildren = 'left'
+	radioGroupAnimationType.orientation = 'row'
+	radioButtonShouldAnimate = radioGroupAnimationType.add "radiobutton", undefined, "Animate Movement"
+	radioButtonPageLayer = radioGroupAnimationType.add "radiobutton", undefined, "Only Move Page"
+	radioButtonShouldAnimate.value = nf.defaultOptions.animatePage
+	radioButtonPageLayer = not nf.defaultOptions.animatePage
 
-	radioGroupKeyframes = w.grp1.add "panel", undefined, "Keyframes"
-	radioGroupKeyframes.alignChildren = 'left'
-	radioGroupKeyframes.orientation = 'row'
-	radioButtonInOut = radioGroupKeyframes.add "radiobutton", undefined, "In & Out"
-	radioButtonOneKF = radioGroupKeyframes.add "radiobutton", undefined, "One Keyframe"
-	radioButtonMoveOnly = radioGroupKeyframes.add "radiobutton", undefined, "No Keyframes (Move Only)"
-	radioButtonInOut.value = true
+	groupAdditionalOptions = w.grp1.add "panel", undefined, 'Additional Options'
+	groupAdditionalOptions.alignChildren = 'left'
+	groupAdditionalOptions.orientation = 'row'
+	checkboxReduceMotion = groupAdditionalOptions.add "checkbox", undefined, "Reduce motion on cross-page moves"
+	checkboxReduceMotion.value = nf.defaultOptions.reduceMotion
+	checkboxEndAfterTurn = groupAdditionalOptions.add "checkbox", undefined, "End layer after turn"
+	checkboxEndAfterTurn.value = nf.defaultOptions.endAfterTurn
 
 	nf.pageTree = nf.pageTreeForPaper selectedLayer
 
@@ -264,25 +278,26 @@ askForChoice = ->
 
 	nf.UIControls =
 		duration: durationValue
-		keyframes:
-			inOut: radioButtonInOut
-			moveOnly: radioButtonMoveOnly
-			oneKF: radioButtonOneKF
-		movePageLayer: radioButtonPageLayer
+		animatePage: radioButtonShouldAnimate
 		highlightWidthPercent: widthValue
 		maxScale: maxScaleValue
+		endAfterTurn: checkboxEndAfterTurn
+		reduceMotion: checkboxReduceMotion
 		tree: tree
 
 	okButton.onClick = ->
 		options =
-			movePageLayer: nf.UIControls.movePageLayer.value
 			duration: parseFloat(nf.UIControls.duration.text)
-			moveOnly: nf.UIControls.keyframes.moveOnly.value
-			makeInKeyframe: nf.UIControls.keyframes.inOut.value
-			# oneKF: nf.UIControls.keyframes.oneKF.value
+			animatePage: nf.UIControls.animatePage.value
+			reduceMotion: nf.UIControls.reduceMotion.value
+			maxPageScale: parseFloat(nf.UIControls.maxScale.text)
+			endAfterTurn: nf.UIControls.endAfterTurn.value
 
-		nf.maxPageScale = parseFloat(nf.UIControls.maxScale.text) ? nf.maxScaleValue
 		nf.highlightWidthPercent = parseFloat(nf.UIControls.highlightWidthPercent.text) ? nf.highlightWidthPercent
+
+		if not options.maxPageScale?
+			alert 'Invalid Max Page Scale!'
+			return false
 
 		if not options.duration?
 			alert 'Invalid Duration!'

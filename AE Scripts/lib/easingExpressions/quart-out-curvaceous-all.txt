@@ -1,0 +1,37 @@
+// Ease and Wizz 2.5.3 : Curvaceous : outQuart : all keyframes
+// Ian Haigh (http://aescripts.com/ease-and-wizz/)
+// Last built: 2017-08-08T09:11:06+10:00
+
+function easeandwizz_outQuart(t, b, c, d) {
+	return -c * ((t=t/d-1)*t*t*t - 1) + b;
+}
+
+function easeAndWizz() {
+	var n = 0;
+	if (numKeys > 0) {
+		n = nearestKey(time).index;
+		if (key(n).time > time) { n-- }
+	}
+
+	try {
+		var key1 = key(n);
+		var key2 = key(n+1);
+	} catch(e) {
+		return null;
+	}
+
+	t = time - key1.time;
+	d = key2.time - key1.time;
+
+	sX = key1.time;
+	eX = key2.time - key1.time;
+
+
+	if ((time < key1.time) || (time > key2.time)) {
+		return null;
+	} else {
+		return valueAtTime(easeandwizz_outQuart(t, sX, eX, d));
+	}
+}
+
+(easeAndWizz() || value);

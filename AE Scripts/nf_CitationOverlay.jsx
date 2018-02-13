@@ -14,7 +14,6 @@ bgLayer.adjustmentLayer = true;
 bgLayer.name = "Bg Blur - " + citationString;
 var BgBlur = bgLayer.property("Effects").addProperty("ADBE Gaussian Blur 2");
 BgBlur.property("Blurriness").setValue(35);
-BgBlur.property("Repeat Edge Pixels").setValue(1);
 var BgBrightness = bgLayer.property("Effects").addProperty("ADBE Brightness & Contrast 2");
 BgBrightness.property("Brightness").setValue(-148);
 

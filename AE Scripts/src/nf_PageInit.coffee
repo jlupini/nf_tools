@@ -4,6 +4,7 @@ importedFunctions = app.nf
 globals =
 	mainComp: app.project.activeItem
 	undoGroupName: 'initialize Pages'
+	animationDuration: 1.85
 nf = Object.assign importedFunctions, globals
 
 initializePages = ->
@@ -32,14 +33,13 @@ initializePages = ->
 		initTab = tPanel.add("tab", undefined, "Init Page")
 		initTab.alignChildren = "fill"
 
-		# FIXME: Add back in this movement thing, to eventually replace the animation composer animation in
-		# # Options Panel
-		# optionsPanel = initTab.add 'panel', undefined, 'Options', {borderStyle:'none'}
-		# optionsPanel.alignChildren = 'left'
-		# optionsPanel.margins.top = 16
-		# durationLabel = optionsPanel.add 'statictext {text: "Movement Duration:", characters: 16, justify: "left"}'
-		# durationValue = optionsPanel.add 'edittext', undefined, 4
-		# durationValue.characters = 3
+		#FIXME: Add back in this movement thing, to eventually replace the animation composer animation in
+		# Options Panel
+		optionsPanel = initTab.add 'panel', undefined, 'Options', {borderStyle:'none'}
+		optionsPanel.alignChildren = 'left'
+		optionsPanel.margins.top = 16
+		animatePageCheckbox = optionsPanel.add "checkbox", undefined, "Animate In First Page"
+		animatePageCheckbox.value = yes
 
 		# Highlights
 		highlightPanel = initTab.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
@@ -75,6 +75,7 @@ initializePages = ->
 
 			options =
 				highlightChoices: highlightChoices
+				animatePage: animatePageCheckbox.value
 
 			initWithOptions options
 
@@ -161,6 +162,18 @@ initWithOptions = (options) ->
 	nf.bubbleUpHighlights selectedLayers, options.highlightChoices
 	# FIXME: When we disconnect with an OVERRIDE, we should warn or offer to remove the overridden controls
 	# FIXME: Anytime we disconnect a broken bubbleup, we should copy the current values back to the OG one
+
+	if options.animatePage
+		topLayer = topmostLayer(selectedLayers)
+		nf.animatePage
+			page: topLayer
+			type: nf.AnimationType.SLIDE
+			position: nf.Position.RIGHT
+			direction: nf.Direction.IN
+			duration: nf.animationDuration
+			easeFunction: nf.EaseFunction.PAGESLIDEEASE
+		for layer in selectedLayers
+			layer.inPoint = topLayer.inPoint + nf.animationDuration unless layer.index is topLayer.index
 
 getBubblableObjects = (selectedLayers) ->
 	# Get all the highlights in selected layers
