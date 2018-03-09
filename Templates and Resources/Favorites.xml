@@ -714,11 +714,11 @@
 </prop.list>
 </prop.pair>
 <prop.pair>
-<key>NF v01 CC 14 RX 5</key>
+<key>NF v03 Audition 18, RX 5</key>
 <prop.list>
 <prop.pair>
 <key>Name</key>
-<ustring>NF v01 CC 14 RX 5</ustring>
+<ustring>NF v03 Audition 17, RX 5</ustring>
 </prop.pair>
 <prop.pair>
 <key>Order</key>
@@ -1267,11 +1267,11 @@
 </prop.list>
 </prop.pair>
 <prop.pair>
-<key>NF v02 CC 15 RX 6</key>
+<key>NF v03 CC 15 RX 6</key>
 <prop.list>
 <prop.pair>
 <key>Name</key>
-<ustring>NF v02 CC 15 RX 6</ustring>
+<ustring>NF v03 CC 15 RX 6</ustring>
 </prop.pair>
 <prop.pair>
 <key>Order</key>
