@@ -25,7 +25,7 @@ var textLayer_TextDocument = textLayer_TextProp.value;
 textLayer_TextDocument.resetCharStyle();
 textLayer_TextDocument.fillColor = [1, 1, 1];
 textLayer_TextDocument.strokeWidth = 0;
-textLayer_TextDocument.font = "Avenir Next";
+textLayer_TextDocument.font = "Proxima Nova";
 textLayer_TextDocument.justification = ParagraphJustification.RIGHT_JUSTIFY; 
 textLayer_TextDocument.fontSize = fontSize;
 textLayer_TextDocument.applyFill =true;
