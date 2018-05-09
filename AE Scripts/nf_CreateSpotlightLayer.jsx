@@ -1,21 +1,19 @@
 (function() {
-  #include "nf_functions.jsx";
-  var askForChoice, childrenOfSpotlight, createSpotlightLayer, featherExpression, getOnClickFunction, globals, importedFunctions, layerOpacityExpression, matchTransformAndParent, moveLatestMaskToSpotlightLayer, newSolid, nf, spotlightLayerMaskExpression, spotlightNameForLayer;
+  #include "nf_runtimeLibraries.jsx";
+  var NF, _, askForChoice, childrenOfSpotlight, createSpotlightLayer, featherExpression, getOnClickFunction, layerOpacityExpression, matchTransformAndParent, moveLatestMaskToSpotlightLayer, newSolid, spotlightLayerMaskExpression, spotlightNameForLayer;
 
-  importedFunctions = app.nf;
+  NF = app.NF;
 
-  globals = {
+  _ = {
     mainComp: app.project.activeItem,
     spotlightColor: [0.0078, 0, 0.1216],
     initialSpotlightStartOffset: -2,
     initialSpotlightLength: 7
   };
 
-  nf = Object.assign(importedFunctions, globals);
-
   askForChoice = function() {
     var cancelButton, highlightRect, highlightRects, radioButton, selectedLayer, useAllHighlightsButton, useNewMaskButton, useSelectedHighlightsButton, w;
-    selectedLayer = nf.mainComp.selectedLayers[0];
+    selectedLayer = _.mainComp.selectedLayers[0];
     w = new Window('dialog', 'Add Spotlight');
     w.alignChildren = 'left';
     w.grp1 = w.add('panel', void 0, 'Create Spotlight from Mask', {
@@ -25,7 +23,7 @@
     w.grp1.margins.top = 16;
     useNewMaskButton = w.grp1.add("button", void 0, "Latest Mask on Selected Layer");
     useNewMaskButton.onClick = getOnClickFunction(null, null, w);
-    highlightRects = nf.sourceRectsForHighlightsInTargetLayer(selectedLayer);
+    highlightRects = NF.Util.sourceRectsForHighlightsInTargetLayer(selectedLayer);
     if (highlightRects != null) {
       w.grp2 = w.add('panel', void 0, 'Create Spotlight from Highlight', {
         borderStyle: 'none'
@@ -33,15 +31,15 @@
       w.grp2.alignChildren = 'left';
       w.grp2.margins.top = 16;
       useAllHighlightsButton = w.grp2.add('button', void 0, "All Active Highlights");
-      useAllHighlightsButton.onClick = getOnClickFunction(nf.toKeys(highlightRects), highlightRects, w, true);
+      useAllHighlightsButton.onClick = getOnClickFunction(NF.Util.toKeys(highlightRects), highlightRects, w, true);
       w.grp3 = w.grp2.add('group', void 0, void 0, void 0);
       w.grp3.alignChildren = 'left';
       w.grp3.orientation = 'column';
       for (highlightRect in highlightRects) {
-        radioButton = w.grp3.add('checkbox', void 0, nf.capitalizeFirstLetter(highlightRect));
+        radioButton = w.grp3.add('checkbox', void 0, NF.Util.capitalizeFirstLetter(highlightRect));
       }
       useSelectedHighlightsButton = w.grp2.add('button', void 0, "Selected Highlights");
-      useSelectedHighlightsButton.onClick = getOnClickFunction(nf.toKeys(highlightRects), highlightRects, w, true, w.grp3.children);
+      useSelectedHighlightsButton.onClick = getOnClickFunction(NF.Util.toKeys(highlightRects), highlightRects, w, true, w.grp3.children);
     }
     cancelButton = w.add('button', void 0, 'Cancel', {
       name: 'cancel'
@@ -62,7 +60,7 @@
     return function() {
       var rectKeys, theRect, thisIndex;
       if (choices != null) {
-        rectKeys = nf.toKeys(sourceRect);
+        rectKeys = NF.Util.toKeys(sourceRect);
       }
       if (multiple) {
         for (theRect in sourceRect) {
@@ -85,15 +83,15 @@
 
   createSpotlightLayer = function(sourceHighlightName, sourceHighlightRect) {
     var childSpan, children, dummyMask, effects, j, len1, newShape, ref, spanLayer, spanMask, spanMaskPath, spanSolidProperties, spotlightControl, spotlightLayer, spotlightLayerMask, spotlightLayerMaskName, spotlightMaskShape, spotlightName, spotlightSolidProperties, targetLayer;
-    targetLayer = nf.mainComp.selectedLayers[0];
+    targetLayer = _.mainComp.selectedLayers[0];
     if (targetLayer instanceof ShapeLayer || targetLayer.nullLayer || (targetLayer.source instanceof FootageItem && targetLayer.source.mainSource instanceof SolidSource)) {
       alert("Error\nPlease select the correct source layer\nDid you draw the mask on the existing spotlight layer by mistake?");
     }
     spotlightName = spotlightNameForLayer(targetLayer);
-    spotlightLayer = nf.mainComp.layers.byName(spotlightName);
+    spotlightLayer = _.mainComp.layers.byName(spotlightName);
     if (spotlightLayer == null) {
       spotlightSolidProperties = {
-        color: nf.spotlightColor,
+        color: _.spotlightColor,
         name: spotlightName,
         width: targetLayer.width,
         height: targetLayer.height,
@@ -110,14 +108,14 @@
     }
     if ((sourceHighlightName != null) && (sourceHighlightRect != null)) {
       spotlightLayerMaskName = spotlightName + " - " + sourceHighlightName;
-      if (nf.mainComp.layer(spotlightLayerMaskName) != null) {
+      if (_.mainComp.layer(spotlightLayerMaskName) != null) {
         alert("Skipping duplicate of spotlight:\n'" + spotlightLayerMaskName + "'");
         return;
       }
       spotlightLayerMask = spotlightLayer.mask.addProperty("Mask");
       spotlightMaskShape = spotlightLayerMask.property("maskShape");
       newShape = spotlightMaskShape.value;
-      newShape.vertices = nf.verticiesFromSourceRect(sourceHighlightRect);
+      newShape.vertices = NF.Util.verticiesFromSourceRect(sourceHighlightRect);
       newShape.closed = true;
       spotlightMaskShape.setValue(newShape);
       spotlightLayerMask.maskMode = MaskMode.SUBTRACT;
@@ -135,8 +133,8 @@
       name: spotlightLayerMask.name,
       layerAfter: spotlightLayer,
       enabled: false,
-      startTime: nf.mainComp.time + nf.initialSpotlightStartOffset,
-      outPoint: nf.mainComp.time + nf.initialSpotlightStartOffset + nf.initialSpotlightLength
+      startTime: _.mainComp.time + _.initialSpotlightStartOffset,
+      outPoint: _.mainComp.time + _.initialSpotlightStartOffset + _.initialSpotlightLength
     };
     spanLayer = newSolid(spanSolidProperties);
     matchTransformAndParent(spanLayer, spotlightLayer);
@@ -177,7 +175,7 @@
 
   childrenOfSpotlight = function(spotlightLayer) {
     var allLayers, childLayerArray, childLayerArrayString, i, returnObject, theLayer;
-    allLayers = nf.mainComp.layers;
+    allLayers = _.mainComp.layers;
     childLayerArrayString = "[";
     childLayerArray = [];
     i = 1;
@@ -228,8 +226,8 @@
     props = {
       color: (ref = props.color) != null ? ref : [0, 0, 0],
       name: (ref1 = props.name) != null ? ref1 : "New Solid",
-      width: (ref2 = props.width) != null ? ref2 : nf.mainComp.width,
-      height: (ref3 = props.height) != null ? ref3 : nf.mainComp.height,
+      width: (ref2 = props.width) != null ? ref2 : _.mainComp.width,
+      height: (ref3 = props.height) != null ? ref3 : _.mainComp.height,
       pixelAspect: (ref4 = props.pixelAspect) != null ? ref4 : 1,
       layerAfter: (ref5 = props.layerAfter) != null ? ref5 : null,
       layerBefore: (ref6 = props.layerBefore) != null ? ref6 : null,
@@ -240,7 +238,7 @@
       outPoint: (ref10 = props.outPoint) != null ? ref10 : null,
       inPoint: (ref11 = props.inPoint) != null ? ref11 : null
     };
-    newSolidLayer = nf.mainComp.layers.addSolid(props.color, props.name, props.width, props.height, props.pixelAspect);
+    newSolidLayer = _.mainComp.layers.addSolid(props.color, props.name, props.width, props.height, props.pixelAspect);
     if (props.layerAfter) {
       newSolidLayer.moveBefore(props.layerAfter);
     }

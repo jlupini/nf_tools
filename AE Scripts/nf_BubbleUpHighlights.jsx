@@ -1,23 +1,21 @@
 (function() {
-  #include "nf_functions.jsx";
-  var globals, importedFunctions, main, nf;
+  #include "nf_runtimeLibraries.jsx";
+  var NF, _, main;
 
-  importedFunctions = app.nf;
+  NF = app.NF;
 
-  globals = {
+  _ = {
     mainComp: app.project.activeItem,
     undoGroupName: 'Bubble Up Highlights'
   };
 
-  nf = Object.assign(importedFunctions, globals);
-
   main = function() {
     var pagesToBubble;
-    pagesToBubble = nf.mainComp.selectedLayers;
-    return nf.bubbleUpHighlights(pagesToBubble);
+    pagesToBubble = _.mainComp.selectedLayers;
+    return NF.Util.bubbleUpHighlights(pagesToBubble);
   };
 
-  app.beginUndoGroup(nf.undoGroupName);
+  app.beginUndoGroup(_.undoGroupName);
 
   main();
 

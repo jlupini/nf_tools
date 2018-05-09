@@ -1,29 +1,29 @@
 `#include "lib/extendscript.prototypes.js"`
-nf = {}
+NF = app.NF ? {}
 
 # enums
-nf.PageTurn =
+NF.Util.PageTurn =
   FLIPPEDUP: 100
   FLIPPEDDOWN: 200
   TURNING: 300
   NOPAGETURN: 400
   BROKEN: 500
 
-nf.AnimationType = 
+NF.Util.AnimationType = 
   SLIDE: 100
   FADE: 200
 
-nf.Position = 
+NF.Util.Position = 
   TOP: 100
   RIGHT: 200
   BOTTOM: 300
   LEFT: 400
 
-nf.Direction =
+NF.Util.Direction =
   IN: 100
   OUT: 200
 
-nf.EaseFunction =
+NF.Util.EaseFunction =
   LINEAR: 100
   PAGESLIDEEASE: 150
   # EASEINSINE: 200
@@ -40,7 +40,7 @@ nf.EaseFunction =
 # Utility Functions
 
 # Looks for an item globally in the project
-nf.findItem = (itemName) ->
+NF.Util.findItem = (itemName) ->
   i = 1
   while i <= app.project.items.length
     thisItem = app.project.items[i]
@@ -49,11 +49,11 @@ nf.findItem = (itemName) ->
     i++
   null
 
-nf.isHighlightLayer = (theLayer) ->
+NF.Util.isHighlightLayer = (theLayer) ->
   return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
 
 # Given a string with the name of an item to find and it's parent folder, findItemIn returns the folderItem, or null of none is found.
-nf.findItemIn = (itemName, sourceFolderItem) ->
+NF.Util.findItemIn = (itemName, sourceFolderItem) ->
   i = 1
   while i <= sourceFolderItem.numItems
     if sourceFolderItem.item(i).name == itemName
@@ -62,7 +62,7 @@ nf.findItemIn = (itemName, sourceFolderItem) ->
   null
 
 # Animates a page in or out with specified params
-nf.animatePage = (model) ->
+NF.Util.animatePage = (model) ->
 
   # FIXME: Move all this ew stuff to a generalized thing
   ew_getPathToEasingFolder = ->
@@ -111,14 +111,14 @@ nf.animatePage = (model) ->
   return null unless model.page?
   model =
     page: model.page
-    type: model.type ? nf.AnimationType.SLIDE
-    position: model.position ? nf.Position.RIGHT
-    direction: model.direction ? nf.Direction.IN
+    type: model.type ? NF.Util.AnimationType.SLIDE
+    position: model.position ? NF.Util.Position.RIGHT
+    direction: model.direction ? NF.Util.Direction.IN
     duration: model.duration ? 1
-    easeFunction: model.easeFunction ? nf.EaseFunction.LINEAR
+    easeFunction: model.easeFunction ? NF.Util.EaseFunction.LINEAR
     shadowBuffer: model.shadowBuffer ? 350
 
-  if model.direction is nf.Direction.IN
+  if model.direction is NF.Util.Direction.IN
     duration = model.duration
     inPoint = model.page.inPoint
     outPoint = model.page.outPoint
@@ -128,12 +128,12 @@ nf.animatePage = (model) ->
     inPoint = model.page.outPoint
     outPoint = model.page.inPoint
 
-  if model.type is nf.AnimationType.SLIDE
+  if model.type is NF.Util.AnimationType.SLIDE
 
     positionProperty = model.page.transform.position
     oldPosition = positionProperty.value
     
-    rect = nf.sourceRectToComp(model.page, inPoint)
+    rect = NF.Util.sourceRectToComp(model.page, inPoint)
     mainComp = app.project.activeItem
 
     rect =
@@ -144,16 +144,16 @@ nf.animatePage = (model) ->
       width: rect.width
       height: rect.height
 
-    if model.position is nf.Position.RIGHT
+    if model.position is NF.Util.Position.RIGHT
       # How far to the right do we need to move the page to get it off that side?
       # To do that, rect.left >= to mainComp.width
       diffX = mainComp.width - rect.left + model.shadowBuffer
       diffY = 0
-    else if model.position is nf.Position.LEFT
+    else if model.position is NF.Util.Position.LEFT
       # need to make rect.right <= 0
       diffX = 0 - rect.right - model.shadowBuffer
       diffY = 0
-    else if model.position is nf.Position.TOP
+    else if model.position is NF.Util.Position.TOP
       # need to make rect.bottom <= 0
       diffY = 0 - rect.bottom - model.shadowBuffer
       diffX = 0
@@ -169,9 +169,9 @@ nf.animatePage = (model) ->
     outKeyIdx = positionProperty.nearestKeyIndex outPoint
 
     # Easing
-    unless model.easeFunction is nf.EaseFunction.LINEAR
+    unless model.easeFunction is NF.Util.EaseFunction.LINEAR
       # FIXME: Add all the other eases and make this one right.... maybe gotta do spatial?
-      if model.easeFunction is nf.EaseFunction.PAGESLIDEEASE
+      if model.easeFunction is NF.Util.EaseFunction.PAGESLIDEEASE
         # easeIn1 = new KeyframeEase(0, 50)
         # easeOut1 = new KeyframeEase(0.75, 85)
         # easeIn2 = new KeyframeEase(0, 100)
@@ -182,17 +182,17 @@ nf.animatePage = (model) ->
         easingEquation = ew_readFile("quint-out-easeandwizz-start-only.txt")
         ew_setProps [positionProperty], easingEquation
 
-  else if model.type is nf.AnimationType.FADE
+  else if model.type is NF.Util.AnimationType.FADE
     # FIXME: Handle this case
     return null
 
-nf.pageTreeForPaper = (sourceLayer) ->
+NF.Util.pageTreeForPaper = (sourceLayer) ->
 
   @layerObj = (layerName) ->
     ->
       app.project.activeItem.layers.byName layerName
 
-  pageParent = nf.pageParent sourceLayer
+  pageParent = NF.Util.pageParent sourceLayer
   allLayers = app.project.activeItem.layers
   tree =
     name: pageParent.name
@@ -203,23 +203,23 @@ nf.pageTreeForPaper = (sourceLayer) ->
   i = 1
   while i <= allLayers.length
     testLayer = allLayers[i]
-    if testLayer.parent is pageParent and nf.isCompLayer testLayer
+    if testLayer.parent is pageParent and NF.Util.isCompLayer testLayer
       pageObject = 
         name: testLayer.name
         index: testLayer.index
         layer: @layerObj testLayer.name
         active: false
-        highlights: nf.sourceRectsForHighlightsInTargetLayer testLayer, nf.isTitlePage(testLayer)
+        highlights: NF.Util.sourceRectsForHighlightsInTargetLayer testLayer, NF.Util.isTitlePage(testLayer)
       tree.pages.push pageObject
     i++
 
-  activePageIndex = nf.activePageIndexInArray tree.pages
+  activePageIndex = NF.Util.activePageIndexInArray tree.pages
   if activePageIndex?
     tree.pages[activePageIndex].active = true 
     tree.activePage = tree.pages[activePageIndex].layer()
   tree
 
-nf.isTitlePage = (testLayer) ->
+NF.Util.isTitlePage = (testLayer) ->
   # FIXME: This is a little hacky
   tests = ['pg01', 'pg1', 'page1', 'page01']
   isTitlePage = false
@@ -227,14 +227,14 @@ nf.isTitlePage = (testLayer) ->
     isTitlePage = true if testLayer.name.indexOf(test) isnt -1
   isTitlePage
 
-nf.activePageIndexInArray = (pages) ->
+NF.Util.activePageIndexInArray = (pages) ->
   activePage = null
   activePageIndex = null
   i = 0
   while i < pages.length
     page = pages[i]
     pageLayer = page.layer()
-    if pageLayer.active and (nf.pageTurnStatus(pageLayer) is nf.PageTurn.FLIPPEDDOWN or nf.pageTurnStatus(pageLayer) is nf.PageTurn.NOPAGETURN)
+    if pageLayer.active and (NF.Util.pageTurnStatus(pageLayer) is NF.Util.PageTurn.FLIPPEDDOWN or NF.Util.pageTurnStatus(pageLayer) is NF.Util.PageTurn.NOPAGETURN)
       if not activePage? or page.index < activePage.index
         activePage = page
         activePageIndex = i
@@ -242,31 +242,31 @@ nf.activePageIndexInArray = (pages) ->
 
   return activePageIndex
 
-nf.pageLayerCanBeActive = (pageLayer) ->
-  return pageLayer.active and (nf.pageTurnStatus(pageLayer) is nf.PageTurn.FLIPPEDDOWN or nf.pageTurnStatus(pageLayer) is nf.PageTurn.NOPAGETURN)
+NF.Util.pageLayerCanBeActive = (pageLayer) ->
+  return pageLayer.active and (NF.Util.pageTurnStatus(pageLayer) is NF.Util.PageTurn.FLIPPEDDOWN or NF.Util.pageTurnStatus(pageLayer) is NF.Util.PageTurn.NOPAGETURN)
 
 ###
 Turn a page, with a duration in seconds, starting at a given time, optionally flipping down to reveal instead of flippingUp
 Current state of the page's fold will override a given flipUp value if there is already a pageTurn Effect
 ###
-nf.turnPageAtTime = (page, duration = 1.5, time = null, flipUp = true) ->
-  if not nf.isCompLayer page
+NF.Util.turnPageAtTime = (page, duration = 1.5, time = null, flipUp = true) ->
+  if not NF.Util.isCompLayer page
     return alert "Cannot turn page on a non-comp layer"
 
   startTime = time ? app.project.activeItem.time
   endTime = startTime + duration
-  startStatus = nf.pageTurnStatus page, startTime
-  endStatus = nf.pageTurnStatus page, endTime
+  startStatus = NF.Util.pageTurnStatus page, startTime
+  endStatus = NF.Util.pageTurnStatus page, endTime
 
   # Check if already turning
-  if startStatus is nf.PageTurn.TURNING or endStatus is nf.PageTurn.TURNING
+  if startStatus is NF.Util.PageTurn.TURNING or endStatus is NF.Util.PageTurn.TURNING
     return alert "Page is already turning at specified time"
-  if startStatus is nf.PageTurn.BROKEN
+  if startStatus is NF.Util.PageTurn.BROKEN
     return alert "Page Turn keyframes seem broken..."
 
   # Check if no effect set up already
-  if startStatus is nf.PageTurn.NOPAGETURN
-    nf.addPageTurnEffects page
+  if startStatus is NF.Util.PageTurn.NOPAGETURN
+    NF.Util.addPageTurnEffects page
 
   # Set the Properties
   pageSize =
@@ -276,9 +276,9 @@ nf.turnPageAtTime = (page, duration = 1.5, time = null, flipUp = true) ->
   upPosition = [-pageSize.width, -pageSize.height]
   positions = [downPosition, upPosition]
 
-  if startStatus is nf.PageTurn.FLIPPEDUP
+  if startStatus is NF.Util.PageTurn.FLIPPEDUP
     flipUp = false
-  else if startStatus is nf.PageTurn.FLIPPEDDOWN
+  else if startStatus is NF.Util.PageTurn.FLIPPEDDOWN
     flipUp = true
 
   positions.reverse() if not flipUp
@@ -288,10 +288,10 @@ nf.turnPageAtTime = (page, duration = 1.5, time = null, flipUp = true) ->
   foldPosition = page.effect("CC Page Turn").property("Fold Position")
   foldPosition.setValuesAtTimes times, positions
 
-  nf.setSymmetricalTemporalEasingOnlyForProperties foldPosition, times, null, null, true
+  NF.Util.setSymmetricalTemporalEasingOnlyForProperties foldPosition, times, null, null, true
 
 # Adds the effects for a pageturn to a layer annd sets some defaults
-nf.addPageTurnEffects = (page) ->
+NF.Util.addPageTurnEffects = (page) ->
   forceMotionBlurMatchName = "CC Force Motion Blur"
   dropShadowMatchName = "ADBE Drop Shadow"
   pageTurnMatchName = "CC Page Turn"
@@ -317,44 +317,44 @@ nf.addPageTurnEffects = (page) ->
   page
   
 ###
-Given a layer, returns the nf.PageTurn enum
+Given a layer, returns the NF.Util.PageTurn enum
 ###
-nf.pageTurnStatus = (pageLayer, time = null) ->
+NF.Util.pageTurnStatus = (pageLayer, time = null) ->
   time = time ? app.project.activeItem.time
   pageTurnEffect = pageLayer.effect("CC Page Turn")
   foldPositionProperty = pageTurnEffect?.property("Fold Position")
   foldPosition = foldPositionProperty?.value
   threshold = 3840
   if not pageTurnEffect?
-    return nf.PageTurn.NOPAGETURN
+    return NF.Util.PageTurn.NOPAGETURN
   else if foldPosition[0] >= threshold
-    return nf.PageTurn.FLIPPEDDOWN
+    return NF.Util.PageTurn.FLIPPEDDOWN
   else if foldPosition[0] <= threshold * -1
-    return nf.PageTurn.FLIPPEDUP
+    return NF.Util.PageTurn.FLIPPEDUP
   else if foldPositionProperty.numKeys isnt 0
     # FIXME: There may be more things that could mean this is broken
-    return nf.PageTurn.TURNING
+    return NF.Util.PageTurn.TURNING
   else
-    return nf.PageTurn.BROKEN
+    return NF.Util.PageTurn.BROKEN
 
 # Returns true if given layer is a comp
-nf.isCompLayer = (testLayer) ->
+NF.Util.isCompLayer = (testLayer) ->
   return testLayer instanceof AVLayer and testLayer.source instanceof CompItem
 
-nf.pageParent = (selectedLayer) ->
+NF.Util.pageParent = (selectedLayer) ->
   return selectedLayer if selectedLayer.nullLayer
   return selectedLayer.parent if selectedLayer.parent?.nullLayer
   return null
 
 # Disconnects ALL highlight controls in a given layer or array of highlight layers
-nf.disconnectBubbleupsInLayers = (layers, names = null) ->
+NF.Util.disconnectBubbleupsInLayers = (layers, names = null) ->
   if not BE.isArray layers
     layers = [layers]
 
   bubbleupLayers = []
   for theLayer in layers
-    if nf.isCompLayer theLayer
-        bubbleupLayers = bubbleupLayers.concat nf.collectionToArray theLayer.source.layers
+    if NF.Util.isCompLayer theLayer
+        bubbleupLayers = bubbleupLayers.concat NF.Util.collectionToArray theLayer.source.layers
     else
       bubbleupLayers.push theLayer
 
@@ -372,7 +372,7 @@ nf.disconnectBubbleupsInLayers = (layers, names = null) ->
 
 # Adds Temporal easing (and removes spatial easing) for an array of properties, an array of key indexes, as well as an ease type and weight.
 # Keys can be delivered as indexes or times. If 
-nf.setSymmetricalTemporalEasingOnlyForProperties = (theProperties, keys, easeType = null, easeWeight = null, keysAsTimes = false) ->
+NF.Util.setSymmetricalTemporalEasingOnlyForProperties = (theProperties, keys, easeType = null, easeWeight = null, keysAsTimes = false) ->
   if theProperties instanceof Array and keys instanceof Array
     return -1 if theProperties.length isnt keys.length
 
@@ -384,9 +384,9 @@ nf.setSymmetricalTemporalEasingOnlyForProperties = (theProperties, keys, easeTyp
     singleProperty = theProperties
 
   if not easeType?
-    easeType = nf.easeType ? KeyframeInterpolationType.BEZIER
+    easeType = NF.Util.easeType ? KeyframeInterpolationType.BEZIER
   if not easeWeight?
-    easeWeight = nf.easeWeight ? 33
+    easeWeight = NF.Util.easeWeight ? 33
 
   i = 0
   length = if singleProperty? then keys.length else theProperties.length
@@ -415,7 +415,7 @@ nf.setSymmetricalTemporalEasingOnlyForProperties = (theProperties, keys, easeTyp
 
     i++
 
-nf.collectionToArray = (collection) ->
+NF.Util.collectionToArray = (collection) ->
   arr = []
   i = 1
   while i <= collection.length
@@ -424,14 +424,14 @@ nf.collectionToArray = (collection) ->
   return arr
 
 # Just a shortcut
-nf.toArr = (collection) ->
-  return nf.collectionToArray collection
+NF.Util.toArr = (collection) ->
+  return NF.Util.collectionToArray collection
 
-nf.capitalizeFirstLetter = (string) ->
+NF.Util.capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase() + string.slice(1)
 
 # true if variable exists, is a string, and has a length greater than zero
-nf.isNonEmptyString = (unknownVariable) ->
+NF.Util.isNonEmptyString = (unknownVariable) ->
   if (((typeof unknownVariable != "undefined") && (typeof unknownVariable.valueOf() == "string")) && (unknownVariable.length > 0))
     return true
   return false
@@ -453,7 +453,7 @@ nf.isNonEmptyString = (unknownVariable) ->
 #     effect? (this needs to be a string)
 #     subEffect? (this needs to be a string)
 # FIXME: Check for if effects are actual effects or strings
-nf.markerDrivenExpression = (model) ->
+NF.Util.markerDrivenExpression = (model) ->
   term = ";\n"
   defaults =
     duration: "30"
@@ -469,12 +469,12 @@ nf.markerDrivenExpression = (model) ->
       if subModel.value?
         expressionString += subModel.value
       else if subModel.effect?
-        if nf.isNonEmptyString(subModel.effect)
+        if NF.Util.isNonEmptyString(subModel.effect)
           effectName = subModel.effect
         else
           effectName = subModel.effect.name
         if subModel.subEffect?
-          if nf.isNonEmptyString(subModel.subEffect)
+          if NF.Util.isNonEmptyString(subModel.subEffect)
             subEffectName = subModel.subEffect
           else
             subEffectName = subModel.subEffect.name
@@ -489,10 +489,10 @@ nf.markerDrivenExpression = (model) ->
     return expressionString
 
   unless model.layer? and model.duration?
-    return alert "Error\nNo layer or duration specified in nf.markerDrivenExpression!"
+    return alert "Error\nNo layer or duration specified in NF.Util.markerDrivenExpression!"
 
   # Get the layer name from the layer object if it's not a string
-  if nf.isNonEmptyString(model.layer)
+  if NF.Util.isNonEmptyString(model.layer)
     layerName = model.layer
   else
     layerName = model.layer.name
@@ -522,7 +522,7 @@ nf.markerDrivenExpression = (model) ->
   return trimString
 
 # Returns an array where each item is an object containing position data for each highlight in the target page layer
-nf.sourceRectsForHighlightsInTargetLayer = (targetLayer, includeTitlePage = false) ->
+NF.Util.sourceRectsForHighlightsInTargetLayer = (targetLayer, includeTitlePage = false) ->
   sourceCompLayers = targetLayer.source?.layers
   return null if not sourceCompLayers?
   sourceHighlightLayers = []
@@ -536,7 +536,7 @@ nf.sourceRectsForHighlightsInTargetLayer = (targetLayer, includeTitlePage = fals
 
         layerParent = theLayer.parent
         theLayer.parent = null
-        sourceHighlightRects[theLayer.name] = nf.sourceRectToComp theLayer
+        sourceHighlightRects[theLayer.name] = NF.Util.sourceRectToComp theLayer
         sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value or 0
         sourceHighlightRects[theLayer.name].name = theLayer.name
         sourceHighlightRects[theLayer.name].bubbled = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionEnabled
@@ -558,7 +558,7 @@ nf.sourceRectsForHighlightsInTargetLayer = (targetLayer, includeTitlePage = fals
 # Uses a null hack to get the sourceRect of a layer relative to the comp. A targetTime passed in will
 # be the time of the comp the LAYER is in. Default is the mainCompTime
 # The Null hack seems to move the time of the maincomp sometimes so we need to keep it in line
-nf.sourceRectToComp = (layer, targetTime = null, keepNull = false) ->
+NF.Util.sourceRectToComp = (layer, targetTime = null, keepNull = false) ->
   mainCompTime = app.project.activeItem.time
   targetTime = targetTime ? mainCompTime
   tempNull = layer.containingComp.layers.addNull()
@@ -576,9 +576,9 @@ nf.sourceRectToComp = (layer, targetTime = null, keepNull = false) ->
     width: bottomRightPoint[0] - topLeftPoint[0]
     height: bottomRightPoint[1] - topLeftPoint[1]
 
-nf.rectRelativeToComp = (rect, layer, targetTime = null) ->
-  topLeftPoint = nf.pointRelativeToComp [rect.left, rect.top], layer, targetTime
-  bottomRightPoint = nf.pointRelativeToComp [rect.left + rect.width, rect.top + rect.height], layer, targetTime
+NF.Util.rectRelativeToComp = (rect, layer, targetTime = null) ->
+  topLeftPoint = NF.Util.pointRelativeToComp [rect.left, rect.top], layer, targetTime
+  bottomRightPoint = NF.Util.pointRelativeToComp [rect.left + rect.width, rect.top + rect.height], layer, targetTime
   newRect =
     left: topLeftPoint[0]
     top: topLeftPoint[1]
@@ -586,16 +586,16 @@ nf.rectRelativeToComp = (rect, layer, targetTime = null) ->
     height: bottomRightPoint[1] - topLeftPoint[1]
 
 # Returns a point on a layer relative to the containing comp, optionally at a given time
-nf.pointRelativeToComp = (sourcePoint, layer, targetTime = null) ->
+NF.Util.pointRelativeToComp = (sourcePoint, layer, targetTime = null) ->
   targetTime = targetTime ? app.project.activeItem.time
-  tempNull = nf.nullAtPointRelativeToComp sourcePoint, layer
+  tempNull = NF.Util.nullAtPointRelativeToComp sourcePoint, layer
   newPoint = tempNull.transform.position.valueAtTime targetTime, false
   tempNull.remove()
   newPoint
 
 # Creates and returns a null object with no parent, at the same coordinates in a comp as the
 # supplied point on a given layer.
-nf.nullAtPointRelativeToComp = (sourcePoint, layer) ->
+NF.Util.nullAtPointRelativeToComp = (sourcePoint, layer) ->
   targetTime = targetTime ? app.project.activeItem.time
   # FIXME: This may cause the time to jump forward, similarly to in sourceRectToComp. Need to investigate further
   tempNull = layer.containingComp.layers.addNull()
@@ -603,14 +603,14 @@ nf.nullAtPointRelativeToComp = (sourcePoint, layer) ->
                                             a"
   tempNull
 
-nf.toKeys = (dict) ->
+NF.Util.toKeys = (dict) ->
   allKeys = []
   for key of dict
     allKeys.push key
   allKeys
 
 # Returns an array of verticies needed to draw a shape or mask from the source rect of a highlight layer
-nf.verticiesFromSourceRect = (rect) ->
+NF.Util.verticiesFromSourceRect = (rect) ->
   v =
     topLeft: [rect.left, rect.top]
     topRight: [rect.left + rect.width, rect.top]
@@ -618,7 +618,7 @@ nf.verticiesFromSourceRect = (rect) ->
     bottomLeft: [rect.left, rect.top + rect.height]
   return [v.topLeft, v.bottomLeft, v.bottomRight, v.topRight]
 
-nf.trimExpression = (thisLine, numberOfLines) ->
+NF.Util.trimExpression = (thisLine, numberOfLines) ->
   trimString = "slider_val = effect(\"AV Highlighter\")(\"Completion\") / 10;
                 start_offset = effect(\"AV Highlighter\")(\"Start Offset\");
                 end_offset = effect(\"AV Highlighter\")(\"End Offset\");
@@ -641,14 +641,14 @@ nf.trimExpression = (thisLine, numberOfLines) ->
 
 # Deprecate soon - Upgrades highlight layers up to v0.80
 # Returns the highlight layer
-nf.upgradeHighlightLayer = (highlightLayer) ->
+NF.Util.upgradeHighlightLayer = (highlightLayer) ->
   lineCount = highlightLayer.property("Contents").numProperties
   i = lineCount
   lineNumber = 1
   while i >= 1
     thisLine = highlightLayer.property("Contents").property(i)
     trimProperty = thisLine.property('Contents').property('Trim Paths 1').property('End')
-    trimProperty.expression = nf.trimExpression(lineNumber, lineCount)
+    trimProperty.expression = NF.Util.trimExpression(lineNumber, lineCount)
 
     # If the last line is partially complete, convert it to full completion with an end offset
     if lineNumber is lineCount
@@ -665,14 +665,14 @@ nf.upgradeHighlightLayer = (highlightLayer) ->
 
   return highlightLayer
 
-nf.fixTrimExpressionsForHighlightLayer = (highlightLayer) ->
+NF.Util.fixTrimExpressionsForHighlightLayer = (highlightLayer) ->
   lineCount = highlightLayer.property("Contents").numProperties
   i = lineCount
   lineNumber = 1
   while i >= 1
     thisLine = highlightLayer.property("Contents").property(i)
     trimProperty = thisLine.property('Contents').property('Trim Paths 1').property('End')
-    trimProperty.expression = nf.trimExpression(lineNumber, lineCount)
+    trimProperty.expression = NF.Util.trimExpression(lineNumber, lineCount)
 
     i--
     lineNumber++
@@ -681,7 +681,7 @@ nf.fixTrimExpressionsForHighlightLayer = (highlightLayer) ->
 # By default, will bubble all unconnected highlights in the layers given.
 # Optional array of names of relevant highlights to bubble up. Will disconnect
 # and override any connected layers among those provided
-nf.bubbleUpHighlights = (pagesToBubble, choices = null) ->
+NF.Util.bubbleUpHighlights = (pagesToBubble, choices = null) ->
   mainComp = app.project.activeItem
   i = pagesToBubble.length - 1
   while i >= 0
@@ -701,7 +701,7 @@ nf.bubbleUpHighlights = (pagesToBubble, choices = null) ->
         testExpression = testLayer.property("Contents").property(firstShapeIndex).property("Contents").property("Trim Paths 1").property("End").expression
 
         # Upgrade to the 'End Offset' pseudo effect version if necessary
-        nf.upgradeHighlightLayer testLayer if testExpression.indexOf('end_offset') < 0
+        NF.Util.upgradeHighlightLayer testLayer if testExpression.indexOf('end_offset') < 0
 
         highlightLayersInPageComp.push testLayer
       k--
@@ -749,5 +749,5 @@ nf.bubbleUpHighlights = (pagesToBubble, choices = null) ->
     i--
   return
 
-# Add functions to app.nf
-app.nf = nf
+# Add functions to app.NF
+app.NF = Object.assign app.NF, NF

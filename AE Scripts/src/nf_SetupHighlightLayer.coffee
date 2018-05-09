@@ -1,17 +1,16 @@
-﻿`#include "nf_functions.jsx"`
+﻿`#include "nf_runtimeLibraries.jsx"`
 
-importedFunctions = app.nf
-globals =
+NF = app.NF
+_ =
 	mainComp: app.project.activeItem
 	undoGroupName: 'Create Highlight Layer'
-nf = Object.assign importedFunctions, globals
 
 main = ->
 	mainComp = app.project.activeItem
 	highlightLayer = mainComp.selectedLayers[0]
 
 	# Get out of here if too many layers are selected
-	return alert "Error!\nMore than one layer selected" if nf.mainComp.selectedLayers.length > 1
+	return alert "Error!\nMore than one layer selected" if _.mainComp.selectedLayers.length > 1
 
 	if !(highlightLayer instanceof ShapeLayer)
 		# If we're not even on a shape layer, make one
@@ -43,13 +42,13 @@ getChoice = ->
 	cancelButton = w.add 'button', undefined, 'Cancel', name: 'cancel'
 
 	splitButton.onClick = ->
-		nf.disconnectBubbleupsInLayers nf.mainComp.selectedLayers[0]
+		NF.Util.disconnectBubbleupsInLayers _.mainComp.selectedLayers[0]
 		splitHighlightLayer()
 		w.close()
 		return
 
 	disconnectButton.onClick = ->
-		nf.disconnectBubbleupsInLayers nf.mainComp.selectedLayers[0]
+		NF.Util.disconnectBubbleupsInLayers _.mainComp.selectedLayers[0]
 		w.close()
 		return
 
@@ -76,7 +75,7 @@ fixExpressionProblems = (highlightLayer) ->
 	return false
 
 
-# Creates and populates nf.highlightColorOptions
+# Creates and populates _.highlightColorOptions
 initColorPresets = ->
 	# Note: to add/subtract or change the order of the highlight colour options, the pseudo effect in preset-effects.xml must be edited
 	highlightColorYELLOW = [255, 221, 3, 255]
@@ -87,7 +86,7 @@ initColorPresets = ->
 	highlightColorORANGE = [255, 175, 104, 255]
 	highlightColorRED = [255, 157, 157, 255]
 
-	nf.highlightColorOptions = [
+	_.highlightColorOptions = [
 		highlightColorYELLOW
 		highlightColorBLUE
 		highlightColorPURPLE
@@ -105,12 +104,12 @@ getColorExpression = ->
 	trimString = ''
 	trimString += 'popup_val = effect("AV Highlighter")("Highlight Colour");'
 	i = 0
-	while i < nf.highlightColorOptions.length
+	while i < _.highlightColorOptions.length
 		if i != 0
 			trimString += 'else '
-		if i != nf.highlightColorOptions.length - 1
+		if i != _.highlightColorOptions.length - 1
 			trimString += 'if (popup_val == ' + (i + 1) + ') '
-		trimString += '{ [' + nf.highlightColorOptions[i].toString() + ']/255; } '
+		trimString += '{ [' + _.highlightColorOptions[i].toString() + ']/255; } '
 		i++
 	trimString += ';'
 	return trimString
@@ -151,7 +150,7 @@ createHighlighter = ->
 	highlightLayer.property('Transform').property('Position').expression = offsetString
 
 	# Set the expression for line 1
-	shape1.property('Contents').property('Trim Paths 1').property('End').expression = nf.trimExpression(1, highlightLinesCount)
+	shape1.property('Contents').property('Trim Paths 1').property('End').expression = NF.Util.trimExpression(1, highlightLinesCount)
 
 	# Make the additional lines
 	i = 2
@@ -163,7 +162,7 @@ createHighlighter = ->
 		# Make the new slider and make it control the new shape's trim paths property
 		newShape.property('Contents').property('Trim Paths 1').property('Start').expression = ''
 
-		newShape.property('Contents').property('Trim Paths 1').property('End').expression = nf.trimExpression(i, highlightLinesCount)
+		newShape.property('Contents').property('Trim Paths 1').property('End').expression = NF.Util.trimExpression(i, highlightLinesCount)
 
 		i++
 	return
@@ -177,8 +176,8 @@ createShapeLayer = (targetLayer) ->
 	return
 
 splitHighlightLayer = ->
-	nf.selectedLayer = nf.mainComp.selectedLayers[0]
-	splitterEffect = nf.selectedLayer.property("Effects").property("Splitter")
+	_.selectedLayer = _.mainComp.selectedLayers[0]
+	splitterEffect = _.selectedLayer.property("Effects").property("Splitter")
 
 	# Create the Splitter Effect and return if it doesn't already exists
 	return createSplitterEffect() unless splitterEffect?
@@ -199,13 +198,13 @@ splitHighlightAtPoint = (splitterPoint) ->
 	percentage = percentThroughLineAtPoint closestLine, splitterPoint
 
 	# Adjust thickness if it's thicker than one full spacing height so that parts match up nicely
-	highlighterEffect = nf.selectedLayer.property("Effects").property("AV Highlighter")
+	highlighterEffect = _.selectedLayer.property("Effects").property("AV Highlighter")
 	highlighterThickness = highlighterEffect.property("Thickness")
 	highlighterSpacing = highlighterEffect.property("Spacing")
 	highlighterThickness.setValue highlighterSpacing.value + 1 if highlighterThickness.value > highlighterSpacing.value + 1
 	
 
-	originalHighlightLayer = nf.selectedLayer
+	originalHighlightLayer = _.selectedLayer
 	newHighlightLayer = originalHighlightLayer.duplicate()
 
 	newHighlightLayer.moveAfter originalHighlightLayer
@@ -246,8 +245,8 @@ splitHighlightAtPoint = (splitterPoint) ->
 	newHighlighterEffect.property("Start Offset").setValue percentage * 100
 	originalHighlighterEffect.property("End Offset").setValue (1 - percentage) * 100
 
-	nf.fixTrimExpressionsForHighlightLayer newHighlightLayer
-	nf.fixTrimExpressionsForHighlightLayer originalHighlightLayer
+	NF.Util.fixTrimExpressionsForHighlightLayer newHighlightLayer
+	NF.Util.fixTrimExpressionsForHighlightLayer originalHighlightLayer
 
 	newLayers = [originalHighlightLayer, newHighlightLayer]
 	return newLayers
@@ -258,12 +257,12 @@ percentThroughLineAtPoint = (line, point) ->
 	return percent
 
 getLineArray = () ->
-	lineCount = nf.selectedLayer.property("Contents").numProperties
+	lineCount = _.selectedLayer.property("Contents").numProperties
 	# Create an array of the path objects in the order they appear
 	lineArray = []
 	i = 1
 	while i <= lineCount
-		lineShape = nf.selectedLayer.property("Contents").property(i)
+		lineShape = _.selectedLayer.property("Contents").property(i)
 		lineName = lineShape.name
 		linePath = lineShape.property("Contents").property("Path 1").property("Path").value
 		lineVerticies = linePath.vertices
@@ -272,7 +271,7 @@ getLineArray = () ->
 		lineEndPoint = lineVerticies[1]
 		yOffsetValue = lineShape.property("Transform").property("Position").value[1]
 		lineAdjustedStartPoint = [lineStartPoint[0], lineStartPoint[1] + yOffsetValue]
-		lineRelativeAdjustedStartPoint = nf.pointRelativeToComp(lineAdjustedStartPoint, nf.selectedLayer)
+		lineRelativeAdjustedStartPoint = NF.Util.pointRelativeToComp(lineAdjustedStartPoint, _.selectedLayer)
 
 		lineRawY = lineAdjustedStartPoint[1]
 		lineRelativeY = lineRelativeAdjustedStartPoint[1]
@@ -297,7 +296,7 @@ getLineArray = () ->
 	return lineArray
 
 createSplitterEffect = () ->
-	splitterEffect = nf.selectedLayer.property("Effects").addProperty("ADBE Point Control")
+	splitterEffect = _.selectedLayer.property("Effects").addProperty("ADBE Point Control")
 	splitterEffect.name = "Splitter"
 	return 1
 
@@ -314,7 +313,7 @@ indexOfClosestLineToPoint = (point, lineArray) ->
 		i++
 	curr
 
-app.beginUndoGroup nf.undoGroupName
+app.beginUndoGroup _.undoGroupName
 
 main()
 

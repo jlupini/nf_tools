@@ -1,10 +1,10 @@
 (function() {
   #include "lib/extendscript.prototypes.js";
-  var nf;
+  var NF, ref;
 
-  nf = {};
+  NF = (ref = app.NF) != null ? ref : {};
 
-  nf.PageTurn = {
+  NF.Util.PageTurn = {
     FLIPPEDUP: 100,
     FLIPPEDDOWN: 200,
     TURNING: 300,
@@ -12,29 +12,29 @@
     BROKEN: 500
   };
 
-  nf.AnimationType = {
+  NF.Util.AnimationType = {
     SLIDE: 100,
     FADE: 200
   };
 
-  nf.Position = {
+  NF.Util.Position = {
     TOP: 100,
     RIGHT: 200,
     BOTTOM: 300,
     LEFT: 400
   };
 
-  nf.Direction = {
+  NF.Util.Direction = {
     IN: 100,
     OUT: 200
   };
 
-  nf.EaseFunction = {
+  NF.Util.EaseFunction = {
     LINEAR: 100,
     PAGESLIDEEASE: 150
   };
 
-  nf.findItem = function(itemName) {
+  NF.Util.findItem = function(itemName) {
     var i, thisItem;
     i = 1;
     while (i <= app.project.items.length) {
@@ -47,12 +47,12 @@
     return null;
   };
 
-  nf.isHighlightLayer = function(theLayer) {
-    var ref;
-    return theLayer instanceof ShapeLayer && ((ref = theLayer.Effects.property(1)) != null ? ref.matchName : void 0) === "AV_Highlighter";
+  NF.Util.isHighlightLayer = function(theLayer) {
+    var ref1;
+    return theLayer instanceof ShapeLayer && ((ref1 = theLayer.Effects.property(1)) != null ? ref1.matchName : void 0) === "AV_Highlighter";
   };
 
-  nf.findItemIn = function(itemName, sourceFolderItem) {
+  NF.Util.findItemIn = function(itemName, sourceFolderItem) {
     var i;
     i = 1;
     while (i <= sourceFolderItem.numItems) {
@@ -64,8 +64,8 @@
     return null;
   };
 
-  nf.animatePage = function(model) {
-    var diffX, diffY, duration, easingEquation, ew_getPathToEasingFolder, ew_readFile, ew_setProps, inKeyIdx, inPoint, mainComp, newPosition, oldPosition, outKeyIdx, outPoint, positionProperty, rect, ref, ref1, ref2, ref3, ref4, ref5;
+  NF.Util.animatePage = function(model) {
+    var diffX, diffY, duration, easingEquation, ew_getPathToEasingFolder, ew_readFile, ew_setProps, inKeyIdx, inPoint, mainComp, newPosition, oldPosition, outKeyIdx, outPoint, positionProperty, rect, ref1, ref2, ref3, ref4, ref5, ref6;
     ew_getPathToEasingFolder = function() {
       var folderObj;
       folderObj = new Folder(new File($.fileName).parent.fsName + '/lib/' + "easingExpressions");
@@ -111,14 +111,14 @@
     }
     model = {
       page: model.page,
-      type: (ref = model.type) != null ? ref : nf.AnimationType.SLIDE,
-      position: (ref1 = model.position) != null ? ref1 : nf.Position.RIGHT,
-      direction: (ref2 = model.direction) != null ? ref2 : nf.Direction.IN,
-      duration: (ref3 = model.duration) != null ? ref3 : 1,
-      easeFunction: (ref4 = model.easeFunction) != null ? ref4 : nf.EaseFunction.LINEAR,
-      shadowBuffer: (ref5 = model.shadowBuffer) != null ? ref5 : 350
+      type: (ref1 = model.type) != null ? ref1 : NF.Util.AnimationType.SLIDE,
+      position: (ref2 = model.position) != null ? ref2 : NF.Util.Position.RIGHT,
+      direction: (ref3 = model.direction) != null ? ref3 : NF.Util.Direction.IN,
+      duration: (ref4 = model.duration) != null ? ref4 : 1,
+      easeFunction: (ref5 = model.easeFunction) != null ? ref5 : NF.Util.EaseFunction.LINEAR,
+      shadowBuffer: (ref6 = model.shadowBuffer) != null ? ref6 : 350
     };
-    if (model.direction === nf.Direction.IN) {
+    if (model.direction === NF.Util.Direction.IN) {
       duration = model.duration;
       inPoint = model.page.inPoint;
       outPoint = model.page.outPoint;
@@ -127,10 +127,10 @@
       inPoint = model.page.outPoint;
       outPoint = model.page.inPoint;
     }
-    if (model.type === nf.AnimationType.SLIDE) {
+    if (model.type === NF.Util.AnimationType.SLIDE) {
       positionProperty = model.page.transform.position;
       oldPosition = positionProperty.value;
-      rect = nf.sourceRectToComp(model.page, inPoint);
+      rect = NF.Util.sourceRectToComp(model.page, inPoint);
       mainComp = app.project.activeItem;
       rect = {
         top: rect.top,
@@ -140,13 +140,13 @@
         width: rect.width,
         height: rect.height
       };
-      if (model.position === nf.Position.RIGHT) {
+      if (model.position === NF.Util.Position.RIGHT) {
         diffX = mainComp.width - rect.left + model.shadowBuffer;
         diffY = 0;
-      } else if (model.position === nf.Position.LEFT) {
+      } else if (model.position === NF.Util.Position.LEFT) {
         diffX = 0 - rect.right - model.shadowBuffer;
         diffY = 0;
-      } else if (model.position === nf.Position.TOP) {
+      } else if (model.position === NF.Util.Position.TOP) {
         diffY = 0 - rect.bottom - model.shadowBuffer;
         diffX = 0;
       } else {
@@ -157,25 +157,25 @@
       positionProperty.setValuesAtTimes([inPoint, inPoint + model.duration], [newPosition, oldPosition]);
       inKeyIdx = positionProperty.nearestKeyIndex(inPoint);
       outKeyIdx = positionProperty.nearestKeyIndex(outPoint);
-      if (model.easeFunction !== nf.EaseFunction.LINEAR) {
-        if (model.easeFunction === nf.EaseFunction.PAGESLIDEEASE) {
+      if (model.easeFunction !== NF.Util.EaseFunction.LINEAR) {
+        if (model.easeFunction === NF.Util.EaseFunction.PAGESLIDEEASE) {
           easingEquation = ew_readFile("quint-out-easeandwizz-start-only.txt");
           return ew_setProps([positionProperty], easingEquation);
         }
       }
-    } else if (model.type === nf.AnimationType.FADE) {
+    } else if (model.type === NF.Util.AnimationType.FADE) {
       return null;
     }
   };
 
-  nf.pageTreeForPaper = function(sourceLayer) {
+  NF.Util.pageTreeForPaper = function(sourceLayer) {
     var activePageIndex, allLayers, i, pageObject, pageParent, testLayer, tree;
     this.layerObj = function(layerName) {
       return function() {
         return app.project.activeItem.layers.byName(layerName);
       };
     };
-    pageParent = nf.pageParent(sourceLayer);
+    pageParent = NF.Util.pageParent(sourceLayer);
     allLayers = app.project.activeItem.layers;
     tree = {
       name: pageParent.name,
@@ -186,19 +186,19 @@
     i = 1;
     while (i <= allLayers.length) {
       testLayer = allLayers[i];
-      if (testLayer.parent === pageParent && nf.isCompLayer(testLayer)) {
+      if (testLayer.parent === pageParent && NF.Util.isCompLayer(testLayer)) {
         pageObject = {
           name: testLayer.name,
           index: testLayer.index,
           layer: this.layerObj(testLayer.name),
           active: false,
-          highlights: nf.sourceRectsForHighlightsInTargetLayer(testLayer, nf.isTitlePage(testLayer))
+          highlights: NF.Util.sourceRectsForHighlightsInTargetLayer(testLayer, NF.Util.isTitlePage(testLayer))
         };
         tree.pages.push(pageObject);
       }
       i++;
     }
-    activePageIndex = nf.activePageIndexInArray(tree.pages);
+    activePageIndex = NF.Util.activePageIndexInArray(tree.pages);
     if (activePageIndex != null) {
       tree.pages[activePageIndex].active = true;
       tree.activePage = tree.pages[activePageIndex].layer();
@@ -206,7 +206,7 @@
     return tree;
   };
 
-  nf.isTitlePage = function(testLayer) {
+  NF.Util.isTitlePage = function(testLayer) {
     var isTitlePage, len, m, test, tests;
     tests = ['pg01', 'pg1', 'page1', 'page01'];
     isTitlePage = false;
@@ -219,7 +219,7 @@
     return isTitlePage;
   };
 
-  nf.activePageIndexInArray = function(pages) {
+  NF.Util.activePageIndexInArray = function(pages) {
     var activePage, activePageIndex, i, page, pageLayer;
     activePage = null;
     activePageIndex = null;
@@ -227,7 +227,7 @@
     while (i < pages.length) {
       page = pages[i];
       pageLayer = page.layer();
-      if (pageLayer.active && (nf.pageTurnStatus(pageLayer) === nf.PageTurn.FLIPPEDDOWN || nf.pageTurnStatus(pageLayer) === nf.PageTurn.NOPAGETURN)) {
+      if (pageLayer.active && (NF.Util.pageTurnStatus(pageLayer) === NF.Util.PageTurn.FLIPPEDDOWN || NF.Util.pageTurnStatus(pageLayer) === NF.Util.PageTurn.NOPAGETURN)) {
         if ((activePage == null) || page.index < activePage.index) {
           activePage = page;
           activePageIndex = i;
@@ -238,8 +238,8 @@
     return activePageIndex;
   };
 
-  nf.pageLayerCanBeActive = function(pageLayer) {
-    return pageLayer.active && (nf.pageTurnStatus(pageLayer) === nf.PageTurn.FLIPPEDDOWN || nf.pageTurnStatus(pageLayer) === nf.PageTurn.NOPAGETURN);
+  NF.Util.pageLayerCanBeActive = function(pageLayer) {
+    return pageLayer.active && (NF.Util.pageTurnStatus(pageLayer) === NF.Util.PageTurn.FLIPPEDDOWN || NF.Util.pageTurnStatus(pageLayer) === NF.Util.PageTurn.NOPAGETURN);
   };
 
 
@@ -248,7 +248,7 @@
   Current state of the page's fold will override a given flipUp value if there is already a pageTurn Effect
    */
 
-  nf.turnPageAtTime = function(page, duration, time, flipUp) {
+  NF.Util.turnPageAtTime = function(page, duration, time, flipUp) {
     var downPosition, endStatus, endTime, foldPosition, pageSize, positions, startStatus, startTime, times, upPosition;
     if (duration == null) {
       duration = 1.5;
@@ -259,21 +259,21 @@
     if (flipUp == null) {
       flipUp = true;
     }
-    if (!nf.isCompLayer(page)) {
+    if (!NF.Util.isCompLayer(page)) {
       return alert("Cannot turn page on a non-comp layer");
     }
     startTime = time != null ? time : app.project.activeItem.time;
     endTime = startTime + duration;
-    startStatus = nf.pageTurnStatus(page, startTime);
-    endStatus = nf.pageTurnStatus(page, endTime);
-    if (startStatus === nf.PageTurn.TURNING || endStatus === nf.PageTurn.TURNING) {
+    startStatus = NF.Util.pageTurnStatus(page, startTime);
+    endStatus = NF.Util.pageTurnStatus(page, endTime);
+    if (startStatus === NF.Util.PageTurn.TURNING || endStatus === NF.Util.PageTurn.TURNING) {
       return alert("Page is already turning at specified time");
     }
-    if (startStatus === nf.PageTurn.BROKEN) {
+    if (startStatus === NF.Util.PageTurn.BROKEN) {
       return alert("Page Turn keyframes seem broken...");
     }
-    if (startStatus === nf.PageTurn.NOPAGETURN) {
-      nf.addPageTurnEffects(page);
+    if (startStatus === NF.Util.PageTurn.NOPAGETURN) {
+      NF.Util.addPageTurnEffects(page);
     }
     pageSize = {
       width: page.source.width,
@@ -282,9 +282,9 @@
     downPosition = [pageSize.width, pageSize.height];
     upPosition = [-pageSize.width, -pageSize.height];
     positions = [downPosition, upPosition];
-    if (startStatus === nf.PageTurn.FLIPPEDUP) {
+    if (startStatus === NF.Util.PageTurn.FLIPPEDUP) {
       flipUp = false;
-    } else if (startStatus === nf.PageTurn.FLIPPEDDOWN) {
+    } else if (startStatus === NF.Util.PageTurn.FLIPPEDDOWN) {
       flipUp = true;
     }
     if (!flipUp) {
@@ -293,10 +293,10 @@
     times = [startTime, endTime];
     foldPosition = page.effect("CC Page Turn").property("Fold Position");
     foldPosition.setValuesAtTimes(times, positions);
-    return nf.setSymmetricalTemporalEasingOnlyForProperties(foldPosition, times, null, null, true);
+    return NF.Util.setSymmetricalTemporalEasingOnlyForProperties(foldPosition, times, null, null, true);
   };
 
-  nf.addPageTurnEffects = function(page) {
+  NF.Util.addPageTurnEffects = function(page) {
     var dropShadowEffect, dropShadowMatchName, forceMotionBlurEffect, forceMotionBlurMatchName, pageTurnEffect, pageTurnMatchName;
     forceMotionBlurMatchName = "CC Force Motion Blur";
     dropShadowMatchName = "ADBE Drop Shadow";
@@ -325,10 +325,10 @@
 
 
   /*
-  Given a layer, returns the nf.PageTurn enum
+  Given a layer, returns the NF.Util.PageTurn enum
    */
 
-  nf.pageTurnStatus = function(pageLayer, time) {
+  NF.Util.pageTurnStatus = function(pageLayer, time) {
     var foldPosition, foldPositionProperty, pageTurnEffect, threshold;
     if (time == null) {
       time = null;
@@ -339,34 +339,34 @@
     foldPosition = foldPositionProperty != null ? foldPositionProperty.value : void 0;
     threshold = 3840;
     if (pageTurnEffect == null) {
-      return nf.PageTurn.NOPAGETURN;
+      return NF.Util.PageTurn.NOPAGETURN;
     } else if (foldPosition[0] >= threshold) {
-      return nf.PageTurn.FLIPPEDDOWN;
+      return NF.Util.PageTurn.FLIPPEDDOWN;
     } else if (foldPosition[0] <= threshold * -1) {
-      return nf.PageTurn.FLIPPEDUP;
+      return NF.Util.PageTurn.FLIPPEDUP;
     } else if (foldPositionProperty.numKeys !== 0) {
-      return nf.PageTurn.TURNING;
+      return NF.Util.PageTurn.TURNING;
     } else {
-      return nf.PageTurn.BROKEN;
+      return NF.Util.PageTurn.BROKEN;
     }
   };
 
-  nf.isCompLayer = function(testLayer) {
+  NF.Util.isCompLayer = function(testLayer) {
     return testLayer instanceof AVLayer && testLayer.source instanceof CompItem;
   };
 
-  nf.pageParent = function(selectedLayer) {
-    var ref;
+  NF.Util.pageParent = function(selectedLayer) {
+    var ref1;
     if (selectedLayer.nullLayer) {
       return selectedLayer;
     }
-    if ((ref = selectedLayer.parent) != null ? ref.nullLayer : void 0) {
+    if ((ref1 = selectedLayer.parent) != null ? ref1.nullLayer : void 0) {
       return selectedLayer.parent;
     }
     return null;
   };
 
-  nf.disconnectBubbleupsInLayers = function(layers, names) {
+  NF.Util.disconnectBubbleupsInLayers = function(layers, names) {
     var bubbleupLayers, effect, i, len, len1, m, n, property, propertyCount, theLayer;
     if (names == null) {
       names = null;
@@ -377,8 +377,8 @@
     bubbleupLayers = [];
     for (m = 0, len = layers.length; m < len; m++) {
       theLayer = layers[m];
-      if (nf.isCompLayer(theLayer)) {
-        bubbleupLayers = bubbleupLayers.concat(nf.collectionToArray(theLayer.source.layers));
+      if (NF.Util.isCompLayer(theLayer)) {
+        bubbleupLayers = bubbleupLayers.concat(NF.Util.collectionToArray(theLayer.source.layers));
       } else {
         bubbleupLayers.push(theLayer);
       }
@@ -399,8 +399,8 @@
     return layers;
   };
 
-  nf.setSymmetricalTemporalEasingOnlyForProperties = function(theProperties, keys, easeType, easeWeight, keysAsTimes) {
-    var ease, i, key, keyItem, length, ref, ref1, results, singleKey, singleProperty, spatialEaseArray, temporalEaseArray, theProperty;
+  NF.Util.setSymmetricalTemporalEasingOnlyForProperties = function(theProperties, keys, easeType, easeWeight, keysAsTimes) {
+    var ease, i, key, keyItem, length, ref1, ref2, results, singleKey, singleProperty, spatialEaseArray, temporalEaseArray, theProperty;
     if (easeType == null) {
       easeType = null;
     }
@@ -424,10 +424,10 @@
       singleProperty = theProperties;
     }
     if (easeType == null) {
-      easeType = (ref = nf.easeType) != null ? ref : KeyframeInterpolationType.BEZIER;
+      easeType = (ref1 = NF.Util.easeType) != null ? ref1 : KeyframeInterpolationType.BEZIER;
     }
     if (easeWeight == null) {
-      easeWeight = (ref1 = nf.easeWeight) != null ? ref1 : 33;
+      easeWeight = (ref2 = NF.Util.easeWeight) != null ? ref2 : 33;
     }
     i = 0;
     length = singleProperty != null ? keys.length : theProperties.length;
@@ -459,7 +459,7 @@
     return results;
   };
 
-  nf.collectionToArray = function(collection) {
+  NF.Util.collectionToArray = function(collection) {
     var arr, i;
     arr = [];
     i = 1;
@@ -470,22 +470,22 @@
     return arr;
   };
 
-  nf.toArr = function(collection) {
-    return nf.collectionToArray(collection);
+  NF.Util.toArr = function(collection) {
+    return NF.Util.collectionToArray(collection);
   };
 
-  nf.capitalizeFirstLetter = function(string) {
+  NF.Util.capitalizeFirstLetter = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  nf.isNonEmptyString = function(unknownVariable) {
+  NF.Util.isNonEmptyString = function(unknownVariable) {
     if (((typeof unknownVariable !== "undefined") && (typeof unknownVariable.valueOf() === "string")) && (unknownVariable.length > 0)) {
       return true;
     }
     return false;
   };
 
-  nf.markerDrivenExpression = function(model) {
+  NF.Util.markerDrivenExpression = function(model) {
     var defaults, durationString, generalValueExpression, layerName, term, trimString, valueAString, valueBString;
     term = ";\n";
     defaults = {
@@ -502,13 +502,13 @@
         if (subModel.value != null) {
           expressionString += subModel.value;
         } else if (subModel.effect != null) {
-          if (nf.isNonEmptyString(subModel.effect)) {
+          if (NF.Util.isNonEmptyString(subModel.effect)) {
             effectName = subModel.effect;
           } else {
             effectName = subModel.effect.name;
           }
           if (subModel.subEffect != null) {
-            if (nf.isNonEmptyString(subModel.subEffect)) {
+            if (NF.Util.isNonEmptyString(subModel.subEffect)) {
               subEffectName = subModel.subEffect;
             } else {
               subEffectName = subModel.subEffect.name;
@@ -527,9 +527,9 @@
       return expressionString;
     };
     if (!((model.layer != null) && (model.duration != null))) {
-      return alert("Error\nNo layer or duration specified in nf.markerDrivenExpression!");
+      return alert("Error\nNo layer or duration specified in NF.Util.markerDrivenExpression!");
     }
-    if (nf.isNonEmptyString(model.layer)) {
+    if (NF.Util.isNonEmptyString(model.layer)) {
       layerName = model.layer;
     } else {
       layerName = model.layer.name;
@@ -541,12 +541,12 @@
     return trimString;
   };
 
-  nf.sourceRectsForHighlightsInTargetLayer = function(targetLayer, includeTitlePage) {
-    var i, layerParent, ref, sourceCompLayers, sourceHighlightLayers, sourceHighlightRects, theLayer;
+  NF.Util.sourceRectsForHighlightsInTargetLayer = function(targetLayer, includeTitlePage) {
+    var i, layerParent, ref1, sourceCompLayers, sourceHighlightLayers, sourceHighlightRects, theLayer;
     if (includeTitlePage == null) {
       includeTitlePage = false;
     }
-    sourceCompLayers = (ref = targetLayer.source) != null ? ref.layers : void 0;
+    sourceCompLayers = (ref1 = targetLayer.source) != null ? ref1.layers : void 0;
     if (sourceCompLayers == null) {
       return null;
     }
@@ -560,7 +560,7 @@
           sourceHighlightLayers.push(theLayer);
           layerParent = theLayer.parent;
           theLayer.parent = null;
-          sourceHighlightRects[theLayer.name] = nf.sourceRectToComp(theLayer);
+          sourceHighlightRects[theLayer.name] = NF.Util.sourceRectToComp(theLayer);
           sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value || 0;
           sourceHighlightRects[theLayer.name].name = theLayer.name;
           sourceHighlightRects[theLayer.name].bubbled = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionEnabled;
@@ -583,7 +583,7 @@
     return sourceHighlightRects;
   };
 
-  nf.sourceRectToComp = function(layer, targetTime, keepNull) {
+  NF.Util.sourceRectToComp = function(layer, targetTime, keepNull) {
     var bottomRightPoint, expressionBase, mainCompTime, rect, tempNull, topLeftPoint;
     if (targetTime == null) {
       targetTime = null;
@@ -611,13 +611,13 @@
     };
   };
 
-  nf.rectRelativeToComp = function(rect, layer, targetTime) {
+  NF.Util.rectRelativeToComp = function(rect, layer, targetTime) {
     var bottomRightPoint, newRect, topLeftPoint;
     if (targetTime == null) {
       targetTime = null;
     }
-    topLeftPoint = nf.pointRelativeToComp([rect.left, rect.top], layer, targetTime);
-    bottomRightPoint = nf.pointRelativeToComp([rect.left + rect.width, rect.top + rect.height], layer, targetTime);
+    topLeftPoint = NF.Util.pointRelativeToComp([rect.left, rect.top], layer, targetTime);
+    bottomRightPoint = NF.Util.pointRelativeToComp([rect.left + rect.width, rect.top + rect.height], layer, targetTime);
     return newRect = {
       left: topLeftPoint[0],
       top: topLeftPoint[1],
@@ -626,19 +626,19 @@
     };
   };
 
-  nf.pointRelativeToComp = function(sourcePoint, layer, targetTime) {
+  NF.Util.pointRelativeToComp = function(sourcePoint, layer, targetTime) {
     var newPoint, tempNull;
     if (targetTime == null) {
       targetTime = null;
     }
     targetTime = targetTime != null ? targetTime : app.project.activeItem.time;
-    tempNull = nf.nullAtPointRelativeToComp(sourcePoint, layer);
+    tempNull = NF.Util.nullAtPointRelativeToComp(sourcePoint, layer);
     newPoint = tempNull.transform.position.valueAtTime(targetTime, false);
     tempNull.remove();
     return newPoint;
   };
 
-  nf.nullAtPointRelativeToComp = function(sourcePoint, layer) {
+  NF.Util.nullAtPointRelativeToComp = function(sourcePoint, layer) {
     var targetTime, tempNull;
     targetTime = targetTime != null ? targetTime : app.project.activeItem.time;
     tempNull = layer.containingComp.layers.addNull();
@@ -646,7 +646,7 @@
     return tempNull;
   };
 
-  nf.toKeys = function(dict) {
+  NF.Util.toKeys = function(dict) {
     var allKeys, key;
     allKeys = [];
     for (key in dict) {
@@ -655,7 +655,7 @@
     return allKeys;
   };
 
-  nf.verticiesFromSourceRect = function(rect) {
+  NF.Util.verticiesFromSourceRect = function(rect) {
     var v;
     v = {
       topLeft: [rect.left, rect.top],
@@ -666,22 +666,22 @@
     return [v.topLeft, v.bottomLeft, v.bottomRight, v.topRight];
   };
 
-  nf.trimExpression = function(thisLine, numberOfLines) {
+  NF.Util.trimExpression = function(thisLine, numberOfLines) {
     var trimString;
     return trimString = "slider_val = effect(\"AV Highlighter\")(\"Completion\") / 10; start_offset = effect(\"AV Highlighter\")(\"Start Offset\"); end_offset = effect(\"AV Highlighter\")(\"End Offset\"); line_count = " + numberOfLines + "; this_line = " + thisLine + "; total_points = line_count * 100; gross_points = total_points - start_offset - end_offset; points_per_line = gross_points/line_count*100; total_percent = (slider_val / 100 * gross_points + start_offset) / total_points * 100; min_percent = 100/line_count*(this_line-1); max_percent = 100/line_count*this_line; if (total_percent <= min_percent) {0;} else if ( total_percent >= max_percent ) { 100; } else { (total_percent - min_percent) / (max_percent - min_percent) * 100; }";
   };
 
-  nf.upgradeHighlightLayer = function(highlightLayer) {
-    var completionControl, endOffset, endOffsetControl, i, lineCount, lineNumber, ref, thisLine, trimProperty;
+  NF.Util.upgradeHighlightLayer = function(highlightLayer) {
+    var completionControl, endOffset, endOffsetControl, i, lineCount, lineNumber, ref1, thisLine, trimProperty;
     lineCount = highlightLayer.property("Contents").numProperties;
     i = lineCount;
     lineNumber = 1;
     while (i >= 1) {
       thisLine = highlightLayer.property("Contents").property(i);
       trimProperty = thisLine.property('Contents').property('Trim Paths 1').property('End');
-      trimProperty.expression = nf.trimExpression(lineNumber, lineCount);
+      trimProperty.expression = NF.Util.trimExpression(lineNumber, lineCount);
       if (lineNumber === lineCount) {
-        if ((100 > (ref = trimProperty.value) && ref > 0)) {
+        if ((100 > (ref1 = trimProperty.value) && ref1 > 0)) {
           endOffset = 100 - trimProperty.value;
           completionControl = highlightLayer.property("Effects").property("AV Highlighter").property("Completion");
           endOffsetControl = highlightLayer.property("Effects").property("AV Highlighter").property("End Offset");
@@ -697,7 +697,7 @@
     return highlightLayer;
   };
 
-  nf.fixTrimExpressionsForHighlightLayer = function(highlightLayer) {
+  NF.Util.fixTrimExpressionsForHighlightLayer = function(highlightLayer) {
     var i, lineCount, lineNumber, results, thisLine, trimProperty;
     lineCount = highlightLayer.property("Contents").numProperties;
     i = lineCount;
@@ -706,14 +706,14 @@
     while (i >= 1) {
       thisLine = highlightLayer.property("Contents").property(i);
       trimProperty = thisLine.property('Contents').property('Trim Paths 1').property('End');
-      trimProperty.expression = nf.trimExpression(lineNumber, lineCount);
+      trimProperty.expression = NF.Util.trimExpression(lineNumber, lineCount);
       i--;
       results.push(lineNumber++);
     }
     return results;
   };
 
-  nf.bubbleUpHighlights = function(pagesToBubble, choices) {
+  NF.Util.bubbleUpHighlights = function(pagesToBubble, choices) {
     var effects, firstShapeIndex, highlightLayersInPageComp, highlighterProperties, highlighterProperty, i, j, k, l, layersInPageComp, mainComp, newName, shouldBubble, sourceExpression, sourceHighlighterEffect, sourceHighlighterPropertyValue, targetComp, targetHighlighterEffect, targetLayer, testExpression, testLayer;
     if (choices == null) {
       choices = null;
@@ -732,7 +732,7 @@
           firstShapeIndex = testLayer.property("Contents").numProperties;
           testExpression = testLayer.property("Contents").property(firstShapeIndex).property("Contents").property("Trim Paths 1").property("End").expression;
           if (testExpression.indexOf('end_offset') < 0) {
-            nf.upgradeHighlightLayer(testLayer);
+            NF.Util.upgradeHighlightLayer(testLayer);
           }
           highlightLayersInPageComp.push(testLayer);
         }
@@ -772,6 +772,6 @@
     }
   };
 
-  app.nf = nf;
+  app.NF = Object.assign(app.NF, NF);
 
 }).call(this);

@@ -1,17 +1,16 @@
-﻿`#include "nf_functions.jsx"`
+﻿`#include "nf_runtimeLibraries.jsx"`
 
-importedFunctions = app.nf
-globals =
+NF = app.NF
+_ =
 	mainComp: app.project.activeItem
 	undoGroupName: 'Bubble Up Highlights'
-nf = Object.assign importedFunctions, globals
 
 main = ->
-	pagesToBubble = nf.mainComp.selectedLayers
+	pagesToBubble = _.mainComp.selectedLayers
 
-	nf.bubbleUpHighlights pagesToBubble
+	NF.Util.bubbleUpHighlights pagesToBubble
 
-app.beginUndoGroup nf.undoGroupName
+app.beginUndoGroup _.undoGroupName
 
 main()
 

@@ -1,35 +1,36 @@
-`#include "nf_functions.jsx"`
+`#include "nf_runtimeLibraries.jsx"`
 
 # Import Polyfills and nf namespace functions from nf_functions.jsx,
 # then combine them with the global variables in the 'nf' object
-importedFunctions = app.nf
-globals =
+NF = app.NF
+
+# _ is temp storage
+_ =
 	mainComp: app.project.activeItem
 	debug: no # Change this flag when you need to add breakpoints to this as a dialog
-nf = Object.assign importedFunctions, globals
 
 panelTest = this
 
 main = ->
-	nf.panel = getPanelUI()
+	_.panel = getPanelUI()
 
 # Returns the panel if we're a UI panel, and creates a new Window if not
 getPanelUI = ->
 	# NOTE: This could potentially cause a bug where the panel doesnt show up. Keep an eye on it
-	return nf.panel if nf.panel?
+	return _.panel if _.panel?
 
 	panel = undefined
 	# check if this Obj is a panel (run from Window menu)  
 	if panelTest instanceof Panel
 		# is a panel (called from Window menu)  
 		panel = panelTest
-		nf.isUIPanel = yes
+		_.isUIPanel = yes
 	else
 		# not a panel (called from File > Scripts > Run)
 		# FIXME: This may not work dimensions-wise. Need to come back & fix
-		panelType = if nf.debug then "dialog" else "palette"
+		panelType = if _.debug then "dialog" else "palette"
 		panel = new Window("dialog", "NF Controls")
-		nf.isUIPanel = no
+		_.isUIPanel = no
 
 	panel.alignChildren = 'left' 
 
@@ -39,10 +40,10 @@ getPanelUI = ->
 
 	buttonGroup = buttonPanel.add 'group', undefined
 
-	# nf.fixExpressionErrorsButton = buttonGroup.add('button', undefined, 'Fix Expression Errors')
-	nf.toggleGuideLayersButton = buttonGroup.add('button', undefined, 'Toggle Guide Layers')
+	# _.fixExpressionErrorsButton = buttonGroup.add('button', undefined, 'Fix Expression Errors')
+	_.toggleGuideLayersButton = buttonGroup.add('button', undefined, 'Toggle Guide Layers')
 
-	nf.toggleGuideLayersButton.onClick = (w) ->
+	_.toggleGuideLayersButton.onClick = (w) ->
 		toggleGuideLayers w
 		@active = false
 
@@ -55,7 +56,7 @@ getPanelUI = ->
 	  @layout.resize()
 	  return
 
-	unless nf.isUIPanel
+	unless _.isUIPanel
 		panel.center()
 		panel.show()
 
@@ -63,11 +64,11 @@ getPanelUI = ->
 
 videoProject =
 	precompsFolder: ->
-		return nf.findItem 'Precomps'
+		return NF.Util.findItem 'Precomps'
 	PDFPrecompsFolder: ->
-		return nf.findItem 'PDF Precomps'
+		return NF.Util.findItem 'PDF Precomps'
 	partsFolder: ->
-		return nf.findItem 'Parts'
+		return NF.Util.findItem 'Parts'
 
 # Guide Reference Object
 guideReference =
@@ -77,7 +78,7 @@ guideReference =
 
 	comp: ->
 		if videoProject.precompsFolder()?
-			return nf.findItemIn 'Guide Reference', videoProject.precompsFolder()
+			return NF.Util.findItemIn 'Guide Reference', videoProject.precompsFolder()
 		else
 			return null
 	layer: ->
@@ -110,7 +111,7 @@ toggleGuideLayers = (w) ->
 		guideReference.create()
 
 		# Get all the page precomps
-		pagePrecomps = nf.collectionToArray videoProject.PDFPrecompsFolder().items
+		pagePrecomps = NF.Util.collectionToArray videoProject.PDFPrecompsFolder().items
 		# Get all the Annotation Guide Layers
 		for thePageComp in pagePrecomps
 			guideLayer = thePageComp.layers.byName "Annotation Guide"
@@ -122,9 +123,9 @@ toggleGuideLayers = (w) ->
 				guideLayer.property("Transform").property("Opacity").expression = "comp(\"#{guideReference.compName}\").layer(\"#{guideReference.layerName}\").enabled * 60"
 
 		# Look for and delete all guide layer effects in part comps
-		parts = nf.toArr videoProject.partsFolder()?.items
+		parts = NF.Util.toArr videoProject.partsFolder()?.items
 		for thePartComp in parts
-			partLayers = nf.toArr thePartComp.layers
+			partLayers = NF.Util.toArr thePartComp.layers
 			for theLayer in partLayers
 				guideEffect = theLayer.property("Effects")?.property(guideReference.effectName)
 				guideEffect.remove() if guideEffect?

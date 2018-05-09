@@ -1,11 +1,10 @@
-`#include "nf_functions.jsx"`
+`#include "nf_runtimeLibraries.jsx"`
 
-importedFunctions = app.nf
-globals =
+NF = app.NF
+_ =
 	mainComp: app.project.activeItem
 	undoGroupName: 'initialize Pages'
 	animationDuration: 1.85
-nf = Object.assign importedFunctions, globals
 
 initializePages = ->
 	# Setup
@@ -112,7 +111,7 @@ initializePages = ->
 
 	# FIXME Add one more tab that handles bubbleups on a non-init state
 
-	# nf.UIControls =
+	# _.UIControls =
 	# 	duration: durationValue
 	# 	highlights: highlightCheckboxes
 
@@ -130,7 +129,7 @@ initializePages = ->
 						highlighterEffect.remove() if highlighterEffect?
 						# FIXME: Find the control and remove it if we're disconnecting from an instance of the page in another part comp
 
-		nf.disconnectBubbleupsInLayers selectedLayers, highlightChoices
+		NF.Util.disconnectBubbleupsInLayers selectedLayers, highlightChoices
 
 		w.hide()
 
@@ -155,31 +154,32 @@ initWithOptions = (options) ->
 		# Add Motion Blur
 		thisLayer.motionBlur = true
 		setDropShadowForLayer thisLayer
+		thisLayer.name = thisLayer.name.replace " NFPage", " [+]"
 		i++
 	name = nullName(selectedLayers[0])
 	newParent = nullify(selectedLayers, name)
 	zoomer = zoom(newParent)
-	nf.bubbleUpHighlights selectedLayers, options.highlightChoices
+	NF.Util.bubbleUpHighlights selectedLayers, options.highlightChoices
 	# FIXME: When we disconnect with an OVERRIDE, we should warn or offer to remove the overridden controls
 	# FIXME: Anytime we disconnect a broken bubbleup, we should copy the current values back to the OG one
 
 	if options.animatePage
 		topLayer = topmostLayer(selectedLayers)
-		nf.animatePage
+		NF.Util.animatePage
 			page: topLayer
-			type: nf.AnimationType.SLIDE
-			position: nf.Position.RIGHT
-			direction: nf.Direction.IN
-			duration: nf.animationDuration
-			easeFunction: nf.EaseFunction.PAGESLIDEEASE
+			type: NF.Util.AnimationType.SLIDE
+			position: NF.Util.Position.RIGHT
+			direction: NF.Util.Direction.IN
+			duration: _.animationDuration
+			easeFunction: NF.Util.EaseFunction.PAGESLIDEEASE
 		for layer in selectedLayers
-			layer.inPoint = topLayer.inPoint + nf.animationDuration unless layer.index is topLayer.index
+			layer.inPoint = topLayer.inPoint + _.animationDuration unless layer.index is topLayer.index
 
 getBubblableObjects = (selectedLayers) ->
 	# Get all the highlights in selected layers
 	allHighlights = {}
 	for layer in selectedLayers
-		layerHighlights = nf.sourceRectsForHighlightsInTargetLayer layer
+		layerHighlights = NF.Util.sourceRectsForHighlightsInTargetLayer layer
 		if layerHighlights?
 			for key of layerHighlights
 				layerHighlights[key].layerInPart = layer
@@ -262,9 +262,8 @@ topmostLayer = (layers) ->
 		i++
 	app.project.activeItem.layer lowestIndex
 
-app.beginUndoGroup nf.undoGroupName
+app.beginUndoGroup _.undoGroupName
 
 initializePages()
 
 app.endUndoGroup()
-# app.nf = {}

@@ -1,24 +1,22 @@
 (function() {
-  #include "nf_functions.jsx";
-  var clear, globals, importedFunctions, main, nf;
+  #include "nf_runtimeLibraries.jsx";
+  var NF, _, clear, main;
 
-  importedFunctions = app.nf;
+  NF = app.NF;
 
-  globals = {
+  _ = {
     mainComp: app.project.activeItem,
     undoGroupName: 'Testing',
     selectedLayer: app.project.activeItem.selectedLayers[0]
   };
 
-  nf = Object.assign(importedFunctions, globals);
-
   clear = function() {
-    return nf.disconnectBubbleupsInLayers(app.project.activeItem.selectedLayers);
+    return NF.Util.disconnectBubbleupsInLayers(app.project.activeItem.selectedLayers);
   };
 
   main = function() {
     var highlight, highlightName, i, pageTree, thePage, tree, w;
-    pageTree = nf.pageTreeForPaper(nf.selectedLayer);
+    pageTree = NF.Util.pageTreeForPaper(_.selectedLayer);
     w = new Window('dialog');
     tree = w.add('treeview', [0, 0, 250, 350]);
     pageTree.node = tree.add('node', pageTree.name);
@@ -37,7 +35,7 @@
     return w.show();
   };
 
-  app.beginUndoGroup(nf.undoGroupName);
+  app.beginUndoGroup(_.undoGroupName);
 
   main();
 

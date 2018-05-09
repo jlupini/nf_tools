@@ -1,7 +1,7 @@
-`#include "nf_functions.jsx"`
+`#include "nf_runtimeLibraries.jsx"`
 
-importedFunctions = app.nf
-globals =
+NF = app.NF
+_ =
 	mainComp: app.project.activeItem
 	undoGroupName: 'Go To Highlight'
 	pageTurnAnticipation: 0.25 # Percent of the page turn to put before the start point of the animation
@@ -12,32 +12,31 @@ globals =
 		animatePage: yes
 		duration: 3
 		reduceMotion: yes
-		pageTurnDuration: 2
+		pageTurnDuration: 2 
 		endAfterTurn: yes
 		maxPageScale: 115
-nf = Object.assign importedFunctions, globals
 
 goToHighlight = (highlight, options) ->
 	options =
-		reduceMotion: options.reduceMotion ? nf.defaultOptions.reduceMotion
-		duration: options.duration ? nf.defaultOptions.duration
-		pageTurnDuration: options.pageTurnDuration ? nf.defaultOptions.pageTurnDuration
-		animatePage: options.animatePage ? nf.defaultOptions.animatePage
-		maxPageScale: options.maxPageScale ? nf.defaultOptions.maxPageScale
-		endAfterTurn: options.endAfterTurn ? nf.defaultOptions.endAfterTurn
+		reduceMotion: options.reduceMotion ? _.defaultOptions.reduceMotion
+		duration: options.duration ? _.defaultOptions.duration
+		pageTurnDuration: options.pageTurnDuration ? _.defaultOptions.pageTurnDuration
+		animatePage: options.animatePage ? _.defaultOptions.animatePage
+		maxPageScale: options.maxPageScale ? _.defaultOptions.maxPageScale
+		endAfterTurn: options.endAfterTurn ? _.defaultOptions.endAfterTurn
 
-	selectedLayer = nf.state.selectedLayer
-	highlightPageLayer = nf.state.highlightLayer
-	activeLayer = nf.state.activeLayer
-	relevantPages = nf.state.relevantPages
-	layerToMove = if options.animatePage then nf.pageParent(selectedLayer) else highlightPageLayer 
+	selectedLayer = _.state.selectedLayer
+	highlightPageLayer = _.state.highlightLayer
+	activeLayer = _.state.activeLayer
+	relevantPages = _.state.relevantPages
+	layerToMove = if options.animatePage then NF.Util.pageParent(selectedLayer) else highlightPageLayer 
 
 	return alert "No Layer Parent Found!" if not layerToMove?
 
 	if options.animatePage
 		# Determine if we need to do some page turning or other voodoo
 		# FIXME: Right now we're assuming no one's mucked it up by changing the in and out points, should handle this possibility
-		highlightPageLayerActive = nf.pageLayerCanBeActive highlightPageLayer
+		highlightPageLayerActive = NF.Util.pageLayerCanBeActive highlightPageLayer
 		if activeLayer.index < highlightPageLayer.index
 			# There is an active layer covering up (above) the target layer, so we need to get rid of it
 
@@ -51,7 +50,7 @@ goToHighlight = (highlight, options) ->
 			# How many active page layers are between us and the active layer?
 			problemLayers = []
 			for possibleProblemLayer in relevantPages
-				if nf.pageLayerCanBeActive(possibleProblemLayer.layer()) and activeLayer.index < possibleProblemLayer.index < highlightPageLayer.index
+				if NF.Util.pageLayerCanBeActive(possibleProblemLayer.layer()) and activeLayer.index < possibleProblemLayer.index < highlightPageLayer.index
 					problemLayers.push possibleProblemLayer
 			# Now we've got an array of problem layers
 			# FIXME: Not gonna deal with this yet
@@ -73,8 +72,8 @@ goToHighlight = (highlight, options) ->
 				goToHighlight(highlight, reduceMotionOptions)
 
 			# Great!, now we've dealt with problem layers, so let's turn our activeLayer out of the way.
-			pageTurnTime = app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration)
-			nf.turnPageAtTime activeLayer, options.pageTurnDuration, pageTurnTime
+			pageTurnTime = app.project.activeItem.time - (_.pageTurnAnticipation * options.pageTurnDuration)
+			NF.Util.turnPageAtTime activeLayer, options.pageTurnDuration, pageTurnTime
 
 			if options.endAfterTurn
 				activeLayer.outPoint = pageTurnTime + options.pageTurnDuration
@@ -83,9 +82,9 @@ goToHighlight = (highlight, options) ->
 			# Our target layer is above, but for some reason isn't active
 
 			# Is it because the page is folded up?
-			if nf.pageTurnStatus(highlightPageLayer) is nf.PageTurn.FLIPPEDUP
+			if NF.Util.pageTurnStatus(highlightPageLayer) is NF.Util.PageTurn.FLIPPEDUP
 				# Let's fold it back down!
-				nf.turnPageAtTime highlightPageLayer, options.pageTurnDuration, app.project.activeItem.time - (nf.pageTurnAnticipation * options.pageTurnDuration)
+				NF.Util.turnPageAtTime highlightPageLayer, options.pageTurnDuration, app.project.activeItem.time - (_.pageTurnAnticipation * options.pageTurnDuration)
 			else
 				# There are many reasons we could be here - figure out what's going on
 				# FIXME: I haven't done this yet
@@ -93,7 +92,7 @@ goToHighlight = (highlight, options) ->
 			
 		
 	# All clear, proceed as normal after re-evaluating the active layer
-	nf.activeLayer = activeLayer = relevantPages[nf.activePageIndexInArray(relevantPages)]
+	_.activeLayer = activeLayer = relevantPages[NF.Util.activePageIndexInArray(relevantPages)]
 
 	positionProp = layerToMove.transform.position
 	scaleProp = layerToMove.transform.scale
@@ -101,7 +100,7 @@ goToHighlight = (highlight, options) ->
 	previousParent = layerToMove.parent if layerToMove.parent?
 	layerToMove.parent = null
 
-	now = nf.mainComp.time
+	now = _.mainComp.time
 
 	if options.animatePage
 
@@ -109,13 +108,13 @@ goToHighlight = (highlight, options) ->
 
 		targetScale = getTargetScale highlight, scaleProp.value, highlightPageLayer, options.maxPageScale
 		scaleProp.setValuesAtTimes keyframeTimes, [scaleProp.valueAtTime(now, false), targetScale]
-		nf.setSymmetricalTemporalEasingOnlyForProperties scaleProp, keyframeTimes, nf.easeType, nf.easeWeight, true
+		NF.Util.setSymmetricalTemporalEasingOnlyForProperties scaleProp, keyframeTimes, _.easeType, _.easeWeight, true
 
 		# Now that we've set the scale, we can get the location of the highlighter at that scale
 		targetPosition = getTargetPosition highlight, positionProp.value, highlightPageLayer, keyframeTimes[1]
 		positionProp.setValuesAtTimes keyframeTimes, [positionProp.valueAtTime(now, false), targetPosition]
 
-		nf.setSymmetricalTemporalEasingOnlyForProperties positionProp, keyframeTimes, nf.easeType, nf.easeWeight, true
+		NF.Util.setSymmetricalTemporalEasingOnlyForProperties positionProp, keyframeTimes, _.easeType, _.easeWeight, true
 
 	else
 		# Delete any Keyframes
@@ -156,12 +155,12 @@ getTargetPositionUsingDelta = (initialPosition, delta) ->
 	targetPosition = [initialPosition[0] + delta[0], initialPosition[1] + delta[1]]
 
 getTargetPositionDelta = (highlight, layerPosition, highlightPageLayer, targetTime = null) ->
-	highlightCenterPoint = nf.pointRelativeToComp [highlight.left + highlight.width / 2, highlight.top + highlight.height / 2], highlightPageLayer, targetTime
-	compCenterPoint = [nf.mainComp.width / 2, nf.mainComp.height / 2]
+	highlightCenterPoint = NF.Util.pointRelativeToComp [highlight.left + highlight.width / 2, highlight.top + highlight.height / 2], highlightPageLayer, targetTime
+	compCenterPoint = [_.mainComp.width / 2, _.mainComp.height / 2]
 	delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]]
 
 	# Adjust to prevent falling off the page
-	rectAfterScale = nf.sourceRectToComp highlightPageLayer, targetTime
+	rectAfterScale = NF.Util.sourceRectToComp highlightPageLayer, targetTime
 	rectAfterScale.left += delta[0]
 	rectAfterScale.top += delta[1]
 
@@ -169,10 +168,10 @@ getTargetPositionDelta = (highlight, layerPosition, highlightPageLayer, targetTi
 		delta[0] -= rectAfterScale.left
 	if rectAfterScale.top > 0
 		delta[1] -= rectAfterScale.top
-	if rectAfterScale.left + rectAfterScale.width < nf.mainComp.width
-		delta[0] += nf.mainComp.width - (rectAfterScale.left + rectAfterScale.width)
-	if rectAfterScale.top + rectAfterScale.height < nf.mainComp.height
-		delta[1] += nf.mainComp.height - (rectAfterScale.top + rectAfterScale.height)
+	if rectAfterScale.left + rectAfterScale.width < _.mainComp.width
+		delta[0] += _.mainComp.width - (rectAfterScale.left + rectAfterScale.width)
+	if rectAfterScale.top + rectAfterScale.height < _.mainComp.height
+		delta[1] += _.mainComp.height - (rectAfterScale.top + rectAfterScale.height)
 
 	delta
 
@@ -180,9 +179,9 @@ getTargetScaleUsingFactor = (initialScale, scaleFactor) ->
 	newScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor]
 
 getTargetScaleFactor = (highlight, layerScale, highlightPageLayer, maxScale, targetTime = null) ->
-	highlightRectInContext = nf.rectRelativeToComp highlight, highlightPageLayer, targetTime
-	compWidth = nf.mainComp.width
-	targetHighlightWidth = nf.highlightWidthPercent / 100 * compWidth
+	highlightRectInContext = NF.Util.rectRelativeToComp highlight, highlightPageLayer, targetTime
+	compWidth = _.mainComp.width
+	targetHighlightWidth = _.highlightWidthPercent / 100 * compWidth
 	scaleFactor = targetHighlightWidth / highlightRectInContext.width
 
 	# Adjust for max page scale
@@ -199,7 +198,7 @@ getTargetScaleFactor = (highlight, layerScale, highlightPageLayer, maxScale, tar
 
 askForChoice = ->
 	# FIXME: Additional options should be TURN PAGE IF NECESSARY checkbox, CHEAT POSITION checkbox, TRIM/SHUNT checkbox
-	selectedLayer = nf.mainComp.selectedLayers[0]
+	selectedLayer = _.mainComp.selectedLayers[0]
 	w = new Window('dialog', 'Go To Highlight')
 	w.alignChildren = 'left'
 
@@ -210,19 +209,19 @@ askForChoice = ->
 	w.grp1.durGroup = w.grp1.add 'panel', undefined, 'Duration (seconds)'
 	w.grp1.durGroup.orientation = 'row'
 	durationLabel = w.grp1.durGroup.add 'statictext {text: "Movement Duration:", characters: 16, justify: "left"}'
-	durationValue = w.grp1.durGroup.add 'edittext', undefined, nf.defaultOptions.duration
+	durationValue = w.grp1.durGroup.add 'edittext', undefined, _.defaultOptions.duration
 	durationValue.characters = 3
 	pageTurnLabel = w.grp1.durGroup.add 'statictext {text: "Page Turn Duration:", characters: 16, justify: "left"}'
-	pageTurnValue = w.grp1.durGroup.add 'edittext', undefined, nf.defaultOptions.pageTurnDuration
+	pageTurnValue = w.grp1.durGroup.add 'edittext', undefined, _.defaultOptions.pageTurnDuration
 	pageTurnValue.characters = 3
 
 	w.grp1.sizeGroup = w.grp1.add 'panel', undefined, 'Sizing'
 	w.grp1.sizeGroup.orientation = 'row'
 	widthLabel = w.grp1.sizeGroup.add 'statictext {text: "Width (% of window):", characters: 16, justify: "left"}'
-	widthValue = w.grp1.sizeGroup.add 'edittext', undefined, nf.highlightWidthPercent
+	widthValue = w.grp1.sizeGroup.add 'edittext', undefined, _.highlightWidthPercent
 	widthValue.characters = 3
 	maxScaleLabel = w.grp1.sizeGroup.add 'statictext {text: "Max Scale (%):", characters: 11, justify: "left"}'
-	maxScaleValue = w.grp1.sizeGroup.add 'edittext', undefined, nf.defaultOptions.maxPageScale
+	maxScaleValue = w.grp1.sizeGroup.add 'edittext', undefined, _.defaultOptions.maxPageScale
 	maxScaleValue.characters = 4
 
 	radioGroupAnimationType = w.grp1.add "panel", undefined, 'Animation Type'
@@ -230,29 +229,29 @@ askForChoice = ->
 	radioGroupAnimationType.orientation = 'row'
 	radioButtonShouldAnimate = radioGroupAnimationType.add "radiobutton", undefined, "Animate Movement"
 	radioButtonPageLayer = radioGroupAnimationType.add "radiobutton", undefined, "Only Move Page"
-	radioButtonShouldAnimate.value = nf.defaultOptions.animatePage
-	radioButtonPageLayer = not nf.defaultOptions.animatePage
+	radioButtonShouldAnimate.value = _.defaultOptions.animatePage
+	radioButtonPageLayer = not _.defaultOptions.animatePage
 
 	groupAdditionalOptions = w.grp1.add "panel", undefined, 'Additional Options'
 	groupAdditionalOptions.alignChildren = 'left'
 	groupAdditionalOptions.orientation = 'row'
 	checkboxReduceMotion = groupAdditionalOptions.add "checkbox", undefined, "Reduce motion on cross-page moves"
-	checkboxReduceMotion.value = nf.defaultOptions.reduceMotion
+	checkboxReduceMotion.value = _.defaultOptions.reduceMotion
 	checkboxEndAfterTurn = groupAdditionalOptions.add "checkbox", undefined, "End layer after turn"
-	checkboxEndAfterTurn.value = nf.defaultOptions.endAfterTurn
+	checkboxEndAfterTurn.value = _.defaultOptions.endAfterTurn
 
-	nf.pageTree = nf.pageTreeForPaper selectedLayer
+	_.pageTree = NF.Util.pageTreeForPaper selectedLayer
 
 	w.grp2 = w.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
 	w.grp2.alignChildren = 'left'
 	w.grp2.margins.top = 16
 	tree = w.grp2.add 'treeview', [0, 0, 450, 250]
 
-	nf.pageTree.node = tree.add 'node', nf.pageTree.name
+	_.pageTree.node = tree.add 'node', _.pageTree.name
 
 	i = 0
-	while i < nf.pageTree.pages.length
-		thePage = nf.pageTree.pages[i]
+	while i < _.pageTree.pages.length
+		thePage = _.pageTree.pages[i]
 		pageName = null
 		if thePage.active
 			pageName = thePage.name + " (Active Page)"
@@ -261,7 +260,7 @@ askForChoice = ->
 		else 
 			pageName = thePage.name
 
-		thePage.node = nf.pageTree.node.add 'node', pageName
+		thePage.node = _.pageTree.node.add 'node', pageName
 		thePage.node.data = thePage
 		for highlightName of thePage.highlights
 			highlight = thePage.highlights[highlightName]
@@ -269,14 +268,14 @@ askForChoice = ->
 			highlight.item.data = highlight
 		thePage.node.expanded = yes
 		i++
-	nf.pageTree.node.expanded = yes
+	_.pageTree.node.expanded = yes
 
 	buttonGroup = w.add 'group', undefined
 	okButton = buttonGroup.add('button', undefined, 'Go To Highlight')
 	spacingGroup = buttonGroup.add 'group', [0,0, 280, 50]
 	cancelButton = buttonGroup.add('button', undefined, 'Cancel', name: 'cancel')
 
-	nf.UIControls =
+	_.UIControls =
 		duration: durationValue
 		animatePage: radioButtonShouldAnimate
 		highlightWidthPercent: widthValue
@@ -287,13 +286,13 @@ askForChoice = ->
 
 	okButton.onClick = ->
 		options =
-			duration: parseFloat(nf.UIControls.duration.text)
-			animatePage: nf.UIControls.animatePage.value
-			reduceMotion: nf.UIControls.reduceMotion.value
-			maxPageScale: parseFloat(nf.UIControls.maxScale.text)
-			endAfterTurn: nf.UIControls.endAfterTurn.value
+			duration: parseFloat(_.UIControls.duration.text)
+			animatePage: _.UIControls.animatePage.value
+			reduceMotion: _.UIControls.reduceMotion.value
+			maxPageScale: parseFloat(_.UIControls.maxScale.text)
+			endAfterTurn: _.UIControls.endAfterTurn.value
 
-		nf.highlightWidthPercent = parseFloat(nf.UIControls.highlightWidthPercent.text) ? nf.highlightWidthPercent
+		_.highlightWidthPercent = parseFloat(_.UIControls.highlightWidthPercent.text) ? _.highlightWidthPercent
 
 		if not options.maxPageScale?
 			alert 'Invalid Max Page Scale!'
@@ -303,16 +302,16 @@ askForChoice = ->
 			alert 'Invalid Duration!'
 			return false
 
-		highlightChoice = nf.UIControls.tree.selection.data if nf.UIControls.tree.selection?.data && nf.UIControls.tree.selection?.type is 'item'
+		highlightChoice = _.UIControls.tree.selection.data if _.UIControls.tree.selection?.data && _.UIControls.tree.selection?.type is 'item'
 		if not highlightChoice?
 			alert 'Invalid Selection!'
 			return false
 
-		nf.state =
-			selectedLayer: nf.mainComp.selectedLayers[0]
-			highlightLayer: nf.UIControls.tree.selection.parent.data.layer()
-			activeLayer: nf.pageTree.activePage
-			relevantPages: nf.pageTree.pages
+		_.state =
+			selectedLayer: _.mainComp.selectedLayers[0]
+			highlightLayer: _.UIControls.tree.selection.parent.data.layer()
+			activeLayer: _.pageTree.activePage
+			relevantPages: _.pageTree.pages
 
 		goToHighlight highlightChoice, options
 
@@ -324,7 +323,6 @@ askForChoice = ->
 
 	w.show()
 
-app.beginUndoGroup nf.undoGroupName
+app.beginUndoGroup _.undoGroupName
 askForChoice()
 app.endUndoGroup()
-# nf = {}

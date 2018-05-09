@@ -1,15 +1,14 @@
-`#include "nf_functions.jsx"`
+`#include "nf_runtimeLibraries.jsx"`
 
-importedFunctions = app.nf
-globals =
+NF = app.NF
+_ =
   mainComp: app.project.activeItem
   spotlightColor: [0.0078, 0, 0.1216]
   initialSpotlightStartOffset: -2
   initialSpotlightLength: 7
-nf = Object.assign importedFunctions, globals
 
 askForChoice = ->
-  selectedLayer = nf.mainComp.selectedLayers[0]
+  selectedLayer = _.mainComp.selectedLayers[0]
   w = new Window('dialog', 'Add Spotlight')
   w.alignChildren = 'left'
 
@@ -20,7 +19,7 @@ askForChoice = ->
   useNewMaskButton = w.grp1.add "button", undefined, "Latest Mask on Selected Layer"
   useNewMaskButton.onClick = getOnClickFunction null, null, w
 
-  highlightRects = nf.sourceRectsForHighlightsInTargetLayer selectedLayer
+  highlightRects = NF.Util.sourceRectsForHighlightsInTargetLayer selectedLayer
   if highlightRects?
     
     w.grp2 = w.add 'panel', undefined, 'Create Spotlight from Highlight', {borderStyle:'none'}
@@ -28,17 +27,17 @@ askForChoice = ->
     w.grp2.margins.top = 16
 
     useAllHighlightsButton = w.grp2.add 'button', undefined, "All Active Highlights"
-    useAllHighlightsButton.onClick = getOnClickFunction nf.toKeys(highlightRects), highlightRects, w, true
+    useAllHighlightsButton.onClick = getOnClickFunction NF.Util.toKeys(highlightRects), highlightRects, w, true
 
     w.grp3 = w.grp2.add 'group', undefined, undefined, undefined
     w.grp3.alignChildren = 'left'
     w.grp3.orientation = 'column'
 
     for highlightRect of highlightRects
-      radioButton = w.grp3.add 'checkbox', undefined, nf.capitalizeFirstLetter(highlightRect)
+      radioButton = w.grp3.add 'checkbox', undefined, NF.Util.capitalizeFirstLetter(highlightRect)
 
     useSelectedHighlightsButton = w.grp2.add 'button', undefined, "Selected Highlights"
-    useSelectedHighlightsButton.onClick = getOnClickFunction nf.toKeys(highlightRects), highlightRects, w, true, w.grp3.children
+    useSelectedHighlightsButton.onClick = getOnClickFunction NF.Util.toKeys(highlightRects), highlightRects, w, true, w.grp3.children
 
   cancelButton = w.add('button', undefined, 'Cancel', name: 'cancel')
 
@@ -51,7 +50,7 @@ askForChoice = ->
 # FIXME: The way this function takes in arguments is ridiculous. Combine sourceRect, multiple, and choices
 getOnClickFunction = (name, sourceRect, w, multiple = false, choices = null) ->
   ->
-    rectKeys = nf.toKeys sourceRect if choices?
+    rectKeys = NF.Util.toKeys sourceRect if choices?
     if multiple
       for theRect of sourceRect
         if choices?
@@ -65,17 +64,17 @@ getOnClickFunction = (name, sourceRect, w, multiple = false, choices = null) ->
     false
 
 createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
-  targetLayer = nf.mainComp.selectedLayers[0]
+  targetLayer = _.mainComp.selectedLayers[0]
   if targetLayer instanceof ShapeLayer or targetLayer.nullLayer or (targetLayer.source instanceof FootageItem and targetLayer.source.mainSource instanceof SolidSource)
     alert "Error\nPlease select the correct source layer\nDid you draw the mask on the existing spotlight layer by mistake?"
   spotlightName = spotlightNameForLayer(targetLayer)
-  spotlightLayer = nf.mainComp.layers.byName(spotlightName)
+  spotlightLayer = _.mainComp.layers.byName(spotlightName)
 
   if not spotlightLayer?
 
     # create new solid
     spotlightSolidProperties =
-      color: nf.spotlightColor
+      color: _.spotlightColor
       name: spotlightName
       width: targetLayer.width
       height: targetLayer.height
@@ -94,14 +93,14 @@ createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
 
     # Check if we have a highlight Dupe
     spotlightLayerMaskName = spotlightName + " - " + sourceHighlightName
-    if nf.mainComp.layer(spotlightLayerMaskName)?
+    if _.mainComp.layer(spotlightLayerMaskName)?
       alert("Skipping duplicate of spotlight:\n'#{spotlightLayerMaskName}'")
       return
 
     spotlightLayerMask = spotlightLayer.mask.addProperty "Mask"
     spotlightMaskShape = spotlightLayerMask.property "maskShape"
     newShape = spotlightMaskShape.value
-    newShape.vertices = nf.verticiesFromSourceRect sourceHighlightRect
+    newShape.vertices = NF.Util.verticiesFromSourceRect sourceHighlightRect
     newShape.closed = true
     spotlightMaskShape.setValue newShape
     spotlightLayerMask.maskMode = MaskMode.SUBTRACT
@@ -121,8 +120,8 @@ createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
     name: spotlightLayerMask.name
     layerAfter: spotlightLayer
     enabled: no
-    startTime: nf.mainComp.time + nf.initialSpotlightStartOffset
-    outPoint: nf.mainComp.time + nf.initialSpotlightStartOffset + nf.initialSpotlightLength
+    startTime: _.mainComp.time + _.initialSpotlightStartOffset
+    outPoint: _.mainComp.time + _.initialSpotlightStartOffset + _.initialSpotlightLength
   spanLayer = newSolid spanSolidProperties
   matchTransformAndParent spanLayer, spotlightLayer
 
@@ -313,7 +312,7 @@ featherExpression = (targetLayer, spotlightLayer, spotlightControl, spanLayer, c
                 }"
 
 childrenOfSpotlight = (spotlightLayer) ->
-  allLayers = nf.mainComp.layers
+  allLayers = _.mainComp.layers
   childLayerArrayString = "["
   childLayerArray = []
   i = 1
@@ -354,8 +353,8 @@ newSolid = (props) ->
   props =
     color: props.color ? [0,0,0]
     name: props.name ? "New Solid"
-    width: props.width ? nf.mainComp.width
-    height: props.height ? nf.mainComp.height
+    width: props.width ? _.mainComp.width
+    height: props.height ? _.mainComp.height
     pixelAspect: props.pixelAspect ? 1
     layerAfter: props.layerAfter ? null
     layerBefore: props.layerBefore ? null
@@ -365,7 +364,7 @@ newSolid = (props) ->
     startTime: props.startTime ? null
     outPoint: props.outPoint ? null
     inPoint: props.inPoint ? null
-  newSolidLayer = nf.mainComp.layers.addSolid props.color, props.name, props.width, props.height, props.pixelAspect
+  newSolidLayer = _.mainComp.layers.addSolid props.color, props.name, props.width, props.height, props.pixelAspect
   newSolidLayer.moveBefore props.layerAfter if props.layerAfter
   newSolidLayer.moveAfter props.layerBefore if props.layerBefore
   newSolidLayer.parent = props.parent if props.parent
@@ -404,4 +403,3 @@ if !Array::indexOf
 app.beginUndoGroup 'Create Spotlight Layer'
 askForChoice()
 app.endUndoGroup()
-# app.nf = {}

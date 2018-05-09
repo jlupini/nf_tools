@@ -1,21 +1,19 @@
 (function() {
-  #include "nf_functions.jsx";
-  var createHighlighter, createShapeLayer, createSplitterEffect, fixExpressionProblems, getChoice, getColorExpression, getLineArray, globals, importedFunctions, indexOfClosestLineToPoint, initColorPresets, main, nf, percentThroughLineAtPoint, splitHighlightAtPoint, splitHighlightLayer;
+  #include "nf_runtimeLibraries.jsx";
+  var NF, _, createHighlighter, createShapeLayer, createSplitterEffect, fixExpressionProblems, getChoice, getColorExpression, getLineArray, indexOfClosestLineToPoint, initColorPresets, main, percentThroughLineAtPoint, splitHighlightAtPoint, splitHighlightLayer;
 
-  importedFunctions = app.nf;
+  NF = app.NF;
 
-  globals = {
+  _ = {
     mainComp: app.project.activeItem,
     undoGroupName: 'Create Highlight Layer'
   };
-
-  nf = Object.assign(importedFunctions, globals);
 
   main = function() {
     var highlightLayer, mainComp;
     mainComp = app.project.activeItem;
     highlightLayer = mainComp.selectedLayers[0];
-    if (nf.mainComp.selectedLayers.length > 1) {
+    if (_.mainComp.selectedLayers.length > 1) {
       return alert("Error!\nMore than one layer selected");
     }
     if (!(highlightLayer instanceof ShapeLayer)) {
@@ -51,12 +49,12 @@
       name: 'cancel'
     });
     splitButton.onClick = function() {
-      nf.disconnectBubbleupsInLayers(nf.mainComp.selectedLayers[0]);
+      NF.Util.disconnectBubbleupsInLayers(_.mainComp.selectedLayers[0]);
       splitHighlightLayer();
       w.close();
     };
     disconnectButton.onClick = function() {
-      nf.disconnectBubbleupsInLayers(nf.mainComp.selectedLayers[0]);
+      NF.Util.disconnectBubbleupsInLayers(_.mainComp.selectedLayers[0]);
       w.close();
     };
     cancelButton.onClick = function() {
@@ -93,7 +91,7 @@
     highlightColorPINK = [255, 152, 202, 255];
     highlightColorORANGE = [255, 175, 104, 255];
     highlightColorRED = [255, 157, 157, 255];
-    return nf.highlightColorOptions = [highlightColorYELLOW, highlightColorBLUE, highlightColorPURPLE, highlightColorGREEN, highlightColorPINK, highlightColorORANGE, highlightColorRED];
+    return _.highlightColorOptions = [highlightColorYELLOW, highlightColorBLUE, highlightColorPURPLE, highlightColorGREEN, highlightColorPINK, highlightColorORANGE, highlightColorRED];
   };
 
   getColorExpression = function() {
@@ -102,14 +100,14 @@
     trimString = '';
     trimString += 'popup_val = effect("AV Highlighter")("Highlight Colour");';
     i = 0;
-    while (i < nf.highlightColorOptions.length) {
+    while (i < _.highlightColorOptions.length) {
       if (i !== 0) {
         trimString += 'else ';
       }
-      if (i !== nf.highlightColorOptions.length - 1) {
+      if (i !== _.highlightColorOptions.length - 1) {
         trimString += 'if (popup_val == ' + (i + 1) + ') ';
       }
-      trimString += '{ [' + nf.highlightColorOptions[i].toString() + ']/255; } ';
+      trimString += '{ [' + _.highlightColorOptions[i].toString() + ']/255; } ';
       i++;
     }
     trimString += ';';
@@ -136,13 +134,13 @@
     offsetString += '[transform.position[0]+ effect("AV Highlighter")("Offset")[0],';
     offsetString += ' transform.position[1]+ effect("AV Highlighter")("Offset")[1]]';
     highlightLayer.property('Transform').property('Position').expression = offsetString;
-    shape1.property('Contents').property('Trim Paths 1').property('End').expression = nf.trimExpression(1, highlightLinesCount);
+    shape1.property('Contents').property('Trim Paths 1').property('End').expression = NF.Util.trimExpression(1, highlightLinesCount);
     i = 2;
     while (i <= highlightLinesCount) {
       newShape = highlightLayer.property('Contents').property(1).duplicate();
       newShape.property('Transform').property('Position').expression = '[content("Shape 1").transform.position[0], effect("AV Highlighter")("Spacing")*' + (i - 1) + ']';
       newShape.property('Contents').property('Trim Paths 1').property('Start').expression = '';
-      newShape.property('Contents').property('Trim Paths 1').property('End').expression = nf.trimExpression(i, highlightLinesCount);
+      newShape.property('Contents').property('Trim Paths 1').property('End').expression = NF.Util.trimExpression(i, highlightLinesCount);
       i++;
     }
   };
@@ -158,8 +156,8 @@
 
   splitHighlightLayer = function() {
     var j, layer, len, newLayers, results, splitterEffect, splitterPoint;
-    nf.selectedLayer = nf.mainComp.selectedLayers[0];
-    splitterEffect = nf.selectedLayer.property("Effects").property("Splitter");
+    _.selectedLayer = _.mainComp.selectedLayers[0];
+    splitterEffect = _.selectedLayer.property("Effects").property("Splitter");
     if (splitterEffect == null) {
       return createSplitterEffect();
     }
@@ -180,13 +178,13 @@
     closestIndex = indexOfClosestLineToPoint(splitterPoint, lineArray);
     closestLine = lineArray[closestIndex];
     percentage = percentThroughLineAtPoint(closestLine, splitterPoint);
-    highlighterEffect = nf.selectedLayer.property("Effects").property("AV Highlighter");
+    highlighterEffect = _.selectedLayer.property("Effects").property("AV Highlighter");
     highlighterThickness = highlighterEffect.property("Thickness");
     highlighterSpacing = highlighterEffect.property("Spacing");
     if (highlighterThickness.value > highlighterSpacing.value + 1) {
       highlighterThickness.setValue(highlighterSpacing.value + 1);
     }
-    originalHighlightLayer = nf.selectedLayer;
+    originalHighlightLayer = _.selectedLayer;
     newHighlightLayer = originalHighlightLayer.duplicate();
     newHighlightLayer.moveAfter(originalHighlightLayer);
     newHighlightParentPosition = closestLine.shape.property("Transform").property("Position").value;
@@ -220,8 +218,8 @@
     newHighlighterEffect = newHighlightLayer.property("Effects").property("AV Highlighter");
     newHighlighterEffect.property("Start Offset").setValue(percentage * 100);
     originalHighlighterEffect.property("End Offset").setValue((1 - percentage) * 100);
-    nf.fixTrimExpressionsForHighlightLayer(newHighlightLayer);
-    nf.fixTrimExpressionsForHighlightLayer(originalHighlightLayer);
+    NF.Util.fixTrimExpressionsForHighlightLayer(newHighlightLayer);
+    NF.Util.fixTrimExpressionsForHighlightLayer(originalHighlightLayer);
     newLayers = [originalHighlightLayer, newHighlightLayer];
     return newLayers;
   };
@@ -235,11 +233,11 @@
 
   getLineArray = function() {
     var i, lineAdjustedStartPoint, lineArray, lineCount, lineEndPoint, lineLength, lineName, lineObj, linePath, lineRawY, lineRelativeAdjustedStartPoint, lineRelativeY, lineShape, lineStartPoint, lineStartRelativeX, lineVerticies, yOffsetValue;
-    lineCount = nf.selectedLayer.property("Contents").numProperties;
+    lineCount = _.selectedLayer.property("Contents").numProperties;
     lineArray = [];
     i = 1;
     while (i <= lineCount) {
-      lineShape = nf.selectedLayer.property("Contents").property(i);
+      lineShape = _.selectedLayer.property("Contents").property(i);
       lineName = lineShape.name;
       linePath = lineShape.property("Contents").property("Path 1").property("Path").value;
       lineVerticies = linePath.vertices;
@@ -247,7 +245,7 @@
       lineEndPoint = lineVerticies[1];
       yOffsetValue = lineShape.property("Transform").property("Position").value[1];
       lineAdjustedStartPoint = [lineStartPoint[0], lineStartPoint[1] + yOffsetValue];
-      lineRelativeAdjustedStartPoint = nf.pointRelativeToComp(lineAdjustedStartPoint, nf.selectedLayer);
+      lineRelativeAdjustedStartPoint = NF.Util.pointRelativeToComp(lineAdjustedStartPoint, _.selectedLayer);
       lineRawY = lineAdjustedStartPoint[1];
       lineRelativeY = lineRelativeAdjustedStartPoint[1];
       lineStartRelativeX = lineRelativeAdjustedStartPoint[0];
@@ -271,7 +269,7 @@
 
   createSplitterEffect = function() {
     var splitterEffect;
-    splitterEffect = nf.selectedLayer.property("Effects").addProperty("ADBE Point Control");
+    splitterEffect = _.selectedLayer.property("Effects").addProperty("ADBE Point Control");
     splitterEffect.name = "Splitter";
     return 1;
   };
@@ -293,7 +291,7 @@
     return curr;
   };
 
-  app.beginUndoGroup(nf.undoGroupName);
+  app.beginUndoGroup(_.undoGroupName);
 
   main();
 

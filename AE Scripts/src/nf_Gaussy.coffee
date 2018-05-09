@@ -1,17 +1,16 @@
-`#include "nf_functions.jsx"`
+`#include "nf_runtimeLibraries.jsx"`
 
-importedFunctions = app.nf
-globals =
+NF = app.NF
+_ =
 	mainComp: app.project.activeItem
 	undoGroupName: 'Create Gaussy Layer'
-nf = Object.assign importedFunctions, globals
 
 createGaussyLayer = ->
-	targetLayer = nf.mainComp.selectedLayers[0]
+	targetLayer = _.mainComp.selectedLayers[0]
 	gaussyName = newGaussyNameForLayer(targetLayer)
 	
 	# Create new adjustment layer
-	gaussyLayer = nf.mainComp.layers.addSolid([1, 1, 1], gaussyName, targetLayer.width, targetLayer.height, 1)
+	gaussyLayer = _.mainComp.layers.addSolid([1, 1, 1], gaussyName, targetLayer.width, targetLayer.height, 1)
 	gaussyLayer.adjustmentLayer = true
 	gaussyLayer.moveBefore targetLayer
 
@@ -30,7 +29,7 @@ createGaussyLayer = ->
 		valueB:
 			effect: "AV Gaussy"
 			subEffect: "Blurriness"
-	markerExpression = nf.markerDrivenExpression(markerExpressionModel)
+	markerExpression = NF.Util.markerDrivenExpression(markerExpressionModel)
 	gaussyLayer.property('Effects').property('Gaussian Blur').property('Blurriness').expression = markerExpression
 
 	gaussyLayer.startTime = targetLayer.startTime
@@ -39,9 +38,9 @@ createGaussyLayer = ->
 
 	# Create in/out markers in target layer
 	inMarker = new MarkerValue('Blur In')
-	gaussyLayer.property('Marker').setValueAtTime nf.mainComp.time, inMarker
+	gaussyLayer.property('Marker').setValueAtTime _.mainComp.time, inMarker
 	outMarker = new MarkerValue('Blur Out')
-	gaussyLayer.property('Marker').setValueAtTime nf.mainComp.time + 5, outMarker
+	gaussyLayer.property('Marker').setValueAtTime _.mainComp.time + 5, outMarker
 
 	# Add Desaturation
 	hueSatEffect = effects.addProperty "ADBE Color Balance (HLS)"
@@ -57,7 +56,7 @@ createGaussyLayer = ->
 		valueB:
 			effect: "AV Gaussy"
 			subEffect: "Saturation"
-	markerExpression = nf.markerDrivenExpression(markerExpressionModel)
+	markerExpression = NF.Util.markerDrivenExpression(markerExpressionModel)
 	masterSaturation.expression = markerExpression
 
 	markerExpressionModel =
@@ -68,7 +67,7 @@ createGaussyLayer = ->
 		valueB:
 			effect: "AV Gaussy"
 			subEffect: "Lightness"
-	markerExpression = nf.markerDrivenExpression(markerExpressionModel)
+	markerExpression = NF.Util.markerDrivenExpression(markerExpressionModel)
 	masterLightness.expression = markerExpression
 
 	return
@@ -88,6 +87,6 @@ newGaussyNameForLayer = (targetLayer) ->
 			i++
 	name
 
-app.beginUndoGroup nf.undoGroupName
+app.beginUndoGroup _.undoGroupName
 createGaussyLayer()
 app.endUndoGroup()

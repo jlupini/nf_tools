@@ -1,21 +1,19 @@
 (function() {
-  #include "nf_functions.jsx";
-  var createGaussyLayer, globals, importedFunctions, newGaussyNameForLayer, nf;
+  #include "nf_runtimeLibraries.jsx";
+  var NF, _, createGaussyLayer, newGaussyNameForLayer;
 
-  importedFunctions = app.nf;
+  NF = app.NF;
 
-  globals = {
+  _ = {
     mainComp: app.project.activeItem,
     undoGroupName: 'Create Gaussy Layer'
   };
 
-  nf = Object.assign(importedFunctions, globals);
-
   createGaussyLayer = function() {
     var effects, gaussianBlur, gaussyLayer, gaussyName, hueSatEffect, inMarker, markerExpression, markerExpressionModel, masterLightness, masterSaturation, outMarker, targetLayer;
-    targetLayer = nf.mainComp.selectedLayers[0];
+    targetLayer = _.mainComp.selectedLayers[0];
     gaussyName = newGaussyNameForLayer(targetLayer);
-    gaussyLayer = nf.mainComp.layers.addSolid([1, 1, 1], gaussyName, targetLayer.width, targetLayer.height, 1);
+    gaussyLayer = _.mainComp.layers.addSolid([1, 1, 1], gaussyName, targetLayer.width, targetLayer.height, 1);
     gaussyLayer.adjustmentLayer = true;
     gaussyLayer.moveBefore(targetLayer);
     effects = gaussyLayer.Effects;
@@ -33,15 +31,15 @@
         subEffect: "Blurriness"
       }
     };
-    markerExpression = nf.markerDrivenExpression(markerExpressionModel);
+    markerExpression = NF.Util.markerDrivenExpression(markerExpressionModel);
     gaussyLayer.property('Effects').property('Gaussian Blur').property('Blurriness').expression = markerExpression;
     gaussyLayer.startTime = targetLayer.startTime;
     targetLayer.selected = true;
     gaussyLayer.selected = false;
     inMarker = new MarkerValue('Blur In');
-    gaussyLayer.property('Marker').setValueAtTime(nf.mainComp.time, inMarker);
+    gaussyLayer.property('Marker').setValueAtTime(_.mainComp.time, inMarker);
     outMarker = new MarkerValue('Blur Out');
-    gaussyLayer.property('Marker').setValueAtTime(nf.mainComp.time + 5, outMarker);
+    gaussyLayer.property('Marker').setValueAtTime(_.mainComp.time + 5, outMarker);
     hueSatEffect = effects.addProperty("ADBE Color Balance (HLS)");
     masterSaturation = hueSatEffect.property("Saturation");
     masterLightness = hueSatEffect.property("Lightness");
@@ -56,7 +54,7 @@
         subEffect: "Saturation"
       }
     };
-    markerExpression = nf.markerDrivenExpression(markerExpressionModel);
+    markerExpression = NF.Util.markerDrivenExpression(markerExpressionModel);
     masterSaturation.expression = markerExpression;
     markerExpressionModel = {
       layer: gaussyLayer,
@@ -69,7 +67,7 @@
         subEffect: "Lightness"
       }
     };
-    markerExpression = nf.markerDrivenExpression(markerExpressionModel);
+    markerExpression = NF.Util.markerDrivenExpression(markerExpressionModel);
     masterLightness.expression = markerExpression;
   };
 
@@ -93,7 +91,7 @@
     return name;
   };
 
-  app.beginUndoGroup(nf.undoGroupName);
+  app.beginUndoGroup(_.undoGroupName);
 
   createGaussyLayer();
 

@@ -1,16 +1,14 @@
 (function() {
-  #include "nf_functions.jsx";
-  var getBubblableObjects, getCancelFunction, globals, importedFunctions, initWithOptions, initializePages, nf, nullName, nullify, setDropShadowForLayer, setPosition, setSize, topmostLayer, zoom;
+  #include "nf_runtimeLibraries.jsx";
+  var NF, _, getBubblableObjects, getCancelFunction, initWithOptions, initializePages, nullName, nullify, setDropShadowForLayer, setPosition, setSize, topmostLayer, zoom;
 
-  importedFunctions = app.nf;
+  NF = app.NF;
 
-  globals = {
+  _ = {
     mainComp: app.project.activeItem,
     undoGroupName: 'initialize Pages',
     animationDuration: 1.85
   };
-
-  nf = Object.assign(importedFunctions, globals);
 
   initializePages = function() {
     var allHighlights, animatePageCheckbox, bubblableObjects, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, layer, len, mainComp, okButton, optionsPanel, orphans, removeCheckbox, selectedLayers, tPanel, w;
@@ -131,7 +129,7 @@
           }
         }
       }
-      nf.disconnectBubbleupsInLayers(selectedLayers, highlightChoices);
+      NF.Util.disconnectBubbleupsInLayers(selectedLayers, highlightChoices);
       return w.hide();
     };
     w.show();
@@ -155,27 +153,28 @@
       thisLayer = selectedLayers[i];
       thisLayer.motionBlur = true;
       setDropShadowForLayer(thisLayer);
+      thisLayer.name = thisLayer.name.replace(" NFPage", " [+]");
       i++;
     }
     name = nullName(selectedLayers[0]);
     newParent = nullify(selectedLayers, name);
     zoomer = zoom(newParent);
-    nf.bubbleUpHighlights(selectedLayers, options.highlightChoices);
+    NF.Util.bubbleUpHighlights(selectedLayers, options.highlightChoices);
     if (options.animatePage) {
       topLayer = topmostLayer(selectedLayers);
-      nf.animatePage({
+      NF.Util.animatePage({
         page: topLayer,
-        type: nf.AnimationType.SLIDE,
-        position: nf.Position.RIGHT,
-        direction: nf.Direction.IN,
-        duration: nf.animationDuration,
-        easeFunction: nf.EaseFunction.PAGESLIDEEASE
+        type: NF.Util.AnimationType.SLIDE,
+        position: NF.Util.Position.RIGHT,
+        direction: NF.Util.Direction.IN,
+        duration: _.animationDuration,
+        easeFunction: NF.Util.EaseFunction.PAGESLIDEEASE
       });
       results = [];
       for (j = 0, len = selectedLayers.length; j < len; j++) {
         layer = selectedLayers[j];
         if (layer.index !== topLayer.index) {
-          results.push(layer.inPoint = topLayer.inPoint + nf.animationDuration);
+          results.push(layer.inPoint = topLayer.inPoint + _.animationDuration);
         } else {
           results.push(void 0);
         }
@@ -189,7 +188,7 @@
     allHighlights = {};
     for (j = 0, len = selectedLayers.length; j < len; j++) {
       layer = selectedLayers[j];
-      layerHighlights = nf.sourceRectsForHighlightsInTargetLayer(layer);
+      layerHighlights = NF.Util.sourceRectsForHighlightsInTargetLayer(layer);
       if (layerHighlights != null) {
         for (key in layerHighlights) {
           layerHighlights[key].layerInPart = layer;
@@ -289,7 +288,7 @@
     return app.project.activeItem.layer(lowestIndex);
   };
 
-  app.beginUndoGroup(nf.undoGroupName);
+  app.beginUndoGroup(_.undoGroupName);
 
   initializePages();
 

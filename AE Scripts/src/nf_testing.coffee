@@ -1,16 +1,15 @@
-`#include "nf_functions.jsx"`
+`#include "nf_runtimeLibraries.jsx"`
 
 # Import Polyfills and nf namespace functions from nf_functions.jsx,
 # then combine them with the global variables in the 'nf' object
-importedFunctions = app.nf
-globals =
+NF = app.NF
+_ =
 	mainComp: app.project.activeItem
 	undoGroupName: 'Testing'
 	selectedLayer: app.project.activeItem.selectedLayers[0];
-nf = Object.assign importedFunctions, globals
 
 clear = ->
-	nf.disconnectBubbleupsInLayers(app.project.activeItem.selectedLayers)
+	NF.Util.disconnectBubbleupsInLayers(app.project.activeItem.selectedLayers)
 
 # buildTree = (doc, tree) ->
 #   styles = doc.paragraphStyles.everyItem().getElements()
@@ -28,7 +27,7 @@ clear = ->
 
 main = ->
 	# nf.turnPageAtTime app.project.activeItem.selectedLayers[0]
-	pageTree = nf.pageTreeForPaper nf.selectedLayer
+	pageTree = NF.Util.pageTreeForPaper _.selectedLayer
 
 	w = new Window('dialog')
 	tree = w.add 'treeview', [0, 0, 250, 350]
@@ -57,10 +56,9 @@ main = ->
 	# insects.expanded = true
 	w.show()
 
-app.beginUndoGroup nf.undoGroupName
+app.beginUndoGroup _.undoGroupName
 
 # Call your main function here
 main()
 
 app.endUndoGroup()
-# app.nf = {}
