@@ -8,11 +8,13 @@ _ =
 
 initializePages = ->
 	# Setup
-	mainComp = app.project.activeItem
-	selectedLayers = mainComp.selectedLayers
+	throw "Project has no active composition" unless _.mainComp?
+	selectedLayers = NF.Models.NFLayerCollection.collectionFromLayerArray(_.mainComp.selectedLayers)
+	throw "Can't initialize non-page layers" unless selectedLayers.onlyContainsPageLayers()
 
-	bubblableObjects = getBubblableObjects selectedLayers
-	allHighlights = bubblableObjects.highlights
+	allHighlights = selectedLayers.highlights()
+	# bubblableObjects = getBubblableObjects selectedLayers
+	# allHighlights = bubblableObjects.highlights
 
 	# Present UI
 	w = new Window('dialog', 'Page Initialization')
@@ -22,13 +24,19 @@ initializePages = ->
 	tPanel.alignChildren = ["fill", "fill"]
 	tPanel.preferredSize = [350,300]
 
-	# Only Show the Init tab if pages are ORPHANS (no parents)
-	orphans = true
-	for layer in selectedLayers
-		orphans = false if layer.parent?
+	# Warn and abort if we're trying to run the script on both initialized and uninitialized pages at the same time
+	orphans = 0
+	for theLayer in selectedLayers.layers
+		orphans++ unless theLayer.hasNullParent()
+	if 0 < orphans < selectedLayers.count()
+		throw "Can't run this script on both initialized and uninitialized page layers at the same time"
 
-	if orphans
+	# orphans = true
+	# for layer in selectedLayers
+	# 	orphans = false if layer.parent?
 
+# Only Show the Init tab if pages are ORPHANS (Not Initialized)
+	if orphans > 0
 		initTab = tPanel.add("tab", undefined, "Init Page")
 		initTab.alignChildren = "fill"
 
@@ -46,19 +54,23 @@ initializePages = ->
 		highlightPanel.margins.top = 16
 
 		highlightCheckboxes = {}
-		for highlightName of allHighlights
-			highlight = allHighlights[highlightName]
-			displayName = highlightName
-			if highlight.bubbled
-				if highlight.broken isnt ""
-					displayName = highlightName + " (OVERRIDE/BROKEN)"
-				else
-					displayName = highlightName + " (OVERRIDE)"
-			else if highlight.broken isnt ""
-				displayName = highlightName + " (BROKEN)"
+		for highlight in allHighlights
+			$.write "\n" + highlight.name + "\n"
+		# FIXME: Pickup here! add the rest of the below stuff back in by fleshing out the Highlight Model
 
-			highlightCheckboxes[highlightName] = highlightPanel.add "checkbox {text: '#{displayName}'}"
-			highlightCheckboxes[highlightName].value = not highlight.bubbled
+		# for highlightName of allHighlights
+		# 	highlight = allHighlights[highlightName]
+		# 	displayName = highlightName
+		# 	if highlight.bubbled
+		# 		if highlight.broken isnt ""
+		# 			displayName = highlightName + " (OVERRIDE/BROKEN)"
+		# 		else
+		# 			displayName = highlightName + " (OVERRIDE)"
+		# 	else if highlight.broken isnt ""
+		# 		displayName = highlightName + " (BROKEN)"
+
+			# highlightCheckboxes[highlightName] = highlightPanel.add "checkbox {text: '#{displayName}'}"
+			# highlightCheckboxes[highlightName].value = not highlight.bubbled
 
 		buttonGroup = initTab.add 'group', undefined
 		okButton = buttonGroup.add('button', undefined, 'Continue')
@@ -142,8 +154,7 @@ getCancelFunction = (w) ->
 		w.close()
 
 initWithOptions = (options) ->
-	mainComp = app.project.activeItem
-	selectedLayers = mainComp.selectedLayers
+	selectedLayers = _.mainComp.selectedLayers
 
 	setSize selectedLayers
 	setPosition selectedLayers
@@ -175,18 +186,18 @@ initWithOptions = (options) ->
 		for layer in selectedLayers
 			layer.inPoint = topLayer.inPoint + _.animationDuration unless layer.index is topLayer.index
 
-getBubblableObjects = (selectedLayers) ->
-	# Get all the highlights in selected layers
-	allHighlights = {}
-	for layer in selectedLayers
-		layerHighlights = NF.Util.sourceRectsForHighlightsInTargetLayer layer
-		if layerHighlights?
-			for key of layerHighlights
-				layerHighlights[key].layerInPart = layer
-			allHighlights = Object.assign allHighlights, layerHighlights
-
-	bubblableObjects =
-		highlights: allHighlights
+# getBubblableObjects = (selectedLayers) ->
+# 	# Get all the highlights in selected layers
+# 	allHighlights = {}
+# 	for layer in selectedLayers
+# 		layerHighlights = NF.Util.sourceRectsForHighlightsInTargetLayer layer
+# 		if layerHighlights?
+# 			for key of layerHighlights
+# 				layerHighlights[key].layerInPart = layer
+# 			allHighlights = Object.assign allHighlights, layerHighlights
+#
+# 	bubblableObjects =
+# 		highlights: allHighlights
 
 setDropShadowForLayer = (layer) ->
 	dropShadow = layer.property('Effects').addProperty('ADBE Drop Shadow')
@@ -239,8 +250,7 @@ zoom = (target) ->
 	zoomer
 
 nullify = (selectedLayers, nullName) ->
-	mainComp = app.project.activeItem
-	newNull = mainComp.layers.addNull()
+	newNull = _.mainComp.layers.addNull()
 	newNull.name = nullName
 	newNull.moveBefore topmostLayer(selectedLayers)
 	thisLayer = undefined
@@ -265,11 +275,11 @@ topmostLayer = (layers) ->
 app.beginUndoGroup _.undoGroupName
 
 # Let's see if the obJect Model made it here in one peice
-testLayer = new NF.Models.NFLayer _.mainComp.selectedLayers[0]
-$.writeln "\n\n" + testLayer.getInfo()
-selectedLayersCollection = NF.Models.NFLayerCollection.collectionFromLayerArray _.mainComp.selectedLayers
-$.write selectedLayersCollection.getInfo()
+# testLayer = new NF.Models.NFLayer _.mainComp.selectedLayers[0]
+# $.writeln "\n\n" + testLayer.getInfo()
+# selectedLayersCollection = NF.Models.NFLayerCollection.collectionFromLayerArray _.mainComp.selectedLayers
+# $.write selectedLayersCollection.getInfo()
 
-# initializePages()
+initializePages()
 
 app.endUndoGroup()

@@ -9,11 +9,11 @@ NF.Util.PageTurn =
   NOPAGETURN: 400
   BROKEN: 500
 
-NF.Util.AnimationType = 
+NF.Util.AnimationType =
   SLIDE: 100
   FADE: 200
 
-NF.Util.Position = 
+NF.Util.Position =
   TOP: 100
   RIGHT: 200
   BOTTOM: 300
@@ -49,6 +49,7 @@ NF.Util.findItem = (itemName) ->
     i++
   null
 
+# Returns true if a given AVLayer is a highlight layer
 NF.Util.isHighlightLayer = (theLayer) ->
   return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
 
@@ -132,7 +133,7 @@ NF.Util.animatePage = (model) ->
 
     positionProperty = model.page.transform.position
     oldPosition = positionProperty.value
-    
+
     rect = NF.Util.sourceRectToComp(model.page, inPoint)
     mainComp = app.project.activeItem
 
@@ -204,7 +205,7 @@ NF.Util.pageTreeForPaper = (sourceLayer) ->
   while i <= allLayers.length
     testLayer = allLayers[i]
     if testLayer.parent is pageParent and NF.Util.isCompLayer testLayer
-      pageObject = 
+      pageObject =
         name: testLayer.name
         index: testLayer.index
         layer: @layerObj testLayer.name
@@ -215,7 +216,7 @@ NF.Util.pageTreeForPaper = (sourceLayer) ->
 
   activePageIndex = NF.Util.activePageIndexInArray tree.pages
   if activePageIndex?
-    tree.pages[activePageIndex].active = true 
+    tree.pages[activePageIndex].active = true
     tree.activePage = tree.pages[activePageIndex].layer()
   tree
 
@@ -315,7 +316,7 @@ NF.Util.addPageTurnEffects = (page) ->
   dropShadowEffect.property("Softness").setValue 300
 
   page
-  
+
 ###
 Given a layer, returns the NF.Util.PageTurn enum
 ###
@@ -371,7 +372,7 @@ NF.Util.disconnectBubbleupsInLayers = (layers, names = null) ->
   layers
 
 # Adds Temporal easing (and removes spatial easing) for an array of properties, an array of key indexes, as well as an ease type and weight.
-# Keys can be delivered as indexes or times. If 
+# Keys can be delivered as indexes or times. If
 NF.Util.setSymmetricalTemporalEasingOnlyForProperties = (theProperties, keys, easeType = null, easeWeight = null, keysAsTimes = false) ->
   if theProperties instanceof Array and keys instanceof Array
     return -1 if theProperties.length isnt keys.length
@@ -531,7 +532,8 @@ NF.Util.sourceRectsForHighlightsInTargetLayer = (targetLayer, includeTitlePage =
   while i <= sourceCompLayers.length
     theLayer = sourceCompLayers[i]
     if theLayer.Effects.numProperties > 0
-      if theLayer instanceof ShapeLayer and theLayer.Effects.property(1).matchName is "AV_Highlighter"
+      if NF.Util.isHighlightLayer(theLayer)
+
         sourceHighlightLayers.push theLayer
 
         layerParent = theLayer.parent
@@ -626,7 +628,7 @@ NF.Util.trimExpression = (thisLine, numberOfLines) ->
                 line_count = #{numberOfLines};
                 this_line = #{thisLine};
                 total_points = line_count * 100;
-                gross_points = total_points - start_offset - end_offset; 
+                gross_points = total_points - start_offset - end_offset;
                 points_per_line = gross_points/line_count*100;
                 total_percent = (slider_val / 100 * gross_points + start_offset) / total_points * 100;
                 min_percent = 100/line_count*(this_line-1);
@@ -636,7 +638,7 @@ NF.Util.trimExpression = (thisLine, numberOfLines) ->
                   {0;}
                 else if ( total_percent >= max_percent )
                   { 100; }
-                else 
+                else
                   { (total_percent - min_percent) / (max_percent - min_percent) * 100; }"
 
 # Deprecate soon - Upgrades highlight layers up to v0.80
@@ -717,7 +719,7 @@ NF.Util.bubbleUpHighlights = (pagesToBubble, choices = null) ->
         shouldBubble = choices.indexOf(highlightLayersInPageComp[j].name) >= 0
       else
         shouldBubble = !sourceHighlighterEffect.property('Completion').expressionEnabled
-      
+
       if shouldBubble
         targetHighlighterEffect = effects.addProperty('AV_Highlighter')
         newName = highlightLayersInPageComp[j].name + ' Highlighter'

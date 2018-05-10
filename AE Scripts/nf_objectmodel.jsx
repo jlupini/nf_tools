@@ -20,16 +20,18 @@
   };
 
   NF.Models.NFLayer.prototype.isPageLayer = function() {
-    return this.isCompLayer() && this.layer.source.name.indexOf("NFPage") >= 0;
+    return NF.Models.NFPageLayer.isPageLayer(this.layer);
   };
 
-  NF.Models.NFLayer.prototype.isCompLayer = function() {
-    return this.layer instanceof AVLayer && this.layer.source instanceof CompItem;
+  NF.Models.NFLayer.prototype.isHighlightLayer = function() {
+    return NF.Models.NFHighlightLayer.isHighlightLayer(this.layer);
   };
 
   NF.Models.NFLayer.prototype.getSpecializedLayer = function() {
     if (this.isPageLayer()) {
       return new NF.Models.NFPageLayer(this.layer);
+    } else if (this.isHighlightLayer()) {
+      return new NF.Model.NFHighlightLayer(this.layer);
     } else {
       return this;
     }
@@ -37,6 +39,17 @@
 
   NF.Models.NFLayer.prototype.getInfo = function() {
     return "NFLayer: '" + this.layer.name + "'";
+  };
+
+  NF.Models.NFLayer.prototype.hasNullParent = function() {
+    if (this.layer.parent != null) {
+      return this.layer.parent.nullLayer;
+    }
+    return false;
+  };
+
+  NF.Models.NFLayer.isCompLayer = function(theLayer) {
+    return theLayer instanceof AVLayer && theLayer.source instanceof CompItem;
   };
 
 
@@ -49,6 +62,10 @@
 
   NF.Models.NFPageLayer = function(layer) {
     NF.Models.NFLayer.call(this, layer);
+    if (layer.source == null) {
+      throw "Cannot create an NFPageLayer from a layer without a source";
+    }
+    this.pageItem = new NF.Models.NFPageItem(layer.source);
     return this;
   };
 
@@ -56,6 +73,10 @@
 
   NF.Models.NFPageLayer.prototype.getInfo = function() {
     return "NFPageLayer: '" + this.layer.name + "'";
+  };
+
+  NF.Models.NFPageLayer.isPageLayer = function(theLayer) {
+    return NF.Models.NFLayer.isCompLayer(theLayer) && theLayer.source.name.indexOf("NFPage") >= 0;
   };
 
 
@@ -125,13 +146,19 @@
 
   NF.Models.NFHighlightLayer = function(layer) {
     NF.Models.NFLayer.call(this, layer);
+    this.name = this.layer.name;
     return this;
   };
 
   NF.Models.NFHighlightLayer.prototype = new NF.Models.NFLayer();
 
   NF.Models.NFHighlightLayer.prototype.getInfo = function() {
-    return "NFHighlightLayer: '" + this.layer.name + "'";
+    return "NFHighlightLayer: '" + this.name + "'";
+  };
+
+  NF.Models.NFHighlightLayer.isHighlightLayer = function(theLayer) {
+    var ref1;
+    return theLayer instanceof ShapeLayer && ((ref1 = theLayer.Effects.property(1)) != null ? ref1.matchName : void 0) === "AV_Highlighter";
   };
 
 
@@ -200,6 +227,39 @@
     }
   };
 
+  NF.Models.NFLayerCollection.prototype.highlights = function() {
+    var highlight, highlightArray, j, k, len, len1, ref1, ref2, theLayer;
+    highlightArray = [];
+    ref1 = this.layers;
+    for (j = 0, len = ref1.length; j < len; j++) {
+      theLayer = ref1[j];
+      if (theLayer instanceof NF.Models.NFPageLayer) {
+        ref2 = theLayer.pageItem.highlights();
+        for (k = 0, len1 = ref2.length; k < len1; k++) {
+          highlight = ref2[k];
+          highlightArray.push(highlight);
+        }
+      }
+    }
+    return highlightArray;
+  };
+
+  NF.Models.NFLayerCollection.prototype.onlyContainsPageLayers = function() {
+    var j, len, ref1, theLayer;
+    ref1 = this.layers;
+    for (j = 0, len = ref1.length; j < len; j++) {
+      theLayer = ref1[j];
+      if (!(theLayer instanceof NF.Models.NFPageLayer)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  NF.Models.NFLayerCollection.prototype.count = function() {
+    return this.layers.length;
+  };
+
   NF.Models.NFLayerCollection.collectionFromLayerArray = function(arr) {
     var layer, newArray, newLayer;
     newArray = (function() {
@@ -230,6 +290,19 @@
 
   NF.Models.NFPageItem.prototype.getInfo = function() {
     return "NFPageItem: '" + this.item.name + "'";
+  };
+
+  NF.Models.NFPageItem.prototype.highlights = function() {
+    var highlightLayers, j, len, sourceLayers, theLayer;
+    sourceLayers = NF.Util.collectionToArray(this.item.layers);
+    highlightLayers = [];
+    for (j = 0, len = sourceLayers.length; j < len; j++) {
+      theLayer = sourceLayers[j];
+      if (NF.Models.NFHighlightLayer.isHighlightLayer(theLayer)) {
+        highlightLayers.push(new NF.Models.NFHighlightLayer(theLayer));
+      }
+    }
+    return highlightLayers;
   };
 
 

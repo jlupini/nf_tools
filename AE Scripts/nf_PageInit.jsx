@@ -1,6 +1,6 @@
 (function() {
   #include "nf_runtimeLibraries.jsx";
-  var NF, _, getBubblableObjects, getCancelFunction, initWithOptions, initializePages, nullName, nullify, selectedLayersCollection, setDropShadowForLayer, setPosition, setSize, testLayer, topmostLayer, zoom;
+  var NF, _, getCancelFunction, initWithOptions, initializePages, nullName, nullify, setDropShadowForLayer, setPosition, setSize, topmostLayer, zoom;
 
   NF = app.NF;
 
@@ -11,24 +11,32 @@
   };
 
   initializePages = function() {
-    var allHighlights, animatePageCheckbox, bubblableObjects, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, layer, len, mainComp, okButton, optionsPanel, orphans, removeCheckbox, selectedLayers, tPanel, w;
-    mainComp = app.project.activeItem;
-    selectedLayers = mainComp.selectedLayers;
-    bubblableObjects = getBubblableObjects(selectedLayers);
-    allHighlights = bubblableObjects.highlights;
+    var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, k, len, len1, okButton, optionsPanel, orphans, ref, removeCheckbox, selectedLayers, tPanel, theLayer, w;
+    if (_.mainComp == null) {
+      throw "Project has no active composition";
+    }
+    selectedLayers = NF.Models.NFLayerCollection.collectionFromLayerArray(_.mainComp.selectedLayers);
+    if (!selectedLayers.onlyContainsPageLayers()) {
+      throw "Can't initialize non-page layers";
+    }
+    allHighlights = selectedLayers.highlights();
     w = new Window('dialog', 'Page Initialization');
     w.alignChildren = 'left';
     tPanel = w.add("tabbedpanel");
     tPanel.alignChildren = ["fill", "fill"];
     tPanel.preferredSize = [350, 300];
-    orphans = true;
-    for (j = 0, len = selectedLayers.length; j < len; j++) {
-      layer = selectedLayers[j];
-      if (layer.parent != null) {
-        orphans = false;
+    orphans = 0;
+    ref = selectedLayers.layers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
+      if (!theLayer.hasNullParent()) {
+        orphans++;
       }
     }
-    if (orphans) {
+    if ((0 < orphans && orphans < selectedLayers.count())) {
+      throw "Can't run this script on both initialized and uninitialized page layers at the same time";
+    }
+    if (orphans > 0) {
       initTab = tPanel.add("tab", void 0, "Init Page");
       initTab.alignChildren = "fill";
       optionsPanel = initTab.add('panel', void 0, 'Options', {
@@ -44,20 +52,9 @@
       highlightPanel.alignChildren = 'left';
       highlightPanel.margins.top = 16;
       highlightCheckboxes = {};
-      for (highlightName in allHighlights) {
-        highlight = allHighlights[highlightName];
-        displayName = highlightName;
-        if (highlight.bubbled) {
-          if (highlight.broken !== "") {
-            displayName = highlightName + " (OVERRIDE/BROKEN)";
-          } else {
-            displayName = highlightName + " (OVERRIDE)";
-          }
-        } else if (highlight.broken !== "") {
-          displayName = highlightName + " (BROKEN)";
-        }
-        highlightCheckboxes[highlightName] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
-        highlightCheckboxes[highlightName].value = !highlight.bubbled;
+      for (k = 0, len1 = allHighlights.length; k < len1; k++) {
+        highlight = allHighlights[k];
+        $.write("\n" + highlight.name + "\n");
       }
       buttonGroup = initTab.add('group', void 0);
       okButton = buttonGroup.add('button', void 0, 'Continue');
@@ -66,7 +63,7 @@
       });
       cancelButton.onClick = getCancelFunction(w);
       okButton.onClick = function() {
-        var checkbox, highlightChoices, options;
+        var checkbox, highlightChoices, highlightName, options;
         highlightChoices = [];
         for (highlightName in allHighlights) {
           checkbox = highlightCheckboxes[highlightName];
@@ -142,9 +139,8 @@
   };
 
   initWithOptions = function(options) {
-    var i, j, layer, len, mainComp, name, newParent, results, selectedLayers, thisLayer, topLayer, zoomer;
-    mainComp = app.project.activeItem;
-    selectedLayers = mainComp.selectedLayers;
+    var i, j, layer, len, name, newParent, results, selectedLayers, thisLayer, topLayer, zoomer;
+    selectedLayers = _.mainComp.selectedLayers;
     setSize(selectedLayers);
     setPosition(selectedLayers);
     thisLayer = void 0;
@@ -181,24 +177,6 @@
       }
       return results;
     }
-  };
-
-  getBubblableObjects = function(selectedLayers) {
-    var allHighlights, bubblableObjects, j, key, layer, layerHighlights, len;
-    allHighlights = {};
-    for (j = 0, len = selectedLayers.length; j < len; j++) {
-      layer = selectedLayers[j];
-      layerHighlights = NF.Util.sourceRectsForHighlightsInTargetLayer(layer);
-      if (layerHighlights != null) {
-        for (key in layerHighlights) {
-          layerHighlights[key].layerInPart = layer;
-        }
-        allHighlights = Object.assign(allHighlights, layerHighlights);
-      }
-    }
-    return bubblableObjects = {
-      highlights: allHighlights
-    };
   };
 
   setDropShadowForLayer = function(layer) {
@@ -259,9 +237,8 @@
   };
 
   nullify = function(selectedLayers, nullName) {
-    var i, mainComp, newNull, thisLayer;
-    mainComp = app.project.activeItem;
-    newNull = mainComp.layers.addNull();
+    var i, newNull, thisLayer;
+    newNull = _.mainComp.layers.addNull();
     newNull.name = nullName;
     newNull.moveBefore(topmostLayer(selectedLayers));
     thisLayer = void 0;
@@ -290,13 +267,7 @@
 
   app.beginUndoGroup(_.undoGroupName);
 
-  testLayer = new NF.Models.NFLayer(_.mainComp.selectedLayers[0]);
-
-  $.writeln("\n\n" + testLayer.getInfo());
-
-  selectedLayersCollection = NF.Models.NFLayerCollection.collectionFromLayerArray(_.mainComp.selectedLayers);
-
-  $.write(selectedLayersCollection.getInfo());
+  initializePages();
 
   app.endUndoGroup();
 

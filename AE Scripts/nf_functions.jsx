@@ -556,7 +556,7 @@
     while (i <= sourceCompLayers.length) {
       theLayer = sourceCompLayers[i];
       if (theLayer.Effects.numProperties > 0) {
-        if (theLayer instanceof ShapeLayer && theLayer.Effects.property(1).matchName === "AV_Highlighter") {
+        if (NF.Util.isHighlightLayer(theLayer)) {
           sourceHighlightLayers.push(theLayer);
           layerParent = theLayer.parent;
           theLayer.parent = null;

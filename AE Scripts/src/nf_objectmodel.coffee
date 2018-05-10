@@ -12,17 +12,28 @@ NF.Models.NFLayer = (layer) ->
   @layer = layer
   @
 NF.Models.NFLayer::isPageLayer = ->
-  return @isCompLayer() and @layer.source.name.indexOf("NFPage") >= 0
-NF.Models.NFLayer::isCompLayer = ->
-  return @layer instanceof AVLayer and @layer.source instanceof CompItem
+  return NF.Models.NFPageLayer.isPageLayer(@layer)
+NF.Models.NFLayer::isHighlightLayer = ->
+  return NF.Models.NFHighlightLayer.isHighlightLayer(@layer)
 NF.Models.NFLayer::getSpecializedLayer = ->
   # FIXME: Also add cases for image layers, Gaussy layers, Emphasis Layers, and Paper Parent Layers (YES)
   if @isPageLayer()
     return new NF.Models.NFPageLayer @layer
+  else if @isHighlightLayer()
+    return new NF.Model.NFHighlightLayer @layer
   else
     return @
 NF.Models.NFLayer::getInfo = ->
   return "NFLayer: '#{@layer.name}'"
+# Returns true if the layer has a null parent
+NF.Models.NFLayer::hasNullParent = ->
+  if @layer.parent?
+    return @layer.parent.nullLayer
+  return false
+# Class Methods
+# Returns true if the given AVLayer is a comp layer
+NF.Models.NFLayer.isCompLayer = (theLayer) ->
+  return theLayer instanceof AVLayer and theLayer.source instanceof CompItem
 
 ###
 #    NF PAGE LAYER
@@ -32,11 +43,16 @@ NF.Models.NFLayer::getInfo = ->
 ###
 NF.Models.NFPageLayer = (layer) ->
   NF.Models.NFLayer.call(this, layer)
+  throw "Cannot create an NFPageLayer from a layer without a source" unless layer.source?
+  @pageItem = new NF.Models.NFPageItem layer.source
   @
 NF.Models.NFPageLayer:: = new NF.Models.NFLayer()
 NF.Models.NFPageLayer::getInfo = ->
   return "NFPageLayer: '#{@layer.name}'"
-
+# Class Methods
+# Returns true if the given AVLayer is a Page Layer
+NF.Models.NFPageLayer.isPageLayer = (theLayer) ->
+  return NF.Models.NFLayer.isCompLayer(theLayer) and theLayer.source.name.indexOf("NFPage") >= 0
 
 ###
 #    NF IMAGE LAYER
@@ -88,11 +104,14 @@ NF.Models.NFEmphasisLayer::getInfo = ->
 ###
 NF.Models.NFHighlightLayer = (layer) ->
   NF.Models.NFLayer.call(this, layer)
+  @name = @layer.name
   @
 NF.Models.NFHighlightLayer:: = new NF.Models.NFLayer()
 NF.Models.NFHighlightLayer::getInfo = ->
-  return "NFHighlightLayer: '#{@layer.name}'"
-
+  return "NFHighlightLayer: '#{@name}'"
+# Class Methods
+NF.Models.NFHighlightLayer.isHighlightLayer = (theLayer) ->
+  return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
 
 ###
 #    NF PAPER PARENT LAYER
@@ -144,6 +163,21 @@ NF.Models.NFLayerCollection::addNFLayer = (newLayer) ->
     @layers.push newLayer
   else
     throw "You can only add NFLayers to an NFLayerCollection"
+# Returns an unordered array of all highlights in all pages in the collection
+NF.Models.NFLayerCollection::highlights = ->
+  highlightArray = []
+  for theLayer in @layers
+    if theLayer instanceof NF.Models.NFPageLayer
+      # Get the layer's NFPageItem
+      highlightArray.push highlight for highlight in theLayer.pageItem.highlights()
+  return highlightArray
+# Returns true if the collection only contains NFPageLayers and no other types of NFLayers
+NF.Models.NFLayerCollection::onlyContainsPageLayers = ->
+  for theLayer in @layers
+    return false unless theLayer instanceof NF.Models.NFPageLayer
+  return true
+NF.Models.NFLayerCollection::count = ->
+  return @layers.length
 # Class Methods
 NF.Models.NFLayerCollection.collectionFromLayerArray = (arr) ->
   newArray = for layer in arr
@@ -162,7 +196,14 @@ NF.Models.NFPageItem = (item) ->
   @
 NF.Models.NFPageItem::getInfo = ->
   return "NFPageItem: '#{@item.name}'"
-
+NF.Models.NFPageItem::highlights = ->
+  # We're working with AVLayers here
+  sourceLayers = NF.Util.collectionToArray(@item.layers)
+  highlightLayers = []
+  for theLayer in sourceLayers
+    if NF.Models.NFHighlightLayer.isHighlightLayer(theLayer)
+      highlightLayers.push(new NF.Models.NFHighlightLayer(theLayer))
+  return highlightLayers
 
 ###
 #    NF PDF
