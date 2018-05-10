@@ -1,6 +1,6 @@
 (function() {
   #include "nf_runtimeLibraries.jsx";
-  var NF, _, getBubblableObjects, getCancelFunction, initWithOptions, initializePages, nullName, nullify, setDropShadowForLayer, setPosition, setSize, topmostLayer, zoom;
+  var NF, _, getBubblableObjects, getCancelFunction, initWithOptions, initializePages, nullName, nullify, selectedLayersCollection, setDropShadowForLayer, setPosition, setSize, testLayer, topmostLayer, zoom;
 
   NF = app.NF;
 
@@ -290,7 +290,13 @@
 
   app.beginUndoGroup(_.undoGroupName);
 
-  initializePages();
+  testLayer = new NF.Models.NFLayer(_.mainComp.selectedLayers[0]);
+
+  $.writeln("\n\n" + testLayer.getInfo());
+
+  selectedLayersCollection = NF.Models.NFLayerCollection.collectionFromLayerArray(_.mainComp.selectedLayers);
+
+  $.write(selectedLayersCollection.getInfo());
 
   app.endUndoGroup();
 

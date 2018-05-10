@@ -1,24 +1,28 @@
 (function() {
-  var NF, ref;
+  var base, base1, base2;
 
-  NF = (ref = app.NF) != null ? ref : {};
-
-  if (NF.Models == null) {
-    NF.Models = {};
+  if (app.NF == null) {
+    app.NF = {};
   }
 
-  if (NF.Util == null) {
-    NF.Util = {};
+  if ((base = app.NF).Models == null) {
+    base.Models = {};
   }
 
-  if (NF.Enum == null) {
-    NF.Enum = {};
+  if ((base1 = app.NF).Util == null) {
+    base1.Util = {};
+  }
+
+  if ((base2 = app.NF).Enum == null) {
+    base2.Enum = {};
   }
 
   #include "lib/extendscript.prototypes.js";
 
   #include "nf_functions.jsx";
 
-  #include "nf_objectmodel.jsx";
+  #include "nf_objectModel.jsx";
+
+  #include "nf_objectModelHelperFunctions.jsx";
 
 }).call(this);

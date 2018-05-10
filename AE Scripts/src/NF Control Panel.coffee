@@ -4,7 +4,7 @@
 # then combine them with the global variables in the 'nf' object
 NF = app.NF
 
-# _ is temp storage
+# _ is temp storag0
 _ =
 	mainComp: app.project.activeItem
 	debug: no # Change this flag when you need to add breakpoints to this as a dialog
@@ -20,9 +20,9 @@ getPanelUI = ->
 	return _.panel if _.panel?
 
 	panel = undefined
-	# check if this Obj is a panel (run from Window menu)  
+	# check if this Obj is a panel (run from Window menu)
 	if panelTest instanceof Panel
-		# is a panel (called from Window menu)  
+		# is a panel (called from Window menu)
 		panel = panelTest
 		_.isUIPanel = yes
 	else
@@ -32,7 +32,7 @@ getPanelUI = ->
 		panel = new Window("dialog", "NF Controls")
 		_.isUIPanel = no
 
-	panel.alignChildren = 'left' 
+	panel.alignChildren = 'left'
 
 	buttonPanel = panel.add 'panel', undefined, 'Controls', {borderStyle:'none'}
 	buttonPanel.alignChildren = 'left'

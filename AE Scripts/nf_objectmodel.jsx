@@ -1,5 +1,5 @@
 (function() {
-  var NF, ref, testFunction;
+  var NF, ref;
 
   NF = (ref = app.NF) != null ? ref : {};
 
@@ -36,7 +36,7 @@
   };
 
   NF.Models.NFLayer.prototype.getInfo = function() {
-    return "NFLayer: " + this.layer.name;
+    return "NFLayer: '" + this.layer.name + "'";
   };
 
 
@@ -48,14 +48,14 @@
    */
 
   NF.Models.NFPageLayer = function(layer) {
-    NFLayer.call(this, layer);
+    NF.Models.NFLayer.call(this, layer);
     return this;
   };
 
-  NFPageLayer.prototype = new NFLayer();
+  NF.Models.NFPageLayer.prototype = new NF.Models.NFLayer();
 
   NF.Models.NFPageLayer.prototype.getInfo = function() {
-    return "NFPageLayer: " + this.layer.name;
+    return "NFPageLayer: '" + this.layer.name + "'";
   };
 
 
@@ -67,14 +67,14 @@
    */
 
   NF.Models.NFImageLayer = function(layer) {
-    NFLayer.call(this, layer);
+    NF.Models.NFLayer.call(this, layer);
     return this;
   };
 
-  NF.Models.NFImageLayer.prototype = new NFLayer();
+  NF.Models.NFImageLayer.prototype = new NF.Models.NFLayer();
 
   NF.Models.NFImageLayer.prototype.getInfo = function() {
-    return "NFImageLayer: " + this.layer.name;
+    return "NFImageLayer: '" + this.layer.name + "'";
   };
 
 
@@ -86,14 +86,14 @@
    */
 
   NF.Models.NFGaussyLayer = function(layer) {
-    NFLayer.call(this, layer);
+    NF.Models.NFLayer.call(this, layer);
     return this;
   };
 
   NF.Models.NFGaussyLayer.prototype = new NF.Models.NFLayer();
 
   NF.Models.NFGaussyLayer.prototype.getInfo = function() {
-    return "NFGaussyLayer: " + this.layer.name;
+    return "NFGaussyLayer: '" + this.layer.name + "'";
   };
 
 
@@ -105,14 +105,14 @@
    */
 
   NF.Models.NFEmphasisLayer = function(layer) {
-    NFLayer.call(this, layer);
+    NF.Models.NFLayer.call(this, layer);
     return this;
   };
 
   NF.Models.NFEmphasisLayer.prototype = new NF.Models.NFLayer();
 
   NF.Models.NFEmphasisLayer.prototype.getInfo = function() {
-    return "NFEmphasisLayer: " + this.layer.name;
+    return "NFEmphasisLayer: '" + this.layer.name + "'";
   };
 
 
@@ -124,14 +124,14 @@
    */
 
   NF.Models.NFHighlightLayer = function(layer) {
-    NFLayer.call(this, layer);
+    NF.Models.NFLayer.call(this, layer);
     return this;
   };
 
   NF.Models.NFHighlightLayer.prototype = new NF.Models.NFLayer();
 
   NF.Models.NFHighlightLayer.prototype.getInfo = function() {
-    return "NFHighlightLayer: " + this.layer.name;
+    return "NFHighlightLayer: '" + this.layer.name + "'";
   };
 
 
@@ -142,14 +142,14 @@
    */
 
   NF.Models.NFPaperParentLayer = function(layer) {
-    NFLayer.call(this, layer);
+    NF.Models.NFLayer.call(this, layer);
     return this;
   };
 
   NF.Models.NFPaperParentLayer.prototype = new NF.Models.NFLayer();
 
   NF.Models.NFPaperParentLayer.prototype.getInfo = function() {
-    return "NFPaperParentLayer: " + this.layer.name;
+    return "NFPaperParentLayer: '" + this.layer.name + "'";
   };
 
   NF.Models.NFPaperParentLayer.prototype.getChildren = function() {
@@ -170,6 +170,53 @@
 
 
   /*
+   *    NF LAYER COLLECTION
+   *
+   *    A collection of NF Layers
+   *
+   */
+
+  NF.Models.NFLayerCollection = function(layerArr) {
+    this.layers = layerArr;
+    return this;
+  };
+
+  NF.Models.NFLayerCollection.prototype.getInfo = function() {
+    var infoString, j, len, ref1, theLayer;
+    infoString = "NFLayerCollection: [";
+    ref1 = this.layers;
+    for (j = 0, len = ref1.length; j < len; j++) {
+      theLayer = ref1[j];
+      infoString += theLayer.getInfo() + ", ";
+    }
+    return infoString += "]";
+  };
+
+  NF.Models.NFLayerCollection.prototype.addNFLayer = function(newLayer) {
+    if (newLayer instanceof NF.Models.NFLayer) {
+      return this.layers.push(newLayer);
+    } else {
+      throw "You can only add NFLayers to an NFLayerCollection";
+    }
+  };
+
+  NF.Models.NFLayerCollection.collectionFromLayerArray = function(arr) {
+    var layer, newArray, newLayer;
+    newArray = (function() {
+      var j, len, results;
+      results = [];
+      for (j = 0, len = arr.length; j < len; j++) {
+        layer = arr[j];
+        newLayer = new NF.Models.NFLayer(layer);
+        results.push(newLayer.getSpecializedLayer());
+      }
+      return results;
+    })();
+    return new NF.Models.NFLayerCollection(newArray);
+  };
+
+
+  /*
    *    NF PAGE ITEM
    *
    *    The composition page item
@@ -182,25 +229,33 @@
   };
 
   NF.Models.NFPageItem.prototype.getInfo = function() {
-    return "NFPageItem: " + this.item.name;
+    return "NFPageItem: '" + this.item.name + "'";
   };
 
-  testFunction = function() {
-    var children, i, parentLayer, results, selectedLayer;
-    $.writeln('\n\nRunning...');
-    selectedLayer = NF.mainComp.selectedLayers[0];
-    parentLayer = new NF.Models.NFPaperParentLayer(selectedLayer);
-    children = parentLayer.getChildren();
-    i = 0;
-    results = [];
-    while (i < children.length) {
-      $.writeln(children[i].getInfo());
-      results.push(i++);
+
+  /*
+   *    NF PDF
+   *
+   *    A collection of Page Items
+   *
+   */
+
+  NF.Models.NFPDF = function(pageArr) {
+    this.pages = pageArr;
+    return this;
+  };
+
+  NF.Models.NFPDF.prototype.getInfo = function() {
+    return "NFPDF: 'FIXME'";
+  };
+
+  NF.Models.NFPDF.prototype.addNFPageItem = function(newPage) {
+    if (newPage instanceof NF.Models.NFPageItem) {
+      return this.layers.push(newPage);
+    } else {
+      throw "You can only add NFPageItems to an NFPDF";
     }
-    return results;
   };
-
-  testFunction();
 
   app.NF = Object.assign(app.NF, NF);
 

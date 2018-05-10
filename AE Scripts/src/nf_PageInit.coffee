@@ -264,6 +264,12 @@ topmostLayer = (layers) ->
 
 app.beginUndoGroup _.undoGroupName
 
-initializePages()
+# Let's see if the obJect Model made it here in one peice
+testLayer = new NF.Models.NFLayer _.mainComp.selectedLayers[0]
+$.writeln "\n\n" + testLayer.getInfo()
+selectedLayersCollection = NF.Models.NFLayerCollection.collectionFromLayerArray _.mainComp.selectedLayers
+$.write selectedLayersCollection.getInfo()
+
+# initializePages()
 
 app.endUndoGroup()
