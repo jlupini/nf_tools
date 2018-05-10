@@ -147,6 +147,8 @@
   NF.Models.NFHighlightLayer = function(layer) {
     NF.Models.NFLayer.call(this, layer);
     this.name = this.layer.name;
+    this.bubbled = this.highlighterEffect().property("Spacing").expressionEnabled;
+    this.broken = this.highlighterEffect().property("Spacing").expressionError;
     return this;
   };
 
@@ -154,6 +156,10 @@
 
   NF.Models.NFHighlightLayer.prototype.getInfo = function() {
     return "NFHighlightLayer: '" + this.name + "'";
+  };
+
+  NF.Models.NFHighlightLayer.prototype.highlighterEffect = function() {
+    return this.layer.Effects.property("AV_Highlighter");
   };
 
   NF.Models.NFHighlightLayer.isHighlightLayer = function(theLayer) {
@@ -204,7 +210,14 @@
    */
 
   NF.Models.NFLayerCollection = function(layerArr) {
+    var j, len, theLayer;
     this.layers = layerArr;
+    for (j = 0, len = layerArr.length; j < len; j++) {
+      theLayer = layerArr[j];
+      if (!(theLayer instanceof NF.Models.NFLayer)) {
+        throw "You can only add NFLayers to an NFLayerCollection";
+      }
+    }
     return this;
   };
 
@@ -241,7 +254,7 @@
         }
       }
     }
-    return highlightArray;
+    return new NF.Models.NFHighlightLayerCollection(highlightArray);
   };
 
   NF.Models.NFLayerCollection.prototype.onlyContainsPageLayers = function() {
@@ -273,6 +286,80 @@
       return results;
     })();
     return new NF.Models.NFLayerCollection(newArray);
+  };
+
+
+  /*
+   *    NF HIGHLIGHT LAYER COLLECTION
+   *
+   *    A collection of NF Highlight Layers
+   *
+   */
+
+  NF.Models.NFHighlightLayerCollection = function(layerArr) {
+    var j, len, theLayer;
+    NF.Models.NFLayerCollection.call(this, layerArr);
+    for (j = 0, len = layerArr.length; j < len; j++) {
+      theLayer = layerArr[j];
+      if (!(theLayer instanceof NF.Models.NFHighlightLayer)) {
+        throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection";
+      }
+    }
+    return this;
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype = new NF.Models.NFLayerCollection();
+
+  NF.Models.NFHighlightLayerCollection.prototype.getInfo = function() {
+    var infoString, j, len, ref1, theLayer;
+    infoString = "NFHighlightLayerCollection: [";
+    ref1 = this.layers;
+    for (j = 0, len = ref1.length; j < len; j++) {
+      theLayer = ref1[j];
+      infoString += theLayer.getInfo() + ", ";
+    }
+    return infoString += "]";
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype.addNFLayer = function(newLayer) {
+    return this.addNFHighlightLayer(newLayer);
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype.addNFHighlightLayer = function(newLayer) {
+    if (newLayer instanceof NF.Models.NFHighlightLayer) {
+      return this.layers.push(newLayer);
+    } else {
+      throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection";
+    }
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype.onlyContainsPageLayers = function() {
+    return false;
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype.duplicateNames = function() {
+    var j, len, nameArr, ref1, theLayer;
+    nameArr = [];
+    ref1 = this.layers;
+    for (j = 0, len = ref1.length; j < len; j++) {
+      theLayer = ref1[j];
+      nameArr.push(theLayer.name);
+    }
+    return NF.Util.hasDuplicates(nameArr);
+  };
+
+  NF.Models.NFHighlightLayerCollection.collectionFromLayerArray = function(arr) {
+    var layer, newArray, newLayer;
+    newArray = (function() {
+      var j, len, results;
+      results = [];
+      for (j = 0, len = arr.length; j < len; j++) {
+        layer = arr[j];
+        results.push(newLayer = new NF.Models.NFHighlightLayer(layer));
+      }
+      return results;
+    })();
+    return new NF.Models.NFHighlightLayerCollection(newArray);
   };
 
 

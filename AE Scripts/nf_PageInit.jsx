@@ -1,6 +1,6 @@
 (function() {
   #include "nf_runtimeLibraries.jsx";
-  var NF, _, getCancelFunction, initWithOptions, initializePages, nullName, nullify, setDropShadowForLayer, setPosition, setSize, topmostLayer, zoom;
+  var NF, _, getCancelFunction, initWithOptions, nullName, nullify, presentUI, setDropShadowForLayer, setPosition, setSize, topmostLayer, zoom;
 
   NF = app.NF;
 
@@ -10,8 +10,8 @@
     animationDuration: 1.85
   };
 
-  initializePages = function() {
-    var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightName, highlightPanel, initTab, j, k, len, len1, okButton, optionsPanel, orphans, ref, removeCheckbox, selectedLayers, tPanel, theLayer, w;
+  presentUI = function() {
+    var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initTab, j, k, l, len, len1, len2, okButton, optionsPanel, orphans, ref, ref1, ref2, removeCheckbox, selectedLayers, tPanel, theLayer, w;
     if (_.mainComp == null) {
       throw "Project has no active composition";
     }
@@ -20,6 +20,9 @@
       throw "Can't initialize non-page layers";
     }
     allHighlights = selectedLayers.highlights();
+    if (allHighlights.duplicateNames()) {
+      throw "Some highlights in the selected pages have the same name - Please ensure unique names";
+    }
     w = new Window('dialog', 'Page Initialization');
     w.alignChildren = 'left';
     tPanel = w.add("tabbedpanel");
@@ -52,9 +55,21 @@
       highlightPanel.alignChildren = 'left';
       highlightPanel.margins.top = 16;
       highlightCheckboxes = {};
-      for (k = 0, len1 = allHighlights.length; k < len1; k++) {
-        highlight = allHighlights[k];
-        $.write("\n" + highlight.name + "\n");
+      ref1 = allHighlights.layers;
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        highlight = ref1[k];
+        displayName = highlight.name;
+        if (highlight.bubbled) {
+          if (highlight.broken !== "") {
+            displayName = highlight.name + " (OVERRIDE/BROKEN)";
+          } else {
+            displayName = highlight.name + " (OVERRIDE)";
+          }
+        } else if (highlight.broken !== "") {
+          displayName = highlight.name + " (BROKEN)";
+        }
+        highlightCheckboxes[highlight.name] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
+        highlightCheckboxes[highlight.name].value = !highlight.bubbled;
       }
       buttonGroup = initTab.add('group', void 0);
       okButton = buttonGroup.add('button', void 0, 'Continue');
@@ -63,13 +78,22 @@
       });
       cancelButton.onClick = getCancelFunction(w);
       okButton.onClick = function() {
-        var checkbox, highlightChoices, highlightName, options;
-        highlightChoices = [];
-        for (highlightName in allHighlights) {
-          checkbox = highlightCheckboxes[highlightName];
-          highlight = allHighlights[highlightName];
+        var checkbox, highlightChoices, l, len2, len3, m, options, ref2, ref3;
+        highlightChoices = new NF.Models.NFHighlightLayerCollection([]);
+        ref2 = allHighlights.layers;
+        for (l = 0, len2 = ref2.length; l < len2; l++) {
+          highlight = ref2[l];
+          checkbox = highlightCheckboxes[highlight.name];
           if (checkbox.value === true) {
-            highlightChoices.push(highlight.name);
+            highlightChoices.addNFHighlightLayer(highlight);
+          }
+        }
+        ref3 = allHighlights.layers;
+        for (m = 0, len3 = ref3.length; m < len3; m++) {
+          highlight = ref3[m];
+          checkbox = highlightCheckboxes[highlight.name];
+          if (checkbox.value === true) {
+            highlightChoices.addNFHighlightLayer(highlight);
           }
         }
         options = {
@@ -95,11 +119,12 @@
     highlightDisconnectPanel.alignChildren = 'left';
     highlightDisconnectPanel.margins.top = 16;
     highlightDisconnectCheckboxes = {};
-    for (highlightName in allHighlights) {
-      highlight = allHighlights[highlightName];
+    ref2 = allHighlights.layers;
+    for (l = 0, len2 = ref2.length; l < len2; l++) {
+      highlight = ref2[l];
       if (highlight.bubbled) {
-        highlightDisconnectCheckboxes[highlightName] = highlightDisconnectPanel.add("checkbox {text: '" + highlightName + "'}");
-        highlightDisconnectCheckboxes[highlightName].value = false;
+        highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add("checkbox {text: '" + highlight.name + "'}");
+        highlightDisconnectCheckboxes[highlight.name].value = false;
       }
     }
     disButtonGroup = disconnectTab.add('group', void 0);
@@ -109,14 +134,15 @@
     });
     disCancelButton.onClick = getCancelFunction(w);
     disOkButton.onClick = function() {
-      var checkbox, highlightChoices, highlighterEffect;
-      highlightChoices = [];
-      for (highlightName in allHighlights) {
-        checkbox = highlightDisconnectCheckboxes[highlightName];
+      var checkbox, highlightChoices, highlighterEffect, len3, m, ref3;
+      highlightChoices = new NF.Models.NFHighlightLayerCollection([]);
+      ref3 = allHighlights.layers;
+      for (m = 0, len3 = ref3.length; m < len3; m++) {
+        highlight = ref3[m];
+        checkbox = highlightDisconnectCheckboxes[highlight.name];
         if (checkbox != null) {
-          highlight = allHighlights[highlightName];
           if (checkbox.value === true) {
-            highlightChoices.push(highlight.name);
+            highlightChoices.addNFHighlightLayer(highlight);
             if (removeCheckbox.value === true) {
               highlighterEffect = highlight.layerInPart.property("Effects").property(highlightName + " Highlighter");
               if (highlighterEffect != null) {
@@ -267,7 +293,7 @@
 
   app.beginUndoGroup(_.undoGroupName);
 
-  initializePages();
+  presentUI();
 
   app.endUndoGroup();
 

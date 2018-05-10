@@ -47,6 +47,21 @@
     return null;
   };
 
+  NF.Util.hasDuplicates = function(array) {
+    var i, value, valuesSoFar;
+    valuesSoFar = [];
+    i = 0;
+    while (i < array.length) {
+      value = array[i];
+      if (valuesSoFar.indexOf(value) !== -1) {
+        return true;
+      }
+      valuesSoFar.push(value);
+      ++i;
+    }
+    return false;
+  };
+
   NF.Util.isHighlightLayer = function(theLayer) {
     var ref1;
     return theLayer instanceof ShapeLayer && ((ref1 = theLayer.Effects.property(1)) != null ? ref1.matchName : void 0) === "AV_Highlighter";

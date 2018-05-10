@@ -49,7 +49,20 @@ NF.Util.findItem = (itemName) ->
     i++
   null
 
+# Checks an array for duplicate values
+NF.Util.hasDuplicates = (array) ->
+  valuesSoFar = []
+  i = 0
+  while i < array.length
+    value = array[i]
+    if valuesSoFar.indexOf(value) != -1
+      return true
+    valuesSoFar.push value
+    ++i
+  false
+
 # Returns true if a given AVLayer is a highlight layer
+# DEPRECATED: Use NF.Models.NFHighlightLayer.isHighlightLayer() instead
 NF.Util.isHighlightLayer = (theLayer) ->
   return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
 

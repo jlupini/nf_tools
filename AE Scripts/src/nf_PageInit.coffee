@@ -6,15 +6,16 @@ _ =
 	undoGroupName: 'initialize Pages'
 	animationDuration: 1.85
 
-initializePages = ->
+presentUI = ->
 	# Setup
 	throw "Project has no active composition" unless _.mainComp?
 	selectedLayers = NF.Models.NFLayerCollection.collectionFromLayerArray(_.mainComp.selectedLayers)
 	throw "Can't initialize non-page layers" unless selectedLayers.onlyContainsPageLayers()
 
 	allHighlights = selectedLayers.highlights()
-	# bubblableObjects = getBubblableObjects selectedLayers
-	# allHighlights = bubblableObjects.highlights
+
+	# Check if there are duplicate highlight names and get out if there are
+	throw "Some highlights in the selected pages have the same name - Please ensure unique names" if allHighlights.duplicateNames()
 
 	# Present UI
 	w = new Window('dialog', 'Page Initialization')
@@ -35,7 +36,7 @@ initializePages = ->
 	# for layer in selectedLayers
 	# 	orphans = false if layer.parent?
 
-# Only Show the Init tab if pages are ORPHANS (Not Initialized)
+	# Only Show the Init tab if pages are ORPHANS (Not Initialized)
 	if orphans > 0
 		initTab = tPanel.add("tab", undefined, "Init Page")
 		initTab.alignChildren = "fill"
@@ -54,23 +55,18 @@ initializePages = ->
 		highlightPanel.margins.top = 16
 
 		highlightCheckboxes = {}
-		for highlight in allHighlights
-			$.write "\n" + highlight.name + "\n"
-		# FIXME: Pickup here! add the rest of the below stuff back in by fleshing out the Highlight Model
+		for highlight in allHighlights.layers
+			displayName = highlight.name
+			if highlight.bubbled
+				if highlight.broken isnt ""
+					displayName = highlight.name + " (OVERRIDE/BROKEN)"
+				else
+					displayName = highlight.name + " (OVERRIDE)"
+			else if highlight.broken isnt ""
+				displayName = highlight.name + " (BROKEN)"
 
-		# for highlightName of allHighlights
-		# 	highlight = allHighlights[highlightName]
-		# 	displayName = highlightName
-		# 	if highlight.bubbled
-		# 		if highlight.broken isnt ""
-		# 			displayName = highlightName + " (OVERRIDE/BROKEN)"
-		# 		else
-		# 			displayName = highlightName + " (OVERRIDE)"
-		# 	else if highlight.broken isnt ""
-		# 		displayName = highlightName + " (BROKEN)"
-
-			# highlightCheckboxes[highlightName] = highlightPanel.add "checkbox {text: '#{displayName}'}"
-			# highlightCheckboxes[highlightName].value = not highlight.bubbled
+			highlightCheckboxes[highlight.name] = highlightPanel.add "checkbox {text: '#{displayName}'}"
+			highlightCheckboxes[highlight.name].value = not highlight.bubbled
 
 		buttonGroup = initTab.add 'group', undefined
 		okButton = buttonGroup.add('button', undefined, 'Continue')
@@ -78,11 +74,14 @@ initializePages = ->
 		cancelButton.onClick = getCancelFunction w
 
 		okButton.onClick = ->
-			highlightChoices = []
-			for highlightName of allHighlights
-				checkbox = highlightCheckboxes[highlightName]
-				highlight = allHighlights[highlightName]
-				highlightChoices.push highlight.name if checkbox.value is true
+			highlightChoices = new NF.Models.NFHighlightLayerCollection([])
+			for highlight in allHighlights.layers
+				checkbox = highlightCheckboxes[highlight.name]
+				highlightChoices.addNFHighlightLayer highlight if checkbox.value is true
+
+			for highlight in allHighlights.layers
+				checkbox = highlightCheckboxes[highlight.name]
+				highlightChoices.addNFHighlightLayer highlight if checkbox.value is true
 
 			options =
 				highlightChoices: highlightChoices
@@ -109,11 +108,10 @@ initializePages = ->
 	highlightDisconnectPanel.margins.top = 16
 
 	highlightDisconnectCheckboxes = {}
-	for highlightName of allHighlights
-		highlight = allHighlights[highlightName]
+	for highlight in allHighlights.layers
 		if highlight.bubbled
-			highlightDisconnectCheckboxes[highlightName] = highlightDisconnectPanel.add "checkbox {text: '#{highlightName}'}"
-			highlightDisconnectCheckboxes[highlightName].value = off
+			highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.name}'}"
+			highlightDisconnectCheckboxes[highlight.name].value = off
 
 	disButtonGroup = disconnectTab.add 'group', undefined
 	disOkButton = disButtonGroup.add('button', undefined, 'Continue')
@@ -129,14 +127,14 @@ initializePages = ->
 
 	disOkButton.onClick = ->
 
-		highlightChoices = []
-		for highlightName of allHighlights
-			checkbox = highlightDisconnectCheckboxes[highlightName]
+		highlightChoices = new NF.Models.NFHighlightLayerCollection([])
+		for highlight in allHighlights.layers
+			checkbox = highlightDisconnectCheckboxes[highlight.name]
 			if checkbox?
-				highlight = allHighlights[highlightName]
 				if checkbox.value is true
-					highlightChoices.push highlight.name
+					highlightChoices.addNFHighlightLayer(highlight)
 					if removeCheckbox.value is yes
+						# FIXME: PICKUP HERE and add a function to an NFPageLayer that returns the highlighter properties
 						highlighterEffect = highlight.layerInPart.property("Effects").property("#{highlightName} Highlighter")
 						highlighterEffect.remove() if highlighterEffect?
 						# FIXME: Find the control and remove it if we're disconnecting from an instance of the page in another part comp
@@ -280,6 +278,6 @@ app.beginUndoGroup _.undoGroupName
 # selectedLayersCollection = NF.Models.NFLayerCollection.collectionFromLayerArray _.mainComp.selectedLayers
 # $.write selectedLayersCollection.getInfo()
 
-initializePages()
+presentUI()
 
 app.endUndoGroup()
