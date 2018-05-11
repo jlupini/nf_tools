@@ -75,6 +75,14 @@
     return "NFPageLayer: '" + this.layer.name + "'";
   };
 
+  NF.Models.NFPageLayer.prototype.getEffectWithName = function(effectName) {
+    return this.layer.Effects.property(effectName);
+  };
+
+  NF.Models.NFPageLayer.prototype.highlights = function() {
+    return this.pageItem.highlights();
+  };
+
   NF.Models.NFPageLayer.isPageLayer = function(theLayer) {
     return NF.Models.NFLayer.isCompLayer(theLayer) && theLayer.source.name.indexOf("NFPage") >= 0;
   };
@@ -146,9 +154,13 @@
 
   NF.Models.NFHighlightLayer = function(layer) {
     NF.Models.NFLayer.call(this, layer);
+    if (!NF.Models.NFHighlightLayer.isHighlightLayer(this.layer)) {
+      throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect";
+    }
     this.name = this.layer.name;
     this.bubbled = this.highlighterEffect().property("Spacing").expressionEnabled;
-    this.broken = this.highlighterEffect().property("Spacing").expressionError;
+    this.broken = this.highlighterEffect().property("Spacing").expressionError !== "";
+    this.containingPageLayer = null;
     return this;
   };
 
@@ -160,6 +172,47 @@
 
   NF.Models.NFHighlightLayer.prototype.highlighterEffect = function() {
     return this.layer.Effects.property("AV_Highlighter");
+  };
+
+  NF.Models.NFHighlightLayer.prototype.connectedPageLayer = function() {
+    var comp, compName, expression, layer, layerName;
+    if (this.bubbled) {
+      expression = this.highlighterEffect().property("Spacing").expression;
+      compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
+      layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression);
+      comp = NF.Util.findItem(compName);
+      if (comp != null) {
+        layer = comp.layer(layerName);
+        if (layer != null) {
+          return new NF.Models.NFPageLayer(layer);
+        }
+      }
+    }
+    return null;
+  };
+
+  NF.Models.NFHighlightLayer.prototype.connectedPageLayerHighlighterEffect = function() {
+    var connectedPageLayer, effect, effectName, expression;
+    connectedPageLayer = this.connectedPageLayer();
+    if (connectedPageLayer != null) {
+      expression = this.highlighterEffect().property("Spacing").expression;
+      effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression);
+      effect = connectedPageLayer.getEffectWithName(effectName);
+      return effect;
+    }
+    return null;
+  };
+
+  NF.Models.NFHighlightLayer.prototype.disconnect = function() {
+    var effect, i, j, property, propertyCount, ref1, results;
+    effect = this.highlighterEffect();
+    propertyCount = effect != null ? effect.numProperties : void 0;
+    results = [];
+    for (i = j = 1, ref1 = propertyCount; 1 <= ref1 ? j <= ref1 : j >= ref1; i = 1 <= ref1 ? ++j : --j) {
+      property = effect.property(i);
+      results.push(property.expression = "");
+    }
+    return results;
   };
 
   NF.Models.NFHighlightLayer.isHighlightLayer = function(theLayer) {
@@ -211,11 +264,13 @@
 
   NF.Models.NFLayerCollection = function(layerArr) {
     var j, len, theLayer;
-    this.layers = layerArr;
-    for (j = 0, len = layerArr.length; j < len; j++) {
-      theLayer = layerArr[j];
-      if (!(theLayer instanceof NF.Models.NFLayer)) {
-        throw "You can only add NFLayers to an NFLayerCollection";
+    this.layers = layerArr != null ? layerArr : [];
+    if (layerArr != null) {
+      for (j = 0, len = layerArr.length; j < len; j++) {
+        theLayer = layerArr[j];
+        if (!(theLayer instanceof NF.Models.NFLayer)) {
+          throw "You can only add NFLayers to an NFLayerCollection";
+        }
       }
     }
     return this;
@@ -241,20 +296,26 @@
   };
 
   NF.Models.NFLayerCollection.prototype.highlights = function() {
-    var highlight, highlightArray, j, k, len, len1, ref1, ref2, theLayer;
+    var containingLayerArray, highlight, highlightArray, highlights, i, j, k, l, len, len1, ref1, ref2, ref3, theLayer;
     highlightArray = [];
+    containingLayerArray = [];
     ref1 = this.layers;
     for (j = 0, len = ref1.length; j < len; j++) {
       theLayer = ref1[j];
       if (theLayer instanceof NF.Models.NFPageLayer) {
-        ref2 = theLayer.pageItem.highlights();
+        ref2 = theLayer.highlights().layers;
         for (k = 0, len1 = ref2.length; k < len1; k++) {
           highlight = ref2[k];
           highlightArray.push(highlight);
+          containingLayerArray.push(theLayer);
         }
       }
     }
-    return new NF.Models.NFHighlightLayerCollection(highlightArray);
+    highlights = new NF.Models.NFHighlightLayerCollection(highlightArray);
+    for (i = l = 0, ref3 = highlights.count() - 1; 0 <= ref3 ? l <= ref3 : l >= ref3; i = 0 <= ref3 ? ++l : --l) {
+      highlights.layers[i].containingPageLayer = containingLayerArray[i];
+    }
+    return highlights;
   };
 
   NF.Models.NFLayerCollection.prototype.onlyContainsPageLayers = function() {
@@ -273,7 +334,7 @@
     return this.layers.length;
   };
 
-  NF.Models.NFLayerCollection.collectionFromLayerArray = function(arr) {
+  NF.Models.NFLayerCollection.collectionFromAVLayerArray = function(arr) {
     var layer, newArray, newLayer;
     newArray = (function() {
       var j, len, results;
@@ -299,10 +360,12 @@
   NF.Models.NFHighlightLayerCollection = function(layerArr) {
     var j, len, theLayer;
     NF.Models.NFLayerCollection.call(this, layerArr);
-    for (j = 0, len = layerArr.length; j < len; j++) {
-      theLayer = layerArr[j];
-      if (!(theLayer instanceof NF.Models.NFHighlightLayer)) {
-        throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection";
+    if (layerArr != null) {
+      for (j = 0, len = layerArr.length; j < len; j++) {
+        theLayer = layerArr[j];
+        if (!(theLayer instanceof NF.Models.NFHighlightLayer)) {
+          throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection";
+        }
       }
     }
     return this;
@@ -329,12 +392,24 @@
     if (newLayer instanceof NF.Models.NFHighlightLayer) {
       return this.layers.push(newLayer);
     } else {
-      throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection";
+      throw "addNFHighlightLayer() can only be used to add NFHighlightLayers to an NFHighlightLayerCollection";
+    }
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype.addAVLayer = function(newLayer) {
+    if (true) {
+      return this.layers.push(new NF.Models.NFHighlightLayer(newLayer));
+    } else {
+      throw "addAVLayer() can only be used to add AVLayers to an NFHighlightLayerCollection";
     }
   };
 
   NF.Models.NFHighlightLayerCollection.prototype.onlyContainsPageLayers = function() {
     return false;
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype.highlights = function() {
+    return this;
   };
 
   NF.Models.NFHighlightLayerCollection.prototype.duplicateNames = function() {
@@ -348,7 +423,7 @@
     return NF.Util.hasDuplicates(nameArr);
   };
 
-  NF.Models.NFHighlightLayerCollection.collectionFromLayerArray = function(arr) {
+  NF.Models.NFHighlightLayerCollection.collectionFromAVLayerArray = function(arr) {
     var layer, newArray, newLayer;
     newArray = (function() {
       var j, len, results;
@@ -382,11 +457,11 @@
   NF.Models.NFPageItem.prototype.highlights = function() {
     var highlightLayers, j, len, sourceLayers, theLayer;
     sourceLayers = NF.Util.collectionToArray(this.item.layers);
-    highlightLayers = [];
+    highlightLayers = new NF.Models.NFHighlightLayerCollection();
     for (j = 0, len = sourceLayers.length; j < len; j++) {
       theLayer = sourceLayers[j];
       if (NF.Models.NFHighlightLayer.isHighlightLayer(theLayer)) {
-        highlightLayers.push(new NF.Models.NFHighlightLayer(theLayer));
+        highlightLayers.addAVLayer(theLayer);
       }
     }
     return highlightLayers;

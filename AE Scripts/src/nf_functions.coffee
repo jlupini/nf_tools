@@ -49,6 +49,31 @@ NF.Util.findItem = (itemName) ->
     i++
   null
 
+# Given an expression string and property to search for, returns the argument passed to that property
+# So for example, with the property "layer" and the expression "comp('composition').layer('myLayer')", this function returns "'myLayer'"
+# Use getCleanedArgumentOfPropertyFromExpression() to strip the quotes from the result
+NF.Util.getArgumentOfPropertyFromExpression = (property, expression) ->
+    propertyIndex = expression.indexOf(property + "(")
+    if propertyIndex > 0
+    	# The +1 is to account for the Open bracket
+      startIdx = propertyIndex + property.length + 1
+      result = expression.slice(startIdx)
+      endIdx = result.indexOf(")")
+      result = result.substr(0, endIdx)
+      return result
+    return null
+
+# Given an expression string and property to search for, returns the argument passed to that property, with quotes stripped
+NF.Util.getCleanedArgumentOfPropertyFromExpression = (property, expression) ->
+  return NF.Util.stripQuotesFromString(NF.Util.getArgumentOfPropertyFromExpression(property, expression))
+
+# Strips opening and closing quotes from a string
+NF.Util.stripQuotesFromString = (str) ->
+  return null unless str?
+  if (str.charAt(0) == '"' and str.charAt(str.length - 1) == '"') or (str.charAt(0) == "'" and str.charAt(str.length - 1) == "'")
+    return str.substr(1, str.length - 2)
+  return str
+
 # Checks an array for duplicate values
 NF.Util.hasDuplicates = (array) ->
   valuesSoFar = []
@@ -735,7 +760,7 @@ NF.Util.bubbleUpHighlights = (pagesToBubble, choices = null) ->
 
       if shouldBubble
         targetHighlighterEffect = effects.addProperty('AV_Highlighter')
-        newName = highlightLayersInPageComp[j].name + ' Highlighter'
+        newName = highlightLayersInPageComp[j].name
         targetHighlighterEffect.name = newName
 
         # Iterate through the properties and connect each one

@@ -49,6 +49,12 @@ NF.Models.NFPageLayer = (layer) ->
 NF.Models.NFPageLayer:: = new NF.Models.NFLayer()
 NF.Models.NFPageLayer::getInfo = ->
   return "NFPageLayer: '#{@layer.name}'"
+NF.Models.NFPageLayer::getEffectWithName = (effectName) ->
+  return @layer.Effects.property(effectName)
+# Returns NFHighlightLayerCollection of all highlights in this page
+NF.Models.NFPageLayer::highlights = ->
+  return @pageItem.highlights()
+
 # Class Methods
 # Returns true if the given AVLayer is a Page Layer
 NF.Models.NFPageLayer.isPageLayer = (theLayer) ->
@@ -104,9 +110,12 @@ NF.Models.NFEmphasisLayer::getInfo = ->
 ###
 NF.Models.NFHighlightLayer = (layer) ->
   NF.Models.NFLayer.call(this, layer)
+  unless NF.Models.NFHighlightLayer.isHighlightLayer(@layer)
+    throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
   @name = @layer.name
   @bubbled = @highlighterEffect().property("Spacing").expressionEnabled
-  @broken = @highlighterEffect().property("Spacing").expressionError
+  @broken = @highlighterEffect().property("Spacing").expressionError isnt ""
+  @containingPageLayer = null
   @
 NF.Models.NFHighlightLayer:: = new NF.Models.NFLayer()
 NF.Models.NFHighlightLayer::getInfo = ->
@@ -114,6 +123,33 @@ NF.Models.NFHighlightLayer::getInfo = ->
 # Returns the AV Highlighter effect
 NF.Models.NFHighlightLayer::highlighterEffect = ->
   return @layer.Effects.property("AV_Highlighter")
+# Returns the NFPageLayer that this highlight is bubbled up to
+NF.Models.NFHighlightLayer::connectedPageLayer = ->
+  if @bubbled
+    expression = @highlighterEffect().property("Spacing").expression
+    compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
+    layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression)
+    comp = NF.Util.findItem compName
+    if comp?
+      layer = comp.layer layerName
+      return new NF.Models.NFPageLayer(layer) if layer?
+  return null
+# Returns the Bubbled Up AV Highlighter effect on a page layer
+NF.Models.NFHighlightLayer::connectedPageLayerHighlighterEffect = ->
+  connectedPageLayer = @connectedPageLayer()
+  if connectedPageLayer?
+    expression = @highlighterEffect().property("Spacing").expression
+    effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression)
+    effect = connectedPageLayer.getEffectWithName(effectName)
+    return effect
+  return null
+# Disconnects bubbleups in this highlight layer
+NF.Models.NFHighlightLayer::disconnect = ->
+  effect = @highlighterEffect()
+  propertyCount = effect?.numProperties
+  for i in [1..propertyCount]
+    property = effect.property(i)
+    property.expression = ""
 # Class Methods
 NF.Models.NFHighlightLayer.isHighlightLayer = (theLayer) ->
   return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
@@ -156,9 +192,10 @@ NF.Models.NFPaperParentLayer::getChildren = ->
 #
 ###
 NF.Models.NFLayerCollection = (layerArr) ->
-  @layers = layerArr
-  for theLayer in layerArr
-    throw "You can only add NFLayers to an NFLayerCollection" unless theLayer instanceof NF.Models.NFLayer
+  @layers = layerArr ? []
+  if layerArr?
+    for theLayer in layerArr
+      throw "You can only add NFLayers to an NFLayerCollection" unless theLayer instanceof NF.Models.NFLayer
   @
 NF.Models.NFLayerCollection::getInfo = ->
   infoString = "NFLayerCollection: ["
@@ -173,11 +210,17 @@ NF.Models.NFLayerCollection::addNFLayer = (newLayer) ->
 # Returns NFHighlightLayerCollection of all highlights in all pages in the collection
 NF.Models.NFLayerCollection::highlights = ->
   highlightArray = []
+  containingLayerArray = []
   for theLayer in @layers
     if theLayer instanceof NF.Models.NFPageLayer
       # Get the layer's NFPageItem
-      highlightArray.push highlight for highlight in theLayer.pageItem.highlights()
-  return new NF.Models.NFHighlightLayerCollection(highlightArray)
+      for highlight in theLayer.highlights().layers
+        highlightArray.push highlight
+        containingLayerArray.push theLayer
+  highlights = new NF.Models.NFHighlightLayerCollection(highlightArray)
+  for i in [0..highlights.count()-1]
+    highlights.layers[i].containingPageLayer = containingLayerArray[i]
+  return highlights
 # Returns true if the collection only contains NFPageLayers and no other types of NFLayers
 NF.Models.NFLayerCollection::onlyContainsPageLayers = ->
   for theLayer in @layers
@@ -186,7 +229,9 @@ NF.Models.NFLayerCollection::onlyContainsPageLayers = ->
 NF.Models.NFLayerCollection::count = ->
   return @layers.length
 # Class Methods
-NF.Models.NFLayerCollection.collectionFromLayerArray = (arr) ->
+# Returns a new instance from an array of AVLayers
+NF.Models.NFLayerCollection.collectionFromAVLayerArray = (arr) ->
+  # FIXME: Should throw error if each layer isnt an AVLayer
   newArray = for layer in arr
     newLayer = new NF.Models.NFLayer(layer)
     newLayer.getSpecializedLayer()
@@ -201,8 +246,10 @@ NF.Models.NFLayerCollection.collectionFromLayerArray = (arr) ->
 ###
 NF.Models.NFHighlightLayerCollection = (layerArr) ->
   NF.Models.NFLayerCollection.call(this, layerArr)
-  for theLayer in layerArr
-    throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NF.Models.NFHighlightLayer
+  if layerArr?
+    for theLayer in layerArr
+      throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NF.Models.NFHighlightLayer
+
   @
 NF.Models.NFHighlightLayerCollection:: = new NF.Models.NFLayerCollection()
 NF.Models.NFHighlightLayerCollection::getInfo = ->
@@ -216,17 +263,28 @@ NF.Models.NFHighlightLayerCollection::addNFHighlightLayer = (newLayer) ->
   if newLayer instanceof NF.Models.NFHighlightLayer
     @layers.push newLayer
   else
-    throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection"
+    throw "addNFHighlightLayer() can only be used to add NFHighlightLayers to an NFHighlightLayerCollection"
+NF.Models.NFHighlightLayerCollection::addAVLayer = (newLayer) ->
+  # FIXME: Should throw error if newLayer is not AVLayer
+  if true #newLayer instanceof NF.Models.NFHighlightLayer
+    @layers.push new NF.Models.NFHighlightLayer(newLayer)
+  else
+    throw "addAVLayer() can only be used to add AVLayers to an NFHighlightLayerCollection"
 # Overrides the function in NFLayerCollection
 NF.Models.NFHighlightLayerCollection::onlyContainsPageLayers = ->
   return false
+# Overrides the function in NFLayerCollection. Just returns self because faster
+NF.Models.NFHighlightLayerCollection::highlights = ->
+  @
 # Checks to see if any highlights in the collection share the same name
 NF.Models.NFHighlightLayerCollection::duplicateNames = ->
   nameArr = []
   nameArr.push theLayer.name for theLayer in @layers
   return NF.Util.hasDuplicates(nameArr)
 # Class Methods
-NF.Models.NFHighlightLayerCollection.collectionFromLayerArray = (arr) ->
+# Returns a new instance from an array of AVLayers
+NF.Models.NFHighlightLayerCollection.collectionFromAVLayerArray = (arr) ->
+  # FIXME: Should throw error if each layer isnt an AVLayer
   newArray = for layer in arr
     newLayer = new NF.Models.NFHighlightLayer(layer)
   return new NF.Models.NFHighlightLayerCollection newArray
@@ -248,10 +306,10 @@ NF.Models.NFPageItem::getInfo = ->
 NF.Models.NFPageItem::highlights = ->
   # We're working with AVLayers here
   sourceLayers = NF.Util.collectionToArray(@item.layers)
-  highlightLayers = []
+  highlightLayers = new NF.Models.NFHighlightLayerCollection()
   for theLayer in sourceLayers
     if NF.Models.NFHighlightLayer.isHighlightLayer(theLayer)
-      highlightLayers.push(new NF.Models.NFHighlightLayer(theLayer))
+      highlightLayers.addAVLayer(theLayer)
   return highlightLayers
 
 ###

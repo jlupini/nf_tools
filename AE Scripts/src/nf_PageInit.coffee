@@ -9,7 +9,7 @@ _ =
 presentUI = ->
 	# Setup
 	throw "Project has no active composition" unless _.mainComp?
-	selectedLayers = NF.Models.NFLayerCollection.collectionFromLayerArray(_.mainComp.selectedLayers)
+	selectedLayers = NF.Models.NFLayerCollection.collectionFromAVLayerArray(_.mainComp.selectedLayers)
 	throw "Can't initialize non-page layers" unless selectedLayers.onlyContainsPageLayers()
 
 	allHighlights = selectedLayers.highlights()
@@ -58,11 +58,11 @@ presentUI = ->
 		for highlight in allHighlights.layers
 			displayName = highlight.name
 			if highlight.bubbled
-				if highlight.broken isnt ""
+				if highlight.broken
 					displayName = highlight.name + " (OVERRIDE/BROKEN)"
 				else
 					displayName = highlight.name + " (OVERRIDE)"
-			else if highlight.broken isnt ""
+			else if highlight.broken
 				displayName = highlight.name + " (BROKEN)"
 
 			highlightCheckboxes[highlight.name] = highlightPanel.add "checkbox {text: '#{displayName}'}"
@@ -126,20 +126,13 @@ presentUI = ->
 	# 	highlights: highlightCheckboxes
 
 	disOkButton.onClick = ->
-
-		highlightChoices = new NF.Models.NFHighlightLayerCollection([])
 		for highlight in allHighlights.layers
-			checkbox = highlightDisconnectCheckboxes[highlight.name]
-			if checkbox?
-				if checkbox.value is true
-					highlightChoices.addNFHighlightLayer(highlight)
+			disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name]
+			if disconnectCheckbox?
+				if disconnectCheckbox.value is true
 					if removeCheckbox.value is yes
-						# FIXME: PICKUP HERE and add a function to an NFPageLayer that returns the highlighter properties
-						highlighterEffect = highlight.layerInPart.property("Effects").property("#{highlightName} Highlighter")
-						highlighterEffect.remove() if highlighterEffect?
-						# FIXME: Find the control and remove it if we're disconnecting from an instance of the page in another part comp
-
-		NF.Util.disconnectBubbleupsInLayers selectedLayers, highlightChoices
+						highlight.connectedPageLayerHighlighterEffect()?.remove()
+					highlight.disconnect()
 
 		w.hide()
 

@@ -15,7 +15,7 @@
     if (_.mainComp == null) {
       throw "Project has no active composition";
     }
-    selectedLayers = NF.Models.NFLayerCollection.collectionFromLayerArray(_.mainComp.selectedLayers);
+    selectedLayers = NF.Models.NFLayerCollection.collectionFromAVLayerArray(_.mainComp.selectedLayers);
     if (!selectedLayers.onlyContainsPageLayers()) {
       throw "Can't initialize non-page layers";
     }
@@ -60,12 +60,12 @@
         highlight = ref1[k];
         displayName = highlight.name;
         if (highlight.bubbled) {
-          if (highlight.broken !== "") {
+          if (highlight.broken) {
             displayName = highlight.name + " (OVERRIDE/BROKEN)";
           } else {
             displayName = highlight.name + " (OVERRIDE)";
           }
-        } else if (highlight.broken !== "") {
+        } else if (highlight.broken) {
           displayName = highlight.name + " (BROKEN)";
         }
         highlightCheckboxes[highlight.name] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
@@ -134,25 +134,22 @@
     });
     disCancelButton.onClick = getCancelFunction(w);
     disOkButton.onClick = function() {
-      var checkbox, highlightChoices, highlighterEffect, len3, m, ref3;
-      highlightChoices = new NF.Models.NFHighlightLayerCollection([]);
+      var disconnectCheckbox, len3, m, ref3, ref4;
       ref3 = allHighlights.layers;
       for (m = 0, len3 = ref3.length; m < len3; m++) {
         highlight = ref3[m];
-        checkbox = highlightDisconnectCheckboxes[highlight.name];
-        if (checkbox != null) {
-          if (checkbox.value === true) {
-            highlightChoices.addNFHighlightLayer(highlight);
+        disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name];
+        if (disconnectCheckbox != null) {
+          if (disconnectCheckbox.value === true) {
             if (removeCheckbox.value === true) {
-              highlighterEffect = highlight.layerInPart.property("Effects").property(highlightName + " Highlighter");
-              if (highlighterEffect != null) {
-                highlighterEffect.remove();
+              if ((ref4 = highlight.connectedPageLayerHighlighterEffect()) != null) {
+                ref4.remove();
               }
             }
+            highlight.disconnect();
           }
         }
       }
-      NF.Util.disconnectBubbleupsInLayers(selectedLayers, highlightChoices);
       return w.hide();
     };
     w.show();

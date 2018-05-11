@@ -47,6 +47,33 @@
     return null;
   };
 
+  NF.Util.getArgumentOfPropertyFromExpression = function(property, expression) {
+    var endIdx, propertyIndex, result, startIdx;
+    propertyIndex = expression.indexOf(property + "(");
+    if (propertyIndex > 0) {
+      startIdx = propertyIndex + property.length + 1;
+      result = expression.slice(startIdx);
+      endIdx = result.indexOf(")");
+      result = result.substr(0, endIdx);
+      return result;
+    }
+    return null;
+  };
+
+  NF.Util.getCleanedArgumentOfPropertyFromExpression = function(property, expression) {
+    return NF.Util.stripQuotesFromString(NF.Util.getArgumentOfPropertyFromExpression(property, expression));
+  };
+
+  NF.Util.stripQuotesFromString = function(str) {
+    if (str == null) {
+      return null;
+    }
+    if ((str.charAt(0) === '"' && str.charAt(str.length - 1) === '"') || (str.charAt(0) === "'" && str.charAt(str.length - 1) === "'")) {
+      return str.substr(1, str.length - 2);
+    }
+    return str;
+  };
+
   NF.Util.hasDuplicates = function(array) {
     var i, value, valuesSoFar;
     valuesSoFar = [];
@@ -765,7 +792,7 @@
         }
         if (shouldBubble) {
           targetHighlighterEffect = effects.addProperty('AV_Highlighter');
-          newName = highlightLayersInPageComp[j].name + ' Highlighter';
+          newName = highlightLayersInPageComp[j].name;
           targetHighlighterEffect.name = newName;
           highlighterProperties = ['Spacing', 'Thickness', 'Start Offset', 'Completion', 'Offset', 'Opacity', 'Highlight Colour', 'End Offset'];
           l = highlighterProperties.length - 1;
