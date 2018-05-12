@@ -386,6 +386,7 @@ NF.Util.pageParent = (selectedLayer) ->
   return null
 
 # Disconnects ALL highlight controls in a given layer or array of highlight layers
+# DEPRECATE
 NF.Util.disconnectBubbleupsInLayers = (layers, names = null) ->
   if not BE.isArray layers
     layers = [layers]
@@ -721,6 +722,7 @@ NF.Util.fixTrimExpressionsForHighlightLayer = (highlightLayer) ->
 # By default, will bubble all unconnected highlights in the layers given.
 # Optional array of names of relevant highlights to bubble up. Will disconnect
 # and override any connected layers among those provided
+# DEPRECATE
 NF.Util.bubbleUpHighlights = (pagesToBubble, choices = null) ->
   mainComp = app.project.activeItem
   i = pagesToBubble.length - 1

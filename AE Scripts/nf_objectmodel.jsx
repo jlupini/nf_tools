@@ -48,6 +48,13 @@
     return false;
   };
 
+  NF.Models.NFLayer.prototype.sameLayerAs = function(testLayer) {
+    if (testLayer == null) {
+      return false;
+    }
+    return this.layer.index === testLayer.layer.index && this.layer.containingComp.id === testLayer.layer.containingComp.id;
+  };
+
   NF.Models.NFLayer.isCompLayer = function(theLayer) {
     return theLayer instanceof AVLayer && theLayer.source instanceof CompItem;
   };
@@ -73,6 +80,10 @@
 
   NF.Models.NFPageLayer.prototype.getInfo = function() {
     return "NFPageLayer: '" + this.layer.name + "'";
+  };
+
+  NF.Models.NFPageLayer.prototype.effects = function() {
+    return this.layer.Effects;
   };
 
   NF.Models.NFPageLayer.prototype.getEffectWithName = function(effectName) {
@@ -153,6 +164,7 @@
    */
 
   NF.Models.NFHighlightLayer = function(layer) {
+    var comp, compName, expression, layerName;
     NF.Models.NFLayer.call(this, layer);
     if (!NF.Models.NFHighlightLayer.isHighlightLayer(this.layer)) {
       throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect";
@@ -161,6 +173,19 @@
     this.bubbled = this.highlighterEffect().property("Spacing").expressionEnabled;
     this.broken = this.highlighterEffect().property("Spacing").expressionError !== "";
     this.containingPageLayer = null;
+    this.connectedPageLayer = null;
+    if (this.bubbled) {
+      expression = this.highlighterEffect().property("Spacing").expression;
+      compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
+      layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression);
+      comp = NF.Util.findItem(compName);
+      if (comp != null) {
+        layer = comp.layer(layerName);
+        if (layer != null) {
+          this.connectedPageLayer = new NF.Models.NFPageLayer(layer);
+        }
+      }
+    }
     return this;
   };
 
@@ -174,45 +199,60 @@
     return this.layer.Effects.property("AV_Highlighter");
   };
 
-  NF.Models.NFHighlightLayer.prototype.connectedPageLayer = function() {
-    var comp, compName, expression, layer, layerName;
-    if (this.bubbled) {
-      expression = this.highlighterEffect().property("Spacing").expression;
-      compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
-      layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression);
-      comp = NF.Util.findItem(compName);
-      if (comp != null) {
-        layer = comp.layer(layerName);
-        if (layer != null) {
-          return new NF.Models.NFPageLayer(layer);
-        }
-      }
-    }
-    return null;
-  };
-
   NF.Models.NFHighlightLayer.prototype.connectedPageLayerHighlighterEffect = function() {
-    var connectedPageLayer, effect, effectName, expression;
-    connectedPageLayer = this.connectedPageLayer();
-    if (connectedPageLayer != null) {
+    var effect, effectName, expression;
+    if (this.connectedPageLayer != null) {
       expression = this.highlighterEffect().property("Spacing").expression;
       effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression);
-      effect = connectedPageLayer.getEffectWithName(effectName);
+      effect = this.connectedPageLayer.getEffectWithName(effectName);
       return effect;
     }
     return null;
   };
 
-  NF.Models.NFHighlightLayer.prototype.disconnect = function() {
-    var effect, i, j, property, propertyCount, ref1, results;
-    effect = this.highlighterEffect();
-    propertyCount = effect != null ? effect.numProperties : void 0;
+  NF.Models.NFHighlightLayer.prototype.canBubbleUp = function() {
+    return !((this.bubbled && !this.broken) || (this.containingPageLayer == null));
+  };
+
+  NF.Models.NFHighlightLayer.prototype.bubbleUp = function() {
+    var highlighterProperties, highlighterProperty, j, len, results, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
+    if (this.bubbled && !this.broken) {
+      throw "Cannot bubble highlight if already connected and not broken. Disconnect first";
+    }
+    if (this.containingPageLayer == null) {
+      throw "Cannot bubble highlight without a containingPageLayer";
+    }
+    targetPageLayerEffects = this.containingPageLayer.effects();
+    sourceEffect = this.highlighterEffect();
+    targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter');
+    targetHighlighterEffect.name = this.name;
+    targetComp = this.containingPageLayer.layer.containingComp;
+    highlighterProperties = ['Spacing', 'Thickness', 'Start Offset', 'Completion', 'Offset', 'Opacity', 'Highlight Colour', 'End Offset'];
     results = [];
-    for (i = j = 1, ref1 = propertyCount; 1 <= ref1 ? j <= ref1 : j >= ref1; i = 1 <= ref1 ? ++j : --j) {
-      property = effect.property(i);
-      results.push(property.expression = "");
+    for (j = 0, len = highlighterProperties.length; j < len; j++) {
+      highlighterProperty = highlighterProperties[j];
+      sourceValue = sourceEffect.property(highlighterProperty).value;
+      targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
+      sourceExpression = "var offsetTime = comp(\"" + targetComp.name + "\").layer(\"" + this.containingPageLayer.layer.name + "\").startTime; comp(\"" + targetComp.name + "\").layer(\"" + this.containingPageLayer.layer.name + "\").effect(\"" + this.name + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
+      results.push(sourceEffect.property(highlighterProperty).expression = sourceExpression);
     }
     return results;
+  };
+
+  NF.Models.NFHighlightLayer.prototype.disconnect = function() {
+    var effect, i, j, property, propertyCount, ref1, ref2;
+    if ((ref1 = this.connectedPageLayerHighlighterEffect()) != null) {
+      ref1.remove();
+    }
+    effect = this.highlighterEffect();
+    propertyCount = effect != null ? effect.numProperties : void 0;
+    for (i = j = 1, ref2 = propertyCount; 1 <= ref2 ? j <= ref2 : j >= ref2; i = 1 <= ref2 ? ++j : --j) {
+      property = effect.property(i);
+      property.expression = "";
+    }
+    this.connectedPageLayer = null;
+    this.bubbled = false;
+    return this.broken = false;
   };
 
   NF.Models.NFHighlightLayer.isHighlightLayer = function(theLayer) {
@@ -312,6 +352,9 @@
       }
     }
     highlights = new NF.Models.NFHighlightLayerCollection(highlightArray);
+    if (highlights.isEmpty()) {
+      return highlights;
+    }
     for (i = l = 0, ref3 = highlights.count() - 1; 0 <= ref3 ? l <= ref3 : l >= ref3; i = 0 <= ref3 ? ++l : --l) {
       highlights.layers[i].containingPageLayer = containingLayerArray[i];
     }
@@ -332,6 +375,10 @@
 
   NF.Models.NFLayerCollection.prototype.count = function() {
     return this.layers.length;
+  };
+
+  NF.Models.NFLayerCollection.prototype.isEmpty = function() {
+    return this.count() === 0;
   };
 
   NF.Models.NFLayerCollection.collectionFromAVLayerArray = function(arr) {
@@ -421,6 +468,28 @@
       nameArr.push(theLayer.name);
     }
     return NF.Util.hasDuplicates(nameArr);
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype.disconnectHighlights = function() {
+    var highlight, j, len, ref1, results;
+    ref1 = this.layers;
+    results = [];
+    for (j = 0, len = ref1.length; j < len; j++) {
+      highlight = ref1[j];
+      results.push(highlight.disconnect());
+    }
+    return results;
+  };
+
+  NF.Models.NFHighlightLayerCollection.prototype.bubbleUpHighlights = function() {
+    var highlight, j, len, ref1, results;
+    ref1 = this.layers;
+    results = [];
+    for (j = 0, len = ref1.length; j < len; j++) {
+      highlight = ref1[j];
+      results.push(highlight.bubbleUp());
+    }
+    return results;
   };
 
   NF.Models.NFHighlightLayerCollection.collectionFromAVLayerArray = function(arr) {

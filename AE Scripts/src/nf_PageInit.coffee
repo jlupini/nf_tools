@@ -32,10 +32,6 @@ presentUI = ->
 	if 0 < orphans < selectedLayers.count()
 		throw "Can't run this script on both initialized and uninitialized page layers at the same time"
 
-	# orphans = true
-	# for layer in selectedLayers
-	# 	orphans = false if layer.parent?
-
 	# Only Show the Init tab if pages are ORPHANS (Not Initialized)
 	if orphans > 0
 		initTab = tPanel.add("tab", undefined, "Init Page")
@@ -46,8 +42,19 @@ presentUI = ->
 		optionsPanel = initTab.add 'panel', undefined, 'Options', {borderStyle:'none'}
 		optionsPanel.alignChildren = 'left'
 		optionsPanel.margins.top = 16
+
 		animatePageCheckbox = optionsPanel.add "checkbox", undefined, "Animate In First Page"
 		animatePageCheckbox.value = yes
+
+		onlyBubbleUpCheckbox = optionsPanel.add "checkbox", undefined, "Bubbleup Only"
+		onlyBubbleUpCheckbox.value = no
+		onlyBubbleUpCheckbox.onClick = ->
+			if onlyBubbleUpCheckbox.value is yes
+				animatePageCheckbox.value = no
+				animatePageCheckbox.enabled = no
+			else
+				animatePageCheckbox.value = yes
+				animatePageCheckbox.enabled = yes
 
 		# Highlights
 		highlightPanel = initTab.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
@@ -57,16 +64,22 @@ presentUI = ->
 		highlightCheckboxes = {}
 		for highlight in allHighlights.layers
 			displayName = highlight.name
+			highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.connectedPageLayer)
+
 			if highlight.bubbled
 				if highlight.broken
-					displayName = highlight.name + " (OVERRIDE/BROKEN)"
+					displayName += " (OVERRIDE/BROKEN)"
+				else if highlightAlreadyConnectedToThisLayer
+					displayName += " (ALREADY CONNECTED TO THIS PAGE LAYER)"
 				else
-					displayName = highlight.name + " (OVERRIDE)"
+					displayName += " (OVERRIDE)"
 			else if highlight.broken
-				displayName = highlight.name + " (BROKEN)"
+				displayName += " (BROKEN)"
 
 			highlightCheckboxes[highlight.name] = highlightPanel.add "checkbox {text: '#{displayName}'}"
 			highlightCheckboxes[highlight.name].value = not highlight.bubbled
+			# Disable the checkbox if it's already bubbled up to the given layer
+			highlightCheckboxes[highlight.name].enabled = not highlightAlreadyConnectedToThisLayer
 
 		buttonGroup = initTab.add 'group', undefined
 		okButton = buttonGroup.add('button', undefined, 'Continue')
@@ -79,62 +92,56 @@ presentUI = ->
 				checkbox = highlightCheckboxes[highlight.name]
 				highlightChoices.addNFHighlightLayer highlight if checkbox.value is true
 
-			for highlight in allHighlights.layers
-				checkbox = highlightCheckboxes[highlight.name]
-				highlightChoices.addNFHighlightLayer highlight if checkbox.value is true
+			if onlyBubbleUpCheckbox.value is yes
+				highlightChoices.disconnectHighlights()
+				highlightChoices.bubbleUpHighlights()
+			else
+				options =
+					highlightChoices: highlightChoices
+					animatePage: animatePageCheckbox.value
 
-			options =
-				highlightChoices: highlightChoices
-				animatePage: animatePageCheckbox.value
-
-			initWithOptions options
+				initWithOptions options
 
 			w.hide()
 
-	# DISCONNECTIONS
-	disconnectTab = tPanel.add("tab", undefined, "Disconnect Items")
-	disconnectTab.alignChildren = "fill"
+	unless allHighlights.isEmpty()
+		# DISCONNECTIONS
+		disconnectTab = tPanel.add("tab", undefined, "Disconnect Items")
+		disconnectTab.alignChildren = "fill"
 
-	# Options Panel
-	disOptionsPanel = disconnectTab.add 'panel', undefined, 'Options', {borderStyle:'none'}
-	disOptionsPanel.alignChildren = 'left'
-	disOptionsPanel.margins.top = 16
-	removeCheckbox = disOptionsPanel.add "checkbox {text: 'Also Remove Controls'}"
-	removeCheckbox.value = yes
+		# Options Panel
+		disOptionsPanel = disconnectTab.add 'panel', undefined, 'Options', {borderStyle:'none'}
+		disOptionsPanel.alignChildren = 'left'
+		disOptionsPanel.margins.top = 16
+		removeCheckbox = disOptionsPanel.add "checkbox {text: 'Also Remove Controls'}"
+		removeCheckbox.value = yes
 
-	# Highlights
-	highlightDisconnectPanel = disconnectTab.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
-	highlightDisconnectPanel.alignChildren = 'left'
-	highlightDisconnectPanel.margins.top = 16
+		# Highlights
+		highlightDisconnectPanel = disconnectTab.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
+		highlightDisconnectPanel.alignChildren = 'left'
+		highlightDisconnectPanel.margins.top = 16
 
-	highlightDisconnectCheckboxes = {}
-	for highlight in allHighlights.layers
-		if highlight.bubbled
-			highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.name}'}"
-			highlightDisconnectCheckboxes[highlight.name].value = off
-
-	disButtonGroup = disconnectTab.add 'group', undefined
-	disOkButton = disButtonGroup.add('button', undefined, 'Continue')
-	disCancelButton = disButtonGroup.add('button', undefined, 'Cancel', name: 'cancel')
-	disCancelButton.onClick = getCancelFunction w
-
-
-	# FIXME Add one more tab that handles bubbleups on a non-init state
-
-	# _.UIControls =
-	# 	duration: durationValue
-	# 	highlights: highlightCheckboxes
-
-	disOkButton.onClick = ->
+		highlightDisconnectCheckboxes = {}
 		for highlight in allHighlights.layers
-			disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name]
-			if disconnectCheckbox?
-				if disconnectCheckbox.value is true
-					if removeCheckbox.value is yes
-						highlight.connectedPageLayerHighlighterEffect()?.remove()
-					highlight.disconnect()
+			if highlight.bubbled
+				highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.name}'}"
+				highlightDisconnectCheckboxes[highlight.name].value = off
 
-		w.hide()
+		disButtonGroup = disconnectTab.add 'group', undefined
+		disOkButton = disButtonGroup.add('button', undefined, 'Continue')
+		disCancelButton = disButtonGroup.add('button', undefined, 'Cancel', name: 'cancel')
+		disCancelButton.onClick = getCancelFunction w
+
+		disOkButton.onClick = ->
+			for highlight in allHighlights.layers
+				disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name]
+				if disconnectCheckbox?
+					if disconnectCheckbox.value is true
+						if removeCheckbox.value is yes
+							highlight.connectedPageLayerHighlighterEffect()?.remove()
+						highlight.disconnect()
+
+			w.hide()
 
 	w.show()
 

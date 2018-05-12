@@ -11,7 +11,7 @@
   };
 
   presentUI = function() {
-    var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initTab, j, k, l, len, len1, len2, okButton, optionsPanel, orphans, ref, ref1, ref2, removeCheckbox, selectedLayers, tPanel, theLayer, w;
+    var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightAlreadyConnectedToThisLayer, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initTab, j, k, l, len, len1, len2, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, ref, ref1, ref2, removeCheckbox, selectedLayers, tPanel, theLayer, w;
     if (_.mainComp == null) {
       throw "Project has no active composition";
     }
@@ -49,6 +49,17 @@
       optionsPanel.margins.top = 16;
       animatePageCheckbox = optionsPanel.add("checkbox", void 0, "Animate In First Page");
       animatePageCheckbox.value = true;
+      onlyBubbleUpCheckbox = optionsPanel.add("checkbox", void 0, "Bubbleup Only");
+      onlyBubbleUpCheckbox.value = false;
+      onlyBubbleUpCheckbox.onClick = function() {
+        if (onlyBubbleUpCheckbox.value === true) {
+          animatePageCheckbox.value = false;
+          return animatePageCheckbox.enabled = false;
+        } else {
+          animatePageCheckbox.value = true;
+          return animatePageCheckbox.enabled = true;
+        }
+      };
       highlightPanel = initTab.add('panel', void 0, 'Highlights', {
         borderStyle: 'none'
       });
@@ -59,17 +70,21 @@
       for (k = 0, len1 = ref1.length; k < len1; k++) {
         highlight = ref1[k];
         displayName = highlight.name;
+        highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.connectedPageLayer);
         if (highlight.bubbled) {
           if (highlight.broken) {
-            displayName = highlight.name + " (OVERRIDE/BROKEN)";
+            displayName += " (OVERRIDE/BROKEN)";
+          } else if (highlightAlreadyConnectedToThisLayer) {
+            displayName += " (ALREADY CONNECTED TO THIS PAGE LAYER)";
           } else {
-            displayName = highlight.name + " (OVERRIDE)";
+            displayName += " (OVERRIDE)";
           }
         } else if (highlight.broken) {
-          displayName = highlight.name + " (BROKEN)";
+          displayName += " (BROKEN)";
         }
         highlightCheckboxes[highlight.name] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
         highlightCheckboxes[highlight.name].value = !highlight.bubbled;
+        highlightCheckboxes[highlight.name].enabled = !highlightAlreadyConnectedToThisLayer;
       }
       buttonGroup = initTab.add('group', void 0);
       okButton = buttonGroup.add('button', void 0, 'Continue');
@@ -78,7 +93,7 @@
       });
       cancelButton.onClick = getCancelFunction(w);
       okButton.onClick = function() {
-        var checkbox, highlightChoices, l, len2, len3, m, options, ref2, ref3;
+        var checkbox, highlightChoices, l, len2, options, ref2;
         highlightChoices = new NF.Models.NFHighlightLayerCollection([]);
         ref2 = allHighlights.layers;
         for (l = 0, len2 = ref2.length; l < len2; l++) {
@@ -88,70 +103,69 @@
             highlightChoices.addNFHighlightLayer(highlight);
           }
         }
-        ref3 = allHighlights.layers;
-        for (m = 0, len3 = ref3.length; m < len3; m++) {
-          highlight = ref3[m];
-          checkbox = highlightCheckboxes[highlight.name];
-          if (checkbox.value === true) {
-            highlightChoices.addNFHighlightLayer(highlight);
-          }
+        if (onlyBubbleUpCheckbox.value === true) {
+          highlightChoices.disconnectHighlights();
+          highlightChoices.bubbleUpHighlights();
+        } else {
+          options = {
+            highlightChoices: highlightChoices,
+            animatePage: animatePageCheckbox.value
+          };
+          initWithOptions(options);
         }
-        options = {
-          highlightChoices: highlightChoices,
-          animatePage: animatePageCheckbox.value
-        };
-        initWithOptions(options);
         return w.hide();
       };
     }
-    disconnectTab = tPanel.add("tab", void 0, "Disconnect Items");
-    disconnectTab.alignChildren = "fill";
-    disOptionsPanel = disconnectTab.add('panel', void 0, 'Options', {
-      borderStyle: 'none'
-    });
-    disOptionsPanel.alignChildren = 'left';
-    disOptionsPanel.margins.top = 16;
-    removeCheckbox = disOptionsPanel.add("checkbox {text: 'Also Remove Controls'}");
-    removeCheckbox.value = true;
-    highlightDisconnectPanel = disconnectTab.add('panel', void 0, 'Highlights', {
-      borderStyle: 'none'
-    });
-    highlightDisconnectPanel.alignChildren = 'left';
-    highlightDisconnectPanel.margins.top = 16;
-    highlightDisconnectCheckboxes = {};
-    ref2 = allHighlights.layers;
-    for (l = 0, len2 = ref2.length; l < len2; l++) {
-      highlight = ref2[l];
-      if (highlight.bubbled) {
-        highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add("checkbox {text: '" + highlight.name + "'}");
-        highlightDisconnectCheckboxes[highlight.name].value = false;
-      }
-    }
-    disButtonGroup = disconnectTab.add('group', void 0);
-    disOkButton = disButtonGroup.add('button', void 0, 'Continue');
-    disCancelButton = disButtonGroup.add('button', void 0, 'Cancel', {
-      name: 'cancel'
-    });
-    disCancelButton.onClick = getCancelFunction(w);
-    disOkButton.onClick = function() {
-      var disconnectCheckbox, len3, m, ref3, ref4;
-      ref3 = allHighlights.layers;
-      for (m = 0, len3 = ref3.length; m < len3; m++) {
-        highlight = ref3[m];
-        disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name];
-        if (disconnectCheckbox != null) {
-          if (disconnectCheckbox.value === true) {
-            if (removeCheckbox.value === true) {
-              if ((ref4 = highlight.connectedPageLayerHighlighterEffect()) != null) {
-                ref4.remove();
-              }
-            }
-            highlight.disconnect();
-          }
+    if (!allHighlights.isEmpty()) {
+      disconnectTab = tPanel.add("tab", void 0, "Disconnect Items");
+      disconnectTab.alignChildren = "fill";
+      disOptionsPanel = disconnectTab.add('panel', void 0, 'Options', {
+        borderStyle: 'none'
+      });
+      disOptionsPanel.alignChildren = 'left';
+      disOptionsPanel.margins.top = 16;
+      removeCheckbox = disOptionsPanel.add("checkbox {text: 'Also Remove Controls'}");
+      removeCheckbox.value = true;
+      highlightDisconnectPanel = disconnectTab.add('panel', void 0, 'Highlights', {
+        borderStyle: 'none'
+      });
+      highlightDisconnectPanel.alignChildren = 'left';
+      highlightDisconnectPanel.margins.top = 16;
+      highlightDisconnectCheckboxes = {};
+      ref2 = allHighlights.layers;
+      for (l = 0, len2 = ref2.length; l < len2; l++) {
+        highlight = ref2[l];
+        if (highlight.bubbled) {
+          highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add("checkbox {text: '" + highlight.name + "'}");
+          highlightDisconnectCheckboxes[highlight.name].value = false;
         }
       }
-      return w.hide();
-    };
+      disButtonGroup = disconnectTab.add('group', void 0);
+      disOkButton = disButtonGroup.add('button', void 0, 'Continue');
+      disCancelButton = disButtonGroup.add('button', void 0, 'Cancel', {
+        name: 'cancel'
+      });
+      disCancelButton.onClick = getCancelFunction(w);
+      disOkButton.onClick = function() {
+        var disconnectCheckbox, len3, m, ref3, ref4;
+        ref3 = allHighlights.layers;
+        for (m = 0, len3 = ref3.length; m < len3; m++) {
+          highlight = ref3[m];
+          disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name];
+          if (disconnectCheckbox != null) {
+            if (disconnectCheckbox.value === true) {
+              if (removeCheckbox.value === true) {
+                if ((ref4 = highlight.connectedPageLayerHighlighterEffect()) != null) {
+                  ref4.remove();
+                }
+              }
+              highlight.disconnect();
+            }
+          }
+        }
+        return w.hide();
+      };
+    }
     w.show();
   };
 

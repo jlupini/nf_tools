@@ -30,6 +30,11 @@ NF.Models.NFLayer::hasNullParent = ->
   if @layer.parent?
     return @layer.parent.nullLayer
   return false
+# Checks to see if a given NFLayer's layer is the same as this one's
+# For example, an NFLayer and an NFPageLayer that refer to the same layer will return true
+NF.Models.NFLayer::sameLayerAs = (testLayer) ->
+  return no unless testLayer?
+  return @layer.index == testLayer.layer.index and @layer.containingComp.id == testLayer.layer.containingComp.id
 # Class Methods
 # Returns true if the given AVLayer is a comp layer
 NF.Models.NFLayer.isCompLayer = (theLayer) ->
@@ -49,12 +54,13 @@ NF.Models.NFPageLayer = (layer) ->
 NF.Models.NFPageLayer:: = new NF.Models.NFLayer()
 NF.Models.NFPageLayer::getInfo = ->
   return "NFPageLayer: '#{@layer.name}'"
+NF.Models.NFPageLayer::effects = ->
+  return @layer.Effects
 NF.Models.NFPageLayer::getEffectWithName = (effectName) ->
   return @layer.Effects.property(effectName)
 # Returns NFHighlightLayerCollection of all highlights in this page
 NF.Models.NFPageLayer::highlights = ->
   return @pageItem.highlights()
-
 # Class Methods
 # Returns true if the given AVLayer is a Page Layer
 NF.Models.NFPageLayer.isPageLayer = (theLayer) ->
@@ -112,19 +118,18 @@ NF.Models.NFHighlightLayer = (layer) ->
   NF.Models.NFLayer.call(this, layer)
   unless NF.Models.NFHighlightLayer.isHighlightLayer(@layer)
     throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
+
+  # FIXME: All these below properties should probably be functions...
   @name = @layer.name
   @bubbled = @highlighterEffect().property("Spacing").expressionEnabled
   @broken = @highlighterEffect().property("Spacing").expressionError isnt ""
+
+  # The NFPageLayer this highlight was found in.
+  # Should be set by any function that looks inside NFPageLayers for highlights and returns the highlights
+  # Is required to bubble up
   @containingPageLayer = null
-  @
-NF.Models.NFHighlightLayer:: = new NF.Models.NFLayer()
-NF.Models.NFHighlightLayer::getInfo = ->
-  return "NFHighlightLayer: '#{@name}'"
-# Returns the AV Highlighter effect
-NF.Models.NFHighlightLayer::highlighterEffect = ->
-  return @layer.Effects.property("AV_Highlighter")
-# Returns the NFPageLayer that this highlight is bubbled up to
-NF.Models.NFHighlightLayer::connectedPageLayer = ->
+  # The NFPageLayer this highlight is bubbled up to
+  @connectedPageLayer = null
   if @bubbled
     expression = @highlighterEffect().property("Spacing").expression
     compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
@@ -132,24 +137,72 @@ NF.Models.NFHighlightLayer::connectedPageLayer = ->
     comp = NF.Util.findItem compName
     if comp?
       layer = comp.layer layerName
-      return new NF.Models.NFPageLayer(layer) if layer?
-  return null
+      @connectedPageLayer = new NF.Models.NFPageLayer(layer) if layer?
+
+  @
+NF.Models.NFHighlightLayer:: = new NF.Models.NFLayer()
+NF.Models.NFHighlightLayer::getInfo = ->
+  return "NFHighlightLayer: '#{@name}'"
+# Returns the AV Highlighter effect
+NF.Models.NFHighlightLayer::highlighterEffect = ->
+  return @layer.Effects.property("AV_Highlighter")
 # Returns the Bubbled Up AV Highlighter effect on a page layer
 NF.Models.NFHighlightLayer::connectedPageLayerHighlighterEffect = ->
-  connectedPageLayer = @connectedPageLayer()
-  if connectedPageLayer?
+  if @connectedPageLayer?
     expression = @highlighterEffect().property("Spacing").expression
     effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression)
-    effect = connectedPageLayer.getEffectWithName(effectName)
+    effect = @connectedPageLayer.getEffectWithName(effectName)
     return effect
   return null
+# Returns true if the highlight can be bubbled up
+NF.Models.NFHighlightLayer::canBubbleUp = ->
+  return not ((@bubbled and not @broken) or not @containingPageLayer?)
+# Bubbles up highlight to the containingPageLayer
+# Will throw an error if there's no containingPageLayer or if (@bubbled and not @broken)
+NF.Models.NFHighlightLayer::bubbleUp = ->
+  if @bubbled and not @broken
+    throw "Cannot bubble highlight if already connected and not broken. Disconnect first"
+  unless @containingPageLayer?
+    throw "Cannot bubble highlight without a containingPageLayer"
+
+  targetPageLayerEffects = @containingPageLayer.effects()
+  sourceEffect = @highlighterEffect()
+
+  targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter')
+  targetHighlighterEffect.name = @name
+
+  targetComp = @containingPageLayer.layer.containingComp
+
+  # Iterate through the properties and connect each one
+  highlighterProperties = [
+    'Spacing'
+    'Thickness'
+    'Start Offset'
+    'Completion'
+    'Offset'
+    'Opacity'
+    'Highlight Colour'
+    'End Offset'
+  ]
+  for highlighterProperty in highlighterProperties
+    sourceValue = sourceEffect.property(highlighterProperty).value
+    targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue)
+    sourceExpression = "var offsetTime = comp(\"#{targetComp.name}\").layer(\"#{@containingPageLayer.layer.name}\").startTime;
+                        comp(\"#{targetComp.name}\").layer(\"#{@containingPageLayer.layer.name}\").effect(\"#{@name}\")(\"#{highlighterProperty}\").valueAtTime(time+offsetTime)"
+    sourceEffect.property(highlighterProperty).expression = sourceExpression
+
 # Disconnects bubbleups in this highlight layer
 NF.Models.NFHighlightLayer::disconnect = ->
+  # Remove the bubbled up AV Highlighter Effect if it exists
+  @connectedPageLayerHighlighterEffect()?.remove()
   effect = @highlighterEffect()
   propertyCount = effect?.numProperties
   for i in [1..propertyCount]
     property = effect.property(i)
     property.expression = ""
+  @connectedPageLayer = null
+  @bubbled = no
+  @broken = no
 # Class Methods
 NF.Models.NFHighlightLayer.isHighlightLayer = (theLayer) ->
   return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
@@ -218,6 +271,7 @@ NF.Models.NFLayerCollection::highlights = ->
         highlightArray.push highlight
         containingLayerArray.push theLayer
   highlights = new NF.Models.NFHighlightLayerCollection(highlightArray)
+  return highlights if highlights.isEmpty()
   for i in [0..highlights.count()-1]
     highlights.layers[i].containingPageLayer = containingLayerArray[i]
   return highlights
@@ -226,8 +280,12 @@ NF.Models.NFLayerCollection::onlyContainsPageLayers = ->
   for theLayer in @layers
     return false unless theLayer instanceof NF.Models.NFPageLayer
   return true
+# Shortcut to access the number of layers in the collection
 NF.Models.NFLayerCollection::count = ->
   return @layers.length
+# Returns true if the collection is empty
+NF.Models.NFLayerCollection::isEmpty = ->
+  return @count() is 0
 # Class Methods
 # Returns a new instance from an array of AVLayers
 NF.Models.NFLayerCollection.collectionFromAVLayerArray = (arr) ->
@@ -281,6 +339,10 @@ NF.Models.NFHighlightLayerCollection::duplicateNames = ->
   nameArr = []
   nameArr.push theLayer.name for theLayer in @layers
   return NF.Util.hasDuplicates(nameArr)
+NF.Models.NFHighlightLayerCollection::disconnectHighlights = ->
+  highlight.disconnect() for highlight in @layers
+NF.Models.NFHighlightLayerCollection::bubbleUpHighlights = ->
+  highlight.bubbleUp() for highlight in @layers
 # Class Methods
 # Returns a new instance from an array of AVLayers
 NF.Models.NFHighlightLayerCollection.collectionFromAVLayerArray = (arr) ->
