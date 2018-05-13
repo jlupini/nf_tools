@@ -69,7 +69,7 @@
       ref1 = allHighlights.layers;
       for (k = 0, len1 = ref1.length; k < len1; k++) {
         highlight = ref1[k];
-        displayName = highlight.name;
+        displayName = highlight.name + " - pg" + highlight.getPageItem().getPageNumber();
         highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.connectedPageLayer);
         if (highlight.bubbled) {
           if (highlight.broken) {
