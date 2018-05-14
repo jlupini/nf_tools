@@ -1,25 +1,26 @@
 (function() {
   #include "nf_runtimeLibraries.jsx";
-  var NF, _, getCancelFunction, initWithOptions, nullName, nullify, presentUI, setDropShadowForLayer, setPosition, setSize, topmostLayer, zoom;
+  var NF, _, getCancelFunction, initWithOptions, nullName, nullify, presentUI, topmostLayer, zoom;
 
   NF = app.NF;
 
   _ = {
-    mainComp: app.project.activeItem,
+    mainComp: new NF.Models.NFPartComp(app.project.activeItem),
     undoGroupName: 'initialize Pages',
     animationDuration: 1.85
   };
 
   presentUI = function() {
-    var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightAlreadyConnectedToThisLayer, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initTab, j, k, l, len, len1, len2, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, ref, ref1, ref2, removeCheckbox, selectedLayers, tPanel, theLayer, w;
-    if (_.mainComp == null) {
-      throw "Project has no active composition";
-    }
-    selectedLayers = NF.Models.NFLayerCollection.collectionFromAVLayerArray(_.mainComp.selectedLayers);
-    if (!selectedLayers.onlyContainsPageLayers()) {
+    var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightAlreadyConnectedToThisLayer, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initLayerTransformsCheckbox, initTab, j, k, l, len, len1, len2, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, ref, ref1, ref2, removeCheckbox, tPanel, theLayer, w;
+    if (_.mainComp.selectedLayers().onlyContainsPageLayers()) {
+      _.selectedPages = _.mainComp.selectedPages();
+    } else {
       throw "Can't initialize non-page layers";
     }
-    allHighlights = selectedLayers.highlights();
+    if (!_.selectedPages.fromSamePDF()) {
+      throw "Can't initialize pages from different PDFs at the same time";
+    }
+    allHighlights = _.selectedPages.highlights();
     if (allHighlights.duplicateNames()) {
       throw "Some highlights in the selected pages have the same name - Please ensure unique names";
     }
@@ -29,14 +30,14 @@
     tPanel.alignChildren = ["fill", "fill"];
     tPanel.preferredSize = [350, 300];
     orphans = 0;
-    ref = selectedLayers.layers;
+    ref = _.selectedPages.layers;
     for (j = 0, len = ref.length; j < len; j++) {
       theLayer = ref[j];
       if (!theLayer.hasNullParent()) {
         orphans++;
       }
     }
-    if ((0 < orphans && orphans < selectedLayers.count())) {
+    if ((0 < orphans && orphans < _.selectedPages.count())) {
       throw "Can't run this script on both initialized and uninitialized page layers at the same time";
     }
     if (orphans > 0) {
@@ -49,15 +50,17 @@
       optionsPanel.margins.top = 16;
       animatePageCheckbox = optionsPanel.add("checkbox", void 0, "Animate In First Page");
       animatePageCheckbox.value = true;
+      initLayerTransformsCheckbox = optionsPanel.add("checkbox", void 0, "Init Size and Position");
+      initLayerTransformsCheckbox.value = true;
       onlyBubbleUpCheckbox = optionsPanel.add("checkbox", void 0, "Bubbleup Only");
       onlyBubbleUpCheckbox.value = false;
       onlyBubbleUpCheckbox.onClick = function() {
         if (onlyBubbleUpCheckbox.value === true) {
-          animatePageCheckbox.value = false;
-          return animatePageCheckbox.enabled = false;
+          animatePageCheckbox.value = initLayerTransformsCheckbox.value = false;
+          return animatePageCheckbox.enabled = initLayerTransformsCheckbox.enabled = false;
         } else {
-          animatePageCheckbox.value = true;
-          return animatePageCheckbox.enabled = true;
+          animatePageCheckbox.value = initLayerTransformsCheckbox.value = true;
+          return animatePageCheckbox.enabled = initLayerTransformsCheckbox.enabled = true;
         }
       };
       highlightPanel = initTab.add('panel', void 0, 'Highlights', {
@@ -93,7 +96,7 @@
       });
       cancelButton.onClick = getCancelFunction(w);
       okButton.onClick = function() {
-        var checkbox, highlightChoices, l, len2, options, ref2;
+        var checkbox, highlightChoices, l, len2, ref2;
         highlightChoices = new NF.Models.NFHighlightLayerCollection([]);
         ref2 = allHighlights.layers;
         for (l = 0, len2 = ref2.length; l < len2; l++) {
@@ -103,16 +106,15 @@
             highlightChoices.addNFHighlightLayer(highlight);
           }
         }
-        if (onlyBubbleUpCheckbox.value === true) {
-          highlightChoices.disconnectHighlights();
-          highlightChoices.bubbleUpHighlights();
-        } else {
-          options = {
-            highlightChoices: highlightChoices,
-            animatePage: animatePageCheckbox.value
-          };
-          initWithOptions(options);
+        if (onlyBubbleUpCheckbox.value === false) {
+          if (initLayerTransformsCheckbox.value === true) {
+            _.selectedPages.initLayerTransforms();
+          }
+          _.selectedPages.initLayers();
+          _.selectedPages.connectToParents();
         }
+        highlightChoices.disconnectHighlights();
+        highlightChoices.bubbleUpHighlights();
         return w.hide();
       };
     }
@@ -176,23 +178,10 @@
   };
 
   initWithOptions = function(options) {
-    var i, j, layer, len, name, newParent, results, selectedLayers, thisLayer, topLayer, zoomer;
-    selectedLayers = _.mainComp.selectedLayers;
-    setSize(selectedLayers);
-    setPosition(selectedLayers);
-    thisLayer = void 0;
-    i = 0;
-    while (i < selectedLayers.length) {
-      thisLayer = selectedLayers[i];
-      thisLayer.motionBlur = true;
-      setDropShadowForLayer(thisLayer);
-      thisLayer.name = thisLayer.name.replace(" NFPage", " [+]");
-      i++;
-    }
+    var j, layer, len, name, newParent, results, topLayer, zoomer;
     name = nullName(selectedLayers[0]);
     newParent = nullify(selectedLayers, name);
     zoomer = zoom(newParent);
-    NF.Util.bubbleUpHighlights(selectedLayers, options.highlightChoices);
     if (options.animatePage) {
       topLayer = topmostLayer(selectedLayers);
       NF.Util.animatePage({
@@ -213,41 +202,6 @@
         }
       }
       return results;
-    }
-  };
-
-  setDropShadowForLayer = function(layer) {
-    var dropShadow;
-    dropShadow = layer.property('Effects').addProperty('ADBE Drop Shadow');
-    dropShadow.property('Opacity').setValue(191.25);
-    dropShadow.property('Direction').setValue(0);
-    dropShadow.property('Distance').setValue(20);
-    dropShadow.property('Softness').setValue(300);
-  };
-
-  setSize = function(selectedLayers) {
-    var i, thisLayer;
-    thisLayer = void 0;
-    i = 0;
-    while (i < selectedLayers.length) {
-      thisLayer = selectedLayers[i];
-      thisLayer.property('Transform').property('Scale').setValue([50, 50, 50]);
-      i++;
-    }
-  };
-
-  setPosition = function(selectedLayers) {
-    var i, layerHeight, newPosition, oldPosition, thisLayer;
-    thisLayer = void 0;
-    i = 0;
-    while (i < selectedLayers.length) {
-      thisLayer = selectedLayers[i];
-      layerHeight = thisLayer.height;
-      oldPosition = thisLayer.property('Transform').property('Position').value;
-      newPosition = oldPosition;
-      newPosition[1] = layerHeight / 4;
-      thisLayer.property('Transform').property('Position').setValue(newPosition);
-      i++;
     }
   };
 

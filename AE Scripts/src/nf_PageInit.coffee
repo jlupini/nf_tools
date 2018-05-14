@@ -2,17 +2,20 @@
 
 NF = app.NF
 _ =
-	mainComp: app.project.activeItem
+	mainComp: new NF.Models.NFPartComp(app.project.activeItem)
 	undoGroupName: 'initialize Pages'
 	animationDuration: 1.85
 
 presentUI = ->
 	# Setup
-	throw "Project has no active composition" unless _.mainComp?
-	selectedLayers = NF.Models.NFLayerCollection.collectionFromAVLayerArray(_.mainComp.selectedLayers)
-	throw "Can't initialize non-page layers" unless selectedLayers.onlyContainsPageLayers()
+	if _.mainComp.selectedLayers().onlyContainsPageLayers()
+		_.selectedPages = _.mainComp.selectedPages()
+	else
+		throw "Can't initialize non-page layers"
 
-	allHighlights = selectedLayers.highlights()
+	throw "Can't initialize pages from different PDFs at the same time" unless _.selectedPages.fromSamePDF()
+
+	allHighlights = _.selectedPages.highlights()
 
 	# Check if there are duplicate highlight names and get out if there are
 	throw "Some highlights in the selected pages have the same name - Please ensure unique names" if allHighlights.duplicateNames()
@@ -27,9 +30,9 @@ presentUI = ->
 
 	# Warn and abort if we're trying to run the script on both initialized and uninitialized pages at the same time
 	orphans = 0
-	for theLayer in selectedLayers.layers
+	for theLayer in _.selectedPages.layers
 		orphans++ unless theLayer.hasNullParent()
-	if 0 < orphans < selectedLayers.count()
+	if 0 < orphans < _.selectedPages.count()
 		throw "Can't run this script on both initialized and uninitialized page layers at the same time"
 
 	# Only Show the Init tab if pages are ORPHANS (Not Initialized)
@@ -46,15 +49,18 @@ presentUI = ->
 		animatePageCheckbox = optionsPanel.add "checkbox", undefined, "Animate In First Page"
 		animatePageCheckbox.value = yes
 
+		initLayerTransformsCheckbox = optionsPanel.add "checkbox", undefined, "Init Size and Position"
+		initLayerTransformsCheckbox.value = yes
+
 		onlyBubbleUpCheckbox = optionsPanel.add "checkbox", undefined, "Bubbleup Only"
 		onlyBubbleUpCheckbox.value = no
 		onlyBubbleUpCheckbox.onClick = ->
 			if onlyBubbleUpCheckbox.value is yes
-				animatePageCheckbox.value = no
-				animatePageCheckbox.enabled = no
+				animatePageCheckbox.value = initLayerTransformsCheckbox.value = no
+				animatePageCheckbox.enabled = initLayerTransformsCheckbox.enabled = no
 			else
-				animatePageCheckbox.value = yes
-				animatePageCheckbox.enabled = yes
+				animatePageCheckbox.value = initLayerTransformsCheckbox.value = yes
+				animatePageCheckbox.enabled = initLayerTransformsCheckbox.enabled = yes
 
 		# Highlights
 		highlightPanel = initTab.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
@@ -92,15 +98,16 @@ presentUI = ->
 				checkbox = highlightCheckboxes[highlight.name]
 				highlightChoices.addNFHighlightLayer highlight if checkbox.value is true
 
-			if onlyBubbleUpCheckbox.value is yes
-				highlightChoices.disconnectHighlights()
-				highlightChoices.bubbleUpHighlights()
-			else
-				options =
-					highlightChoices: highlightChoices
-					animatePage: animatePageCheckbox.value
+			if onlyBubbleUpCheckbox.value is no
+				_.selectedPages.initLayerTransforms() if initLayerTransformsCheckbox.value is yes
+				_.selectedPages.initLayers()
 
-				initWithOptions options
+				_.selectedPages.connectToParents()
+
+			highlightChoices.disconnectHighlights()
+			highlightChoices.bubbleUpHighlights()
+
+			# initWithOptions options
 
 			w.hide()
 
@@ -152,25 +159,26 @@ getCancelFunction = (w) ->
 		w.close()
 
 initWithOptions = (options) ->
-	selectedLayers = _.mainComp.selectedLayers
+	# Set size and position for each layer
 
-	setSize selectedLayers
-	setPosition selectedLayers
-	thisLayer = undefined
-	i = 0
-	while i < selectedLayers.length
-		thisLayer = selectedLayers[i]
-		# Add Motion Blur
-		thisLayer.motionBlur = true
-		setDropShadowForLayer thisLayer
-		thisLayer.name = thisLayer.name.replace " NFPage", " [+]"
-		i++
+
+	# setSize _selectedLayers
+	# setPosition selectedLayers
+	# thisLayer = undefined
+	# i = 0
+	# while i < selectedLayers.length
+	# 	thisLayer = selectedLayers[i]
+	# 	# Add Motion Blur
+	# 	thisLayer.motionBlur = true
+	# 	setDropShadowForLayer thisLayer
+	# 	thisLayer.name = thisLayer.name.replace " NFPage", " [+]"
+	# 	i++
 	name = nullName(selectedLayers[0])
 	newParent = nullify(selectedLayers, name)
 	zoomer = zoom(newParent)
-	NF.Util.bubbleUpHighlights selectedLayers, options.highlightChoices
-	# FIXME: When we disconnect with an OVERRIDE, we should warn or offer to remove the overridden controls
-	# FIXME: Anytime we disconnect a broken bubbleup, we should copy the current values back to the OG one
+	# NF.Util.bubbleUpHighlights selectedLayers, options.highlightChoices
+	# # FIXME: When we disconnect with an OVERRIDE, we should warn or offer to remove the overridden controls
+	# # FIXME: Anytime we disconnect a broken bubbleup, we should copy the current values back to the OG one
 
 	if options.animatePage
 		topLayer = topmostLayer(selectedLayers)
@@ -197,39 +205,39 @@ initWithOptions = (options) ->
 # 	bubblableObjects =
 # 		highlights: allHighlights
 
-setDropShadowForLayer = (layer) ->
-	dropShadow = layer.property('Effects').addProperty('ADBE Drop Shadow')
-	dropShadow.property('Opacity').setValue 191.25
-	dropShadow.property('Direction').setValue 0
-	dropShadow.property('Distance').setValue 20
-	dropShadow.property('Softness').setValue 300
-	return
+# setDropShadowForLayer = (layer) ->
+# 	dropShadow = layer.property('Effects').addProperty('ADBE Drop Shadow')
+# 	dropShadow.property('Opacity').setValue 191.25
+# 	dropShadow.property('Direction').setValue 0
+# 	dropShadow.property('Distance').setValue 20
+# 	dropShadow.property('Softness').setValue 300
+# 	return
 
-setSize = (selectedLayers) ->
-	thisLayer = undefined
-	i = 0
-	while i < selectedLayers.length
-		thisLayer = selectedLayers[i]
-		thisLayer.property('Transform').property('Scale').setValue [
-			50
-			50
-			50
-		]
-		i++
-	return
-
-setPosition = (selectedLayers) ->
-	thisLayer = undefined
-	i = 0
-	while i < selectedLayers.length
-		thisLayer = selectedLayers[i]
-		layerHeight = thisLayer.height
-		oldPosition = thisLayer.property('Transform').property('Position').value
-		newPosition = oldPosition
-		newPosition[1] = layerHeight / 4
-		thisLayer.property('Transform').property('Position').setValue newPosition
-		i++
-	return
+# setSize = (selectedLayers) ->
+# 	thisLayer = undefined
+# 	i = 0
+# 	while i < selectedLayers.length
+# 		thisLayer = selectedLayers[i]
+# 		thisLayer.property('Transform').property('Scale').setValue [
+# 			50
+# 			50
+# 			50
+# 		]
+# 		i++
+# 	return
+#
+# setPosition = (selectedLayers) ->
+# 	thisLayer = undefined
+# 	i = 0
+# 	while i < selectedLayers.length
+# 		thisLayer = selectedLayers[i]
+# 		layerHeight = thisLayer.height
+# 		oldPosition = thisLayer.property('Transform').property('Position').value
+# 		newPosition = oldPosition
+# 		newPosition[1] = layerHeight / 4
+# 		thisLayer.property('Transform').property('Position').setValue newPosition
+# 		i++
+# 	return
 
 nullName = (selectedLayer) ->
 	fullName = selectedLayer.name

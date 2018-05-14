@@ -34,6 +34,8 @@
     PAGESLIDEEASE: 150
   };
 
+  NF.Util.highlighterProperties = ['Spacing', 'Thickness', 'Start Offset', 'Completion', 'Offset', 'Opacity', 'Highlight Colour', 'End Offset'];
+
   NF.Util.findItem = function(itemName) {
     var i, thisItem;
     i = 1;

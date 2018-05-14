@@ -36,6 +36,17 @@ NF.Util.EaseFunction =
   # EASEOUTQUINT: 250
   # EASEINOUTQUINT: 275
 
+# Utility Arrays
+NF.Util.highlighterProperties = [
+  'Spacing'
+  'Thickness'
+  'Start Offset'
+  'Completion'
+  'Offset'
+  'Opacity'
+  'Highlight Colour'
+  'End Offset'
+]
 
 # Utility Functions
 

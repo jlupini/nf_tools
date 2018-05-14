@@ -44,12 +44,16 @@ NFLayer:: = Object.assign NFLayer::,
     return NFPageLayer.isPageLayer(@layer)
   isHighlightLayer: ->
     return NFHighlightLayer.isHighlightLayer(@layer)
+  isPaperParentLayer: ->
+    return NFPaperParentLayer.isPaperParentLayer(@layer)
   getSpecializedLayer: ->
-    # FIXME: Also add cases for image layers, Gaussy layers, Emphasis Layers, and Paper Parent Layers (YES)
+    # FIXME: Also add cases for image layers, Gaussy layers, Emphasis Layers
     if @isPageLayer()
       return new NFPageLayer @layer
     else if @isHighlightLayer()
       return new NFHighlightLayer @layer
+    else if @isPaperParentLayer()
+      return new NFPaperParentLayer @layer
     else
       return @
   getInfo: ->
@@ -66,6 +70,11 @@ NFLayer:: = Object.assign NFLayer::,
     return @layer.index == testLayer.layer.index and @layer.containingComp.id == testLayer.layer.containingComp.id
 # Class Methods
 NFLayer = Object.assign NFLayer,
+  # Returns a new Specialized NFLayer from an AVLayer
+  getSpecializedLayerFromAVLayer: (theLayer) ->
+    throw "Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer" unless theLayer instanceof AVLayer
+    tmpLayer = new NFLayer theLayer
+    return tmpLayer.getSpecializedLayer()
   # Returns true if the given AVLayer is a comp layer
   isCompLayer: (theLayer) ->
     return theLayer instanceof AVLayer and theLayer.source instanceof CompItem
@@ -86,6 +95,12 @@ NFPageLayer = (layer) ->
 NFPageLayer:: = Object.assign new NFLayer(),
   getInfo: ->
     return "NFPageLayer: '#{@layer.name}'"
+  # Returns the paper parent layer. If the parent exists but is not attached, this will not return it.
+  getPaperParentLayer: ->
+    if @layer.parent?
+      return new NFPaperParentLayer(@layer.parent)
+    else
+      return null
   effects: ->
     return @layer.Effects
   getEffectWithName: (effectName) ->
@@ -93,6 +108,61 @@ NFPageLayer:: = Object.assign new NFLayer(),
   # Returns NFHighlightLayerCollection of all highlights in this page
   highlights: ->
     return @pageItem.highlights()
+  # Returns NFHighlightLayerCollection of all highlights bubbled onto this page layer
+  bubbledHighlights: ->
+    bubbledHighlights = highlight if highlight.bubbled and highlight.connectedPageLayer.sameLayerAs(@) for highlight in @highlights().layers
+    return new NFHighlightLayerCollection(bubbledHighlights)
+  # Returns whether or not the page has been initted with the below methods
+  isInitted: ->
+    return @layer.name.indexOf "[+]"
+  # Changes the page name to mark the page layer as initted, and updates bubbled highlights
+  markInitted: ->
+    unless @isInitted()
+      @layer.name.replace " NFPage", " [+]"
+      if @bubbledHighlights.count() > 0
+        for highlight in @bubbledHighlights.layers
+          highlight.fixExpressionAfterInit()
+  # Adds the non-transform init properties (dropshadow, motion blur, etc)
+  init: ->
+    @layer.motionBlur = true
+    @setDropShadow()
+    @markInitted()
+  # Sets the drop shadow for the layer
+  setDropShadow: ->
+    shadowProp = @effects().property('ADBE Drop Shadow') ? @effects().addProperty('ADBE Drop Shadow')
+    shadowProp.property('Opacity').setValue(191.25)
+    shadowProp.property('Direction').setValue(0)
+    shadowProp.property('Distance').setValue(20)
+    shadowProp.property('Softness').setValue(300)
+  # Adds the transform init properties (size, position)
+  initTransforms: ->
+    @setInitSize()
+    @setInitPosition()
+  # Sets the size of the layer to the Init size. Returns false and doesn't set size if there are existing keyframes
+  setInitSize: ->
+    return false if @layer.property('Transform').property('Scale').numKeys > 0
+    @layer.property('Transform').property('Scale').setValue [50,50,50]
+    return true
+  # Sets the position of the layer to the Init position. Returns false and doesn't set position if there are existing keyframes
+  setInitPosition: ->
+    if @layer.property('Transform').property('Position').numKeys > 0
+      return false
+    else
+      layerHeight = @layer.height
+  		oldPosition = @layer.property('Transform').property('Position').value
+  		newPosition = oldPosition
+  		newPosition[1] = layerHeight / 4
+  		@layer.property('Transform').property('Position').setValue(newPosition)
+    return true
+  # Returns the PDF number as a String
+  getPDFNumber: ->
+    @pageItem.getPDFNumber()
+  # Returns the page number as a String
+  getPageNumber: ->
+    @pageItem.getPageNumber()
+  # Returns the containing NFPartComp
+  containingComp: ->
+    return new NFComp @layer.containingComp
 # Class Methods
 NFPageLayer = Object.assign NFPageLayer,
   # Returns true if the given AVLayer is a Page Layer
@@ -213,17 +283,7 @@ NFHighlightLayer:: = Object.assign new NFLayer(),
     targetComp = @containingPageLayer.layer.containingComp
 
     # Iterate through the properties and connect each one
-    highlighterProperties = [
-      'Spacing'
-      'Thickness'
-      'Start Offset'
-      'Completion'
-      'Offset'
-      'Opacity'
-      'Highlight Colour'
-      'End Offset'
-    ]
-    for highlighterProperty in highlighterProperties
+    for highlighterProperty in NF.Util.highlighterProperties
       sourceValue = sourceEffect.property(highlighterProperty).value
       targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue)
       sourceExpression = "var offsetTime = comp(\"#{targetComp.name}\").layer(\"#{@containingPageLayer.layer.name}\").startTime;
@@ -231,6 +291,12 @@ NFHighlightLayer:: = Object.assign new NFLayer(),
       sourceEffect.property(highlighterProperty).expression = sourceExpression
 
       @updateProperties()
+  # Fixes the expression after initting if the page layer name changed and there was already an existing expression
+  fixExpressionAfterInit: ->
+    if @bubbled
+      for property in NF.Util.highlighterProperties
+        expression = @highlighterEffect.property(property).expression
+        @highlighterEffect.property(property).expression = expression.replace " NFPage", " [+]"
   # Disconnects bubbleups in this highlight layer
   disconnect: ->
     # Remove the bubbled up AV Highlighter Effect if it exists
@@ -254,7 +320,9 @@ NFHighlightLayer = Object.assign NFHighlightLayer,
 ###
 NFPaperParentLayer = (layer) ->
   NFLayer.call(this, layer)
+  throw "Can only create a NFPaperParentLayer from a null layer" unless @layer.nullLayer
   @
+# Instance Methods
 NFPaperParentLayer:: = Object.assign new NFLayer(),
   getInfo: ->
     return "NFPaperParentLayer: '#{@layer.name}'"
@@ -277,6 +345,26 @@ NFPaperParentLayer:: = Object.assign new NFLayer(),
       i++
 
     return childLayers
+# Class Methods
+NFPaperParentLayer = Object.assign NFPaperParentLayer,
+  # Tests an AV layer to see if it can be a paper parent Layer
+  isPaperParentLayer: (layer) ->
+    return layer.nullLayer and layer.name.indexOf 'PDF' >= 0
+  # Returns the name string for the paper parent for a given layer
+  getPaperParentNameForPageLayer: (pageLayer) ->
+  	return 'PDF ' + pageLayer.getPDFNumber()
+  # Returns the paperParentLayer for a given page layer
+  getPaperParentLayerForPageLayers: (pageLayer) ->
+    paperParent = pageLayer.getPaperParentLayer()
+    unless paperParent?
+      paperParent = pageLayer.containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForPageLayer(pageLayer))
+    return paperParent
+  # Creates a new paperParentLayer for a given collection of Page Layers
+  newPaperParentLayerForPageLayers: (pageLayers) ->
+    throw "Can only create a new paper parent layer from a NFPageLayerCollection" unless pageLayers instanceof NFPageLayerCollection
+    throw "Can't create a single paper parent layer for page layers from different PDFs" unless pageLayers.fromSamePDF()
+    # FIXME: Pickup here - this is for NFPageLayerCollection's method connectToParents()
+
 
 ###
 #    NF LAYER COLLECTION
@@ -301,26 +389,13 @@ NFLayerCollection:: = Object.assign NFLayerCollection::,
       @layers.push newLayer
     else
       throw "You can only add NFLayers to an NFLayerCollection"
-  # Returns NFHighlightLayerCollection of all highlights in all pages in the collection
-  highlights: ->
-    highlightArray = []
-    containingLayerArray = []
-    for theLayer in @layers
-      if theLayer instanceof NFPageLayer
-        # Get the layer's NFPageItem
-        for highlight in theLayer.highlights().layers
-          highlightArray.push highlight
-          containingLayerArray.push theLayer
-    highlights = new NFHighlightLayerCollection(highlightArray)
-    return highlights if highlights.isEmpty()
-    for i in [0..highlights.count()-1]
-      highlights.layers[i].containingPageLayer = containingLayerArray[i]
-    return highlights
   # Returns true if the collection only contains NFPageLayers and no other types of NFLayers
   onlyContainsPageLayers: ->
     for theLayer in @layers
       return false unless theLayer instanceof NFPageLayer
     return true
+  getPageLayerCollection: ->
+    return new NFPageLayerCollection @layers
   # Shortcut to access the number of layers in the collection
   count: ->
     return @layers.length
@@ -337,6 +412,81 @@ NFLayerCollection = Object.assign NFLayerCollection,
       newLayer.getSpecializedLayer()
     return new NFLayerCollection newArray
 
+
+###
+#    NF PAGE LAYER COLLECTION
+#
+#    A collection of NF Page Layers
+#
+###
+NFPageLayerCollection = (layerArr) ->
+  NFLayerCollection.call(this, layerArr)
+  if layerArr?
+    for theLayer in layerArr
+      throw "You can only add NFPageLayers to an NFPageLayerCollection" unless theLayer instanceof NFPageLayer
+  @
+# Instance Methods
+NFPageLayerCollection:: = Object.assign new NFLayerCollection(),
+  addNFLayer: (newLayer) ->
+    @addNFPageLayer(newLayer)
+  addNFPageLayer: (newLayer) ->
+    if newLayer instanceof NFPageLayer
+      @layers.push newLayer
+    else
+      throw "addNFPageLayer() can only be used to add NFPageLayers to an NFPageLayerCollection"
+  addAVLayer: (newLayer) ->
+    if newLayer instanceof AVLayer
+      @layers.push new NFPageLayer(newLayer)
+    else
+      throw "addAVLayer() can only be used to add AVLayers to an NFPageLayerCollection"
+  # Returns NFHighlightLayerCollection of all highlights in all pages in the collection
+  highlights: ->
+    highlightArray = []
+    containingLayerArray = []
+    for theLayer in @layers
+      if theLayer instanceof NFPageLayer
+        # Get the layer's NFPageItem
+        for highlight in theLayer.highlights().layers
+          highlightArray.push highlight
+          containingLayerArray.push theLayer
+    highlights = new NFHighlightLayerCollection(highlightArray)
+    return highlights if highlights.isEmpty()
+    for i in [0..highlights.count()-1]
+      highlights.layers[i].containingPageLayer = containingLayerArray[i]
+    return highlights
+  # Returns true if the collection only contains pages from the same PDF
+  fromSamePDF: ->
+    return true if @count() is 0
+    testNumber = @layers[0].getPDFNumber()
+    for layer in @layers
+      return false if layer.getPDFNumber() isnt testNumber
+    return true
+  # Overrides the function in NFLayerCollection
+  onlyContainsPageLayers: ->
+    return true
+  initLayers: ->
+    page.init() for page in @layers
+  initLayerTransforms: ->
+    page.initTransforms() for page in @layers
+  connectToParents: ->
+    for pageLayer in @layers
+      paperParentLayer = pageLayer.containingComp()
+      # get PDF #
+      # get layer name
+      # Look for layer
+      # if it doesn't exist
+        # make it and put it above the pageLayer
+      # if it does
+        # put this pagelayer below it
+# Class Methods
+NFPageLayerCollection = Object.assign NFPageLayerCollection,
+  # Returns a new instance from an array of AVLayers
+  collectionFromAVLayerArray: (arr) ->
+    # FIXME: Should throw error if each layer isnt an AVLayer
+    newArray = for layer in arr
+      newLayer = new NFLayer(layer)
+      newLayer.getSpecializedLayer()
+    return new NFPageLayerCollection newArray
 
 ###
 #    NF HIGHLIGHT LAYER COLLECTION
@@ -366,17 +516,13 @@ NFHighlightLayerCollection:: = Object.assign new NFLayerCollection(),
     else
       throw "addNFHighlightLayer() can only be used to add NFHighlightLayers to an NFHighlightLayerCollection"
   addAVLayer: (newLayer) ->
-    # FIXME: Should throw error if newLayer is not AVLayer
-    if true #newLayer instanceof NFHighlightLayer
+    if newLayer instanceof AVLayer
       @layers.push new NFHighlightLayer(newLayer)
     else
       throw "addAVLayer() can only be used to add AVLayers to an NFHighlightLayerCollection"
   # Overrides the function in NFLayerCollection
   onlyContainsPageLayers: ->
     return false
-  # Overrides the function in NFLayerCollection. Just returns self because faster
-  highlights: ->
-    @
   # Checks to see if any highlights in the collection share the same name
   duplicateNames: ->
     nameArr = []
@@ -395,8 +541,55 @@ NFHighlightLayerCollection = Object.assign NFHighlightLayerCollection,
       newLayer = new NFHighlightLayer(layer)
     return new NFHighlightLayerCollection newArray
 
+###
+#    NF Comp
+#
+#    A composition
+#
+###
+NFComp = (comp) ->
+  # FIXME: Check to make sure we've been given a valid comp and throw error if not
+  throw "Can't create an NFComp without a given comp" unless comp?
+  @comp = comp
+  @name = @comp.name
+  @
+# Instance Methods
+NFComp:: = Object.assign NFComp::,
+  getInfo: ->
+    return "NFComp: '#{@name}'"
+  selectedLayers: ->
+    return NFLayerCollection.collectionFromAVLayerArray @comp.selectedLayers
+  # Throws an error if there are non-page layers selected
+  selectedPageLayers: ->
+    selectedPageLayers = new NFPageLayerCollection
+    for layer in @selectedLayers()
+      selectedPageLayers.addNFPageLayer layer if layer instanceOf NFPageLayer
+    return selectedPageLayers
+  layerWithName: (name) ->
+    theLayer = @comp.layers?.byName(name)
+    if theLayer?
+      foundLayer = new NFLayer(theLayer)
+      foundLayer = foundLayer.getSpecializedLayer()
+    return null
 
-
+###
+#    NF Part Comp
+#
+#    subclass of NFComp
+#    A part composition which can contain pageLayers and other such things
+#
+###
+NFPartComp = (comp) ->
+  NFComp.call(this, comp)
+  # FIXME: Check to make sure we've been given a valid comp and throw error if not
+  throw "Can't create an NFPartComp without a given comp" unless comp?
+  @comp = comp
+  @name = @comp.name
+  @
+# Instance Methods
+NFPartComp:: = Object.assign NFPartComp::,
+  getInfo: ->
+    return "NFPartComp: '#{@name}'"
 
 ###
 #    NF PAGE ITEM
@@ -435,7 +628,6 @@ NFPageItem:: = Object.assign NFPageItem::,
         highlightLayers.addAVLayer(theLayer)
     return highlightLayers
 
-
 ###
 #    NF PDF
 #
@@ -465,9 +657,12 @@ NF.Models =
   NFHighlightLayer: NFHighlightLayer
   NFPaperParentLayer: NFPaperParentLayer
   NFLayerCollection: NFLayerCollection
+  NFPageLayerCollection: NFPageLayerCollection
   NFHighlightLayerCollection: NFHighlightLayerCollection
   NFPageItem: NFPageItem
   NFPDF: NFPDF
+  NFComp: NFComp
+  NFPartComp: NFPartComp
 
 # Put everything we changed back into app.NF
 app.NF = Object.assign app.NF, NF
