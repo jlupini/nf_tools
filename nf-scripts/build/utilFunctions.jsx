@@ -1,0 +1,881 @@
+#include "lib/extendscript.prototypes.js";
+var NF, ref;
+
+NF = (ref = app.NF) != null ? ref : {};
+
+// enums
+NF.Util.PageTurn = {
+  FLIPPEDUP: 100,
+  FLIPPEDDOWN: 200,
+  TURNING: 300,
+  NOPAGETURN: 400,
+  BROKEN: 500
+};
+
+NF.Util.AnimationType = {
+  SLIDE: 100,
+  FADE: 200
+};
+
+NF.Util.Position = {
+  TOP: 100,
+  RIGHT: 200,
+  BOTTOM: 300,
+  LEFT: 400
+};
+
+NF.Util.Direction = {
+  IN: 100,
+  OUT: 200
+};
+
+NF.Util.EaseFunction = {
+  LINEAR: 100,
+  PAGESLIDEEASE: 150
+};
+
+// EASEINSINE: 200
+// EASEOUTSINE: 250
+// EASEINOUTSINE: 275
+// EASEINQUAD: 300
+// EASEOUTQUAD: 350
+// EASEINOUTQUAD: 375
+// EASEINQUINT: 400
+// EASEOUTQUINT: 250
+// EASEINOUTQUINT: 275
+
+// Utility Arrays
+NF.Util.highlighterProperties = ['Spacing', 'Thickness', 'Start Offset', 'Completion', 'Offset', 'Opacity', 'Highlight Colour', 'End Offset'];
+
+// Utility Functions
+
+// Looks for an item globally in the project
+NF.Util.findItem = function(itemName) {
+  var i, thisItem;
+  i = 1;
+  while (i <= app.project.items.length) {
+    thisItem = app.project.items[i];
+    if (thisItem.name === itemName) {
+      return thisItem;
+    }
+    i++;
+  }
+  return null;
+};
+
+// Given an expression string and property to search for, returns the argument passed to that property
+// So for example, with the property "layer" and the expression "comp('composition').layer('myLayer')", this function returns "'myLayer'"
+// Use getCleanedArgumentOfPropertyFromExpression() to strip the quotes from the result
+NF.Util.getArgumentOfPropertyFromExpression = function(property, expression) {
+  var endIdx, propertyIndex, result, startIdx;
+  propertyIndex = expression.indexOf(property + "(");
+  if (propertyIndex > 0) {
+    // The +1 is to account for the Open bracket
+    startIdx = propertyIndex + property.length + 1;
+    result = expression.slice(startIdx);
+    endIdx = result.indexOf(")");
+    result = result.substr(0, endIdx);
+    return result;
+  }
+  return null;
+};
+
+// Given an expression string and property to search for, returns the argument passed to that property, with quotes stripped
+NF.Util.getCleanedArgumentOfPropertyFromExpression = function(property, expression) {
+  return NF.Util.stripQuotesFromString(NF.Util.getArgumentOfPropertyFromExpression(property, expression));
+};
+
+// Strips opening and closing quotes from a string
+NF.Util.stripQuotesFromString = function(str) {
+  if (str == null) {
+    return null;
+  }
+  if ((str.charAt(0) === '"' && str.charAt(str.length - 1) === '"') || (str.charAt(0) === "'" && str.charAt(str.length - 1) === "'")) {
+    return str.substr(1, str.length - 2);
+  }
+  return str;
+};
+
+// Checks an array for duplicate values
+NF.Util.hasDuplicates = function(array) {
+  var i, value, valuesSoFar;
+  valuesSoFar = [];
+  i = 0;
+  while (i < array.length) {
+    value = array[i];
+    if (valuesSoFar.indexOf(value) !== -1) {
+      return true;
+    }
+    valuesSoFar.push(value);
+    ++i;
+  }
+  return false;
+};
+
+// Returns true if a given AVLayer is a highlight layer
+// DEPRECATED: Use NF.Models.NFHighlightLayer.isHighlightLayer() instead
+NF.Util.isHighlightLayer = function(theLayer) {
+  var ref1;
+  return theLayer instanceof ShapeLayer && ((ref1 = theLayer.Effects.property(1)) != null ? ref1.matchName : void 0) === "AV_Highlighter";
+};
+
+// Given a string with the name of an item to find and it's parent folder, findItemIn returns the folderItem, or null of none is found.
+NF.Util.findItemIn = function(itemName, sourceFolderItem) {
+  var i;
+  i = 1;
+  while (i <= sourceFolderItem.numItems) {
+    if (sourceFolderItem.item(i).name === itemName) {
+      return sourceFolderItem.item(i);
+    }
+    i++;
+  }
+  return null;
+};
+
+// Animates a page in or out with specified params
+NF.Util.animatePage = function(model) {
+  var diffX, diffY, duration, easingEquation, ew_getPathToEasingFolder, ew_readFile, ew_setProps, inKeyIdx, inPoint, mainComp, newPosition, oldPosition, outKeyIdx, outPoint, positionProperty, rect, ref1, ref2, ref3, ref4, ref5, ref6;
+  // FIXME: Move all this ew stuff to a generalized thing
+  ew_getPathToEasingFolder = function() {
+    var folderObj;
+    folderObj = new Folder(new File($.fileName).parent.fsName + '/lib/' + "easingExpressions");
+    return folderObj;
+  };
+  ew_readFile = function(filename) {
+    var e, easing_folder, file_handle, the_code;
+    the_code = void 0;
+    easing_folder = ew_getPathToEasingFolder();
+    file_handle = new File(easing_folder.fsName + '/' + filename);
+    if (!file_handle.exists) {
+      throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + easing_folder.fsName + '\'. \n\nPlease refer to the installation guide and try installing again, or go to:\n\nhttp://aescripts.com/ease-and-wizz/\n\nfor more info.');
+    }
+    try {
+      file_handle.open('r');
+      the_code = file_handle.read();
+    } catch (error) {
+      e = error;
+      throw new Error('I couldn\'t read the easing equation file: ' + e);
+    } finally {
+      file_handle.close();
+    }
+    return the_code;
+  };
+  ew_setProps = function(selectedProperties, expressionCode) {
+    var currentProperty, i, numOfChangedProperties;
+    // selectedProperties = app.project.activeItem.selectedProperties
+    numOfChangedProperties = 0;
+    currentProperty = void 0;
+    i = void 0;
+    // retain the whitespace
+    expressionCode = expressionCode.replace(/\n\n/g, '\n \n');
+    i = 0;
+    while (i < selectedProperties.length) {
+      currentProperty = selectedProperties[i];
+      if (currentProperty.numKeys >= 2 && currentProperty.canSetExpression) {
+        // don't do anything if we can't set an expression
+        // likewise if there aren't at least two keyframes
+        currentProperty.expression = expressionCode;
+        numOfChangedProperties += 1;
+      }
+      i += 1;
+    }
+  };
+  if (model.page == null) {
+    // easingType = ease_and_wizz.easingList.selection.text
+    // clearOutput()
+    // if numOfChangedProperties == 1
+    //   writeLn 'Applied "' + easingType + '" to 1 property.'
+    // else
+    //   writeLn 'Applied "' + easingType + '" to ' + numOfChangedProperties + ' properties.'
+    return null;
+  }
+  model = {
+    page: model.page,
+    type: (ref1 = model.type) != null ? ref1 : NF.Util.AnimationType.SLIDE,
+    position: (ref2 = model.position) != null ? ref2 : NF.Util.Position.RIGHT,
+    direction: (ref3 = model.direction) != null ? ref3 : NF.Util.Direction.IN,
+    duration: (ref4 = model.duration) != null ? ref4 : 1,
+    easeFunction: (ref5 = model.easeFunction) != null ? ref5 : NF.Util.EaseFunction.LINEAR,
+    shadowBuffer: (ref6 = model.shadowBuffer) != null ? ref6 : 350
+  };
+  if (model.direction === NF.Util.Direction.IN) {
+    duration = model.duration;
+    inPoint = model.page.inPoint;
+    outPoint = model.page.outPoint;
+  } else {
+    // NOTE: IN and OUT points are REVERSED in this case. Be careful.
+    duration = model.duration * -1;
+    inPoint = model.page.outPoint;
+    outPoint = model.page.inPoint;
+  }
+  if (model.type === NF.Util.AnimationType.SLIDE) {
+    positionProperty = model.page.transform.position;
+    oldPosition = positionProperty.value;
+    rect = NF.Util.sourceRectToComp(model.page, inPoint);
+    mainComp = app.project.activeItem;
+    rect = {
+      top: rect.top,
+      left: rect.left,
+      right: rect.left + rect.width,
+      bottom: rect.top + rect.height,
+      width: rect.width,
+      height: rect.height
+    };
+    if (model.position === NF.Util.Position.RIGHT) {
+      // How far to the right do we need to move the page to get it off that side?
+      // To do that, rect.left >= to mainComp.width
+      diffX = mainComp.width - rect.left + model.shadowBuffer;
+      diffY = 0;
+    } else if (model.position === NF.Util.Position.LEFT) {
+      // need to make rect.right <= 0
+      diffX = 0 - rect.right - model.shadowBuffer;
+      diffY = 0;
+    } else if (model.position === NF.Util.Position.TOP) {
+      // need to make rect.bottom <= 0
+      diffY = 0 - rect.bottom - model.shadowBuffer;
+      diffX = 0;
+    } else {
+      // BOTTOM, so need to make rect.top >= mainComp.height
+      diffY = mainComp.height - rect.top + model.shadowBuffer;
+      diffX = 0;
+    }
+    newPosition = [oldPosition[0] + diffX, oldPosition[1] + diffY, oldPosition[2]];
+    positionProperty.setValuesAtTimes([inPoint, inPoint + model.duration], [newPosition, oldPosition]);
+    inKeyIdx = positionProperty.nearestKeyIndex(inPoint);
+    outKeyIdx = positionProperty.nearestKeyIndex(outPoint);
+    // Easing
+    if (model.easeFunction !== NF.Util.EaseFunction.LINEAR) {
+      // FIXME: Add all the other eases and make this one right.... maybe gotta do spatial?
+      if (model.easeFunction === NF.Util.EaseFunction.PAGESLIDEEASE) {
+        // easeIn1 = new KeyframeEase(0, 50)
+        // easeOut1 = new KeyframeEase(0.75, 85)
+        // easeIn2 = new KeyframeEase(0, 100)
+        // easeOut2 = new KeyframeEase(0, 0.1)
+        // positionProperty.setTemporalEaseAtKey inKeyIdx, [easeIn1], [easeOut1]
+        // positionProperty.setTemporalEaseAtKey outKeyIdx, [easeIn2], [easeOut2]
+        easingEquation = ew_readFile("quint-out-easeandwizz-start-only.txt");
+        return ew_setProps([positionProperty], easingEquation);
+      }
+    }
+  } else if (model.type === NF.Util.AnimationType.FADE) {
+    // FIXME: Handle this case
+    return null;
+  }
+};
+
+NF.Util.pageTreeForPaper = function(sourceLayer) {
+  var activePageIndex, allLayers, i, pageObject, pageParent, testLayer, tree;
+  this.layerObj = function(layerName) {
+    return function() {
+      return app.project.activeItem.layers.byName(layerName);
+    };
+  };
+  pageParent = NF.Util.pageParent(sourceLayer);
+  allLayers = app.project.activeItem.layers;
+  tree = {
+    name: pageParent.name,
+    index: pageParent.index,
+    layer: this.layerObj(pageParent.name),
+    pages: []
+  };
+  i = 1;
+  while (i <= allLayers.length) {
+    testLayer = allLayers[i];
+    if (testLayer.parent === pageParent && NF.Util.isCompLayer(testLayer)) {
+      pageObject = {
+        name: testLayer.name,
+        index: testLayer.index,
+        layer: this.layerObj(testLayer.name),
+        active: false,
+        highlights: NF.Util.sourceRectsForHighlightsInTargetLayer(testLayer, NF.Util.isTitlePage(testLayer))
+      };
+      tree.pages.push(pageObject);
+    }
+    i++;
+  }
+  activePageIndex = NF.Util.activePageIndexInArray(tree.pages);
+  if (activePageIndex != null) {
+    tree.pages[activePageIndex].active = true;
+    tree.activePage = tree.pages[activePageIndex].layer();
+  }
+  return tree;
+};
+
+NF.Util.isTitlePage = function(testLayer) {
+  var isTitlePage, len, m, test, tests;
+  // FIXME: This is a little hacky
+  tests = ['pg01', 'pg1', 'page1', 'page01'];
+  isTitlePage = false;
+  for (m = 0, len = tests.length; m < len; m++) {
+    test = tests[m];
+    if (testLayer.name.indexOf(test) !== -1) {
+      isTitlePage = true;
+    }
+  }
+  return isTitlePage;
+};
+
+NF.Util.activePageIndexInArray = function(pages) {
+  var activePage, activePageIndex, i, page, pageLayer;
+  activePage = null;
+  activePageIndex = null;
+  i = 0;
+  while (i < pages.length) {
+    page = pages[i];
+    pageLayer = page.layer();
+    if (pageLayer.active && (NF.Util.pageTurnStatus(pageLayer) === NF.Util.PageTurn.FLIPPEDDOWN || NF.Util.pageTurnStatus(pageLayer) === NF.Util.PageTurn.NOPAGETURN)) {
+      if ((activePage == null) || page.index < activePage.index) {
+        activePage = page;
+        activePageIndex = i;
+      }
+    }
+    i++;
+  }
+  return activePageIndex;
+};
+
+NF.Util.pageLayerCanBeActive = function(pageLayer) {
+  return pageLayer.active && (NF.Util.pageTurnStatus(pageLayer) === NF.Util.PageTurn.FLIPPEDDOWN || NF.Util.pageTurnStatus(pageLayer) === NF.Util.PageTurn.NOPAGETURN);
+};
+
+/*
+Turn a page, with a duration in seconds, starting at a given time, optionally flipping down to reveal instead of flippingUp
+Current state of the page's fold will override a given flipUp value if there is already a pageTurn Effect
+*/
+NF.Util.turnPageAtTime = function(page, duration = 1.5, time = null, flipUp = true) {
+  var downPosition, endStatus, endTime, foldPosition, pageSize, positions, startStatus, startTime, times, upPosition;
+  if (!NF.Util.isCompLayer(page)) {
+    return alert("Cannot turn page on a non-comp layer");
+  }
+  startTime = time != null ? time : app.project.activeItem.time;
+  endTime = startTime + duration;
+  startStatus = NF.Util.pageTurnStatus(page, startTime);
+  endStatus = NF.Util.pageTurnStatus(page, endTime);
+  // Check if already turning
+  if (startStatus === NF.Util.PageTurn.TURNING || endStatus === NF.Util.PageTurn.TURNING) {
+    return alert("Page is already turning at specified time");
+  }
+  if (startStatus === NF.Util.PageTurn.BROKEN) {
+    return alert("Page Turn keyframes seem broken...");
+  }
+  // Check if no effect set up already
+  if (startStatus === NF.Util.PageTurn.NOPAGETURN) {
+    NF.Util.addPageTurnEffects(page);
+  }
+  // Set the Properties
+  pageSize = {
+    width: page.source.width,
+    height: page.source.height
+  };
+  downPosition = [pageSize.width, pageSize.height];
+  upPosition = [-pageSize.width, -pageSize.height];
+  positions = [downPosition, upPosition];
+  if (startStatus === NF.Util.PageTurn.FLIPPEDUP) {
+    flipUp = false;
+  } else if (startStatus === NF.Util.PageTurn.FLIPPEDDOWN) {
+    flipUp = true;
+  }
+  if (!flipUp) {
+    positions.reverse();
+  }
+  times = [startTime, endTime];
+  foldPosition = page.effect("CC Page Turn").property("Fold Position");
+  foldPosition.setValuesAtTimes(times, positions);
+  return NF.Util.setSymmetricalTemporalEasingOnlyForProperties(foldPosition, times, null, null, true);
+};
+
+// Adds the effects for a pageturn to a layer annd sets some defaults
+NF.Util.addPageTurnEffects = function(page) {
+  var dropShadowEffect, dropShadowMatchName, forceMotionBlurEffect, forceMotionBlurMatchName, pageTurnEffect, pageTurnMatchName;
+  forceMotionBlurMatchName = "CC Force Motion Blur";
+  dropShadowMatchName = "ADBE Drop Shadow";
+  pageTurnMatchName = "CC Page Turn";
+  pageTurnEffect = page.effect(pageTurnMatchName);
+  if (pageTurnEffect == null) {
+    pageTurnEffect = page.Effects.addProperty(pageTurnMatchName);
+    pageTurnEffect.property("Fold Radius").setValue(500);
+  }
+  forceMotionBlurEffect = page.effect(forceMotionBlurMatchName);
+  if (forceMotionBlurEffect == null) {
+    forceMotionBlurEffect = page.Effects.addProperty(forceMotionBlurMatchName);
+    forceMotionBlurEffect.property("Override Shutter Angle").setValue(0);
+  }
+  dropShadowEffect = page.effect(dropShadowMatchName);
+  if (dropShadowEffect != null) {
+    dropShadowEffect.remove();
+  }
+  dropShadowEffect = page.Effects.addProperty(dropShadowMatchName);
+  dropShadowEffect.property("Opacity").setValue(0.75 * 255);
+  dropShadowEffect.property("Direction").setValue(125);
+  dropShadowEffect.property("Distance").setValue(20);
+  dropShadowEffect.property("Softness").setValue(300);
+  return page;
+};
+
+/*
+Given a layer, returns the NF.Util.PageTurn enum
+*/
+NF.Util.pageTurnStatus = function(pageLayer, time = null) {
+  var foldPosition, foldPositionProperty, pageTurnEffect, threshold;
+  time = time != null ? time : app.project.activeItem.time;
+  pageTurnEffect = pageLayer.effect("CC Page Turn");
+  foldPositionProperty = pageTurnEffect != null ? pageTurnEffect.property("Fold Position") : void 0;
+  foldPosition = foldPositionProperty != null ? foldPositionProperty.value : void 0;
+  threshold = 3840;
+  if (pageTurnEffect == null) {
+    return NF.Util.PageTurn.NOPAGETURN;
+  } else if (foldPosition[0] >= threshold) {
+    return NF.Util.PageTurn.FLIPPEDDOWN;
+  } else if (foldPosition[0] <= threshold * -1) {
+    return NF.Util.PageTurn.FLIPPEDUP;
+  } else if (foldPositionProperty.numKeys !== 0) {
+    // FIXME: There may be more things that could mean this is broken
+    return NF.Util.PageTurn.TURNING;
+  } else {
+    return NF.Util.PageTurn.BROKEN;
+  }
+};
+
+// Returns true if given layer is a comp
+NF.Util.isCompLayer = function(testLayer) {
+  return testLayer instanceof AVLayer && testLayer.source instanceof CompItem;
+};
+
+NF.Util.pageParent = function(selectedLayer) {
+  var ref1;
+  if (selectedLayer.nullLayer) {
+    return selectedLayer;
+  }
+  if ((ref1 = selectedLayer.parent) != null ? ref1.nullLayer : void 0) {
+    return selectedLayer.parent;
+  }
+  return null;
+};
+
+// Disconnects ALL highlight controls in a given layer or array of highlight layers
+// DEPRECATE
+NF.Util.disconnectBubbleupsInLayers = function(layers, names = null) {
+  var bubbleupLayers, effect, i, len, len1, m, n, property, propertyCount, theLayer;
+  if (!layers instanceof Array) {
+    layers = [layers];
+  }
+  bubbleupLayers = [];
+  for (m = 0, len = layers.length; m < len; m++) {
+    theLayer = layers[m];
+    if (NF.Util.isCompLayer(theLayer)) {
+      bubbleupLayers = bubbleupLayers.concat(NF.Util.collectionToArray(theLayer.source.layers));
+    } else {
+      bubbleupLayers.push(theLayer);
+    }
+  }
+  for (n = 0, len1 = bubbleupLayers.length; n < len1; n++) {
+    theLayer = bubbleupLayers[n];
+    if ((names == null) || names.indexOf(theLayer.name) > -1) {
+      effect = theLayer.effect("AV_Highlighter");
+      propertyCount = effect != null ? effect.numProperties : void 0;
+      i = 1;
+      while (i < propertyCount && (effect != null)) {
+        property = effect.property(i);
+        property.expression = "";
+        i++;
+      }
+    }
+  }
+  return layers;
+};
+
+// Adds Temporal easing (and removes spatial easing) for an array of properties, an array of key indexes, as well as an ease type and weight.
+// Keys can be delivered as indexes or times. If
+NF.Util.setSymmetricalTemporalEasingOnlyForProperties = function(theProperties, keys, easeType = null, easeWeight = null, keysAsTimes = false) {
+  var ease, i, key, keyItem, length, ref1, ref2, results, singleKey, singleProperty, spatialEaseArray, temporalEaseArray, theProperty;
+  if (theProperties instanceof Array && keys instanceof Array) {
+    if (theProperties.length !== keys.length) {
+      return -1;
+    }
+  }
+  singleKey = null;
+  singleProperty = null;
+  if (theProperties instanceof Array && !(keys instanceof Array)) {
+    singleKey = keys;
+  }
+  if (keys instanceof Array && !(theProperties instanceof Array)) {
+    singleProperty = theProperties;
+  }
+  if (easeType == null) {
+    easeType = (ref1 = NF.Util.easeType) != null ? ref1 : KeyframeInterpolationType.BEZIER;
+  }
+  if (easeWeight == null) {
+    easeWeight = (ref2 = NF.Util.easeWeight) != null ? ref2 : 33;
+  }
+  i = 0;
+  length = singleProperty != null ? keys.length : theProperties.length;
+  results = [];
+  while (i < length) {
+    theProperty = singleProperty != null ? singleProperty : theProperties[i];
+    keyItem = singleKey != null ? singleKey : keys[i];
+    key = keysAsTimes ? theProperty.nearestKeyIndex(keyItem) : keyItem;
+    theProperty.setInterpolationTypeAtKey(key, easeType, easeType);
+    ease = new KeyframeEase(0, easeWeight);
+    temporalEaseArray = [ease];
+    if (theProperty.propertyValueType === PropertyValueType.TwoD) {
+      temporalEaseArray = [ease, ease];
+    } else if (theProperty.propertyValueType === PropertyValueType.ThreeD) {
+      temporalEaseArray = [ease, ease, ease];
+    }
+    theProperty.setTemporalEaseAtKey(key, temporalEaseArray);
+    spatialEaseArray = null;
+    if (theProperty.propertyValueType === PropertyValueType.TwoD_SPATIAL) {
+      spatialEaseArray = [0, 0];
+    } else if (theProperty.propertyValueType === PropertyValueType.ThreeD_SPATIAL) {
+      spatialEaseArray = [0, 0, 0];
+    }
+    if (spatialEaseArray != null) {
+      theProperty.setSpatialTangentsAtKey(key, spatialEaseArray);
+    }
+    results.push(i++);
+  }
+  return results;
+};
+
+NF.Util.collectionToArray = function(collection) {
+  var arr, i;
+  arr = [];
+  i = 1;
+  while (i <= collection.length) {
+    arr.push(collection[i]);
+    i++;
+  }
+  return arr;
+};
+
+// Just a shortcut
+NF.Util.toArr = function(collection) {
+  return NF.Util.collectionToArray(collection);
+};
+
+NF.Util.capitalizeFirstLetter = function(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+// true if variable exists, is a string, and has a length greater than zero
+NF.Util.isNonEmptyString = function(unknownVariable) {
+  if (((typeof unknownVariable !== "undefined") && (typeof unknownVariable.valueOf() === "string")) && (unknownVariable.length > 0)) {
+    return true;
+  }
+  return false;
+};
+
+// Returns an expression that adjusts a property based on markers. Default property values are zero
+
+// model =
+//   layer (Required. Either a layer name or layer object)
+//   duration?: (if this is missing, defaults to 30 frames)
+//     value? (in frames)
+//     effect? (this needs to be a string)
+//     subEffect?(this needs to be a string)
+//   valueA?:
+//     value?
+//     effect? (this needs to be a string)
+//     subEffect? (this needs to be a string)
+//   valueB?:
+//     value?
+//     effect? (this needs to be a string)
+//     subEffect? (this needs to be a string)
+// FIXME: Check for if effects are actual effects or strings
+NF.Util.markerDrivenExpression = function(model) {
+  var defaults, durationString, generalValueExpression, layerName, term, trimString, valueAString, valueBString;
+  term = ";\n";
+  defaults = {
+    duration: "30",
+    valueA: "0",
+    valueB: "0",
+    subEffect: "Slider"
+  };
+  // Returns the expression to access a property given a key to a value in the model
+  generalValueExpression = function(key) {
+    var effectName, expressionString, subEffectName, subModel;
+    subModel = model[key];
+    expressionString = "";
+    if (subModel != null) {
+      if (subModel.value != null) {
+        expressionString += subModel.value;
+      } else if (subModel.effect != null) {
+        if (NF.Util.isNonEmptyString(subModel.effect)) {
+          effectName = subModel.effect;
+        } else {
+          effectName = subModel.effect.name;
+        }
+        if (subModel.subEffect != null) {
+          if (NF.Util.isNonEmptyString(subModel.subEffect)) {
+            subEffectName = subModel.subEffect;
+          } else {
+            subEffectName = subModel.subEffect.name;
+          }
+        } else {
+          subEffectName = defaults.subEffect;
+        }
+        expressionString += `thisComp.layer("${layerName}").effect("${effectName}")("${subEffectName}")`;
+      } else {
+        expressionString += defaults[key];
+      }
+    } else {
+      expressionString += defaults[key];
+    }
+    expressionString += term;
+    return expressionString;
+  };
+  if (!((model.layer != null) && (model.duration != null))) {
+    return alert("Error\nNo layer or duration specified in NF.Util.markerDrivenExpression!");
+  }
+  // Get the layer name from the layer object if it's not a string
+  if (NF.Util.isNonEmptyString(model.layer)) {
+    layerName = model.layer;
+  } else {
+    layerName = model.layer.name;
+  }
+  durationString = generalValueExpression("duration");
+  valueAString = generalValueExpression("valueA");
+  valueBString = generalValueExpression("valueB");
+  trimString = `if (thisComp.layer("${layerName}").marker.numKeys > 0) {\n d = ${durationString} m = thisComp.layer("${layerName}").marker.nearestKey(time);\n t = m.time;\n valueA = ${valueAString} valueB = ${valueBString} \n if (m.index%2) {\n // For all in markers\n ease(time,t,t+d*thisComp.frameDuration,valueA,valueB)\n } else {\n // For all out markers\n ease(time,t,t-d*thisComp.frameDuration,valueB,valueA)\n }\n } else {\n value\n }`;
+  return trimString;
+};
+
+// Returns an array where each item is an object containing position data for each highlight in the target page layer
+NF.Util.sourceRectsForHighlightsInTargetLayer = function(targetLayer, includeTitlePage = false) {
+  var i, layerParent, ref1, sourceCompLayers, sourceHighlightLayers, sourceHighlightRects, theLayer;
+  sourceCompLayers = (ref1 = targetLayer.source) != null ? ref1.layers : void 0;
+  if (sourceCompLayers == null) {
+    return null;
+  }
+  sourceHighlightLayers = [];
+  sourceHighlightRects = {};
+  i = 1;
+  while (i <= sourceCompLayers.length) {
+    theLayer = sourceCompLayers[i];
+    if (theLayer.Effects.numProperties > 0) {
+      if (NF.Util.isHighlightLayer(theLayer)) {
+        sourceHighlightLayers.push(theLayer);
+        layerParent = theLayer.parent;
+        theLayer.parent = null;
+        sourceHighlightRects[theLayer.name] = NF.Util.sourceRectToComp(theLayer);
+        sourceHighlightRects[theLayer.name].padding = theLayer.Effects.property(1).property("Thickness").value || 0;
+        sourceHighlightRects[theLayer.name].name = theLayer.name;
+        sourceHighlightRects[theLayer.name].bubbled = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionEnabled;
+        sourceHighlightRects[theLayer.name].broken = theLayer.Effects.property("AV_Highlighter").property("Spacing").expressionError;
+        theLayer.parent = layerParent;
+      }
+    }
+    i++;
+  }
+  if (includeTitlePage) {
+    sourceHighlightRects["Title Page"] = {
+      left: 0,
+      top: 0,
+      width: targetLayer.source.width,
+      height: 1080,
+      padding: 0,
+      name: "Title Page"
+    };
+  }
+  return sourceHighlightRects;
+};
+
+// Uses a null hack to get the sourceRect of a layer relative to the comp. A targetTime passed in will
+// be the time of the comp the LAYER is in. Default is the mainCompTime
+// The Null hack seems to move the time of the maincomp sometimes so we need to keep it in line
+NF.Util.sourceRectToComp = function(layer, targetTime = null, keepNull = false) {
+  var bottomRightPoint, expressionBase, mainCompTime, rect, tempNull, topLeftPoint;
+  mainCompTime = app.project.activeItem.time;
+  targetTime = targetTime != null ? targetTime : mainCompTime;
+  tempNull = layer.containingComp.layers.addNull();
+  // This line stops the mainComp time from jumping forward.
+  app.project.activeItem.time = mainCompTime;
+  expressionBase = `rect = thisComp.layer(${layer.index}).sourceRectAtTime(time);`;
+  tempNull.transform.position.expression = expressionBase + `thisComp.layer(${layer.index}).toComp([rect.left, rect.top])`;
+  topLeftPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+  tempNull.transform.position.expression = expressionBase + `thisComp.layer(${layer.index}).toComp([rect.left + rect.width, rect.top + rect.height])`;
+  bottomRightPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+  if (!keepNull) {
+    tempNull.remove();
+  }
+  return rect = {
+    left: topLeftPoint[0],
+    top: topLeftPoint[1],
+    width: bottomRightPoint[0] - topLeftPoint[0],
+    height: bottomRightPoint[1] - topLeftPoint[1]
+  };
+};
+
+NF.Util.rectRelativeToComp = function(rect, layer, targetTime = null) {
+  var bottomRightPoint, newRect, topLeftPoint;
+  topLeftPoint = NF.Util.pointRelativeToComp([rect.left, rect.top], layer, targetTime);
+  bottomRightPoint = NF.Util.pointRelativeToComp([rect.left + rect.width, rect.top + rect.height], layer, targetTime);
+  return newRect = {
+    left: topLeftPoint[0],
+    top: topLeftPoint[1],
+    width: bottomRightPoint[0] - topLeftPoint[0],
+    height: bottomRightPoint[1] - topLeftPoint[1]
+  };
+};
+
+// Returns a point on a layer relative to the containing comp, optionally at a given time
+NF.Util.pointRelativeToComp = function(sourcePoint, layer, targetTime = null) {
+  var newPoint, tempNull;
+  targetTime = targetTime != null ? targetTime : app.project.activeItem.time;
+  tempNull = NF.Util.nullAtPointRelativeToComp(sourcePoint, layer);
+  newPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+  tempNull.remove();
+  return newPoint;
+};
+
+// Creates and returns a null object with no parent, at the same coordinates in a comp as the
+// supplied point on a given layer.
+NF.Util.nullAtPointRelativeToComp = function(sourcePoint, layer) {
+  var targetTime, tempNull;
+  targetTime = targetTime != null ? targetTime : app.project.activeItem.time;
+  // FIXME: This may cause the time to jump forward, similarly to in sourceRectToComp. Need to investigate further
+  tempNull = layer.containingComp.layers.addNull();
+  tempNull.transform.position.expression = `a = thisComp.layer(${layer.index}).toComp([${sourcePoint[0]}, ${sourcePoint[1]}]); a`;
+  return tempNull;
+};
+
+NF.Util.toKeys = function(dict) {
+  var allKeys, key;
+  allKeys = [];
+  for (key in dict) {
+    allKeys.push(key);
+  }
+  return allKeys;
+};
+
+// Returns an array of verticies needed to draw a shape or mask from the source rect of a highlight layer
+NF.Util.verticiesFromSourceRect = function(rect) {
+  var v;
+  v = {
+    topLeft: [rect.left, rect.top],
+    topRight: [rect.left + rect.width, rect.top],
+    bottomRight: [rect.left + rect.width, rect.top + rect.height],
+    bottomLeft: [rect.left, rect.top + rect.height]
+  };
+  return [v.topLeft, v.bottomLeft, v.bottomRight, v.topRight];
+};
+
+NF.Util.trimExpression = function(thisLine, numberOfLines) {
+  var trimString;
+  return trimString = `slider_val = effect("AV Highlighter")("Completion") / 10; start_offset = effect("AV Highlighter")("Start Offset"); end_offset = effect("AV Highlighter")("End Offset"); line_count = ${numberOfLines}; this_line = ${thisLine}; total_points = line_count * 100; gross_points = total_points - start_offset - end_offset; points_per_line = gross_points/line_count*100; total_percent = (slider_val / 100 * gross_points + start_offset) / total_points * 100; min_percent = 100/line_count*(this_line-1); max_percent = 100/line_count*this_line; if (total_percent <= min_percent) {0;} else if ( total_percent >= max_percent ) { 100; } else { (total_percent - min_percent) / (max_percent - min_percent) * 100; }`;
+};
+
+// Deprecate soon - Upgrades highlight layers up to v0.80
+// Returns the highlight layer
+NF.Util.upgradeHighlightLayer = function(highlightLayer) {
+  var completionControl, endOffset, endOffsetControl, i, lineCount, lineNumber, ref1, thisLine, trimProperty;
+  lineCount = highlightLayer.property("Contents").numProperties;
+  i = lineCount;
+  lineNumber = 1;
+  while (i >= 1) {
+    thisLine = highlightLayer.property("Contents").property(i);
+    trimProperty = thisLine.property('Contents').property('Trim Paths 1').property('End');
+    trimProperty.expression = NF.Util.trimExpression(lineNumber, lineCount);
+    // If the last line is partially complete, convert it to full completion with an end offset
+    if (lineNumber === lineCount) {
+      if ((100 > (ref1 = trimProperty.value) && ref1 > 0)) {
+        endOffset = 100 - trimProperty.value;
+        completionControl = highlightLayer.property("Effects").property("AV Highlighter").property("Completion");
+        endOffsetControl = highlightLayer.property("Effects").property("AV Highlighter").property("End Offset");
+        if (completionControl.expressionEnabled === false) {
+          completionControl.setValue(1000);
+          endOffsetControl.setValue(endOffset);
+        }
+      }
+    }
+    i--;
+    lineNumber++;
+  }
+  return highlightLayer;
+};
+
+NF.Util.fixTrimExpressionsForHighlightLayer = function(highlightLayer) {
+  var i, lineCount, lineNumber, results, thisLine, trimProperty;
+  lineCount = highlightLayer.property("Contents").numProperties;
+  i = lineCount;
+  lineNumber = 1;
+  results = [];
+  while (i >= 1) {
+    thisLine = highlightLayer.property("Contents").property(i);
+    trimProperty = thisLine.property('Contents').property('Trim Paths 1').property('End');
+    trimProperty.expression = NF.Util.trimExpression(lineNumber, lineCount);
+    i--;
+    results.push(lineNumber++);
+  }
+  return results;
+};
+
+// Bubble up the highlights in given layers.
+// By default, will bubble all unconnected highlights in the layers given.
+// Optional array of names of relevant highlights to bubble up. Will disconnect
+// and override any connected layers among those provided
+// DEPRECATE
+NF.Util.bubbleUpHighlights = function(pagesToBubble, choices = null) {
+  var effects, firstShapeIndex, highlightLayersInPageComp, highlighterProperties, highlighterProperty, i, j, k, l, layersInPageComp, mainComp, newName, shouldBubble, sourceExpression, sourceHighlighterEffect, sourceHighlighterPropertyValue, targetComp, targetHighlighterEffect, targetLayer, testExpression, testLayer;
+  mainComp = app.project.activeItem;
+  i = pagesToBubble.length - 1;
+  while (i >= 0) {
+    targetLayer = pagesToBubble[i];
+    targetComp = targetLayer.source;
+    // Look in selected comp
+    // Grab Array of highlight layers
+    layersInPageComp = targetComp.layers;
+    highlightLayersInPageComp = [];
+    k = layersInPageComp.length;
+    while (k >= 1) {
+      testLayer = layersInPageComp[k];
+      if (testLayer.property('Effects').property('AV Highlighter')) {
+        firstShapeIndex = testLayer.property("Contents").numProperties;
+        testExpression = testLayer.property("Contents").property(firstShapeIndex).property("Contents").property("Trim Paths 1").property("End").expression;
+        if (testExpression.indexOf('end_offset') < 0) {
+          // Upgrade to the 'End Offset' pseudo effect version if necessary
+          NF.Util.upgradeHighlightLayer(testLayer);
+        }
+        highlightLayersInPageComp.push(testLayer);
+      }
+      k--;
+    }
+    // Create layer Controls
+    effects = targetLayer.Effects;
+    j = highlightLayersInPageComp.length - 1;
+    while (j >= 0) {
+      sourceHighlighterEffect = highlightLayersInPageComp[j].property('Effects').property('AV Highlighter');
+      // Only continue if it's not already hooked up to another parent comp and we weren't given choices
+      shouldBubble = false;
+      if (choices != null) {
+        shouldBubble = choices.indexOf(highlightLayersInPageComp[j].name) >= 0;
+      } else {
+        shouldBubble = !sourceHighlighterEffect.property('Completion').expressionEnabled;
+      }
+      if (shouldBubble) {
+        targetHighlighterEffect = effects.addProperty('AV_Highlighter');
+        newName = highlightLayersInPageComp[j].name;
+        targetHighlighterEffect.name = newName;
+        // Iterate through the properties and connect each one
+        highlighterProperties = ['Spacing', 'Thickness', 'Start Offset', 'Completion', 'Offset', 'Opacity', 'Highlight Colour', 'End Offset'];
+        l = highlighterProperties.length - 1;
+        while (l >= 0) {
+          highlighterProperty = highlighterProperties[l];
+          sourceHighlighterPropertyValue = sourceHighlighterEffect.property(highlighterProperty).value;
+          targetHighlighterEffect.property(highlighterProperty).setValue(sourceHighlighterPropertyValue);
+          sourceExpression = '';
+          sourceExpression += 'var offsetTime = comp("' + mainComp.name + '").layer("' + targetLayer.name + '").startTime;';
+          sourceExpression += 'comp("' + mainComp.name + '").layer("' + targetLayer.name + '").effect("' + newName + '")("' + highlighterProperty + '")';
+          sourceExpression += '.valueAtTime(time+offsetTime)';
+          sourceHighlighterEffect.property(highlighterProperty).expression = sourceExpression;
+          l--;
+        }
+      }
+      j--;
+    }
+    i--;
+  }
+};
+
+// Add functions to app.NF
+app.NF = Object.assign(app.NF, NF);
