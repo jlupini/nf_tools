@@ -1,15 +1,12 @@
 (function() {
-  #include "nf_runtimeLibraries.jsx";
+  #include "runtimeLibraries.jsx";
   var NF, _, getPanelUI, guideReference, main, panelTest, toggleGuideLayers, videoProject;
 
-  // Import Polyfills and nf namespace functions from nf_functions.jsx,
-  // then combine them with the global variables in the 'nf' object
   NF = app.NF;
 
-  // _ is temp storag0
   _ = {
     mainComp: app.project.activeItem,
-    debug: false // Change this flag when you need to add breakpoints to this as a dialog
+    debug: false
   };
 
   panelTest = this;
@@ -18,22 +15,16 @@
     return _.panel = getPanelUI();
   };
 
-  // Returns the panel if we're a UI panel, and creates a new Window if not
   getPanelUI = function() {
     var buttonGroup, buttonPanel, panel, panelType;
     if (_.panel != null) {
-      // NOTE: This could potentially cause a bug where the panel doesnt show up. Keep an eye on it
       return _.panel;
     }
     panel = void 0;
-    // check if this Obj is a panel (run from Window menu)
     if (panelTest instanceof Panel) {
-      // is a panel (called from Window menu)
       panel = panelTest;
       _.isUIPanel = true;
     } else {
-      // not a panel (called from File > Scripts > Run)
-      // FIXME: This may not work dimensions-wise. Need to come back & fix
       panelType = _.debug ? "dialog" : "palette";
       panel = new Window("dialog", "NF Controls");
       _.isUIPanel = false;
@@ -45,13 +36,11 @@
     buttonPanel.alignChildren = 'left';
     buttonPanel.margins.top = 16;
     buttonGroup = buttonPanel.add('group', void 0);
-    // _.fixExpressionErrorsButton = buttonGroup.add('button', undefined, 'Fix Expression Errors')
     _.toggleGuideLayersButton = buttonGroup.add('button', void 0, 'Toggle Guide Layers');
     _.toggleGuideLayersButton.onClick = function(w) {
       toggleGuideLayers(w);
       return this.active = false;
     };
-    // Layout + Resize handling
     panel.layout.layout(true);
     buttonGroup.minimumSize = buttonGroup.size;
     panel.layout.resize();
@@ -77,7 +66,6 @@
     }
   };
 
-  // Guide Reference Object
   guideReference = {
     compName: 'Guide Reference',
     layerName: 'Guide Visibility',
@@ -126,27 +114,22 @@
 
   toggleGuideLayers = function(w) {
     var guideEffect, guideLayer, i, j, k, len, len1, len2, pagePrecomps, partLayers, parts, ref, ref1, ref2, theLayer, thePageComp, thePartComp;
-    // First, check if this is an old project that needs to be upgraded
     if (guideReference.comp() == null) {
       alert("Upgrading Guide Layers!\nThis project uses an older guide layer toggle style. Upgrading to the new version - This may take a minute.");
       app.beginUndoGroup('Upgrading Guide Layers');
       guideReference.create();
-      // Get all the page precomps
       pagePrecomps = NF.Util.collectionToArray(videoProject.PDFPrecompsFolder().items);
-// Get all the Annotation Guide Layers
       for (i = 0, len = pagePrecomps.length; i < len; i++) {
         thePageComp = pagePrecomps[i];
         guideLayer = thePageComp.layers.byName("Annotation Guide");
-        // If it has a 'Guide layer' effect, delete it
         if (guideLayer != null) {
           guideEffect = (ref = guideLayer.property("Effects")) != null ? ref.property(guideReference.effectName) : void 0;
           if (guideEffect != null) {
             guideEffect.remove();
           }
-          guideLayer.property("Transform").property("Opacity").expression = `comp("${guideReference.compName}").layer("${guideReference.layerName}").enabled * 60`;
+          guideLayer.property("Transform").property("Opacity").expression = "comp(\"" + guideReference.compName + "\").layer(\"" + guideReference.layerName + "\").enabled * 60";
         }
       }
-      // Look for and delete all guide layer effects in part comps
       parts = NF.Util.toArr((ref1 = videoProject.partsFolder()) != null ? ref1.items : void 0);
       for (j = 0, len1 = parts.length; j < len1; j++) {
         thePartComp = parts[j];
@@ -162,7 +145,6 @@
       alert("All done upgrading!\nIf you see expression errors, it's possible that you have PDF Page Comps out of the PDF Precomps folder. If that happens, hit undo, then try moving them there and running the script again.");
       app.endUndoGroup();
     }
-    // Toggle State
     app.beginUndoGroup('Toggle Guide Layers');
     guideReference.setVisible(!guideReference.visible());
     return app.endUndoGroup();

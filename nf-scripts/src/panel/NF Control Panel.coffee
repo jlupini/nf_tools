@@ -1,4 +1,4 @@
-`#include "nf_runtimeLibraries.jsx"`
+`#include "runtimeLibraries.jsx"`
 
 # Import Polyfills and nf namespace functions from nf_functions.jsx,
 # then combine them with the global variables in the 'nf' object

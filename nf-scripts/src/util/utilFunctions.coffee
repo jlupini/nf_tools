@@ -1,4 +1,4 @@
-`#include "lib/extendscript.prototypes.js"`
+`#include "../lib/extendscript.prototypes.js"`
 NF = app.NF ? {}
 
 # enums
@@ -399,7 +399,7 @@ NF.Util.pageParent = (selectedLayer) ->
 # Disconnects ALL highlight controls in a given layer or array of highlight layers
 # DEPRECATE
 NF.Util.disconnectBubbleupsInLayers = (layers, names = null) ->
-  if not BE.isArray layers
+  if not layers instanceof Array
     layers = [layers]
 
   bubbleupLayers = []

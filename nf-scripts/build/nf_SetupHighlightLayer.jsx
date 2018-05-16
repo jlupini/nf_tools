@@ -1,5 +1,5 @@
 (function() {
-  #include "nf_runtimeLibraries.jsx";
+  #include "runtimeLibraries.jsx";
   var NF, _, createHighlighter, createShapeLayer, createSplitterEffect, fixExpressionProblems, getChoice, getColorExpression, getLineArray, indexOfClosestLineToPoint, initColorPresets, main, percentThroughLineAtPoint, splitHighlightAtPoint, splitHighlightLayer;
 
   NF = app.NF;

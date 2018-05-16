@@ -1,15 +1,15 @@
-`#include "nf_runtimeLibraries.jsx"`
+`#include "runtimeLibraries.jsx"`
 
 NF = app.NF
 _ =
-	mainComp: new NF.Models.NFPartComp(app.project.activeItem)
+	mainComp: new NFPartComp(app.project.activeItem)
 	undoGroupName: 'initialize Pages'
 	animationDuration: 1.85
 
 presentUI = ->
 	# Setup
 	if _.mainComp.selectedLayers().onlyContainsPageLayers()
-		_.selectedPages = _.mainComp.selectedPages()
+		_.selectedPages = _.mainComp.selectedPageLayers()
 	else
 		throw "Can't initialize non-page layers"
 
@@ -93,7 +93,7 @@ presentUI = ->
 		cancelButton.onClick = getCancelFunction w
 
 		okButton.onClick = ->
-			highlightChoices = new NF.Models.NFHighlightLayerCollection([])
+			highlightChoices = new NFHighlightLayerCollection([])
 			for highlight in allHighlights.layers
 				checkbox = highlightCheckboxes[highlight.name]
 				highlightChoices.addNFHighlightLayer highlight if checkbox.value is true

@@ -17,6 +17,8 @@ module.exports = (grunt) ->
         dest: 'build/'
         ext: '.jsx'
       compileAEScripts:
+        options:
+          bare: true
         expand: true
         flatten: true
         cwd: 'src/ae_scripts'
@@ -36,9 +38,15 @@ module.exports = (grunt) ->
           bare: yes
       compileObjectModel:
         options:
-          bare: yes
-        files:
-          'build/objectModel.jsx': 'src/class/objectModel/*.coffee'
+          bare: true
+        expand: true
+        flatten: false
+        cwd: 'src/class'
+        src: ['superclasses/*', 'subclasses/*']
+        dest: 'build/'
+        ext: '.jsx'
+        rename: (dest, src) ->
+          dest + "objectModel.jsx"
     copy:
       oldScripts:
         expand: true

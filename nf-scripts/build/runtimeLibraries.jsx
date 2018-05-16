@@ -8,7 +8,7 @@ if ((base = app.NF).Util == null) {
   base.Util = {};
 }
 
-#include "../lib/extendscripst.prototypes.js";
+#include "../lib/extendscript.prototypes.js";
 
 #include "utilFunctions.jsx";
 
