@@ -25,8 +25,9 @@ NFHighlightLayerCollection:: = Object.assign new NFLayerCollection(),
       @layers.push newLayer
     else
       throw "addNFHighlightLayer() can only be used to add NFHighlightLayers to an NFHighlightLayerCollection"
+  # The only type of AVLayer you can add to this object is a shapelayer
   addAVLayer: (newLayer) ->
-    if newLayer instanceof AVLayer
+    if newLayer instanceof ShapeLayer
       @layers.push new NFHighlightLayer(newLayer)
     else
       throw "addAVLayer() can only be used to add AVLayers to an NFHighlightLayerCollection"

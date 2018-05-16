@@ -25,7 +25,7 @@ NFComp.prototype = Object.assign(NFComp.prototype, {
   selectedPageLayers: function() {
     var i, layer, len, ref, selectedPageLayers;
     selectedPageLayers = new NFPageLayerCollection;
-    ref = this.selectedLayers();
+    ref = this.selectedLayers().layers;
     for (i = 0, len = ref.length; i < len; i++) {
       layer = ref[i];
       if (layer instanceof NFPageLayer) {
@@ -506,7 +506,7 @@ NFHighlightLayerCollection.prototype = Object.assign(new NFLayerCollection(), {
     }
   },
   addAVLayer: function(newLayer) {
-    if (newLayer instanceof AVLayer) {
+    if (newLayer instanceof ShapeLayer) {
       return this.layers.push(new NFHighlightLayer(newLayer));
     } else {
       throw "addAVLayer() can only be used to add AVLayers to an NFHighlightLayerCollection";

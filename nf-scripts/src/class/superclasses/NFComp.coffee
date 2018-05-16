@@ -19,7 +19,7 @@ NFComp:: = Object.assign NFComp::,
   # Throws an error if there are non-page layers selected
   selectedPageLayers: ->
     selectedPageLayers = new NFPageLayerCollection
-    for layer in @selectedLayers()
+    for layer in @selectedLayers().layers
       selectedPageLayers.addNFPageLayer(layer) if layer instanceof NFPageLayer
     return selectedPageLayers
   layerWithName: (name) ->
