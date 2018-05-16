@@ -1,4 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: objectModel.jsx</title>
 
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: objectModel.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
 /**
 Creates a new NFComp and sets its comp property.
 @class NFComp
@@ -54,7 +82,7 @@ NFComp = (function() {
     var i, layer, len, ref, selectedPageLayers;
     selectedPageLayers = new NFPageLayerCollection;
     ref = this.selectedLayers().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       layer = ref[i];
       if (layer instanceof NFPageLayer) {
         selectedPageLayers.addNFPageLayer(layer);
@@ -163,7 +191,7 @@ NFLayer = (function() {
     if (testLayer == null) {
       return false;
     }
-    return this.layer.index === testLayer.layer.index && this.layer.containingComp.id === testLayer.layer.containingComp.id;
+    return this.layer.index === testLayer.layer.index &amp;&amp; this.layer.containingComp.id === testLayer.layer.containingComp.id;
   };
 
 
@@ -188,7 +216,7 @@ NFLayer = (function() {
     var allLayers, childLayers, i, len, testLayer, theLayer;
     allLayers = this.containingComp().comp.layers.toArr();
     childLayers = [];
-    for (i = 0, len = allLayers.length; i < len; i++) {
+    for (i = 0, len = allLayers.length; i &lt; len; i++) {
       theLayer = allLayers[i];
       testLayer = new NFLayer(theLayer);
       if (testLayer.layer.parent === this.layer) {
@@ -283,7 +311,7 @@ NFLayer = Object.assign(NFLayer, {
     return tmpLayer.getSpecializedLayer();
   },
   isCompLayer: function(theLayer) {
-    return NFLayer.isAVLayer(theLayer) && theLayer.source instanceof CompItem;
+    return NFLayer.isAVLayer(theLayer) &amp;&amp; theLayer.source instanceof CompItem;
   },
 
   /**
@@ -317,7 +345,7 @@ NFLayerCollection = (function(superClass) {
     var i, len, theLayer;
     this.layers = layerArr != null ? layerArr : [];
     if (layerArr != null) {
-      for (i = 0, len = layerArr.length; i < len; i++) {
+      for (i = 0, len = layerArr.length; i &lt; len; i++) {
         theLayer = layerArr[i];
         if (!(theLayer instanceof NFLayer)) {
           throw "You can only add NFLayers to an NFLayerCollection";
@@ -331,7 +359,7 @@ NFLayerCollection = (function(superClass) {
     var i, infoString, len, ref, theLayer;
     infoString = "NFLayerCollection: [";
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       theLayer = ref[i];
       infoString += theLayer.getInfo() + ", ";
     }
@@ -349,7 +377,7 @@ NFLayerCollection = (function(superClass) {
   NFLayerCollection.prototype.onlyContainsPageLayers = function() {
     var i, len, ref, theLayer;
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       theLayer = ref[i];
       if (!(theLayer instanceof NFPageLayer)) {
         return false;
@@ -365,7 +393,7 @@ NFLayerCollection = (function(superClass) {
     }
     testID = this.layers[0].containingComp().id;
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       layer = ref[i];
       if (layer.containingComp().id !== testID) {
         return false;
@@ -375,7 +403,7 @@ NFLayerCollection = (function(superClass) {
   };
 
   NFLayerCollection.prototype.containingComp = function() {
-    if (this.inSameComp() && !this.isEmpty()) {
+    if (this.inSameComp() &amp;&amp; !this.isEmpty()) {
       return this.layers[0].containingComp();
     }
     return false;
@@ -411,9 +439,9 @@ NFLayerCollection = (function(superClass) {
     }
     topmostLayer = this.layers[0];
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       layer = ref[i];
-      if (layer.layer.index < topmostLayer.layer.index) {
+      if (layer.layer.index &lt; topmostLayer.layer.index) {
         topmostLayer = layer;
       }
     }
@@ -432,7 +460,7 @@ NFLayerCollection = (function(superClass) {
     var i, layer, len, ref;
     if (!this.isEmpty()) {
       ref = this.layers;
-      for (i = 0, len = ref.length; i < len; i++) {
+      for (i = 0, len = ref.length; i &lt; len; i++) {
         layer = ref[i];
         layer.setParent(newParent);
       }
@@ -500,7 +528,7 @@ NFLayerCollection = Object.assign(NFLayerCollection, {
     newArray = (function() {
       var i, len, results;
       results = [];
-      for (i = 0, len = arr.length; i < len; i++) {
+      for (i = 0, len = arr.length; i &lt; len; i++) {
         layer = arr[i];
         if (!NFLayer.isAVLayer(layer)) {
           throw "Cannot run collectionFromAVLayerArray() because not all layers provided are AVLayers";
@@ -589,7 +617,7 @@ NFPageItem.prototype = Object.assign(NFPageItem.prototype, {
     var highlightLayers, i, len, sourceLayers, theLayer;
     sourceLayers = NF.Util.collectionToArray(this.item.layers);
     highlightLayers = new NFHighlightLayerCollection();
-    for (i = 0, len = sourceLayers.length; i < len; i++) {
+    for (i = 0, len = sourceLayers.length; i &lt; len; i++) {
       theLayer = sourceLayers[i];
       if (NFHighlightLayer.isHighlightLayer(theLayer)) {
         highlightLayers.addAVLayer(theLayer);
@@ -723,12 +751,12 @@ NFHighlightLayer = (function(superClass) {
   };
 
   NFHighlightLayer.prototype.canBubbleUp = function() {
-    return !((this.bubbled && !this.broken) || (this.containingPageLayer == null));
+    return !((this.bubbled &amp;&amp; !this.broken) || (this.containingPageLayer == null));
   };
 
   NFHighlightLayer.prototype.bubbleUp = function() {
     var highlighterProperty, j, len, ref, results, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
-    if (this.bubbled && !this.broken) {
+    if (this.bubbled &amp;&amp; !this.broken) {
       throw "Cannot bubble highlight if already connected and not broken. Disconnect first";
     }
     if (this.containingPageLayer == null) {
@@ -741,7 +769,7 @@ NFHighlightLayer = (function(superClass) {
     targetComp = this.containingPageLayer.layer.containingComp;
     ref = NF.Util.highlighterProperties;
     results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len = ref.length; j &lt; len; j++) {
       highlighterProperty = ref[j];
       sourceValue = sourceEffect.property(highlighterProperty).value;
       targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
@@ -757,7 +785,7 @@ NFHighlightLayer = (function(superClass) {
     if (this.bubbled) {
       ref = NF.Util.highlighterProperties;
       results = [];
-      for (j = 0, len = ref.length; j < len; j++) {
+      for (j = 0, len = ref.length; j &lt; len; j++) {
         property = ref[j];
         expression = this.highlighterEffect.property(property).expression;
         results.push(this.highlighterEffect.property(property).expression = expression.replace(" NFPage", " [+]"));
@@ -773,7 +801,7 @@ NFHighlightLayer = (function(superClass) {
     }
     effect = this.highlighterEffect();
     propertyCount = effect != null ? effect.numProperties : void 0;
-    for (i = j = 1, ref1 = propertyCount; 1 <= ref1 ? j <= ref1 : j >= ref1; i = 1 <= ref1 ? ++j : --j) {
+    for (i = j = 1, ref1 = propertyCount; 1 &lt;= ref1 ? j &lt;= ref1 : j >= ref1; i = 1 &lt;= ref1 ? ++j : --j) {
       property = effect.property(i);
       property.expression = "";
     }
@@ -787,7 +815,7 @@ NFHighlightLayer = (function(superClass) {
 NFHighlightLayer = Object.assign(NFHighlightLayer, {
   isHighlightLayer: function(theLayer) {
     var ref;
-    return theLayer instanceof ShapeLayer && ((ref = theLayer.Effects.property(1)) != null ? ref.matchName : void 0) === "AV_Highlighter";
+    return theLayer instanceof ShapeLayer &amp;&amp; ((ref = theLayer.Effects.property(1)) != null ? ref.matchName : void 0) === "AV_Highlighter";
   }
 });
 
@@ -809,7 +837,7 @@ NFHighlightLayerCollection = (function(superClass) {
     var i, len, theLayer;
     NFLayerCollection.call(this, layerArr);
     if (layerArr != null) {
-      for (i = 0, len = layerArr.length; i < len; i++) {
+      for (i = 0, len = layerArr.length; i &lt; len; i++) {
         theLayer = layerArr[i];
         if (!(theLayer instanceof NFHighlightLayer)) {
           throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection";
@@ -823,7 +851,7 @@ NFHighlightLayerCollection = (function(superClass) {
     var i, infoString, len, ref, theLayer;
     infoString = "NFHighlightLayerCollection: [";
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       theLayer = ref[i];
       infoString += theLayer.getInfo() + ", ";
     }
@@ -858,7 +886,7 @@ NFHighlightLayerCollection = (function(superClass) {
     var i, len, nameArr, ref, theLayer;
     nameArr = [];
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       theLayer = ref[i];
       nameArr.push(theLayer.name);
     }
@@ -869,7 +897,7 @@ NFHighlightLayerCollection = (function(superClass) {
     var highlight, i, len, ref, results;
     ref = this.layers;
     results = [];
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       highlight = ref[i];
       results.push(highlight.disconnect());
     }
@@ -880,7 +908,7 @@ NFHighlightLayerCollection = (function(superClass) {
     var highlight, i, len, ref, results;
     ref = this.layers;
     results = [];
-    for (i = 0, len = ref.length; i < len; i++) {
+    for (i = 0, len = ref.length; i &lt; len; i++) {
       highlight = ref[i];
       results.push(highlight.bubbleUp());
     }
@@ -897,7 +925,7 @@ NFHighlightLayerCollection = Object.assign(NFHighlightLayerCollection, {
     newArray = (function() {
       var i, len, results;
       results = [];
-      for (i = 0, len = arr.length; i < len; i++) {
+      for (i = 0, len = arr.length; i &lt; len; i++) {
         layer = arr[i];
         results.push(newLayer = new NFHighlightLayer(layer));
       }
@@ -987,9 +1015,9 @@ NFPageLayer = (function(superClass) {
       var i, len, ref, results;
       ref = this.highlights().layers;
       results = [];
-      for (i = 0, len = ref.length; i < len; i++) {
+      for (i = 0, len = ref.length; i &lt; len; i++) {
         highlight = ref[i];
-        results.push(highlight.bubbled && highlight.connectedPageLayer.sameLayerAs(this));
+        results.push(highlight.bubbled &amp;&amp; highlight.connectedPageLayer.sameLayerAs(this));
       }
       return results;
     }).call(this)) {
@@ -1009,7 +1037,7 @@ NFPageLayer = (function(superClass) {
       if (this.bubbledHighlights.count() > 0) {
         ref = this.bubbledHighlights.layers;
         results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
+        for (i = 0, len = ref.length; i &lt; len; i++) {
           highlight = ref[i];
           results.push(highlight.fixExpressionAfterInit());
         }
@@ -1074,7 +1102,7 @@ NFPageLayer = (function(superClass) {
 
 NFPageLayer = Object.assign(NFPageLayer, {
   isPageLayer: function(theLayer) {
-    return NFLayer.isCompLayer(theLayer) && theLayer.source.name.indexOf("NFPage") >= 0;
+    return NFLayer.isCompLayer(theLayer) &amp;&amp; theLayer.source.name.indexOf("NFPage") >= 0;
   }
 });
 
@@ -1096,7 +1124,7 @@ NFPageLayerCollection = (function(superClass) {
     var j, len, theLayer;
     NFLayerCollection.call(this, layerArr);
     if (layerArr != null) {
-      for (j = 0, len = layerArr.length; j < len; j++) {
+      for (j = 0, len = layerArr.length; j &lt; len; j++) {
         theLayer = layerArr[j];
         if (!(theLayer instanceof NFPageLayer)) {
           throw "You can only add NFPageLayers to an NFPageLayerCollection";
@@ -1110,7 +1138,7 @@ NFPageLayerCollection = (function(superClass) {
     var infoString, j, len, ref, theLayer;
     infoString = "NFPageLayerCollection: [";
     ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len = ref.length; j &lt; len; j++) {
       theLayer = ref[j];
       infoString += theLayer.getInfo() + ", ";
     }
@@ -1142,11 +1170,11 @@ NFPageLayerCollection = (function(superClass) {
     highlightArray = [];
     containingLayerArray = [];
     ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len = ref.length; j &lt; len; j++) {
       theLayer = ref[j];
       if (theLayer instanceof NFPageLayer) {
         ref1 = theLayer.highlights().layers;
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
+        for (k = 0, len1 = ref1.length; k &lt; len1; k++) {
           highlight = ref1[k];
           highlightArray.push(highlight);
           containingLayerArray.push(theLayer);
@@ -1157,7 +1185,7 @@ NFPageLayerCollection = (function(superClass) {
     if (highlights.isEmpty()) {
       return highlights;
     }
-    for (i = l = 0, ref2 = highlights.count() - 1; 0 <= ref2 ? l <= ref2 : l >= ref2; i = 0 <= ref2 ? ++l : --l) {
+    for (i = l = 0, ref2 = highlights.count() - 1; 0 &lt;= ref2 ? l &lt;= ref2 : l >= ref2; i = 0 &lt;= ref2 ? ++l : --l) {
       highlights.layers[i].containingPageLayer = containingLayerArray[i];
     }
     return highlights;
@@ -1170,7 +1198,7 @@ NFPageLayerCollection = (function(superClass) {
     }
     testNumber = this.layers[0].getPDFNumber();
     ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len = ref.length; j &lt; len; j++) {
       layer = ref[j];
       if (layer.getPDFNumber() !== testNumber) {
         return false;
@@ -1187,7 +1215,7 @@ NFPageLayerCollection = (function(superClass) {
     var j, len, page, ref, results;
     ref = this.layers;
     results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len = ref.length; j &lt; len; j++) {
       page = ref[j];
       results.push(page.init());
     }
@@ -1198,7 +1226,7 @@ NFPageLayerCollection = (function(superClass) {
     var j, len, page, ref, results;
     ref = this.layers;
     results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len = ref.length; j &lt; len; j++) {
       page = ref[j];
       results.push(page.initTransforms());
     }
@@ -1215,7 +1243,7 @@ NFPageLayerCollection = Object.assign(NFPageLayerCollection, {
     newArray = (function() {
       var j, len, results;
       results = [];
-      for (j = 0, len = arr.length; j < len; j++) {
+      for (j = 0, len = arr.length; j &lt; len; j++) {
         layer = arr[j];
         newLayer = new NFLayer(layer);
         results.push(newLayer.getSpecializedLayer());
@@ -1280,7 +1308,7 @@ NFPaperParentLayer = (function(superClass) {
 
 NFPaperParentLayer = Object.assign(NFPaperParentLayer, {
   isPaperParentLayer: function(layer) {
-    return layer.nullLayer && layer.name.indexOf('PDF' >= 0);
+    return layer.nullLayer &amp;&amp; layer.name.indexOf('PDF' >= 0);
   },
   getPaperParentNameForPageLayer: function(pageLayer) {},
   getPaperParentLayerForPageLayers: function(pageLayer) {
@@ -1325,3 +1353,26 @@ NFPartComp = (function(superClass) {
   return NFPartComp;
 
 })(NFComp);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="NFComp.html">NFComp</a></li><li><a href="NFLayer.html">NFLayer</a></li><li><a href="NFLayerCollection.html">NFLayerCollection</a></li><li><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed May 16 2018 15:22:55 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

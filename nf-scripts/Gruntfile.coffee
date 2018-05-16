@@ -3,6 +3,11 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     clean: ['build/*']
+    jsdoc:
+      dist:
+        src: ['build/objectModel.jsx']
+        options:
+          destination: 'doc'
     coffeelinter:
       options:
         reportConsole: yes
@@ -57,12 +62,16 @@ module.exports = (grunt) ->
       scripts:
         files: 'src/**'
         tasks: ['coffee', 'copy']
+      scriptsDocs:
+        files: 'src/**'
+        tasks: ['coffee', 'copy', 'jsdoc']
 
   grunt.loadNpmTasks 'grunt-coffeelinter'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-jsdoc'
 
   # Default task(s).
   grunt.registerTask 'default', ['coffee', 'copy']

@@ -1,5 +1,5 @@
 #include "runtimeLibraries.jsx";
-var NF, _, getCancelFunction, initWithOptions, nullName, nullify, presentUI, topmostLayer, zoom;
+var NF, _, getCancelFunction, initWithOptions, nullName, nullify, presentUI, zoom;
 
 NF = app.NF;
 
@@ -110,7 +110,7 @@ presentUI = function() {
           _.selectedPages.initLayerTransforms();
         }
         _.selectedPages.initLayers();
-        _.selectedPages.connectToParents();
+        _.selectedPages.newPaperParentLayer();
       }
       highlightChoices.disconnectHighlights();
       highlightChoices.bubbleUpHighlights();
@@ -239,20 +239,6 @@ nullify = function(selectedLayers, nullName) {
     i++;
   }
   return newNull;
-};
-
-topmostLayer = function(layers) {
-  var i, lowestIndex, thisLayer;
-  lowestIndex = layers[0].index;
-  thisLayer = void 0;
-  i = 1;
-  while (i < layers.length) {
-    if (layers[i].index < lowestIndex) {
-      lowestIndex = layers[i].index;
-    }
-    i++;
-  }
-  return app.project.activeItem.layer(lowestIndex);
 };
 
 app.beginUndoGroup(_.undoGroupName);

@@ -102,7 +102,7 @@ presentUI = ->
 				_.selectedPages.initLayerTransforms() if initLayerTransformsCheckbox.value is yes
 				_.selectedPages.initLayers()
 
-				_.selectedPages.connectToParents()
+				_.selectedPages.newPaperParentLayer()
 
 			highlightChoices.disconnectHighlights()
 			highlightChoices.bubbleUpHighlights()
@@ -268,15 +268,15 @@ nullify = (selectedLayers, nullName) ->
 		i++
 	newNull
 
-topmostLayer = (layers) ->
-	lowestIndex = layers[0].index
-	thisLayer = undefined
-	i = 1
-	while i < layers.length
-		if layers[i].index < lowestIndex
-			lowestIndex = layers[i].index
-		i++
-	app.project.activeItem.layer lowestIndex
+# topmostLayer = (layers) ->
+# 	lowestIndex = layers[0].index
+# 	thisLayer = undefined
+# 	i = 1
+# 	while i < layers.length
+# 		if layers[i].index < lowestIndex
+# 			lowestIndex = layers[i].index
+# 		i++
+# 	app.project.activeItem.layer lowestIndex
 
 app.beginUndoGroup _.undoGroupName
 

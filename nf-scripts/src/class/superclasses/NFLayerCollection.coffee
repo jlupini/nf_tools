@@ -1,11 +1,14 @@
-###
-#    NF LAYER COLLECTION
-#
-#    A collection of NF Layers
-#
+###*
+Creates a new NFLayerCollection from an array of [NFLayers]{@link NFLayer}
+@class NFLayerCollection
+@classdesc NF Wrapper object for a Array that contains NFLayers
+@param {Array} layerArr - the array with [NFLayers]{@link NFLayer} to initialize the collection with
+@property {Array} layers - the array of [NFLayers]{@link NFLayer} in the collection
+@throws Will throw an error if array contains non-{@link NFLayer} objects
 ###
 class NFLayerCollection extends Array
   constructor: (layerArr) ->
+    # TODO: accept an array of AVLayers here as well
     @layers = layerArr ? []
     if layerArr?
       for theLayer in layerArr
@@ -47,31 +50,70 @@ class NFLayerCollection extends Array
   # Returns true if the collection is empty
   isEmpty: ->
     return @count() is 0
-  # Creates a new null parent to all the layers, positioned above the one with the lowest index. Will override previous parenting
+
+  ###*
+  Gets the topmost NFLayer in this collection
+  @memberof NFLayerCollection
+  @returns {NFLayer | null} the topmost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+  ###
+  getTopmostLayer: ->
+    return null if @isEmpty()
+    throw "Can't get topmost layer of layers in different comps" unless @inSameComp()
+    topmostLayer = @layers[0]
+    for layer in @layers
+      topmostLayer = layer if layer.layer.index < topmostLayer.layer.index
+    return topmostLayer
+
+  ###*
+  Sets all member layers' parents to a given {@link NFLayer} or null
+  @memberof NFLayerCollection
+  @param {NFLayer | null} newParent - the new parent for the member layers
+  @returns {NFLayerCollection} self
+  ###
+  setParents: (newParent) ->
+    unless @isEmpty()
+      for layer in @layers
+        layer.setParent(newParent)
+    return @
+
+  ###*
+  Creates a new null parent to all the layers in the collection, positioned above the one with the lowest index. Will override previous parenting.
+  @memberof NFLayerCollection
+  @returns {NFLayer} the new null NFLayer
+  ###
   nullify: ->
     throw "Cannot nullify layers in different compositions at the same time" unless @inSameComp()
     throw "Cannot nullify without a given layer" if @isEmpty()
-    newNull = @containingComp.addNull()
-    # FIXME: PICKUP: here and add addNull() to NFComp
+    newNull = @containingComp().addNull()
+    @setParents(newNull)
+    newNull.moveBefore @getTopmostLayer().layer
+    return newNull
 
-    # newNull = _.mainComp.layers.addNull()
-  	# newNull.name = nullName
-  	# newNull.moveBefore topmostLayer(selectedLayers)
-  	# thisLayer = undefined
-  	# #$.write("new null: "+ newNull.name + "\n");
-  	# i = 1
-  	# while i <= selectedLayers.length
-  	# 	thisLayer = selectedLayers[i - 1]
-  	# 	thisLayer.parent = newNull
-  	# 	i++
-  	# newNull
+  ###*
+  Creates a new {@link NFPaperParentLayer} from this collection
+  @memberof NFLayerCollection
+  @returns {NFPaperParentLayer} the new Paper Parent layer
+  @throws Throw error if this collection is empty
+  @throws Throw error if this collection contains layers from different PDFs
+  ###
+  newPaperParentLayer: ->
+    throw "Can't create a paper parent layer with no target layers" if @isEmpty()
+    throw "Can't create a single paper parent layer for page layers from different PDFs" unless @fromSamePDF()
+    newPaperParent = new NFPaperParentLayer(@nullify()).setName()
+    return newPaperParent
 
-# Class Methods
+###*
+Class Method which returns a new NFLayerCollection from an array of AVLayers
+@memberof NFLayerCollection
+@returns {NFLayerCollection} the new layer collection
+@throws Throw error if the given array doesn't contain only AVLayers
+###
 NFLayerCollection = Object.assign NFLayerCollection,
   # Returns a new instance from an array of AVLayers
   collectionFromAVLayerArray: (arr) ->
-    # FIXME: Should throw error if each layer isnt an AVLayer
     newArray = for layer in arr
+      throw "Cannot run collectionFromAVLayerArray() because not all layers provided are AVLayers" unless NFLayer.isAVLayer layer
       newLayer = new NFLayer(layer)
       newLayer.getSpecializedLayer()
     return new NFLayerCollection newArray

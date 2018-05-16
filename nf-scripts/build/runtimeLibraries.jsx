@@ -10,6 +10,8 @@ if ((base = app.NF).Util == null) {
 
 #include "../lib/extendscript.prototypes.js";
 
+#include "extensions.jsx";
+
 #include "utilFunctions.jsx";
 
 #include "objectModel.jsx";

@@ -78,9 +78,6 @@ class NFPageLayer extends NFLayer
   # Returns the page number as a String
   getPageNumber: ->
     @pageItem.getPageNumber()
-  # Returns the containing NFPartComp
-  containingComp: ->
-    return new NFComp @layer.containingComp
 # Class Methods
 NFPageLayer = Object.assign NFPageLayer,
   # Returns true if the given AVLayer is a Page Layer

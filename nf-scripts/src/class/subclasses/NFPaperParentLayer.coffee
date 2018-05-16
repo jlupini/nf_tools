@@ -1,7 +1,11 @@
-###
-#    NF PAPER PARENT LAYER
-#
-#    (inherits from NFLayer)
+###*
+Creates a new NFPaperParentLayer from a given null AVLayer
+@class NFPaperParentLayer
+@classdesc Subclass of {@link NFLayer} for the parent null layer of a group of page layers from the same PDF
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
+@throws Will throw an error if not given an AVLayer that's a null layer or an NFLayer with a similar layer property
 ###
 class NFPaperParentLayer extends NFLayer
   constructor: (layer) ->
@@ -11,25 +15,20 @@ class NFPaperParentLayer extends NFLayer
   # MARK: Instance Methods
   getInfo: ->
     return "NFPaperParentLayer: '#{@layer.name}'"
-  # Returns an array of child NFLayers
-  getChildren: ->
-    # Look for all layers in the comp this layer is in whose parents are this layer
-    allLayers = @layer.containingComp.layers
-    childLayers = []
 
-    i = 1
-    while i <= allLayers.length
-      testLayer = new NFLayer allLayers[i]
+  ###*
+  Sets the name of this paper parent layer to the correct name.
+  @memberof NFPaperParentLayer
+  @returns {NFPaperParentLayer} self
+  @throws Throws error if there are no child layers
+  ###
+  setName: ->
+    children = @getChildren()
+    throw "Cannot set paper parent layer name because it has no child layers" if children.isEmpty()
+    newName = 'PDF ' + children.layers[0].getPDFNumber()
+    @layer.name = newName
+    return @
 
-      # If this layer is the parent...
-      if testLayer.layer.parent is @layer
-
-        # Convert to page, image or gaussy if it's a specialized layer
-        testLayer = testLayer.getSpecializedLayer()
-        childLayers.push testLayer
-      i++
-
-    return childLayers
 # Class Methods
 NFPaperParentLayer = Object.assign NFPaperParentLayer,
   # Tests an AV layer to see if it can be a paper parent Layer
@@ -37,17 +36,10 @@ NFPaperParentLayer = Object.assign NFPaperParentLayer,
     return layer.nullLayer and layer.name.indexOf 'PDF' >= 0
   # Returns the name string for the paper parent for a given layer
   getPaperParentNameForPageLayer: (pageLayer) ->
-    return 'PDF ' + pageLayer.getPDFNumber()
+
   # Returns the paperParentLayer for a given page layer
   getPaperParentLayerForPageLayers: (pageLayer) ->
     paperParent = pageLayer.getPaperParentLayer()
     unless paperParent?
       paperParent = pageLayer.containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForPageLayer(pageLayer))
     return paperParent
-  # Creates a new paperParentLayer for a given collection of Page Layers
-  newPaperParentLayerForPageLayers: (pageLayers) ->
-    throw "Can't create a paper parent layer with no target layers" unless pageLayers? and pageLayers.count() > 0
-    throw "Can only create a new paper parent layer from a NFPageLayerCollection" unless pageLayers instanceof NFPageLayerCollection
-    throw "Can't create a single paper parent layer for page layers from different PDFs" unless pageLayers.fromSamePDF()
-    # FIXME: Pickup in NFLayerCollection.nullify() - this is for NFPageLayerCollection's method connectToParents()
-    name  = NFPaperParentLayer.getPaperParentNameForPageLayer pageLayer

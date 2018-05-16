@@ -26,7 +26,7 @@ class NFPageLayerCollection extends NFLayerCollection
     else
       throw "addNFPageLayer() can only be used to add NFPageLayers to an NFPageLayerCollection"
   addAVLayer: (newLayer) ->
-    if newLayer instanceof AVLayer
+    if NFLayer.isAVLayer newLayer
       @layers.push new NFPageLayer(newLayer)
     else
       throw "addAVLayer() can only be used to add AVLayers to an NFPageLayerCollection"
@@ -59,16 +59,6 @@ class NFPageLayerCollection extends NFLayerCollection
     page.init() for page in @layers
   initLayerTransforms: ->
     page.initTransforms() for page in @layers
-  connectToParents: ->
-    for pageLayer in @layers
-      paperParentLayer = pageLayer.containingComp()
-      # get PDF #
-      # get layer name
-      # Look for layer
-      # if it doesn't exist
-        # make it and put it above the pageLayer
-      # if it does
-        # put this pagelayer below it
 # Class Methods
 NFPageLayerCollection = Object.assign NFPageLayerCollection,
   # Returns a new instance from an array of AVLayers
