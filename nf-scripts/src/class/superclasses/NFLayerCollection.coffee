@@ -4,13 +4,14 @@
 #    A collection of NF Layers
 #
 ###
-NFLayerCollection = (layerArr) ->
-  @layers = layerArr ? []
-  if layerArr?
-    for theLayer in layerArr
-      throw "You can only add NFLayers to an NFLayerCollection" unless theLayer instanceof NFLayer
-  @
-NFLayerCollection:: = Object.assign NFLayerCollection::,
+class NFLayerCollection extends Array
+  constructor: (layerArr) ->
+    @layers = layerArr ? []
+    if layerArr?
+      for theLayer in layerArr
+        throw "You can only add NFLayers to an NFLayerCollection" unless theLayer instanceof NFLayer
+    @
+  # MARK: Instance Methods
   getInfo: ->
     infoString = "NFLayerCollection: ["
     for theLayer in @layers

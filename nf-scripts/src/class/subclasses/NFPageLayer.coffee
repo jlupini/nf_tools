@@ -4,14 +4,13 @@
 #    (Subclass of NFLayer)
 #
 ###
-NFPageLayer = (layer) ->
-  NFLayer.call(this, layer)
-  throw "Cannot create an NFPageLayer from a layer without a source" unless layer.source?
-  @pageItem = new NFPageItem layer.source
-  @
-# Initialize the prototype as a new instance of the superclass, then add instance methods
-# Instance Methods
-NFPageLayer:: = Object.assign new NFLayer(),
+class NFPageLayer extends NFLayer
+  constructor: (layer) ->
+    NFLayer.call(this, layer)
+    throw "Cannot create an NFPageLayer from a layer without a source" unless layer.source?
+    @pageItem = new NFPageItem layer.source
+    @
+  # MARK: Instance Methods
   getInfo: ->
     return "NFPageLayer: '#{@layer.name}'"
   # Returns the paper parent layer. If the parent exists but is not attached, this will not return it.

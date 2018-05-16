@@ -2,11 +2,11 @@
 #    NF LAYER
 #
 ###
-NFLayer = (layer) ->
-  @layer = layer
-  @
-# Instance Methods
-NFLayer:: = Object.assign NFLayer::,
+class NFLayer
+  constructor: (layer) ->
+    @layer = layer
+    @
+  # MARK: Instance Methods
   isPageLayer: ->
     return NFPageLayer.isPageLayer(@layer)
   isNullLayer: ->

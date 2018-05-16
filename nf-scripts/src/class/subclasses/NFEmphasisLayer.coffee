@@ -4,9 +4,10 @@
 #    (Subclass of NFLayer)
 #
 ###
-NFEmphasisLayer = (layer) ->
-  NFLayer.call(this, layer)
-  @
-NFEmphasisLayer:: = Object.assign new NFLayer(),
+class NFEmphasisLayer extends NFLayer
+  constructor: (layer) ->
+    NFLayer.call(this, layer)
+    @
+  # MARK: Instance Methods
   getInfo: ->
     return "NFEmphasisLayer: '#{@layer.name}'"

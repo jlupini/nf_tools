@@ -4,11 +4,12 @@
 #    The composition page item
 #
 ###
-NFPageItem = (item) ->
-  # FIXME: Check to make sure we've been given a valid item and throw error if not
-  @item = item
-  @name = @item.name
-  @
+class NFPageItem
+  constructor: (item) ->
+    # FIXME: Check to make sure we've been given a valid item and throw error if not
+    @item = item
+    @name = @item.name
+    @
 # Instance Methods
 NFPageItem:: = Object.assign NFPageItem::,
   getInfo: ->

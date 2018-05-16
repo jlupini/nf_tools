@@ -4,14 +4,20 @@
 #    A collection of NF Page Layers
 #
 ###
-NFPageLayerCollection = (layerArr) ->
-  NFLayerCollection.call(this, layerArr)
-  if layerArr?
-    for theLayer in layerArr
-      throw "You can only add NFPageLayers to an NFPageLayerCollection" unless theLayer instanceof NFPageLayer
-  @
-# Instance Methods
-NFPageLayerCollection:: = Object.assign new NFLayerCollection(),
+class NFPageLayerCollection extends NFLayerCollection
+  constructor: (layerArr) ->
+    NFLayerCollection.call(@, layerArr)
+    if layerArr?
+      for theLayer in layerArr
+        throw "You can only add NFPageLayers to an NFPageLayerCollection" unless theLayer instanceof NFPageLayer
+
+    @
+  # MARK: Instance Methods
+  getInfo: ->
+    infoString = "NFPageLayerCollection: ["
+    for theLayer in @layers
+      infoString += theLayer.getInfo() + ", "
+    infoString += "]"
   addNFLayer: (newLayer) ->
     @addNFPageLayer(newLayer)
   addNFPageLayer: (newLayer) ->

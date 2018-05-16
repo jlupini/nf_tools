@@ -4,14 +4,14 @@
 #    A composition
 #
 ###
-NFComp = (comp) ->
-  # FIXME: Check to make sure we've been given a valid comp and throw error if not
-  @comp = comp
-  @name = @comp?.name
-  @id = @comp?.id
-  @
-# Instance Methods
-NFComp:: = Object.assign NFComp::,
+class NFComp
+  constructor: (comp) ->
+    # FIXME: Check to make sure we've been given a valid comp and throw error if not
+    @comp = comp
+    @name = @comp?.name
+    @id = @comp?.id
+    @
+  # MARK: Instance Methods
   getInfo: ->
     return "NFComp: '#{@name}'"
   selectedLayers: ->

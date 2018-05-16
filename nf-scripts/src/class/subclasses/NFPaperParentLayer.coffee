@@ -3,12 +3,12 @@
 #
 #    (inherits from NFLayer)
 ###
-NFPaperParentLayer = (layer) ->
-  NFLayer.call(this, layer)
-  throw "Can only create a NFPaperParentLayer from a null layer" unless @layer.nullLayer
-  @
-# Instance Methods
-NFPaperParentLayer:: = Object.assign new NFLayer(),
+class NFPaperParentLayer extends NFLayer
+  constructor: (layer) ->
+    NFLayer.call(this, layer)
+    throw "Can only create a NFPaperParentLayer from a null layer" unless @layer.nullLayer
+    @
+  # MARK: Instance Methods
   getInfo: ->
     return "NFPaperParentLayer: '#{@layer.name}'"
   # Returns an array of child NFLayers

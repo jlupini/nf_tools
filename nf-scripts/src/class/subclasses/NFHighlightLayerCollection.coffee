@@ -4,15 +4,15 @@
 #    A collection of NF Highlight Layers
 #
 ###
-NFHighlightLayerCollection = (layerArr) ->
-  NFLayerCollection.call(this, layerArr)
-  if layerArr?
-    for theLayer in layerArr
-      throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NFHighlightLayer
+class NFHighlightLayerCollection extends NFLayerCollection
+  constructor: (layerArr) ->
+    NFLayerCollection.call(@, layerArr)
+    if layerArr?
+      for theLayer in layerArr
+        throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NFHighlightLayer
 
-  @
-# Instance Methods
-NFHighlightLayerCollection:: = Object.assign new NFLayerCollection(),
+    @
+  # MARK: Instance Methods
   getInfo: ->
     infoString = "NFHighlightLayerCollection: ["
     for theLayer in @layers

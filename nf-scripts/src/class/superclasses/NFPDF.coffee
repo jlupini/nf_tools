@@ -4,8 +4,9 @@
 #    A collection of Page Items
 #
 ###
-NFPDF = (pageArr) ->
-  @pages = pageArr
+class NFPDF
+  constructor: (pageArr) ->
+    @pages = pageArr
 # Instance Methods
 NFPDF:: = Object.assign NFPDF::,
   getInfo: ->

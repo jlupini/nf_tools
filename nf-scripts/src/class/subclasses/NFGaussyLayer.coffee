@@ -4,10 +4,10 @@
 #    (Subclass of NFLayer)
 #
 ###
-NFGaussyLayer = (layer) ->
-  NFLayer.call(this, layer)
-  @
-# Instance Methods
-NFGaussyLayer:: = Object.assign new NFLayer(),
+class NFGaussyLayer extends NFLayer
+  constructor: (layer) ->
+    NFLayer.call(this, layer)
+    @
+  # MARK: Instance Methods
   getInfo: ->
     return "NFGaussyLayer: '#{@layer.name}'"

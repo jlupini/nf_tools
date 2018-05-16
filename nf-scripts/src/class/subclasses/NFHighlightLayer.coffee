@@ -4,14 +4,14 @@
 #    (inherits from NFLayer)
 #
 ###
-NFHighlightLayer = (layer) ->
-  NFLayer.call(this, layer)
-  unless NFHighlightLayer.isHighlightLayer(@layer)
-    throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
-  @updateProperties()
-  @
-# Instance Methods
-NFHighlightLayer:: = Object.assign new NFLayer(),
+class NFHighlightLayer extends NFLayer
+  constructor: (layer) ->
+    NFLayer.call(this, layer)
+    unless NFHighlightLayer.isHighlightLayer(@layer)
+      throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
+    @updateProperties()
+    @
+  # Instance Methods
   # Updates values of all Properties. Run after changing anything that buggers these up
   updateProperties: ->
     @name = @layer.name
