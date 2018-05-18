@@ -16,15 +16,48 @@ class NFLayer
       throw "Can only create a new NFLayer with a valid AVLayer or NFLayer object"
     @layer = layer
     @
+
   # MARK: Instance Methods
+  getInfo: ->
+    return "NFLayer: '#{@layer.name}'"
+
+  ###*
+  Checks if this layer is a valid page Layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid page layer
+  ###
   isPageLayer: ->
     return NFPageLayer.isPageLayer(@layer)
+
+  ###*
+  Checks if this layer is a null layer
+  @memberof NFLayer
+  @returns {boolean} if this is a null layer
+  ###
   isNullLayer: ->
     return @layer.nullLayer
+
+  ###*
+  Checks if this layer is a valid highlight layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid highlight layer
+  ###
   isHighlightLayer: ->
     return NFHighlightLayer.isHighlightLayer(@layer)
+
+  ###*
+  Checks if this layer is a valid paper parent layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid paper parent layer
+  ###
   isPaperParentLayer: ->
     return NFPaperParentLayer.isPaperParentLayer(@layer)
+
+  ###*
+  Returns a new layer of a specialized type for the contents of this layer
+  @memberof NFLayer
+  @returns {NFPageLayer | NFHighlightLayer | NFPaperParentLayer | NFLayer} the specialized layer or self if no specialized layer options
+  ###
   getSpecializedLayer: ->
     # FIXME: Also add cases for image layers, Gaussy layers, Emphasis Layers
     if @isPageLayer()
@@ -35,11 +68,20 @@ class NFLayer
       return new NFPaperParentLayer @layer
     else
       return @
-  getInfo: ->
-    return "NFLayer: '#{@layer.name}'"
+
+  ###*
+  Shorthand for the layer's index
+  @memberof NFLayer
+  @returns {int} the layer's index
+  ###
   index: ->
     return @layer.index
-  # Returns true if the layer has a null parent
+
+  ###*
+  Returns true if the layer has a null parent
+  @memberof NFLayer
+  @returns {boolean} Whether this layer has a parent which is a null layer
+  ###
   hasNullParent: ->
     if @layer.parent?
       return @layer.parent.nullLayer
@@ -49,8 +91,12 @@ class NFLayer
   getEffectWithName: (effectName) ->
     return @layer.Effects.property(effectName)
 
-  # Checks to see if a given NFLayer's layer is the same as this one's
-  # For example, an NFLayer and an NFPageLayer that refer to the same layer will return true
+  ###*
+  Checks to see if a given NFLayer's layer is the same as this one's
+  For example, an NFLayer and an NFPageLayer that refer to the same layer will return true
+  @memberof NFLayer
+  @returns {boolean} Whether both layers are the same layer
+  ###
   sameLayerAs: (testLayer) ->
     return no unless testLayer?
     return @layer.index == testLayer.layer.index and @layer.containingComp.id == testLayer.layer.containingComp.id
@@ -64,7 +110,7 @@ class NFLayer
     return new NFComp @layer.containingComp
 
   ###*
-  Returns an NFLayerCollection of child layers of this layer
+  Returns an NFLayerCollection of child layers of this layer as specialized layers
   @memberof NFLayer
   @returns {NFLayerCollection} the collection of child layers
   ###
@@ -268,12 +314,24 @@ class NFLayer
 
 # Class Methods
 NFLayer = Object.assign NFLayer,
-  # Returns a new Specialized NFLayer from an AVLayer
+
+  ###*
+  Class Method: Returns a new Specialized NFLayer from an AVLayer
+  @memberof NFLayer
+  @param {AVLayer} theLayer - the AVLayer to use
+  @returns {NFLayer | NFHighlightLayer | NFPageLayer | NFEmphasisLayer | NFGaussyLayer | NFImageLayer} the specialized layer
+  ###
   getSpecializedLayerFromAVLayer: (theLayer) ->
     throw "Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer" unless NFLayer.isAVLayer theLayer
     tmpLayer = new NFLayer theLayer
     return tmpLayer.getSpecializedLayer()
-  # Returns true if the given AVLayer is a comp layer
+
+  ###*
+  Class Method: Returns true if the given AVLayer is a comp layer
+  @memberof NFLayer
+  @param {AVLayer} theLayer - the AVLayer to check
+  @returns {boolean} whether or not the AVLayer is a comp
+  ###
   isCompLayer: (theLayer) ->
     return NFLayer.isAVLayer(theLayer) and theLayer.source instanceof CompItem
 

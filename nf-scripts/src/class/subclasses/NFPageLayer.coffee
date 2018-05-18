@@ -44,18 +44,21 @@ class NFPageLayer extends NFLayer
     return @pageItem.highlights()
   # Returns NFHighlightLayerCollection of all highlights bubbled onto this page layer
   bubbledHighlights: ->
-    bubbledHighlights = highlight if highlight.bubbled and highlight.connectedPageLayer.sameLayerAs(@) for highlight in @highlights().layers
+    bubbledHighlights = []
+    for highlight in @highlights().layers
+      bubbledHighlights.push highlight if highlight.bubbled and highlight.connectedPageLayer?.sameLayerAs(@)
     return new NFHighlightLayerCollection(bubbledHighlights)
   # Returns whether or not the page has been initted with the below methods
   isInitted: ->
-    return @layer.name.indexOf "[+]"
+    return @layer.name.indexOf("[+]") >= 0
   # Changes the page name to mark the page layer as initted, and updates bubbled highlights
   markInitted: ->
     unless @isInitted()
-      @layer.name.replace " NFPage", " [+]"
-      if @bubbledHighlights.count() > 0
-        for highlight in @bubbledHighlights.layers
-          highlight.fixExpressionAfterInit()
+      bubbledHighlights = @bubbledHighlights()
+      if bubbledHighlights.count() > 0
+        bubbledHighlights.fixExpressionsAfterInit()
+      @layer.name = @layer.name.replace " NFPage", " [+]"
+      bubbledHighlights.resetExpressionErrors()
   # Adds the non-transform init properties (dropshadow, motion blur, etc)
   init: ->
     @layer.motionBlur = true

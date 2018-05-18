@@ -80,8 +80,15 @@ class NFHighlightLayer extends NFLayer
   fixExpressionAfterInit: ->
     if @bubbled
       for property in NF.Util.highlighterProperties
-        expression = @highlighterEffect.property(property).expression
-        @highlighterEffect.property(property).expression = expression.replace " NFPage", " [+]"
+        expression = @highlighterEffect().property(property).expression
+        @highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]")
+  # Attempt to clear expresssion errors
+  resetExpressionErrors: ->
+    if @bubbled
+      for property in NF.Util.highlighterProperties
+        expression = @highlighterEffect().property(property).expression
+        @highlighterEffect().property(property).expression = ""
+        @highlighterEffect().property(property).expression = expression
   # Disconnects bubbleups in this highlight layer
   disconnect: ->
     # Remove the bubbled up AV Highlighter Effect if it exists

@@ -43,6 +43,10 @@ class NFHighlightLayerCollection extends NFLayerCollection
     highlight.disconnect() for highlight in @layers
   bubbleUpHighlights: ->
     highlight.bubbleUp() for highlight in @layers
+  resetExpressionErrors: ->
+    highlight.resetExpressionErrors() for highlight in @layers
+  fixExpressionsAfterInit: ->
+    highlight.fixExpressionAfterInit() for highlight in @layers
 # Class Methods
 NFHighlightLayerCollection = Object.assign NFHighlightLayerCollection,
   # Returns a new instance from an array of AVLayers

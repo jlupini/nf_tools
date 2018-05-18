@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-		<title>LayerCollection</title>
+		<title>NFPaperLayerGroup</title>
 		<!--[if lt IE 9]>
 		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
@@ -80,8 +80,8 @@
 	</header>
 	<!-- end:navbar.hbs -->		<div class="page-header">
 			<div class="container">
-				<span class="kind">namespace</span>
-				<h1><span class="name">LayerCollection</span></h1>
+				<span class="kind">class</span>
+				<h1><span class="name">NFPaperLayerGroup</span></h1>
 			</div>
 		</div>
 	<div class="container content">
@@ -89,17 +89,67 @@
 			<div class="col-md-9 main-content">
 						<ol class="breadcrumb">
 							<li><a href="index.html">Home</a></li>
-							<li><a href="list_namespace.html">Namespaces</a></li>
-							<li class="active">LayerCollection</li>
+							<li><a href="list_class.html">Classes</a></li>
+							<li class="active">NFPaperLayerGroup</li>
 						</ol>
 					<section>
 							<dl class="symbol primary">
-								<dt class="symbol-title namespace collapsible-symbol expanded">
-			<h2 class="namespace"><span class="name">LayerCollection</span></h2>
+								<dt class="symbol-title class collapsible-symbol expanded">
+			<h2 class="class"><span class="signature-new">new&nbsp;</span><span class="name">NFPaperLayerGroup</span><span class="signature-params">( <span class="signature-param">paperParent</span>&nbsp;)</span><span class="signature-type"></span></h2>
 </dt>
-<dd class="symbol-details namespace  collapsible-symbol expanded" style="max-height: 9999px;">
+<dd class="symbol-details class  collapsible-symbol expanded" style="max-height: 9999px;">
 	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">The After Effects LayerCollection Class</div>
+			<div class="callout callout-primary"><h5>Description</h5>		<div class="description classdesc">An object that manages and manipulates a group of layers that are part of the same PDF</div>
+			</div>			<div class="callout callout-info">
+				<h5>Parameters</h5>
+				<table class="params table table-striped">
+					<thead>
+					<tr>
+							<th>Name</th>
+						<th>Type</th>
+						<th class="last">Description</th>
+					</tr>
+					</thead>
+					<tbody>
+						<tr>
+								<td><code>paperParent</code></td>
+							<td><span class="param-type"><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></span></td>
+							<td class="last">
+									the NFPaperParentLayer to create the group with
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="callout callout-info">
+				<h5>Properties</h5>
+				<table class="params table table-striped">
+					<thead>
+					<tr>
+							<th>Name</th>
+						<th>Type</th>
+						<th class="last">Description</th>
+					</tr>
+					</thead>
+					<tbody>
+						<tr>
+								<td><code>paperParent</code></td>
+							<td><span class="param-type"><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></span></td>
+							<td class="last">
+									the NFPaperParentLayer for the group
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
+							<div class="form-group">
+								<label class="col-sm-3 control-label exceptions-type"></label>
+								<div class="col-sm-9">
+									<div class="form-control-static exceptions-description">Will throw an error if not created with a valid NFPaperParentLayer object</div>
+								</div>
+							</div>
+					</form>
 			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
 			
 			
@@ -120,7 +170,7 @@
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Source</label>
 								<div class="col-sm-9">
-									<p class="form-control-static"><a href="extensions.jsx.html">extensions.jsx</a>, <a href="extensions.jsx.html#line-2">line 2</a></p>
+									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-1007">line 1007</a></p>
 								</div>
 							</div>
 			
@@ -136,16 +186,16 @@
 									<dl class="symbol">
 											<hr/>
 											<dt class="symbol-title function public collapsible-symbol">
-			<h4 id=".toArr" class="function public"><span class="signature-attribs">&lt;static> </span><span class="name">toArr</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{Array}</span></h4>
+			<h4 id="getChildren" class="function public"><span class="name">getChildren</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFLayerCollection.html">NFLayerCollection</a>}</span></h4>
 		</dt>
 <dd class="symbol-details function public  collapsible-symbol">
 	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Returns an Array of all the layers in this collection for easier manipulation</div>
+			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Gets all the NFLayers in the group</div>
 			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
 							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">Array</span></label>
+								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFLayerCollection.html">NFLayerCollection</a></span></label>
 								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the array created from this collection</div>
+									<div class="form-control-static returns-description">the layers</div>
 								</div>
 							</div>
 					</form>
@@ -169,7 +219,134 @@
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Source</label>
 								<div class="col-sm-9">
-									<p class="form-control-static"><a href="extensions.jsx.html">extensions.jsx</a>, <a href="extensions.jsx.html#line-7">line 7</a></p>
+									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-1036">line 1036</a></p>
+								</div>
+							</div>
+			
+			
+			
+			
+					</form>
+			</div>	</div>
+</dd>
+											<hr/>
+											<dt class="symbol-title function public collapsible-symbol">
+			<h4 id="getPages" class="function public"><span class="name">getPages</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFPageLayerCollection.html">NFPageLayerCollection</a>}</span></h4>
+		</dt>
+<dd class="symbol-details function public  collapsible-symbol">
+	<div class="symbol-details-inner">
+			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Gets all the NFPageLayers in the group</div>
+			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
+							<div class="form-group">
+								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFPageLayerCollection.html">NFPageLayerCollection</a></span></label>
+								<div class="col-sm-9">
+									<div class="form-control-static returns-description">the page layers</div>
+								</div>
+							</div>
+					</form>
+			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+							<!-- source -->
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Source</label>
+								<div class="col-sm-9">
+									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-1047">line 1047</a></p>
+								</div>
+							</div>
+			
+			
+			
+			
+					</form>
+			</div>	</div>
+</dd>
+											<hr/>
+											<dt class="symbol-title function public collapsible-symbol">
+			<h4 id="gatherLayers" class="function public"><span class="name">gatherLayers</span><span class="signature-params">( <span class="signature-param">layersToGather</span> [,&nbsp;<span class="signature-param">shouldParent</span>&nbsp;]&nbsp;)</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFPaperLayerGroup.html">NFPaperLayerGroup</a>}</span></h4>
+		</dt>
+<dd class="symbol-details function public  collapsible-symbol">
+	<div class="symbol-details-inner">
+			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Moves the given layers into the group and parents if indicated. Layers below
+			  the bottommost layer in the group will go at the bottom, and layers above the
+			  parent will go immediately below it.</div>
+			</div>			<div class="callout callout-info">
+				<h5>Parameters</h5>
+				<table class="params table table-striped">
+					<thead>
+					<tr>
+							<th>Name</th>
+						<th>Type</th>
+							<th>Attributes</th>
+							<th>Default</th>
+						<th class="last">Description</th>
+					</tr>
+					</thead>
+					<tbody>
+						<tr>
+								<td><code>layersToGather</code></td>
+							<td><span class="param-type"><a href="NFLayerCollection.html">NFLayerCollection</a></span></td>
+								<td class="attributes"></td>
+								<td></td>
+							<td class="last">
+									the layers to gather up
+							</td>
+						</tr>
+						<tr>
+								<td><code>shouldParent</code></td>
+							<td><span class="param-type">boolean</span></td>
+								<td class="attributes">&lt;optional&gt;<br/></td>
+								<td>true</td>
+							<td class="last">
+									whether or not to parent the new layers
+			  to the paper parent
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
+							<div class="form-group">
+								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFPaperLayerGroup.html">NFPaperLayerGroup</a></span></label>
+								<div class="col-sm-9">
+									<div class="form-control-static returns-description">self</div>
+								</div>
+							</div>
+					</form>
+			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+							<!-- source -->
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Source</label>
+								<div class="col-sm-9">
+									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-1073">line 1073</a></p>
 								</div>
 							</div>
 			

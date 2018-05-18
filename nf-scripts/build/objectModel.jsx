@@ -84,7 +84,7 @@ NFComp = (function() {
 
   /**
   Gets the Zoomer layer
-  @memberof NFPartComp
+  @memberof NFComp
   @returns {NFLayer | null} The zoomer NFLayer or null if it doesn't exist
    */
 
@@ -133,21 +133,60 @@ NFLayer = (function() {
     this;
   }
 
+  NFLayer.prototype.getInfo = function() {
+    return "NFLayer: '" + this.layer.name + "'";
+  };
+
+
+  /**
+  Checks if this layer is a valid page Layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid page layer
+   */
+
   NFLayer.prototype.isPageLayer = function() {
     return NFPageLayer.isPageLayer(this.layer);
   };
+
+
+  /**
+  Checks if this layer is a null layer
+  @memberof NFLayer
+  @returns {boolean} if this is a null layer
+   */
 
   NFLayer.prototype.isNullLayer = function() {
     return this.layer.nullLayer;
   };
 
+
+  /**
+  Checks if this layer is a valid highlight layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid highlight layer
+   */
+
   NFLayer.prototype.isHighlightLayer = function() {
     return NFHighlightLayer.isHighlightLayer(this.layer);
   };
 
+
+  /**
+  Checks if this layer is a valid paper parent layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid paper parent layer
+   */
+
   NFLayer.prototype.isPaperParentLayer = function() {
     return NFPaperParentLayer.isPaperParentLayer(this.layer);
   };
+
+
+  /**
+  Returns a new layer of a specialized type for the contents of this layer
+  @memberof NFLayer
+  @returns {NFPageLayer | NFHighlightLayer | NFPaperParentLayer | NFLayer} the specialized layer or self if no specialized layer options
+   */
 
   NFLayer.prototype.getSpecializedLayer = function() {
     if (this.isPageLayer()) {
@@ -161,13 +200,23 @@ NFLayer = (function() {
     }
   };
 
-  NFLayer.prototype.getInfo = function() {
-    return "NFLayer: '" + this.layer.name + "'";
-  };
+
+  /**
+  Shorthand for the layer's index
+  @memberof NFLayer
+  @returns {int} the layer's index
+   */
 
   NFLayer.prototype.index = function() {
     return this.layer.index;
   };
+
+
+  /**
+  Returns true if the layer has a null parent
+  @memberof NFLayer
+  @returns {boolean} Whether this layer has a parent which is a null layer
+   */
 
   NFLayer.prototype.hasNullParent = function() {
     if (this.layer.parent != null) {
@@ -183,6 +232,14 @@ NFLayer = (function() {
   NFLayer.prototype.getEffectWithName = function(effectName) {
     return this.layer.Effects.property(effectName);
   };
+
+
+  /**
+  Checks to see if a given NFLayer's layer is the same as this one's
+  For example, an NFLayer and an NFPageLayer that refer to the same layer will return true
+  @memberof NFLayer
+  @returns {boolean} Whether both layers are the same layer
+   */
 
   NFLayer.prototype.sameLayerAs = function(testLayer) {
     if (testLayer == null) {
@@ -204,7 +261,7 @@ NFLayer = (function() {
 
 
   /**
-  Returns an NFLayerCollection of child layers of this layer
+  Returns an NFLayerCollection of child layers of this layer as specialized layers
   @memberof NFLayer
   @returns {NFLayerCollection} the collection of child layers
    */
@@ -478,6 +535,13 @@ NFLayer = (function() {
 })();
 
 NFLayer = Object.assign(NFLayer, {
+
+  /**
+  Class Method: Returns a new Specialized NFLayer from an AVLayer
+  @memberof NFLayer
+  @param {AVLayer} theLayer - the AVLayer to use
+  @returns {NFLayer | NFHighlightLayer | NFPageLayer | NFEmphasisLayer | NFGaussyLayer | NFImageLayer} the specialized layer
+   */
   getSpecializedLayerFromAVLayer: function(theLayer) {
     var tmpLayer;
     if (!NFLayer.isAVLayer(theLayer)) {
@@ -486,6 +550,13 @@ NFLayer = Object.assign(NFLayer, {
     tmpLayer = new NFLayer(theLayer);
     return tmpLayer.getSpecializedLayer();
   },
+
+  /**
+  Class Method: Returns true if the given AVLayer is a comp layer
+  @memberof NFLayer
+  @param {AVLayer} theLayer - the AVLayer to check
+  @returns {boolean} whether or not the AVLayer is a comp
+   */
   isCompLayer: function(theLayer) {
     return NFLayer.isAVLayer(theLayer) && theLayer.source instanceof CompItem;
   },
@@ -542,13 +613,29 @@ NFLayerCollection = (function(superClass) {
     return infoString += "]";
   };
 
+
+  /**
+  Adds an NFLayer to this collection
+  @memberof NFLayerCollection
+  @param {NFLayer} newLayer - the layer to add
+  @returns {NFLayerCollection} self
+   */
+
   NFLayerCollection.prototype.addNFLayer = function(newLayer) {
     if (newLayer instanceof NFLayer) {
-      return this.layers.push(newLayer);
+      this.layers.push(newLayer);
     } else {
       throw "You can only add NFLayers to an NFLayerCollection";
     }
+    return this;
   };
+
+
+  /**
+  Returns true if the collection only contains NFPageLayers and no other types of NFLayers
+  @memberof NFLayerCollection
+  @returns {boolean} if the layers in this collection are all {@link NFPageLayer} objects
+   */
 
   NFLayerCollection.prototype.onlyContainsPageLayers = function() {
     var j, len, ref, theLayer;
@@ -561,6 +648,13 @@ NFLayerCollection = (function(superClass) {
     }
     return true;
   };
+
+
+  /**
+  Returns true if the layers in the collection are all in the same comp
+  @memberof NFLayerCollection
+  @returns {boolean} if the layers in this collection are all in the same containing comp
+   */
 
   NFLayerCollection.prototype.inSameComp = function() {
     var j, layer, len, ref, testID;
@@ -578,20 +672,49 @@ NFLayerCollection = (function(superClass) {
     return true;
   };
 
+
+  /**
+  Returns the containing comp for the layers, or null if #inSameComp is false
+  @memberof NFLayerCollection
+  @returns {NFComp | null} the containing comp
+   */
+
   NFLayerCollection.prototype.containingComp = function() {
     if (this.inSameComp() && !this.isEmpty()) {
       return this.layers[0].containingComp();
     }
-    return false;
+    return null;
   };
+
+
+  /**
+  Returns a new NFPageLayerCollection from this collection. Only call if you know
+  this collection only contains NFPageLayers
+  @memberof NFLayerCollection
+  @returns {NFPageLayerCollection} the new collection
+   */
 
   NFLayerCollection.prototype.getPageLayerCollection = function() {
     return new NFPageLayerCollection(this.layers);
   };
 
+
+  /**
+  Shortcut to access the number of layers in the collection
+  @memberof NFLayerCollection
+  @returns {int} the number of layers in the collection
+   */
+
   NFLayerCollection.prototype.count = function() {
     return this.layers.length;
   };
+
+
+  /**
+  True if the collection is empty
+  @memberof NFLayerCollection
+  @returns {boolean} whether or not the collection is empty
+   */
 
   NFLayerCollection.prototype.isEmpty = function() {
     return this.count() === 0;
@@ -717,15 +840,14 @@ NFLayerCollection = (function(superClass) {
 
 })(Array);
 
-
-/**
-Class Method which returns a new NFLayerCollection from an array of AVLayers
-@memberof NFLayerCollection
-@returns {NFLayerCollection} the new layer collection
-@throws Throw error if the given array doesn't contain only AVLayers
- */
-
 NFLayerCollection = Object.assign(NFLayerCollection, {
+
+  /**
+  Class Method which returns a new NFLayerCollection from an array of AVLayers
+  @memberof NFLayerCollection
+  @returns {NFLayerCollection} the new layer collection
+  @throws Throw error if the given array doesn't contain only AVLayers
+   */
   collectionFromAVLayerArray: function(arr) {
     var layer, newArray, newLayer;
     newArray = (function() {
@@ -746,42 +868,69 @@ NFLayerCollection = Object.assign(NFLayerCollection, {
 });
 
 
-/*
- *    NF PDF
- *
- *    A collection of Page Items
- *
+/**
+Creates a new NFPDF from a given array of pages
+@class NFPDF
+@classdesc NF Wrapper object for a group of NFPageItems
+@param {NFPageItem[]} pageArr - an array of NFPageItems
+@property {NFPageItem[]} pages - the array ofitems
+@throws Throws error if one object in the array is not an NFPageItem
  */
 var NFPDF;
 
 NFPDF = (function() {
   function NFPDF(pageArr) {
-    this.pages = pageArr;
+    var page;
+    this.pages = pageArr != null ? pageArr : [];
+    if (this.pages.length > 0) {
+      if (!(function() {
+        var i, len, ref, results;
+        ref = this.pages;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          page = ref[i];
+          results.push(page instanceof NFPageItem);
+        }
+        return results;
+      }).call(this)) {
+        throw "You can only add NFPageItems to an NFPDF";
+      }
+    }
   }
+
+  NFPDF.prototype.getInfo = function() {
+    return "NFPDF: 'FIXME'";
+  };
+
+
+  /**
+  Checks if this layer is a valid page Layer
+  @memberof NFPDF
+  @param {NFPageItem} newPage - the page to add
+  @throws Throws error if you try to add a non-NFPageItem
+  @returns {NFPDF} self
+   */
+
+  NFPDF.prototype.addNFPageItem = function(newPage) {
+    if (newPage instanceof NFPageItem) {
+      this.layers.push(newPage);
+    } else {
+      throw "You can only add NFPageItems to an NFPDF";
+    }
+    return this;
+  };
 
   return NFPDF;
 
 })();
 
-NFPDF.prototype = Object.assign(NFPDF.prototype, {
-  getInfo: function() {
-    return "NFPDF: 'FIXME'";
-  },
-  addNFPageItem: function(newPage) {
-    if (newPage instanceof NFPageItem) {
-      return this.layers.push(newPage);
-    } else {
-      throw "You can only add NFPageItems to an NFPDF";
-    }
-  }
-});
 
-
-/*
- *    NF PAGE ITEM
- *
- *    The composition page item
- *
+/**
+Creates a new NFPageItem from a given CompItem
+@class NFPageItem
+@classdesc NF Wrapper object for a page CompItem
+@param {CompItem} item - the CompItem to wrap
+@property {CompItem} item - the CompItem
  */
 var NFPageItem;
 
@@ -792,31 +941,52 @@ NFPageItem = (function() {
     this;
   }
 
-  return NFPageItem;
-
-})();
-
-NFPageItem.prototype = Object.assign(NFPageItem.prototype, {
-  getInfo: function() {
+  NFPageItem.prototype.getInfo = function() {
     return "NFPageItem: '" + this.name + "'";
-  },
-  getPDFNumber: function() {
+  };
+
+
+  /**
+  Returns the PDF number as a String
+  @memberof NFPageItem
+  @throws Throws error if the number could not be found in this item
+  @returns {string} the PDF number
+   */
+
+  NFPageItem.prototype.getPDFNumber = function() {
     var endIdx;
     endIdx = this.name.indexOf("_");
     if (endIdx > 0) {
       return this.name.substr(0, endIdx);
     }
     throw "Could not get the PDF Number from this NFPageItem";
-  },
-  getPageNumber: function() {
+  };
+
+
+  /**
+  Returns the page number as a String
+  @memberof NFPageItem
+  @throws Throws error if the number could not be found in this item
+  @returns {string} the page number
+   */
+
+  NFPageItem.prototype.getPageNumber = function() {
     var searchIndex;
     searchIndex = this.name.indexOf("pg");
     if (searchIndex > 0) {
       return this.name.substr(searchIndex + 2, 2);
     }
     throw "Could not get the Page Number from this NFPageItem";
-  },
-  highlights: function() {
+  };
+
+
+  /**
+  Gets the Highlight layers in this item
+  @memberof NFPageItem
+  @returns {NFHighlightLayerCollection} highlight layers in this PageItem
+   */
+
+  NFPageItem.prototype.highlights = function() {
     var highlightLayers, i, len, sourceLayers, theLayer;
     sourceLayers = NF.Util.collectionToArray(this.item.layers);
     highlightLayers = new NFHighlightLayerCollection();
@@ -827,8 +997,116 @@ NFPageItem.prototype = Object.assign(NFPageItem.prototype, {
       }
     }
     return highlightLayers;
+  };
+
+  return NFPageItem;
+
+})();
+
+
+/**
+Creates a new NFPaperLayerGroup from an NFPaperParentLayer
+@class NFPaperLayerGroup
+@classdesc An object that manages and manipulates a group of layers that are part of the same PDF
+@param {NFPaperParentLayer} paperParent - the NFPaperParentLayer to create the group with
+@property {NFPaperParentLayer} paperParent - the NFPaperParentLayer for the group
+@throws Will throw an error if not created with a valid NFPaperParentLayer object
+ */
+var NFPaperLayerGroup;
+
+NFPaperLayerGroup = (function() {
+  function NFPaperLayerGroup(paperParent) {
+    this.paperParent = paperParent;
+    if (!(this.paperParent instanceof NFPaperParentLayer)) {
+      throw "Not a valid paper parent";
+    }
   }
-});
+
+  NFPaperLayerGroup.prototype.getInfo = function() {
+    return "NFPaperLayerGroup: " + paperParent.layer.name;
+  };
+
+
+  /**
+  Gets all the NFLayers in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the layers
+   */
+
+  NFPaperLayerGroup.prototype.getChildren = function() {
+    return this.paperParent.getChildren();
+  };
+
+
+  /**
+  Gets all the NFPageLayers in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFPageLayerCollection} the page layers
+   */
+
+  NFPaperLayerGroup.prototype.getPages = function() {
+    var allChildren, i, layer, len, pageChildren, ref;
+    allChildren = this.getChildren();
+    pageChildren = new NFPageLayerCollection();
+    ref = allChildren.layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      layer = ref[i];
+      if (layer instanceof NFPageLayer) {
+        pageChildren.addNFPageLayer(layer);
+      }
+    }
+    return pageChildren;
+  };
+
+
+  /**
+  Moves the given layers into the group and parents if indicated. Layers below
+  the bottommost layer in the group will go at the bottom, and layers above the
+  parent will go immediately below it.
+  @memberof NFPaperLayerGroup
+  @param {NFLayerCollection} layersToGather - the layers to gather up
+  @param {boolean} [shouldParent=true] - whether or not to parent the new layers
+  to the paper parent
+  @returns {NFPaperLayerGroup} self
+   */
+
+  NFPaperLayerGroup.prototype.gatherLayers = function(layersToGather, shouldParent) {
+    var bottomLayer, childLayers, i, layer, layersAboveGroup, layersBelowGroup, len, ref, topLayer;
+    if (shouldParent == null) {
+      shouldParent = true;
+    }
+    childLayers = this.getChildren();
+    layersAboveGroup = new NFLayerCollection();
+    layersBelowGroup = new NFLayerCollection();
+    ref = layersToGather.layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      layer = ref[i];
+      if (layer.index() < this.paperParent.index()) {
+        layersAboveGroup.addNFLayer(layer);
+      }
+      if (layer.index() > childLayers.getBottommostLayer().index()) {
+        layersBelowGroup.addNFLayer(layer);
+      }
+    }
+    while (layersAboveGroup.count() > 0) {
+      bottomLayer = layersAboveGroup.getBottommostLayer();
+      bottomLayer.moveAfter(this.paperParent);
+      layersAboveGroup.remove(bottomLayer);
+    }
+    while (layersBelowGroup.count() > 0) {
+      topLayer = layersBelowGroup.getTopmostLayer();
+      topLayer.moveAfter(childLayers.getBottommostLayer());
+      layersBelowGroup.remove(topLayer);
+      if (shouldParent) {
+        layersToGather.setParents(this.paperParent);
+      }
+    }
+    return this;
+  };
+
+  return NFPaperLayerGroup;
+
+})();
 
 
 /*
@@ -990,8 +1268,23 @@ NFHighlightLayer = (function(superClass) {
       results = [];
       for (j = 0, len = ref.length; j < len; j++) {
         property = ref[j];
-        expression = this.highlighterEffect.property(property).expression;
-        results.push(this.highlighterEffect.property(property).expression = expression.replace(" NFPage", " [+]"));
+        expression = this.highlighterEffect().property(property).expression;
+        results.push(this.highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]"));
+      }
+      return results;
+    }
+  };
+
+  NFHighlightLayer.prototype.resetExpressionErrors = function() {
+    var expression, j, len, property, ref, results;
+    if (this.bubbled) {
+      ref = NF.Util.highlighterProperties;
+      results = [];
+      for (j = 0, len = ref.length; j < len; j++) {
+        property = ref[j];
+        expression = this.highlighterEffect().property(property).expression;
+        this.highlighterEffect().property(property).expression = "";
+        results.push(this.highlighterEffect().property(property).expression = expression);
       }
       return results;
     }
@@ -1118,6 +1411,28 @@ NFHighlightLayerCollection = (function(superClass) {
     return results;
   };
 
+  NFHighlightLayerCollection.prototype.resetExpressionErrors = function() {
+    var highlight, i, len, ref, results;
+    ref = this.layers;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      highlight = ref[i];
+      results.push(highlight.resetExpressionErrors());
+    }
+    return results;
+  };
+
+  NFHighlightLayerCollection.prototype.fixExpressionsAfterInit = function() {
+    var highlight, i, len, ref, results;
+    ref = this.layers;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      highlight = ref[i];
+      results.push(highlight.fixExpressionAfterInit());
+    }
+    return results;
+  };
+
   return NFHighlightLayerCollection;
 
 })(NFLayerCollection);
@@ -1231,39 +1546,31 @@ NFPageLayer = (function(superClass) {
   };
 
   NFPageLayer.prototype.bubbledHighlights = function() {
-    var bubbledHighlights, highlight;
-    if ((function() {
-      var i, len, ref, results;
-      ref = this.highlights().layers;
-      results = [];
-      for (i = 0, len = ref.length; i < len; i++) {
-        highlight = ref[i];
-        results.push(highlight.bubbled && highlight.connectedPageLayer.sameLayerAs(this));
+    var bubbledHighlights, highlight, i, len, ref, ref1;
+    bubbledHighlights = [];
+    ref = this.highlights().layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      highlight = ref[i];
+      if (highlight.bubbled && ((ref1 = highlight.connectedPageLayer) != null ? ref1.sameLayerAs(this) : void 0)) {
+        bubbledHighlights.push(highlight);
       }
-      return results;
-    }).call(this)) {
-      bubbledHighlights = highlight;
     }
     return new NFHighlightLayerCollection(bubbledHighlights);
   };
 
   NFPageLayer.prototype.isInitted = function() {
-    return this.layer.name.indexOf("[+]");
+    return this.layer.name.indexOf("[+]") >= 0;
   };
 
   NFPageLayer.prototype.markInitted = function() {
-    var highlight, i, len, ref, results;
+    var bubbledHighlights;
     if (!this.isInitted()) {
-      this.layer.name.replace(" NFPage", " [+]");
-      if (this.bubbledHighlights.count() > 0) {
-        ref = this.bubbledHighlights.layers;
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-          highlight = ref[i];
-          results.push(highlight.fixExpressionAfterInit());
-        }
-        return results;
+      bubbledHighlights = this.bubbledHighlights();
+      if (bubbledHighlights.count() > 0) {
+        bubbledHighlights.fixExpressionsAfterInit();
       }
+      this.layer.name = this.layer.name.replace(" NFPage", " [+]");
+      return bubbledHighlights.resetExpressionErrors();
     }
   };
 
@@ -1370,25 +1677,64 @@ NFPageLayerCollection = (function(superClass) {
     return infoString += "]";
   };
 
+
+  /**
+  Adds an NFLayer to this collection
+  @memberof NFPageLayerCollection
+  @override
+  @returns {NFPageLayerCollection} self
+  @param {NFPageLayer} newLayer - the layer to add
+  @throws Throw error if not adding a NFPageLayer (because this function just calls #addNFPageLayer)
+   */
+
   NFPageLayerCollection.prototype.addNFLayer = function(newLayer) {
-    return this.addNFPageLayer(newLayer);
+    this.addNFPageLayer(newLayer);
+    return this;
   };
+
+
+  /**
+  Adds an NFPageLayer to this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  @param {NFPageLayer} newLayer - the layer to add
+  @throws Throw error if not adding a NFPageLayer
+   */
 
   NFPageLayerCollection.prototype.addNFPageLayer = function(newLayer) {
     if (newLayer instanceof NFPageLayer) {
-      return this.layers.push(newLayer);
+      this.layers.push(newLayer);
     } else {
       throw "addNFPageLayer() can only be used to add NFPageLayers to an NFPageLayerCollection";
     }
+    return this;
   };
+
+
+  /**
+  Adds an AVLayer to this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  @param {AVLayer} newLayer - the layer to add
+  @throws Throw error if not adding an AVLayer that's a valid NFPageLayer
+   */
 
   NFPageLayerCollection.prototype.addAVLayer = function(newLayer) {
     if (NFLayer.isAVLayer(newLayer)) {
-      return this.layers.push(new NFPageLayer(newLayer));
+      this.layers.push(new NFPageLayer(newLayer));
     } else {
       throw "addAVLayer() can only be used to add AVLayers to an NFPageLayerCollection";
     }
+    return this;
   };
+
+
+  /**
+  Returns NFHighlightLayerCollection of all highlights in all pages in the collection
+  @memberof NFPageLayerCollection
+  @returns {NFHighlightLayerCollection} all highlights in all pages in this collection
+  @param {AVLayer} newLayer - the layer to add
+   */
 
   NFPageLayerCollection.prototype.highlights = function() {
     var containingLayerArray, highlight, highlightArray, highlights, i, j, k, l, len, len1, ref, ref1, ref2, theLayer;
@@ -1416,6 +1762,13 @@ NFPageLayerCollection = (function(superClass) {
     return highlights;
   };
 
+
+  /**
+  Returns true if the collection only contains pages from the same PDF
+  @memberof NFPageLayerCollection
+  @returns {boolean} whether all pages in this collection are from the same PDF
+   */
+
   NFPageLayerCollection.prototype.fromSamePDF = function() {
     var j, layer, len, ref, testNumber;
     if (this.count() === 0) {
@@ -1432,20 +1785,41 @@ NFPageLayerCollection = (function(superClass) {
     return true;
   };
 
+
+  /**
+  Always returns true. Overrides the function in NFLayerCollection
+  @memberof NFPageLayerCollection
+  @override
+  @returns {boolean} true (because this has to contain only page layers)
+   */
+
   NFPageLayerCollection.prototype.onlyContainsPageLayers = function() {
     return true;
   };
 
+
+  /**
+  Run NFPageLayer#init on every page in this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+   */
+
   NFPageLayerCollection.prototype.initLayers = function() {
-    var j, len, page, ref, results;
+    var j, len, page, ref;
     ref = this.layers;
-    results = [];
     for (j = 0, len = ref.length; j < len; j++) {
       page = ref[j];
-      results.push(page.init());
+      page.init();
     }
-    return results;
+    return this;
   };
+
+
+  /**
+  Run NFPageLayer#initLayerTransforms on every page in this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+   */
 
   NFPageLayerCollection.prototype.initLayerTransforms = function() {
     var j, len, page, ref, results;
@@ -1485,13 +1859,13 @@ NFPageLayerCollection = (function(superClass) {
   the parent if it exists, otherwise creates a new one.
   @memberof NFPageLayerCollection
   @returns {NFPaperParentLayer} the paper parent layer
-  @param {boolean} [shouldMove] - whether or not the layers should move below their parent
+  @param {boolean} [shouldMove=false] - whether or not the layers should move below their parent
   @throws Throw error if this collection is empty
   @throws Throw error if this collection contains layers from different PDFs
    */
 
   NFPageLayerCollection.prototype.assignPaperParentLayer = function(shouldMove) {
-    var bottomLayer, j, layer, layersAboveGroup, layersBelowGroup, len, paperLayerGroup, paperParentLayer, ref, topLayer;
+    var paperLayerGroup, paperParentLayer;
     if (shouldMove == null) {
       shouldMove = false;
     }
@@ -1504,31 +1878,9 @@ NFPageLayerCollection = (function(superClass) {
     paperParentLayer = this.layers[0].findPaperParentLayer();
     if (paperParentLayer != null) {
       if (shouldMove) {
-        paperLayerGroup = paperParentLayer.getChildren();
-        layersAboveGroup = new NFLayerCollection();
-        layersBelowGroup = new NFLayerCollection();
-        ref = this.layers;
-        for (j = 0, len = ref.length; j < len; j++) {
-          layer = ref[j];
-          if (layer.index() < paperParentLayer.index()) {
-            layersAboveGroup.addNFLayer(layer);
-          }
-          if (layer.index() > paperParentLayer.index()) {
-            layersBelowGroup.addNFLayer(layer);
-          }
-        }
-        while (layersAboveGroup.count() > 0) {
-          bottomLayer = layersAboveGroup.getBottommostLayer();
-          bottomLayer.moveAfter(paperParentLayer);
-          layersAboveGroup.remove(bottomLayer);
-        }
-        while (layersBelowGroup.count() > 0) {
-          topLayer = layersBelowGroup.getTopmostLayer();
-          topLayer.moveAfter(paperLayerGroup.getBottommostLayer());
-          layersBelowGroup.remove(topLayer);
-        }
+        paperLayerGroup = new NFPaperLayerGroup(paperParentLayer);
+        paperLayerGroup.gatherLayers(this);
       }
-      this.setParents(paperParentLayer);
     } else {
       paperParentLayer = this.newPaperParentLayer();
     }
@@ -1540,6 +1892,12 @@ NFPageLayerCollection = (function(superClass) {
 })(NFLayerCollection);
 
 NFPageLayerCollection = Object.assign(NFPageLayerCollection, {
+
+  /**
+  Returns a new instance from an array of AVLayers
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} the new collection
+   */
   collectionFromAVLayerArray: function(arr) {
     var layer, newArray, newLayer;
     newArray = (function() {

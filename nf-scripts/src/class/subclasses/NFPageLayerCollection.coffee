@@ -21,19 +21,53 @@ class NFPageLayerCollection extends NFLayerCollection
     for theLayer in @layers
       infoString += theLayer.getInfo() + ", "
     infoString += "]"
+
+  ###*
+  Adds an NFLayer to this collection
+  @memberof NFPageLayerCollection
+  @override
+  @returns {NFPageLayerCollection} self
+  @param {NFPageLayer} newLayer - the layer to add
+  @throws Throw error if not adding a NFPageLayer (because this function just calls #addNFPageLayer)
+  ###
   addNFLayer: (newLayer) ->
     @addNFPageLayer(newLayer)
+    @
+
+  ###*
+  Adds an NFPageLayer to this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  @param {NFPageLayer} newLayer - the layer to add
+  @throws Throw error if not adding a NFPageLayer
+  ###
   addNFPageLayer: (newLayer) ->
     if newLayer instanceof NFPageLayer
       @layers.push newLayer
     else
       throw "addNFPageLayer() can only be used to add NFPageLayers to an NFPageLayerCollection"
+    @
+
+  ###*
+  Adds an AVLayer to this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  @param {AVLayer} newLayer - the layer to add
+  @throws Throw error if not adding an AVLayer that's a valid NFPageLayer
+  ###
   addAVLayer: (newLayer) ->
     if NFLayer.isAVLayer newLayer
       @layers.push new NFPageLayer(newLayer)
     else
       throw "addAVLayer() can only be used to add AVLayers to an NFPageLayerCollection"
-  # Returns NFHighlightLayerCollection of all highlights in all pages in the collection
+    @
+
+  ###*
+  Returns NFHighlightLayerCollection of all highlights in all pages in the collection
+  @memberof NFPageLayerCollection
+  @returns {NFHighlightLayerCollection} all highlights in all pages in this collection
+  @param {AVLayer} newLayer - the layer to add
+  ###
   highlights: ->
     highlightArray = []
     containingLayerArray = []
@@ -48,18 +82,43 @@ class NFPageLayerCollection extends NFLayerCollection
     for i in [0..highlights.count()-1]
       highlights.layers[i].containingPageLayer = containingLayerArray[i]
     return highlights
-  # Returns true if the collection only contains pages from the same PDF
+
+  ###*
+  Returns true if the collection only contains pages from the same PDF
+  @memberof NFPageLayerCollection
+  @returns {boolean} whether all pages in this collection are from the same PDF
+  ###
   fromSamePDF: ->
     return true if @count() is 0
     testNumber = @layers[0].getPDFNumber()
     for layer in @layers
       return false if layer.getPDFNumber() isnt testNumber
     return true
-  # Overrides the function in NFLayerCollection
+
+  ###*
+  Always returns true. Overrides the function in NFLayerCollection
+  @memberof NFPageLayerCollection
+  @override
+  @returns {boolean} true (because this has to contain only page layers)
+  ###
+  #
   onlyContainsPageLayers: ->
     return true
+
+  ###*
+  Run NFPageLayer#init on every page in this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  ###
   initLayers: ->
     page.init() for page in @layers
+    @
+
+  ###*
+  Run NFPageLayer#initLayerTransforms on every page in this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  ###
   initLayerTransforms: ->
     page.initTransforms() for page in @layers
 
@@ -81,7 +140,7 @@ class NFPageLayerCollection extends NFLayerCollection
   the parent if it exists, otherwise creates a new one.
   @memberof NFPageLayerCollection
   @returns {NFPaperParentLayer} the paper parent layer
-  @param {boolean} [shouldMove] - whether or not the layers should move below their parent
+  @param {boolean} [shouldMove=false] - whether or not the layers should move below their parent
   @throws Throw error if this collection is empty
   @throws Throw error if this collection contains layers from different PDFs
   ###
@@ -90,38 +149,22 @@ class NFPageLayerCollection extends NFLayerCollection
     throw "Can't create a single paper parent layer for page layers from different PDFs" unless @fromSamePDF()
     paperParentLayer = @layers[0].findPaperParentLayer()
     if paperParentLayer?
-      
-      # FIXME: Add a new class NFPaperLayerGroup here and do the manipulation necessary
       if shouldMove
-        paperLayerGroup = paperParentLayer.getChildren()
-
-        layersAboveGroup = new NFLayerCollection()
-        layersBelowGroup = new NFLayerCollection()
-        for layer in @layers
-          layersAboveGroup.addNFLayer layer if layer.index() < paperParentLayer.index()
-          layersBelowGroup.addNFLayer layer if layer.index() > paperParentLayer.index()
-
-        # For the layers in this collection above the group
-        while layersAboveGroup.count() > 0
-          # starting with the bottommost and working up, move each one just below the parent
-          bottomLayer = layersAboveGroup.getBottommostLayer()
-          bottomLayer.moveAfter paperParentLayer
-          layersAboveGroup.remove bottomLayer
-        # for the layers in this coll below the group
-        while layersBelowGroup.count() > 0
-          # starting with the toppest and workingdown, move each one just below the bottomest layer in the group
-          topLayer = layersBelowGroup.getTopmostLayer()
-          topLayer.moveAfter paperLayerGroup.getBottommostLayer()
-          layersBelowGroup.remove topLayer
-
-      @setParents(paperParentLayer)
+        paperLayerGroup = new NFPaperLayerGroup(paperParentLayer)
+        paperLayerGroup.gatherLayers @
     else
       paperParentLayer = @newPaperParentLayer()
 
     return paperParentLayer
+
 # Class Methods
 NFPageLayerCollection = Object.assign NFPageLayerCollection,
-  # Returns a new instance from an array of AVLayers
+
+  ###*
+  Returns a new instance from an array of AVLayers
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} the new collection
+  ###
   collectionFromAVLayerArray: (arr) ->
     # FIXME: Should throw error if each layer isnt an AVLayer
     newArray = for layer in arr

@@ -58,7 +58,7 @@ class NFComp
 
   ###*
   Gets the Zoomer layer
-  @memberof NFPartComp
+  @memberof NFComp
   @returns {NFLayer | null} The zoomer NFLayer or null if it doesn't exist
   ###
   getZoomer: ->

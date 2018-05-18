@@ -20,34 +20,74 @@ class NFLayerCollection extends Array
     for theLayer in @layers
       infoString += theLayer.getInfo() + ", "
     infoString += "]"
+
+  ###*
+  Adds an NFLayer to this collection
+  @memberof NFLayerCollection
+  @param {NFLayer} newLayer - the layer to add
+  @returns {NFLayerCollection} self
+  ###
   addNFLayer: (newLayer) ->
     if newLayer instanceof NFLayer
       @layers.push newLayer
     else
       throw "You can only add NFLayers to an NFLayerCollection"
-  # Returns true if the collection only contains NFPageLayers and no other types of NFLayers
+    @
+
+  ###*
+  Returns true if the collection only contains NFPageLayers and no other types of NFLayers
+  @memberof NFLayerCollection
+  @returns {boolean} if the layers in this collection are all {@link NFPageLayer} objects
+  ###
   onlyContainsPageLayers: ->
     for theLayer in @layers
       return false unless theLayer instanceof NFPageLayer
     return true
-  # Returns true if the layers in the collection are all in the same comp
+
+  ###*
+  Returns true if the layers in the collection are all in the same comp
+  @memberof NFLayerCollection
+  @returns {boolean} if the layers in this collection are all in the same containing comp
+  ###
   inSameComp: ->
     return true if @isEmpty()
     testID = @layers[0].containingComp().id
     for layer in @layers
       return false if layer.containingComp().id isnt testID
     return true
-  # Returns the containing comp for the layers, or null if inSameComp() is false
+
+  ###*
+  Returns the containing comp for the layers, or null if #inSameComp is false
+  @memberof NFLayerCollection
+  @returns {NFComp | null} the containing comp
+  ###
   containingComp: ->
     if @inSameComp() and not @isEmpty()
       return @layers[0].containingComp()
-    return false
+    return null
+
+  ###*
+  Returns a new NFPageLayerCollection from this collection. Only call if you know
+  this collection only contains NFPageLayers
+  @memberof NFLayerCollection
+  @returns {NFPageLayerCollection} the new collection
+  ###
   getPageLayerCollection: ->
     return new NFPageLayerCollection @layers
-  # Shortcut to access the number of layers in the collection
+
+  ###*
+  Shortcut to access the number of layers in the collection
+  @memberof NFLayerCollection
+  @returns {int} the number of layers in the collection
+  ###
   count: ->
     return @layers.length
-  # Returns true if the collection is empty
+
+  ###*
+  True if the collection is empty
+  @memberof NFLayerCollection
+  @returns {boolean} whether or not the collection is empty
+  ###
   isEmpty: ->
     return @count() is 0
 
@@ -120,14 +160,15 @@ class NFLayerCollection extends Array
     newNull.moveBefore @getTopmostLayer().layer
     return newNull
 
-###*
-Class Method which returns a new NFLayerCollection from an array of AVLayers
-@memberof NFLayerCollection
-@returns {NFLayerCollection} the new layer collection
-@throws Throw error if the given array doesn't contain only AVLayers
-###
+
 NFLayerCollection = Object.assign NFLayerCollection,
-  # Returns a new instance from an array of AVLayers
+
+  ###*
+  Class Method which returns a new NFLayerCollection from an array of AVLayers
+  @memberof NFLayerCollection
+  @returns {NFLayerCollection} the new layer collection
+  @throws Throw error if the given array doesn't contain only AVLayers
+  ###
   collectionFromAVLayerArray: (arr) ->
     newArray = for layer in arr
       throw "Cannot run collectionFromAVLayerArray() because not all layers provided are AVLayers" unless NFLayer.isAVLayer layer

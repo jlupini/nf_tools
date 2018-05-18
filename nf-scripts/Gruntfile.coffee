@@ -8,7 +8,7 @@ module.exports = (grunt) ->
         src: ['build/objectModel.jsx', 'build/utilFunctions.jsx', 'build/extensions.jsx', 'build/easingEquations.jsx']
         options:
           destination: 'doc'
-          template : "node_modules/docdash",
+          template : "node_modules/foodoc/template",
     coffeelinter:
       options:
         reportConsole: yes

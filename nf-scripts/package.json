@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "devDependencies": {
     "docdash": "^0.4.0",
+    "foodoc": "0.0.9",
     "grunt": "^0.4.5",
     "grunt-codo": "^0.3.0",
     "grunt-coffeelinter": "^0.1.0",
