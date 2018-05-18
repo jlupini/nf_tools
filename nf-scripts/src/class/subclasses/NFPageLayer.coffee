@@ -1,8 +1,11 @@
-###
-#    NF PAGE LAYER
-#
-#    (Subclass of NFLayer)
-#
+###*
+Creates a new NFPageLayer from a given AVLayer
+@class NFPageLayer
+@classdesc Subclass of {@link NFLayer} for a page layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
+@throws Will throw an error if not given an AVLayer with a source (aka a comp layer)
 ###
 class NFPageLayer extends NFLayer
   constructor: (layer) ->
@@ -13,12 +16,29 @@ class NFPageLayer extends NFLayer
   # MARK: Instance Methods
   getInfo: ->
     return "NFPageLayer: '#{@layer.name}'"
-  # Returns the paper parent layer. If the parent exists but is not attached, this will not return it.
+
+  ###*
+  Returns a connected paper parent layer. Not to be confused with {@link NFPageLayer#findPaperParentLayer} which will return a non-connected one
+  @memberof NFPageLayer
+  @returns {NFPaperParentLayer | null} The paper parent layer if found
+  ###
   getPaperParentLayer: ->
     if @layer.parent?
       return new NFPaperParentLayer(@layer.parent)
     else
       return null
+
+  ###*
+  Returns the paperParentLayer for this layer, if it exists, REGARDLESS OF WHETHER ITS CONNECTED. Not to be confused with {@link NFPageLayer#getPaperParentLayer}
+  @memberof NFPageLayer
+  @returns {NFPaperParentLayer | null} The paper parent layer if found
+  ###
+  findPaperParentLayer: ->
+    paperParent = @getPaperParentLayer()
+    unless paperParent?
+      paperParent = @containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForPageLayer(@))
+    return paperParent
+
   # Returns NFHighlightLayerCollection of all highlights in this page
   highlights: ->
     return @pageItem.highlights()

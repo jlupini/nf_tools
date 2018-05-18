@@ -31,15 +31,20 @@ class NFPaperParentLayer extends NFLayer
 
 # Class Methods
 NFPaperParentLayer = Object.assign NFPaperParentLayer,
-  # Tests an AV layer to see if it can be a paper parent Layer
+  ###*
+  Class Method. Tests an AV layer to see if it can be a paper parent Layer
+  @memberof NFPaperParentLayer
+  @param {AVLayer} layer - the AVLayer to test
+  @returns {boolean} whether or not the layer is a valid paper parent
+  ###
   isPaperParentLayer: (layer) ->
     return layer.nullLayer and layer.name.indexOf 'PDF' >= 0
-  # Returns the name string for the paper parent for a given layer
-  getPaperParentNameForPageLayer: (pageLayer) ->
 
-  # Returns the paperParentLayer for a given page layer
-  getPaperParentLayerForPageLayers: (pageLayer) ->
-    paperParent = pageLayer.getPaperParentLayer()
-    unless paperParent?
-      paperParent = pageLayer.containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForPageLayer(pageLayer))
-    return paperParent
+  ###*
+  Class Method. Returns the name string for the paper parent for a given layer
+  @memberof NFPaperParentLayer
+  @param {NFPageLayer} pageLayer - the page layer to use to determine the name
+  @returns {string} The name of the paperParentLayer for the given layer
+  ###
+  getPaperParentNameForPageLayer: (pageLayer) ->
+    return 'PDF ' + pageLayer.getPDFNumber()

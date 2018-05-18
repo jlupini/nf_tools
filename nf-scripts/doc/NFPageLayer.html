@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>NFLayer - Documentation</title>
+    <title>NFPageLayer - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">NFLayer</h1>
+    <h1 class="page-title">NFPageLayer</h1>
     
 
     
@@ -40,10 +40,10 @@
 <header>
     
         <h2>
-        NFLayer
+        NFPageLayer
         </h2>
         
-            <div class="class-description">NF Wrapper object for an AVLayer</div>
+            <div class="class-description">Subclass of <a href="NFLayer.html">NFLayer</a> for a page layer</div>
         
     
 </header>
@@ -57,7 +57,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="NFLayer"><span class="type-signature"></span>new NFLayer<span class="signature">(layer)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="NFPageLayer"><span class="type-signature"></span>new NFPageLayer<span class="signature">(layer)</span><span class="type-signature"></span></h4>
 
     
 
@@ -69,7 +69,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line113">line 113</a>
+        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line1169">line 1169</a>
     </li></ul></dd>
     
 
@@ -161,7 +161,7 @@
 
 
 <div class="description">
-    Creates a new NFLayer from a given AVLayer
+    Creates a new NFPageLayer from a given AVLayer
 </div>
 
 
@@ -218,7 +218,7 @@
 
             
 
-            <td class="description last">the target AVLayer or NFLayer (in which case we use it's AVLayer)</td>
+            <td class="description last">the target AVLayer or NFLayer</td>
         </tr>
 
     
@@ -242,7 +242,7 @@
 
     <div class="param-desc">
     
-        Will throw an error if not given a valid AVLayer object
+        Will throw an error if not given an AVLayer with a source (aka a comp layer)
     
     </div>
 
@@ -254,6 +254,17 @@
 
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="NFLayer.html">NFLayer</a></li>
+    </ul>
+
 
     
 
@@ -269,161 +280,6 @@
 
     
         <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id=".isAVLayer"><span class="type-signature">(static) </span>isAVLayer<span class="signature">(layer)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line499">line 499</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    Returns whether or not a given Layer is an AVLayer or one of its subclasses. This is because Layer objects don't play nice with `instanceof`
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>layer</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Layer.html">Layer</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the Layer to check</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    the result
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-    </dd>
-</dl>
-
-    
-
 
         
             
@@ -450,6 +306,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#addInOutMarkersForProperty">NFLayer#addInOutMarkersForProperty</a>
+    </li></ul></dd>
     
 
     
@@ -798,6 +659,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#addSlider">NFLayer#addSlider</a>
+    </li></ul></dd>
+    
 
     
 
@@ -976,6 +842,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#containingComp">NFLayer#containingComp</a>
+    </li></ul></dd>
+    
 
     
 
@@ -1061,6 +932,115 @@
 
     
 
+    <h4 class="name" id="findPaperParentLayer"><span class="type-signature"></span>findPaperParentLayer<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="NFPaperParentLayer.html">NFPaperParentLayer</a>|null}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line1220">line 1220</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Returns the paperParentLayer for this layer, if it exists, REGARDLESS OF WHETHER ITS CONNECTED. Not to be confused with <a href="NFPageLayer.html#getPaperParentLayer">NFPageLayer#getPaperParentLayer</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The paper parent layer if found
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
     <h4 class="name" id="getChildren"><span class="type-signature"></span>getChildren<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="NFLayerCollection.html">NFLayerCollection</a>}</span></h4>
 
     
@@ -1081,6 +1061,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#getChildren">NFLayer#getChildren</a>
+    </li></ul></dd>
     
 
     
@@ -1167,6 +1152,115 @@
 
     
 
+    <h4 class="name" id="getPaperParentLayer"><span class="type-signature"></span>getPaperParentLayer<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="NFPaperParentLayer.html">NFPaperParentLayer</a>|null}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line1205">line 1205</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Returns a connected paper parent layer. Not to be confused with <a href="NFPageLayer.html#findPaperParentLayer">NFPageLayer#findPaperParentLayer</a> which will return a non-connected one
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The paper parent layer if found
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
     <h4 class="name" id="getParent"><span class="type-signature"></span>getParent<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="NFLayer.html">NFLayer</a>|null}</span></h4>
 
     
@@ -1187,6 +1281,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#getParent">NFLayer#getParent</a>
+    </li></ul></dd>
     
 
     
@@ -1297,6 +1396,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#markers">NFLayer#markers</a>
+    </li></ul></dd>
+    
 
     
 
@@ -1402,6 +1506,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#moveAfter">NFLayer#moveAfter</a>
+    </li></ul></dd>
     
 
     
@@ -1570,6 +1679,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#moveBefore">NFLayer#moveBefore</a>
+    </li></ul></dd>
+    
 
     
 
@@ -1736,6 +1850,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#setParent">NFLayer#setParent</a>
+    </li></ul></dd>
     
 
     
@@ -1909,6 +2028,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFLayer.html#setZoomer">NFLayer#setZoomer</a>
+    </li></ul></dd>
     
 
     

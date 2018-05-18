@@ -52,6 +52,22 @@ class NFLayerCollection extends Array
     return @count() is 0
 
   ###*
+  Removes a given layer from this collection
+  @memberof NFLayerCollection
+  @returns {NFLayerCollection} self
+  @param {NFLayer} layerToRemove the layer to be removed
+  @throws Throws an error if the layers couldn't be found in this collection
+  ###
+  remove: (layerToRemove) ->
+    # Get the index of the layer to remove
+    for i in [0..@count()-1]
+      layer = @layers[i]
+      if layer.sameLayerAs layerToRemove
+        @layers.splice(i, 1)
+        return @
+    throw "Couldn't find layer to remove"
+
+  ###*
   Gets the topmost NFLayer in this collection
   @memberof NFLayerCollection
   @returns {NFLayer | null} the topmost layer or null if empty
@@ -64,6 +80,20 @@ class NFLayerCollection extends Array
     for layer in @layers
       topmostLayer = layer if layer.layer.index < topmostLayer.layer.index
     return topmostLayer
+
+  ###*
+  Gets the bottommost NFLayer in this collection
+  @memberof NFLayerCollection
+  @returns {NFLayer | null} the bottommost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+  ###
+  getBottommostLayer: ->
+    return null if @isEmpty()
+    throw "Can't get bottommost layer of layers in different comps" unless @inSameComp()
+    bottommostLayer = @layers[0]
+    for layer in @layers
+      bottommostLayer = layer if layer.layer.index > bottommostLayer.layer.index
+    return bottommostLayer
 
   ###*
   Sets all member layers' parents to a given {@link NFLayer} or null
@@ -89,19 +119,6 @@ class NFLayerCollection extends Array
     @setParents(newNull)
     newNull.moveBefore @getTopmostLayer().layer
     return newNull
-
-  ###*
-  Creates a new {@link NFPaperParentLayer} from this collection
-  @memberof NFLayerCollection
-  @returns {NFPaperParentLayer} the new Paper Parent layer
-  @throws Throw error if this collection is empty
-  @throws Throw error if this collection contains layers from different PDFs
-  ###
-  newPaperParentLayer: ->
-    throw "Can't create a paper parent layer with no target layers" if @isEmpty()
-    throw "Can't create a single paper parent layer for page layers from different PDFs" unless @fromSamePDF()
-    newPaperParent = new NFPaperParentLayer(@nullify()).setName()
-    return newPaperParent
 
 ###*
 Class Method which returns a new NFLayerCollection from an array of AVLayers

@@ -40,7 +40,6 @@ presentUI = ->
 		initTab = tPanel.add("tab", undefined, "Init Page")
 		initTab.alignChildren = "fill"
 
-		#FIXME: Add back in this movement thing, to eventually replace the animation composer animation in
 		# Options Panel
 		optionsPanel = initTab.add 'panel', undefined, 'Options', {borderStyle:'none'}
 		optionsPanel.alignChildren = 'left'
@@ -103,7 +102,7 @@ presentUI = ->
 				_.selectedPages.initLayers()
 
 				# FIXME: This creates a new paper parent layer even if there's already an existing one we should hook up to
-				newParent = _.selectedPages.newPaperParentLayer()
+				newParent = _.selectedPages.assignPaperParentLayer(yes)
 				newParent.setZoomer()
 
 				if animatePageCheckbox.value

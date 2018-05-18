@@ -37,6 +37,8 @@ class NFLayer
       return @
   getInfo: ->
     return "NFLayer: '#{@layer.name}'"
+  index: ->
+    return @layer.index
   # Returns true if the layer has a null parent
   hasNullParent: ->
     if @layer.parent?

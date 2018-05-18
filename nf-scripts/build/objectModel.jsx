@@ -165,6 +165,10 @@ NFLayer = (function() {
     return "NFLayer: '" + this.layer.name + "'";
   };
 
+  NFLayer.prototype.index = function() {
+    return this.layer.index;
+  };
+
   NFLayer.prototype.hasNullParent = function() {
     if (this.layer.parent != null) {
       return this.layer.parent.nullLayer;
@@ -514,11 +518,11 @@ NFLayerCollection = (function(superClass) {
   extend(NFLayerCollection, superClass);
 
   function NFLayerCollection(layerArr) {
-    var i, len, theLayer;
+    var j, len, theLayer;
     this.layers = layerArr != null ? layerArr : [];
     if (layerArr != null) {
-      for (i = 0, len = layerArr.length; i < len; i++) {
-        theLayer = layerArr[i];
+      for (j = 0, len = layerArr.length; j < len; j++) {
+        theLayer = layerArr[j];
         if (!(theLayer instanceof NFLayer)) {
           throw "You can only add NFLayers to an NFLayerCollection";
         }
@@ -528,11 +532,11 @@ NFLayerCollection = (function(superClass) {
   }
 
   NFLayerCollection.prototype.getInfo = function() {
-    var i, infoString, len, ref, theLayer;
+    var infoString, j, len, ref, theLayer;
     infoString = "NFLayerCollection: [";
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      theLayer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
       infoString += theLayer.getInfo() + ", ";
     }
     return infoString += "]";
@@ -547,10 +551,10 @@ NFLayerCollection = (function(superClass) {
   };
 
   NFLayerCollection.prototype.onlyContainsPageLayers = function() {
-    var i, len, ref, theLayer;
+    var j, len, ref, theLayer;
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      theLayer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
       if (!(theLayer instanceof NFPageLayer)) {
         return false;
       }
@@ -559,14 +563,14 @@ NFLayerCollection = (function(superClass) {
   };
 
   NFLayerCollection.prototype.inSameComp = function() {
-    var i, layer, len, ref, testID;
+    var j, layer, len, ref, testID;
     if (this.isEmpty()) {
       return true;
     }
     testID = this.layers[0].containingComp().id;
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
       if (layer.containingComp().id !== testID) {
         return false;
       }
@@ -595,6 +599,27 @@ NFLayerCollection = (function(superClass) {
 
 
   /**
+  Removes a given layer from this collection
+  @memberof NFLayerCollection
+  @returns {NFLayerCollection} self
+  @param {NFLayer} layerToRemove the layer to be removed
+  @throws Throws an error if the layers couldn't be found in this collection
+   */
+
+  NFLayerCollection.prototype.remove = function(layerToRemove) {
+    var i, j, layer, ref;
+    for (i = j = 0, ref = this.count() - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+      layer = this.layers[i];
+      if (layer.sameLayerAs(layerToRemove)) {
+        this.layers.splice(i, 1);
+        return this;
+      }
+    }
+    throw "Couldn't find layer to remove";
+  };
+
+
+  /**
   Gets the topmost NFLayer in this collection
   @memberof NFLayerCollection
   @returns {NFLayer | null} the topmost layer or null if empty
@@ -602,7 +627,7 @@ NFLayerCollection = (function(superClass) {
    */
 
   NFLayerCollection.prototype.getTopmostLayer = function() {
-    var i, layer, len, ref, topmostLayer;
+    var j, layer, len, ref, topmostLayer;
     if (this.isEmpty()) {
       return null;
     }
@@ -611,13 +636,40 @@ NFLayerCollection = (function(superClass) {
     }
     topmostLayer = this.layers[0];
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
       if (layer.layer.index < topmostLayer.layer.index) {
         topmostLayer = layer;
       }
     }
     return topmostLayer;
+  };
+
+
+  /**
+  Gets the bottommost NFLayer in this collection
+  @memberof NFLayerCollection
+  @returns {NFLayer | null} the bottommost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+   */
+
+  NFLayerCollection.prototype.getBottommostLayer = function() {
+    var bottommostLayer, j, layer, len, ref;
+    if (this.isEmpty()) {
+      return null;
+    }
+    if (!this.inSameComp()) {
+      throw "Can't get bottommost layer of layers in different comps";
+    }
+    bottommostLayer = this.layers[0];
+    ref = this.layers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
+      if (layer.layer.index > bottommostLayer.layer.index) {
+        bottommostLayer = layer;
+      }
+    }
+    return bottommostLayer;
   };
 
 
@@ -629,11 +681,11 @@ NFLayerCollection = (function(superClass) {
    */
 
   NFLayerCollection.prototype.setParents = function(newParent) {
-    var i, layer, len, ref;
+    var j, layer, len, ref;
     if (!this.isEmpty()) {
       ref = this.layers;
-      for (i = 0, len = ref.length; i < len; i++) {
-        layer = ref[i];
+      for (j = 0, len = ref.length; j < len; j++) {
+        layer = ref[j];
         layer.setParent(newParent);
       }
     }
@@ -661,27 +713,6 @@ NFLayerCollection = (function(superClass) {
     return newNull;
   };
 
-
-  /**
-  Creates a new {@link NFPaperParentLayer} from this collection
-  @memberof NFLayerCollection
-  @returns {NFPaperParentLayer} the new Paper Parent layer
-  @throws Throw error if this collection is empty
-  @throws Throw error if this collection contains layers from different PDFs
-   */
-
-  NFLayerCollection.prototype.newPaperParentLayer = function() {
-    var newPaperParent;
-    if (this.isEmpty()) {
-      throw "Can't create a paper parent layer with no target layers";
-    }
-    if (!this.fromSamePDF()) {
-      throw "Can't create a single paper parent layer for page layers from different PDFs";
-    }
-    newPaperParent = new NFPaperParentLayer(this.nullify()).setName();
-    return newPaperParent;
-  };
-
   return NFLayerCollection;
 
 })(Array);
@@ -698,10 +729,10 @@ NFLayerCollection = Object.assign(NFLayerCollection, {
   collectionFromAVLayerArray: function(arr) {
     var layer, newArray, newLayer;
     newArray = (function() {
-      var i, len, results;
+      var j, len, results;
       results = [];
-      for (i = 0, len = arr.length; i < len; i++) {
-        layer = arr[i];
+      for (j = 0, len = arr.length; j < len; j++) {
+        layer = arr[j];
         if (!NFLayer.isAVLayer(layer)) {
           throw "Cannot run collectionFromAVLayerArray() because not all layers provided are AVLayers";
         }
@@ -1135,11 +1166,14 @@ NFImageLayer = (function(superClass) {
 })(NFLayer);
 
 
-/*
- *    NF PAGE LAYER
- *
- *    (Subclass of NFLayer)
- *
+/**
+Creates a new NFPageLayer from a given AVLayer
+@class NFPageLayer
+@classdesc Subclass of {@link NFLayer} for a page layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
+@throws Will throw an error if not given an AVLayer with a source (aka a comp layer)
  */
 var NFPageLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1161,12 +1195,35 @@ NFPageLayer = (function(superClass) {
     return "NFPageLayer: '" + this.layer.name + "'";
   };
 
+
+  /**
+  Returns a connected paper parent layer. Not to be confused with {@link NFPageLayer#findPaperParentLayer} which will return a non-connected one
+  @memberof NFPageLayer
+  @returns {NFPaperParentLayer | null} The paper parent layer if found
+   */
+
   NFPageLayer.prototype.getPaperParentLayer = function() {
     if (this.layer.parent != null) {
       return new NFPaperParentLayer(this.layer.parent);
     } else {
       return null;
     }
+  };
+
+
+  /**
+  Returns the paperParentLayer for this layer, if it exists, REGARDLESS OF WHETHER ITS CONNECTED. Not to be confused with {@link NFPageLayer#getPaperParentLayer}
+  @memberof NFPageLayer
+  @returns {NFPaperParentLayer | null} The paper parent layer if found
+   */
+
+  NFPageLayer.prototype.findPaperParentLayer = function() {
+    var paperParent;
+    paperParent = this.getPaperParentLayer();
+    if (paperParent == null) {
+      paperParent = this.containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForPageLayer(this));
+    }
+    return paperParent;
   };
 
   NFPageLayer.prototype.highlights = function() {
@@ -1271,11 +1328,14 @@ NFPageLayer = Object.assign(NFPageLayer, {
 });
 
 
-/*
- *    NF PAGE LAYER COLLECTION
- *
- *    A collection of NF Page Layers
- *
+/**
+Creates a new NFPageLayerCollection from a given array of NFPageLayers
+@class NFPageLayerCollection
+@classdesc Subclass of {@link NFLayer} for the parent null layer of a group of page layers from the same PDF
+@param {NFPageLayer[]} layerArr - array of layers to use
+@property {NFPageLayer[]} layers - array of layers
+@extends NFLayerCollection
+@throws Will throw an error if the array does not contain valid page layers
  */
 var NFPageLayerCollection,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1285,11 +1345,12 @@ NFPageLayerCollection = (function(superClass) {
   extend(NFPageLayerCollection, superClass);
 
   function NFPageLayerCollection(layerArr) {
-    var j, len, theLayer;
+    var j, len, ref, theLayer;
     NFLayerCollection.call(this, layerArr);
-    if (layerArr != null) {
-      for (j = 0, len = layerArr.length; j < len; j++) {
-        theLayer = layerArr[j];
+    if (this.layers != null) {
+      ref = this.layers;
+      for (j = 0, len = ref.length; j < len; j++) {
+        theLayer = ref[j];
         if (!(theLayer instanceof NFPageLayer)) {
           throw "You can only add NFPageLayers to an NFPageLayerCollection";
         }
@@ -1397,6 +1458,83 @@ NFPageLayerCollection = (function(superClass) {
     return results;
   };
 
+
+  /**
+  Creates a new {@link NFPaperParentLayer} from this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPaperParentLayer} the new Paper Parent layer
+  @throws Throw error if this collection is empty
+  @throws Throw error if this collection contains layers from different PDFs
+   */
+
+  NFPageLayerCollection.prototype.newPaperParentLayer = function() {
+    var newPaperParent;
+    if (this.isEmpty()) {
+      throw "Can't create a paper parent layer with no target layers";
+    }
+    if (!this.fromSamePDF()) {
+      throw "Can't create a single paper parent layer for page layers from different PDFs";
+    }
+    newPaperParent = new NFPaperParentLayer(this.nullify()).setName();
+    return newPaperParent;
+  };
+
+
+  /**
+  Checks for an existing valid paper parent layer for these pages. Sets it as
+  the parent if it exists, otherwise creates a new one.
+  @memberof NFPageLayerCollection
+  @returns {NFPaperParentLayer} the paper parent layer
+  @param {boolean} [shouldMove] - whether or not the layers should move below their parent
+  @throws Throw error if this collection is empty
+  @throws Throw error if this collection contains layers from different PDFs
+   */
+
+  NFPageLayerCollection.prototype.assignPaperParentLayer = function(shouldMove) {
+    var bottomLayer, j, layer, layersAboveGroup, layersBelowGroup, len, paperLayerGroup, paperParentLayer, ref, topLayer;
+    if (shouldMove == null) {
+      shouldMove = false;
+    }
+    if (this.isEmpty()) {
+      throw "Can't create a paper parent layer with no target layers";
+    }
+    if (!this.fromSamePDF()) {
+      throw "Can't create a single paper parent layer for page layers from different PDFs";
+    }
+    paperParentLayer = this.layers[0].findPaperParentLayer();
+    if (paperParentLayer != null) {
+      if (shouldMove) {
+        paperLayerGroup = paperParentLayer.getChildren();
+        layersAboveGroup = new NFLayerCollection();
+        layersBelowGroup = new NFLayerCollection();
+        ref = this.layers;
+        for (j = 0, len = ref.length; j < len; j++) {
+          layer = ref[j];
+          if (layer.index() < paperParentLayer.index()) {
+            layersAboveGroup.addNFLayer(layer);
+          }
+          if (layer.index() > paperParentLayer.index()) {
+            layersBelowGroup.addNFLayer(layer);
+          }
+        }
+        while (layersAboveGroup.count() > 0) {
+          bottomLayer = layersAboveGroup.getBottommostLayer();
+          bottomLayer.moveAfter(paperParentLayer);
+          layersAboveGroup.remove(bottomLayer);
+        }
+        while (layersBelowGroup.count() > 0) {
+          topLayer = layersBelowGroup.getTopmostLayer();
+          topLayer.moveAfter(paperLayerGroup.getBottommostLayer());
+          layersBelowGroup.remove(topLayer);
+        }
+      }
+      this.setParents(paperParentLayer);
+    } else {
+      paperParentLayer = this.newPaperParentLayer();
+    }
+    return paperParentLayer;
+  };
+
   return NFPageLayerCollection;
 
 })(NFLayerCollection);
@@ -1471,17 +1609,25 @@ NFPaperParentLayer = (function(superClass) {
 })(NFLayer);
 
 NFPaperParentLayer = Object.assign(NFPaperParentLayer, {
+
+  /**
+  Class Method. Tests an AV layer to see if it can be a paper parent Layer
+  @memberof NFPaperParentLayer
+  @param {AVLayer} layer - the AVLayer to test
+  @returns {boolean} whether or not the layer is a valid paper parent
+   */
   isPaperParentLayer: function(layer) {
     return layer.nullLayer && layer.name.indexOf('PDF' >= 0);
   },
-  getPaperParentNameForPageLayer: function(pageLayer) {},
-  getPaperParentLayerForPageLayers: function(pageLayer) {
-    var paperParent;
-    paperParent = pageLayer.getPaperParentLayer();
-    if (paperParent == null) {
-      paperParent = pageLayer.containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForPageLayer(pageLayer));
-    }
-    return paperParent;
+
+  /**
+  Class Method. Returns the name string for the paper parent for a given layer
+  @memberof NFPaperParentLayer
+  @param {NFPageLayer} pageLayer - the page layer to use to determine the name
+  @returns {string} The name of the paperParentLayer for the given layer
+   */
+  getPaperParentNameForPageLayer: function(pageLayer) {
+    return 'PDF ' + pageLayer.getPDFNumber();
   }
 });
 

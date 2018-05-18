@@ -110,7 +110,7 @@ presentUI = function() {
           _.selectedPages.initLayerTransforms();
         }
         _.selectedPages.initLayers();
-        newParent = _.selectedPages.newPaperParentLayer();
+        newParent = _.selectedPages.assignPaperParentLayer(true);
         newParent.setZoomer();
         if (animatePageCheckbox.value) {
           topLayer = _.selectedPages.getTopmostLayer();
