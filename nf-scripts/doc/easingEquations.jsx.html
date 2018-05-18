@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: easingEquations.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,30 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: easingEquations.jsx</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+/**
+The possible easing equations for {@linkcode Property#makeEasedInOutFromMarkers}
+@global
+@constant
+@property in_quint
+@property out_quint
+ */
+app.NF.Util.easingEquations = {
+  in_quint: "c * (t/=d) * t * t * t * t + b",
+  out_quint: "c * ((t = t / d - 1) * t * t * t * t + 1) + b"
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

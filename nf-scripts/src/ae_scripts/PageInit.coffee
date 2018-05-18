@@ -93,7 +93,7 @@ presentUI = ->
 		cancelButton.onClick = getCancelFunction w
 
 		okButton.onClick = ->
-			highlightChoices = new NFHighlightLayerCollection([])
+			highlightChoices = new NFHighlightLayerCollection()
 			for highlight in allHighlights.layers
 				checkbox = highlightCheckboxes[highlight.name]
 				highlightChoices.addNFHighlightLayer highlight if checkbox.value is true
@@ -102,12 +102,25 @@ presentUI = ->
 				_.selectedPages.initLayerTransforms() if initLayerTransformsCheckbox.value is yes
 				_.selectedPages.initLayers()
 
-				_.selectedPages.newPaperParentLayer()
+				# FIXME: This creates a new paper parent layer even if there's already an existing one we should hook up to
+				newParent = _.selectedPages.newPaperParentLayer()
+				newParent.setZoomer()
+
+				if animatePageCheckbox.value
+					topLayer = _.selectedPages.getTopmostLayer()
+					positionProperty = topLayer.layer.property("Transform").property("Position")
+					# Make a slider for controlling the start position
+					slider = topLayer.addSlider("Start Offset", 3000)
+					markerOptions =
+						property: positionProperty
+						startEquation: NF.Util.easingEquations.out_quint
+						startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
+					topLayer.addInOutMarkersForProperty markerOptions
+					for layer in _.selectedPages.layers
+						layer.layer.startTime = topLayer.markers().keyTime("NF In") unless layer.sameLayerAs topLayer
 
 			highlightChoices.disconnectHighlights()
 			highlightChoices.bubbleUpHighlights()
-
-			# initWithOptions options
 
 			w.hide()
 
@@ -158,133 +171,7 @@ getCancelFunction = (w) ->
 	->
 		w.close()
 
-initWithOptions = (options) ->
-	# Set size and position for each layer
-
-
-	# setSize _selectedLayers
-	# setPosition selectedLayers
-	# thisLayer = undefined
-	# i = 0
-	# while i < selectedLayers.length
-	# 	thisLayer = selectedLayers[i]
-	# 	# Add Motion Blur
-	# 	thisLayer.motionBlur = true
-	# 	setDropShadowForLayer thisLayer
-	# 	thisLayer.name = thisLayer.name.replace " NFPage", " [+]"
-	# 	i++
-	name = nullName(selectedLayers[0])
-	newParent = nullify(selectedLayers, name)
-	zoomer = zoom(newParent)
-	# NF.Util.bubbleUpHighlights selectedLayers, options.highlightChoices
-	# # FIXME: When we disconnect with an OVERRIDE, we should warn or offer to remove the overridden controls
-	# # FIXME: Anytime we disconnect a broken bubbleup, we should copy the current values back to the OG one
-
-	if options.animatePage
-		topLayer = topmostLayer(selectedLayers)
-		NF.Util.animatePage
-			page: topLayer
-			type: NF.Util.AnimationType.SLIDE
-			position: NF.Util.Position.RIGHT
-			direction: NF.Util.Direction.IN
-			duration: _.animationDuration
-			easeFunction: NF.Util.EaseFunction.PAGESLIDEEASE
-		for layer in selectedLayers
-			layer.inPoint = topLayer.inPoint + _.animationDuration unless layer.index is topLayer.index
-
-# getBubblableObjects = (selectedLayers) ->
-# 	# Get all the highlights in selected layers
-# 	allHighlights = {}
-# 	for layer in selectedLayers
-# 		layerHighlights = NF.Util.sourceRectsForHighlightsInTargetLayer layer
-# 		if layerHighlights?
-# 			for key of layerHighlights
-# 				layerHighlights[key].layerInPart = layer
-# 			allHighlights = Object.assign allHighlights, layerHighlights
-#
-# 	bubblableObjects =
-# 		highlights: allHighlights
-
-# setDropShadowForLayer = (layer) ->
-# 	dropShadow = layer.property('Effects').addProperty('ADBE Drop Shadow')
-# 	dropShadow.property('Opacity').setValue 191.25
-# 	dropShadow.property('Direction').setValue 0
-# 	dropShadow.property('Distance').setValue 20
-# 	dropShadow.property('Softness').setValue 300
-# 	return
-
-# setSize = (selectedLayers) ->
-# 	thisLayer = undefined
-# 	i = 0
-# 	while i < selectedLayers.length
-# 		thisLayer = selectedLayers[i]
-# 		thisLayer.property('Transform').property('Scale').setValue [
-# 			50
-# 			50
-# 			50
-# 		]
-# 		i++
-# 	return
-#
-# setPosition = (selectedLayers) ->
-# 	thisLayer = undefined
-# 	i = 0
-# 	while i < selectedLayers.length
-# 		thisLayer = selectedLayers[i]
-# 		layerHeight = thisLayer.height
-# 		oldPosition = thisLayer.property('Transform').property('Position').value
-# 		newPosition = oldPosition
-# 		newPosition[1] = layerHeight / 4
-# 		thisLayer.property('Transform').property('Position').setValue newPosition
-# 		i++
-# 	return
-
-nullName = (selectedLayer) ->
-	fullName = selectedLayer.name
-	newName = 'PDF ' + fullName.substr(0, fullName.indexOf('_'))
-	newName
-
-zoom = (target) ->
-	zoomName = 'Zoomer'
-	zoomer = app.project.activeItem.layer(zoomName)
-	if zoomer == null
-		zoomer = app.project.activeItem.layer(zoomName.toLowerCase())
-	if zoomer == null
-		zoomer = nullify([ target ], zoomName)
-	else
-		target.parent = zoomer
-	zoomer
-
-nullify = (selectedLayers, nullName) ->
-	newNull = _.mainComp.layers.addNull()
-	newNull.name = nullName
-	newNull.moveBefore topmostLayer(selectedLayers)
-	thisLayer = undefined
-	#$.write("new null: "+ newNull.name + "\n");
-	i = 1
-	while i <= selectedLayers.length
-		thisLayer = selectedLayers[i - 1]
-		thisLayer.parent = newNull
-		i++
-	newNull
-
-# topmostLayer = (layers) ->
-# 	lowestIndex = layers[0].index
-# 	thisLayer = undefined
-# 	i = 1
-# 	while i < layers.length
-# 		if layers[i].index < lowestIndex
-# 			lowestIndex = layers[i].index
-# 		i++
-# 	app.project.activeItem.layer lowestIndex
-
 app.beginUndoGroup _.undoGroupName
-
-# Let's see if the obJect Model made it here in one peice
-# testLayer = new NF.Models.NFLayer _.mainComp.selectedLayers[0]
-# $.writeln "\n\n" + testLayer.getInfo()
-# selectedLayersCollection = NF.Models.NFLayerCollection.collectionFromLayerArray _.mainComp.selectedLayers
-# $.write selectedLayersCollection.getInfo()
 
 presentUI()
 

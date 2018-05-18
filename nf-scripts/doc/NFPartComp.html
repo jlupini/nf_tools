@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: NFComp</title>
+    <title>JSDoc: Class: NFPartComp</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: NFComp</h1>
+    <h1 class="page-title">Class: NFPartComp</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>NFComp<span class="signature">(comp)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>NFPartComp<span class="signature">(comp)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">NF Wrapper object for a CompItem that allows for access to and maniplation of its layers.</div>
+            <div class="class-description">NF Wrapper object for a CompItem used as a part comp that allows for access to and maniplation of its layers.</div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="NFComp"><span class="type-signature"></span>new NFComp<span class="signature">(comp)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="NFPartComp"><span class="type-signature"></span>new NFPartComp<span class="signature">(comp)</span><span class="type-signature"></span></h4>
     
 
     
@@ -53,7 +53,7 @@
 
 
 <div class="description">
-    Creates a new NFComp and sets its comp property.
+    Creates a new NFPartComp and sets its comp property.
 </div>
 
 
@@ -105,7 +105,7 @@
 
             
 
-            <td class="description last">the CompItem for this NFComp</td>
+            <td class="description last">the CompItem for this NFPartComp</td>
         </tr>
 
     
@@ -159,7 +159,7 @@
 
             
 
-            <td class="description last">the CompItem for this NFComp</td>
+            <td class="description last">the CompItem for this NFPartComp</td>
         </tr>
 
     
@@ -198,7 +198,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line2">line 2</a>
+        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line1489">line 1489</a>
     </li></ul></dd>
     
 
@@ -242,6 +242,17 @@
     </div>
 
     
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="NFComp.html">NFComp</a></li>
+    </ul>
+
+
+    
 
     
 
@@ -257,6 +268,117 @@
 
     
         <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getZoomer"><span class="type-signature">(static) </span>NFComp#getZoomer<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="NFLayer.html">NFLayer</a>|null}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Gets the Zoomer layer
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line91">line 91</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The zoomer NFLayer or null if it doesn't exist
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
 
         
             
@@ -293,6 +415,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFComp.html#addNull">NFComp#addNull</a>
+    </li></ul></dd>
     
 
     
@@ -404,6 +531,11 @@
     
 
     
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="NFComp.html#getInfo">NFComp#getInfo</a>
+    </li></ul></dd>
+    
 
     
 
@@ -463,6 +595,126 @@
     <dd>
         
 <span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getZoomer"><span class="type-signature"></span>getZoomer<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="NFLayer.html">NFLayer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Gets the zoomer layer
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line1536">line 1536</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+    <div class="param-desc">
+    
+        Will throw an error if the zoomer comp cannot be found
+    
+    </div>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The zoomer NFLayer
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
 
 
     </dd>
@@ -558,6 +810,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFComp.html#layerWithName">NFComp#layerWithName</a>
+    </li></ul></dd>
     
 
     
@@ -670,6 +927,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFComp.html#selectedLayers">NFComp#selectedLayers</a>
+    </li></ul></dd>
+    
 
     
 
@@ -777,6 +1039,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="NFComp.html#selectedPageLayers">NFComp#selectedPageLayers</a>
+    </li></ul></dd>
     
 
     

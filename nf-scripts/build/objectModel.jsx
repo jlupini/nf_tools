@@ -76,9 +76,22 @@ NFComp = (function() {
     theLayer = (ref = this.comp.layers) != null ? ref.byName(name) : void 0;
     if (theLayer != null) {
       foundLayer = new NFLayer(theLayer);
-      foundLayer = foundLayer.getSpecializedLayer();
+      return foundLayer.getSpecializedLayer();
     }
     return null;
+  };
+
+
+  /**
+  Gets the Zoomer layer
+  @memberof NFPartComp
+  @returns {NFLayer | null} The zoomer NFLayer or null if it doesn't exist
+   */
+
+  NFComp.prototype.getZoomer = function() {
+    var zoomer;
+    zoomer = this.layerWithName('Zoomer');
+    return zoomer;
   };
 
 
@@ -159,6 +172,14 @@ NFLayer = (function() {
     return false;
   };
 
+  NFLayer.prototype.effects = function() {
+    return this.layer.Effects;
+  };
+
+  NFLayer.prototype.getEffectWithName = function(effectName) {
+    return this.layer.Effects.property(effectName);
+  };
+
   NFLayer.prototype.sameLayerAs = function(testLayer) {
     if (testLayer == null) {
       return false;
@@ -237,6 +258,23 @@ NFLayer = (function() {
 
 
   /**
+  Sets the layer's parent to the zoomer if this layer is in an NFPartComp
+  @memberof NFLayer
+  @returns {NFLayer} self
+  @throws Will throw an error if not given an NFLayer or null
+   */
+
+  NFLayer.prototype.setZoomer = function() {
+    var zoomer;
+    zoomer = this.containingComp().getZoomer();
+    if (zoomer != null) {
+      this.setParent(zoomer);
+    }
+    return this;
+  };
+
+
+  /**
   Moves this layer's index to immediately before the provided target layer
   @memberof NFLayer
   @param {NFLayer} targetLayer - the layer to move this layer before
@@ -267,6 +305,168 @@ NFLayer = (function() {
     }
     this.layer.moveAfter(targetLayer.layer);
     return this;
+  };
+
+
+  /**
+  Moves this layer's index to immediately after the provided target layer
+  @memberof NFLayer
+  @returns {Property} Marker property
+   */
+
+  NFLayer.prototype.markers = function() {
+    return this.layer.property("Marker");
+  };
+
+
+  /**
+  Sets the given property's expression and adds In and Out markers (if not already on the layer) for in and out transitions. Overrides previous expressions
+  @memberof NFLayer
+  @returns {NFLayer} self
+  @param {Object} options - an object with the chosen equations and in/out values. Equations found in easingEquations.coffee
+  @param {Property} options.property - the property to use for the in/outs. required
+  @param {float} options.length - the length of the transition. Default 2.0
+  @param {string} options.startEquation - the equation to use for the in transition of the property.
+  @param {string} options.endEquation - the equation to use for the out transition of the property.
+  @param {any | Array} options.startValue - the value for this property at its inPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.
+  @param {any | Array} options.endValue - the value for this property at its outPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.
+  @throws Throws error if not given at least a start or end equation and value
+  @throws Throws error if the start or end values given are the wrong number of dimensions for this property
+   */
+
+  NFLayer.prototype.addInOutMarkersForProperty = function(options) {
+    var e, element, error, error1, expression, fileText, i, idx, inComm, inMarker, inValueString, j, markers, outComm, outMarker, outValueString, ref, ref1, shouldFail;
+    if (!((options.property != null) && options.property instanceof Property)) {
+      throw "Invalid property";
+    }
+    if (!(((options.startEquation != null) && (options.startValue != null)) || ((options.endEquation != null) && (options.endValue != null)))) {
+      throw "Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value";
+    }
+    shouldFail = false;
+    if (options.property.value instanceof Array) {
+      if (options.startValue != null) {
+        if (!(options.startValue instanceof Array && options.startValue.length === options.property.value.length)) {
+          shouldFail = true;
+        }
+      }
+      if (options.endValue != null) {
+        if (!(options.endValue instanceof Array && options.endValue.length === options.property.value.length)) {
+          shouldFail = true;
+        }
+      }
+    } else {
+      if ((options.startValue != null) && options.startValue instanceof Array) {
+        shouldFail = true;
+      }
+      if ((options.endValue != null) && options.endValue instanceof Array) {
+        shouldFail = true;
+      }
+    }
+    if (shouldFail) {
+      throw "Given start or end value type doesn't match property value";
+    }
+    if (options.length == null) {
+      options.length = 2.0;
+    }
+    inComm = "NF In";
+    outComm = "NF Out";
+    markers = this.markers();
+    inMarker = outMarker = null;
+    try {
+      inMarker = markers.keyValue(inComm);
+    } catch (error) {
+      e = error;
+    }
+    try {
+      outMarker = markers.keyValue(outComm);
+    } catch (error1) {
+      e = error1;
+    }
+    if (options.startValue != null) {
+      if (inMarker == null) {
+        markers.setValueAtTime(this.layer.inPoint + options.length, new MarkerValue(inComm));
+      }
+    } else if (inMarker != null) {
+      this.layer.removeMarker(inComm);
+    }
+    if (options.endValue != null) {
+      if (outMarker == null) {
+        markers.setValueAtTime(this.layer.outPoint - options.length, new MarkerValue(outComm));
+      }
+    } else if (outMarker != null) {
+      this.layer.removeMarker(outComm);
+    }
+    fileText = NF.Util.readFile("expressions/marker-animation-main-function.js");
+    fileText = NF.Util.fixLineBreaks(fileText);
+    expression = fileText;
+    if (options.startEquation != null) {
+      expression = ("var startEquationString = '" + options.startEquation + "';\n") + expression;
+      if (options.startValue instanceof Array) {
+        inValueString = "[";
+        for (idx = i = 0, ref = options.startValue.length - 1; 0 <= ref ? i <= ref : i >= ref; idx = 0 <= ref ? ++i : --i) {
+          element = options.startValue[idx];
+          if (element instanceof Property) {
+            inValueString += options.startValue[idx].expressionStringForValue();
+          } else {
+            inValueString += options.startValue[idx];
+          }
+          if (idx < options.startValue.length - 1) {
+            inValueString += ",";
+          }
+        }
+        inValueString += "]";
+      } else if (options.startValue instanceof Property) {
+        inValueString = options.startValue.expressionStringForValue();
+      } else {
+        inValueString = options.startValue;
+      }
+      expression = ("var inValue = " + inValueString + ";\n") + expression;
+    }
+    if (options.endEquation != null) {
+      expression = ("var endEquationString = '" + options.endEquation + "';\n") + expression;
+      if (options.endValue instanceof Array) {
+        outValueString = "[";
+        for (idx = j = 0, ref1 = options.endValue.length - 1; 0 <= ref1 ? j <= ref1 : j >= ref1; idx = 0 <= ref1 ? ++j : --j) {
+          element = options.endValue[idx];
+          if (element instanceof Property) {
+            outValueString += options.endValue[idx].expressionStringForValue();
+          } else {
+            outValueString += options.endValue[idx];
+          }
+          if (idx < options.endValue.length - 1) {
+            outValueString += ",";
+          }
+        }
+        outValueString += "]";
+      } else if (options.endValue instanceof Property) {
+        outValueString = options.endValue.expressionStringForValue();
+      } else {
+        outValueString = options.endValue;
+      }
+      expression = ("var outValue = " + outValueString + ";\n") + expression;
+    }
+    if (!options.property.canSetExpression) {
+      throw "Can't set expression on this property";
+    }
+    options.property.expression = expression;
+    return this;
+  };
+
+
+  /**
+  Creates and returns a slider effect on the layer
+  @memberof NFLayer
+  @param {string} name - the slider name
+  @param {float} value - the initial value of the slider
+  @returns {Property} the slider property
+   */
+
+  NFLayer.prototype.addSlider = function(name, value) {
+    var slider;
+    slider = this.effects().addProperty("ADBE Slider Control");
+    slider.slider.setValue(value);
+    slider.name = name;
+    return slider;
   };
 
   return NFLayer;
@@ -969,14 +1169,6 @@ NFPageLayer = (function(superClass) {
     }
   };
 
-  NFPageLayer.prototype.effects = function() {
-    return this.layer.Effects;
-  };
-
-  NFPageLayer.prototype.getEffectWithName = function(effectName) {
-    return this.layer.Effects.property(effectName);
-  };
-
   NFPageLayer.prototype.highlights = function() {
     return this.pageItem.highlights();
   };
@@ -1294,12 +1486,14 @@ NFPaperParentLayer = Object.assign(NFPaperParentLayer, {
 });
 
 
-/*
- *    NF Part Comp
- *
- *    subclass of NFComp
- *    A part composition which can contain pageLayers and other such things
- *
+/**
+Creates a new NFPartComp and sets its comp property.
+@class NFPartComp
+@classdesc NF Wrapper object for a CompItem used as a part comp that allows for access to and maniplation of its layers.
+@property {CompItem} comp - the CompItem for this NFPartComp
+@param {CompItem} comp - the CompItem for this NFPartComp
+@extends NFComp
+@throws Will throw an error if not given a valid CompItem at initialization
  */
 var NFPartComp,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1318,8 +1512,34 @@ NFPartComp = (function(superClass) {
     this;
   }
 
+
+  /**
+  Returns a string representation of the object
+  @memberof NFPartComp
+  @override
+  @returns {string} string representation of the object
+   */
+
   NFPartComp.prototype.getInfo = function() {
     return "NFPartComp: '" + this.name + "'";
+  };
+
+
+  /**
+  Gets the zoomer layer
+  @memberof NFPartComp
+  @override
+  @throws Will throw an error if the zoomer comp cannot be found
+  @returns {NFLayer} The zoomer NFLayer
+   */
+
+  NFPartComp.prototype.getZoomer = function() {
+    var zoomer;
+    zoomer = this.layerWithName('Zoomer');
+    if (zoomer == null) {
+      throw "This NFPartComp has no zoomer!";
+    }
+    return zoomer;
   };
 
   return NFPartComp;

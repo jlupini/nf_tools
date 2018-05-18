@@ -19,10 +19,6 @@ class NFPageLayer extends NFLayer
       return new NFPaperParentLayer(@layer.parent)
     else
       return null
-  effects: ->
-    return @layer.Effects
-  getEffectWithName: (effectName) ->
-    return @layer.Effects.property(effectName)
   # Returns NFHighlightLayerCollection of all highlights in this page
   highlights: ->
     return @pageItem.highlights()

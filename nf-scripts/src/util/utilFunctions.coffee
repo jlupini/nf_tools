@@ -1,4 +1,3 @@
-`#include "../lib/extendscript.prototypes.js"`
 NF = app.NF ? {}
 
 # enums
@@ -111,28 +110,27 @@ NF.Util.findItemIn = (itemName, sourceFolderItem) ->
     i++
   null
 
+# Reads a file and returns the contents as a string
+NF.Util.readFile = (filename) ->
+  file_contents = undefined
+  start_folder = new Folder(new File($.fileName).parent.fsName)
+  file_handle = new File(start_folder.fsName + '/' + filename)
+  if !file_handle.exists
+    throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + start_folder.fsName + '\'.')
+  try
+    file_handle.open 'r'
+    file_contents = file_handle.read()
+  catch e
+    throw new Error('I couldn\'t read the given file: ' + e)
+  finally
+    file_handle.close()
+  file_contents
+
+NF.Util.fixLineBreaks = (text) ->
+  return text.replace(/\n\n/g, '\n \n')
+
 # Animates a page in or out with specified params
 NF.Util.animatePage = (model) ->
-
-  # FIXME: Move all this ew stuff to a generalized thing
-  ew_getPathToEasingFolder = ->
-    folderObj = new Folder(new File($.fileName).parent.fsName + '/lib/' + "easingExpressions")
-    folderObj
-
-  ew_readFile = (filename) ->
-    the_code = undefined
-    easing_folder = ew_getPathToEasingFolder()
-    file_handle = new File(easing_folder.fsName + '/' + filename)
-    if !file_handle.exists
-      throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + easing_folder.fsName + '\'. \n\nPlease refer to the installation guide and try installing again, or go to:\n\nhttp://aescripts.com/ease-and-wizz/\n\nfor more info.')
-    try
-      file_handle.open 'r'
-      the_code = file_handle.read()
-    catch e
-      throw new Error('I couldn\'t read the easing equation file: ' + e)
-    finally
-      file_handle.close()
-    the_code
 
   ew_setProps = (selectedProperties, expressionCode) ->
     # selectedProperties = app.project.activeItem.selectedProperties
@@ -140,7 +138,7 @@ NF.Util.animatePage = (model) ->
     currentProperty = undefined
     i = undefined
     # retain the whitespace
-    expressionCode = expressionCode.replace(/\n\n/g, '\n \n')
+    expressionCode = NF.Util.fixLineBreaks expressionCode
     i = 0
     while i < selectedProperties.length
       currentProperty = selectedProperties[i]

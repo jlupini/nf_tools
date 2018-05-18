@@ -1,5 +1,5 @@
 #include "runtimeLibraries.jsx";
-var NF, _, getCancelFunction, initWithOptions, nullName, nullify, presentUI, zoom;
+var NF, _, getCancelFunction, presentUI;
 
 NF = app.NF;
 
@@ -10,7 +10,7 @@ _ = {
 };
 
 presentUI = function() {
-  var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightAlreadyConnectedToThisLayer, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initLayerTransformsCheckbox, initTab, j, k, l, len, len1, len2, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, ref, ref1, ref2, removeCheckbox, tPanel, theLayer, w;
+  var allHighlights, animatePageCheckbox, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightAlreadyConnectedToThisLayer, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, i, initLayerTransformsCheckbox, initTab, j, k, len, len1, len2, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, ref, ref1, ref2, removeCheckbox, tPanel, theLayer, w;
   if (_.mainComp.selectedLayers().onlyContainsPageLayers()) {
     _.selectedPages = _.mainComp.selectedPageLayers();
   } else {
@@ -30,8 +30,8 @@ presentUI = function() {
   tPanel.preferredSize = [350, 300];
   orphans = 0;
   ref = _.selectedPages.layers;
-  for (j = 0, len = ref.length; j < len; j++) {
-    theLayer = ref[j];
+  for (i = 0, len = ref.length; i < len; i++) {
+    theLayer = ref[i];
     if (!theLayer.hasNullParent()) {
       orphans++;
     }
@@ -69,8 +69,8 @@ presentUI = function() {
     highlightPanel.margins.top = 16;
     highlightCheckboxes = {};
     ref1 = allHighlights.layers;
-    for (k = 0, len1 = ref1.length; k < len1; k++) {
-      highlight = ref1[k];
+    for (j = 0, len1 = ref1.length; j < len1; j++) {
+      highlight = ref1[j];
       displayName = highlight.name + " - pg" + highlight.getPageItem().getPageNumber();
       highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.connectedPageLayer);
       if (highlight.bubbled) {
@@ -95,11 +95,11 @@ presentUI = function() {
     });
     cancelButton.onClick = getCancelFunction(w);
     okButton.onClick = function() {
-      var checkbox, highlightChoices, l, len2, ref2;
-      highlightChoices = new NFHighlightLayerCollection([]);
+      var checkbox, highlightChoices, k, l, layer, len2, len3, markerOptions, newParent, positionProperty, ref2, ref3, slider, topLayer;
+      highlightChoices = new NFHighlightLayerCollection();
       ref2 = allHighlights.layers;
-      for (l = 0, len2 = ref2.length; l < len2; l++) {
-        highlight = ref2[l];
+      for (k = 0, len2 = ref2.length; k < len2; k++) {
+        highlight = ref2[k];
         checkbox = highlightCheckboxes[highlight.name];
         if (checkbox.value === true) {
           highlightChoices.addNFHighlightLayer(highlight);
@@ -110,7 +110,26 @@ presentUI = function() {
           _.selectedPages.initLayerTransforms();
         }
         _.selectedPages.initLayers();
-        _.selectedPages.newPaperParentLayer();
+        newParent = _.selectedPages.newPaperParentLayer();
+        newParent.setZoomer();
+        if (animatePageCheckbox.value) {
+          topLayer = _.selectedPages.getTopmostLayer();
+          positionProperty = topLayer.layer.property("Transform").property("Position");
+          slider = topLayer.addSlider("Start Offset", 3000);
+          markerOptions = {
+            property: positionProperty,
+            startEquation: NF.Util.easingEquations.out_quint,
+            startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
+          };
+          topLayer.addInOutMarkersForProperty(markerOptions);
+          ref3 = _.selectedPages.layers;
+          for (l = 0, len3 = ref3.length; l < len3; l++) {
+            layer = ref3[l];
+            if (!layer.sameLayerAs(topLayer)) {
+              layer.layer.startTime = topLayer.markers().keyTime("NF In");
+            }
+          }
+        }
       }
       highlightChoices.disconnectHighlights();
       highlightChoices.bubbleUpHighlights();
@@ -134,8 +153,8 @@ presentUI = function() {
     highlightDisconnectPanel.margins.top = 16;
     highlightDisconnectCheckboxes = {};
     ref2 = allHighlights.layers;
-    for (l = 0, len2 = ref2.length; l < len2; l++) {
-      highlight = ref2[l];
+    for (k = 0, len2 = ref2.length; k < len2; k++) {
+      highlight = ref2[k];
       if (highlight.bubbled) {
         highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add("checkbox {text: '" + highlight.name + "'}");
         highlightDisconnectCheckboxes[highlight.name].value = false;
@@ -148,10 +167,10 @@ presentUI = function() {
     });
     disCancelButton.onClick = getCancelFunction(w);
     disOkButton.onClick = function() {
-      var disconnectCheckbox, len3, m, ref3, ref4;
+      var disconnectCheckbox, l, len3, ref3, ref4;
       ref3 = allHighlights.layers;
-      for (m = 0, len3 = ref3.length; m < len3; m++) {
-        highlight = ref3[m];
+      for (l = 0, len3 = ref3.length; l < len3; l++) {
+        highlight = ref3[l];
         disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name];
         if (disconnectCheckbox != null) {
           if (disconnectCheckbox.value === true) {
@@ -174,71 +193,6 @@ getCancelFunction = function(w) {
   return function() {
     return w.close();
   };
-};
-
-initWithOptions = function(options) {
-  var j, layer, len, name, newParent, results, topLayer, zoomer;
-  name = nullName(selectedLayers[0]);
-  newParent = nullify(selectedLayers, name);
-  zoomer = zoom(newParent);
-  if (options.animatePage) {
-    topLayer = topmostLayer(selectedLayers);
-    NF.Util.animatePage({
-      page: topLayer,
-      type: NF.Util.AnimationType.SLIDE,
-      position: NF.Util.Position.RIGHT,
-      direction: NF.Util.Direction.IN,
-      duration: _.animationDuration,
-      easeFunction: NF.Util.EaseFunction.PAGESLIDEEASE
-    });
-    results = [];
-    for (j = 0, len = selectedLayers.length; j < len; j++) {
-      layer = selectedLayers[j];
-      if (layer.index !== topLayer.index) {
-        results.push(layer.inPoint = topLayer.inPoint + _.animationDuration);
-      } else {
-        results.push(void 0);
-      }
-    }
-    return results;
-  }
-};
-
-nullName = function(selectedLayer) {
-  var fullName, newName;
-  fullName = selectedLayer.name;
-  newName = 'PDF ' + fullName.substr(0, fullName.indexOf('_'));
-  return newName;
-};
-
-zoom = function(target) {
-  var zoomName, zoomer;
-  zoomName = 'Zoomer';
-  zoomer = app.project.activeItem.layer(zoomName);
-  if (zoomer === null) {
-    zoomer = app.project.activeItem.layer(zoomName.toLowerCase());
-  }
-  if (zoomer === null) {
-    zoomer = nullify([target], zoomName);
-  } else {
-    target.parent = zoomer;
-  }
-  return zoomer;
-};
-
-nullify = function(selectedLayers, nullName) {
-  var i, newNull, thisLayer;
-  newNull = _.mainComp.layers.addNull();
-  newNull.name = nullName;
-  newNull.moveBefore(topmostLayer(selectedLayers));
-  thisLayer = void 0;
-  i = 1;
-  while (i <= selectedLayers.length) {
-    thisLayer = selectedLayers[i - 1];
-    thisLayer.parent = newNull;
-    i++;
-  }
-  return newNull;
 };
 
 app.beginUndoGroup(_.undoGroupName);

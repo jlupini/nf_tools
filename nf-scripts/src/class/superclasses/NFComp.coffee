@@ -53,8 +53,17 @@ class NFComp
     theLayer = @comp.layers?.byName(name)
     if theLayer?
       foundLayer = new NFLayer(theLayer)
-      foundLayer = foundLayer.getSpecializedLayer()
+      return foundLayer.getSpecializedLayer()
     return null
+
+  ###*
+  Gets the Zoomer layer
+  @memberof NFPartComp
+  @returns {NFLayer | null} The zoomer NFLayer or null if it doesn't exist
+  ###
+  getZoomer: ->
+    zoomer = @layerWithName 'Zoomer'
+    return zoomer
 
   ###*
   # Creates and returns a new null layer in this comp

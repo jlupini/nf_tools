@@ -2,10 +2,10 @@ module.exports = (grunt) ->
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
-    clean: ['build/*']
+    clean: ['build/*', 'doc/*']
     jsdoc:
       dist:
-        src: ['build/objectModel.jsx']
+        src: ['build/objectModel.jsx', 'build/utilFunctions.jsx', 'build/extensions.jsx', 'build/easingEquations.jsx']
         options:
           destination: 'doc'
     coffeelinter:
@@ -14,6 +14,15 @@ module.exports = (grunt) ->
       target:
         ['src/class/*.coffee']
     coffee:
+      compileExpressions:
+        options:
+          bare: true
+        expand: true
+        flatten: true
+        cwd: 'src/expressions'
+        src: ['*']
+        dest: 'build/expressions'
+        ext: '.js'
       compilePanels:
         expand: true
         flatten: true

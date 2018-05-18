@@ -1,4 +1,3 @@
-#include "../lib/extendscript.prototypes.js";
 var NF, ref;
 
 NF = (ref = app.NF) != null ? ref : {};
@@ -107,38 +106,38 @@ NF.Util.findItemIn = function(itemName, sourceFolderItem) {
   return null;
 };
 
+NF.Util.readFile = function(filename) {
+  var e, error, file_contents, file_handle, start_folder;
+  file_contents = void 0;
+  start_folder = new Folder(new File($.fileName).parent.fsName);
+  file_handle = new File(start_folder.fsName + '/' + filename);
+  if (!file_handle.exists) {
+    throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + start_folder.fsName + '\'.');
+  }
+  try {
+    file_handle.open('r');
+    file_contents = file_handle.read();
+  } catch (error) {
+    e = error;
+    throw new Error('I couldn\'t read the given file: ' + e);
+  } finally {
+    file_handle.close();
+  }
+  return file_contents;
+};
+
+NF.Util.fixLineBreaks = function(text) {
+  return text.replace(/\n\n/g, '\n \n');
+};
+
 NF.Util.animatePage = function(model) {
-  var diffX, diffY, duration, easingEquation, ew_getPathToEasingFolder, ew_readFile, ew_setProps, inKeyIdx, inPoint, mainComp, newPosition, oldPosition, outKeyIdx, outPoint, positionProperty, rect, ref1, ref2, ref3, ref4, ref5, ref6;
-  ew_getPathToEasingFolder = function() {
-    var folderObj;
-    folderObj = new Folder(new File($.fileName).parent.fsName + '/lib/' + "easingExpressions");
-    return folderObj;
-  };
-  ew_readFile = function(filename) {
-    var e, easing_folder, error, file_handle, the_code;
-    the_code = void 0;
-    easing_folder = ew_getPathToEasingFolder();
-    file_handle = new File(easing_folder.fsName + '/' + filename);
-    if (!file_handle.exists) {
-      throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + easing_folder.fsName + '\'. \n\nPlease refer to the installation guide and try installing again, or go to:\n\nhttp://aescripts.com/ease-and-wizz/\n\nfor more info.');
-    }
-    try {
-      file_handle.open('r');
-      the_code = file_handle.read();
-    } catch (error) {
-      e = error;
-      throw new Error('I couldn\'t read the easing equation file: ' + e);
-    } finally {
-      file_handle.close();
-    }
-    return the_code;
-  };
+  var diffX, diffY, duration, easingEquation, ew_setProps, inKeyIdx, inPoint, mainComp, newPosition, oldPosition, outKeyIdx, outPoint, positionProperty, rect, ref1, ref2, ref3, ref4, ref5, ref6;
   ew_setProps = function(selectedProperties, expressionCode) {
     var currentProperty, i, numOfChangedProperties;
     numOfChangedProperties = 0;
     currentProperty = void 0;
     i = void 0;
-    expressionCode = expressionCode.replace(/\n\n/g, '\n \n');
+    expressionCode = NF.Util.fixLineBreaks(expressionCode);
     i = 0;
     while (i < selectedProperties.length) {
       currentProperty = selectedProperties[i];
