@@ -72,20 +72,20 @@ presentUI = function() {
     for (j = 0, len1 = ref1.length; j < len1; j++) {
       highlight = ref1[j];
       displayName = highlight.name + " - pg" + highlight.getPageItem().getPageNumber();
-      highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.connectedPageLayer);
-      if (highlight.bubbled) {
-        if (highlight.broken) {
+      highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.getConnectedPageLayer());
+      if (highlight.isBubbled()) {
+        if (highlight.isBroken()) {
           displayName += " (OVERRIDE/BROKEN)";
         } else if (highlightAlreadyConnectedToThisLayer) {
           displayName += " (ALREADY CONNECTED TO THIS PAGE LAYER)";
         } else {
           displayName += " (OVERRIDE)";
         }
-      } else if (highlight.broken) {
+      } else if (highlight.isBroken()) {
         displayName += " (BROKEN)";
       }
       highlightCheckboxes[highlight.name] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
-      highlightCheckboxes[highlight.name].value = !highlight.bubbled;
+      highlightCheckboxes[highlight.name].value = !highlight.isBubbled();
       highlightCheckboxes[highlight.name].enabled = !highlightAlreadyConnectedToThisLayer;
     }
     buttonGroup = initTab.add('group', void 0);
@@ -155,7 +155,7 @@ presentUI = function() {
     ref2 = allHighlights.layers;
     for (k = 0, len2 = ref2.length; k < len2; k++) {
       highlight = ref2[k];
-      if (highlight.bubbled) {
+      if (highlight.isBubbled()) {
         highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add("checkbox {text: '" + highlight.name + "'}");
         highlightDisconnectCheckboxes[highlight.name].value = false;
       }

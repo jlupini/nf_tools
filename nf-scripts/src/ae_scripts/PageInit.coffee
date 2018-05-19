@@ -69,20 +69,20 @@ presentUI = ->
 		highlightCheckboxes = {}
 		for highlight in allHighlights.layers
 			displayName = highlight.name + " - pg" + highlight.getPageItem().getPageNumber()
-			highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.connectedPageLayer)
+			highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.getConnectedPageLayer())
 
-			if highlight.bubbled
-				if highlight.broken
+			if highlight.isBubbled()
+				if highlight.isBroken()
 					displayName += " (OVERRIDE/BROKEN)"
 				else if highlightAlreadyConnectedToThisLayer
 					displayName += " (ALREADY CONNECTED TO THIS PAGE LAYER)"
 				else
 					displayName += " (OVERRIDE)"
-			else if highlight.broken
+			else if highlight.isBroken()
 				displayName += " (BROKEN)"
 
 			highlightCheckboxes[highlight.name] = highlightPanel.add "checkbox {text: '#{displayName}'}"
-			highlightCheckboxes[highlight.name].value = not highlight.bubbled
+			highlightCheckboxes[highlight.name].value = not highlight.isBubbled()
 			# Disable the checkbox if it's already bubbled up to the given layer
 			highlightCheckboxes[highlight.name].enabled = not highlightAlreadyConnectedToThisLayer
 
@@ -142,7 +142,7 @@ presentUI = ->
 
 		highlightDisconnectCheckboxes = {}
 		for highlight in allHighlights.layers
-			if highlight.bubbled
+			if highlight.isBubbled()
 				highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.name}'}"
 				highlightDisconnectCheckboxes[highlight.name].value = off
 

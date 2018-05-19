@@ -54,7 +54,7 @@ class NFHighlightLayerCollection extends NFLayerCollection
   ###
   duplicateNames: ->
     nameArr = []
-    nameArr.push theLayer.name for theLayer in @layers
+    nameArr.push theLayer.getName() for theLayer in @layers
     return NF.Util.hasDuplicates(nameArr)
 
   ###*

@@ -12,36 +12,49 @@ class NFHighlightLayer extends NFLayer
     NFLayer.call(this, layer)
     unless NFHighlightLayer.isHighlightLayer(@layer)
       throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
-    @updateProperties()
     @
   getInfo: ->
     return "NFHighlightLayer: '#{@name}'"
 
   ###*
-  Updates values of all properties. Run after changing anything that buggers these up
+  Returns whether this highlight is bubbled up or not
   @memberof NFHighlightLayer
-  @returns {NFHighlightLayer} self
+  @returns {boolean} if the highlight is bubbled up
   ###
-  updateProperties: ->
-    @name = @layer.name
-    @bubbled = @highlighterEffect().property("Spacing").expressionEnabled
-    @broken = @highlighterEffect().property("Spacing").expressionError isnt ""
+  isBubbled: ->
+    return @highlighterEffect().property("Spacing").expressionEnabled
 
-    # The NFPageLayer this highlight was found in.
-    # Should be set by any function that looks inside NFPageLayers for highlights and returns the highlights
-    # Is required to bubble up
-    @containingPageLayer ?= null
-    # The NFPageLayer this highlight is bubbled up to
-    @connectedPageLayer = null
-    if @bubbled
+  ###*
+  Returns whether this highlight is has a broken expression
+  @memberof NFHighlightLayer
+  @returns {boolean} if the highlight has a broken expression
+  ###
+  isBroken: ->
+    return @highlighterEffect().property("Spacing").expressionError isnt ""
+
+  ###*
+  Returns the name of the highlight layer
+  @memberof NFHighlightLayer
+  @returns {string} the layer name
+  ###
+  getName: ->
+    return @layer.name
+
+  ###*
+  Returns the connected NFPageLayer if it exists
+  @memberof NFHighlightLayer
+  @returns {NFPageLayer | null} the connectedPageLayer or null
+  ###
+  getConnectedPageLayer: ->
+    if @isBubbled()
       expression = @highlighterEffect().property("Spacing").expression
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression)
       comp = NF.Util.findItem compName
       if comp?
         layer = comp.layer layerName
-        @connectedPageLayer = new NFPageLayer(layer) if layer?
-    @
+        return connectedPageLayer = new NFPageLayer(layer) if layer?
+    return connectedPageLayer
 
   ###*
   Returns the NFPageItem this highlight lives in
@@ -65,10 +78,11 @@ class NFHighlightLayer extends NFLayer
   @returns {Property | null} the AV_Highlighter Property on an NFPageLayer if connected, null if not
   ###
   connectedPageLayerHighlighterEffect: ->
-    if @connectedPageLayer?
+    connectedPageLayer = @getConnectedPageLayer()
+    if connectedPageLayer?
       expression = @highlighterEffect().property("Spacing").expression
       effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression)
-      effect = @connectedPageLayer.getEffectWithName(effectName)
+      effect = connectedPageLayer.getEffectWithName(effectName)
       return effect
     return null
 
@@ -80,7 +94,7 @@ class NFHighlightLayer extends NFLayer
   @returns {boolean} whether the highlight can be bubbled up
   ###
   canBubbleUp: ->
-    return not ((@bubbled and not @broken) or not @containingPageLayer?)
+    return not ((@isBubbled() and not @isBroken()) or not @containingPageLayer?)
 
   ###*
   Bubbles up highlight to the containingPageLayer.
@@ -91,7 +105,7 @@ class NFHighlightLayer extends NFLayer
   @throws Throw error if no containingPageLayer
   ###
   bubbleUp: ->
-    if @bubbled and not @broken
+    if @isBubbled() and not @isBroken()
       throw "Cannot bubble highlight if already connected and not broken. Disconnect first"
     unless @containingPageLayer?
       throw "Cannot bubble highlight without a containingPageLayer"
@@ -100,7 +114,7 @@ class NFHighlightLayer extends NFLayer
     sourceEffect = @highlighterEffect()
 
     targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter')
-    targetHighlighterEffect.name = @name
+    targetHighlighterEffect.name = @layer.name
 
     targetComp = @containingPageLayer.layer.containingComp
 
@@ -111,8 +125,6 @@ class NFHighlightLayer extends NFLayer
       sourceExpression = "var offsetTime = comp(\"#{targetComp.name}\").layer(\"#{@containingPageLayer.layer.name}\").startTime;
                           comp(\"#{targetComp.name}\").layer(\"#{@containingPageLayer.layer.name}\").effect(\"#{@name}\")(\"#{highlighterProperty}\").valueAtTime(time+offsetTime)"
       sourceEffect.property(highlighterProperty).expression = sourceExpression
-
-      @updateProperties()
     @
 
   ###*
@@ -121,7 +133,7 @@ class NFHighlightLayer extends NFLayer
   @returns {NFHighlightLayer} self
   ###
   fixExpressionAfterInit: ->
-    if @bubbled
+    if @isBubbled()
       for property in NF.Util.highlighterProperties
         expression = @highlighterEffect().property(property).expression
         @highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]")
@@ -133,7 +145,7 @@ class NFHighlightLayer extends NFLayer
   @returns {NFHighlightLayer} self
   ###
   resetExpressionErrors: ->
-    if @bubbled
+    if @isBubbled()
       for property in NF.Util.highlighterProperties
         expression = @highlighterEffect().property(property).expression
         @highlighterEffect().property(property).expression = ""
@@ -153,7 +165,6 @@ class NFHighlightLayer extends NFLayer
     for i in [1..propertyCount]
       property = effect.property(i)
       property.expression = ""
-    @updateProperties()
     @
 
 NFHighlightLayer = Object.assign NFHighlightLayer,

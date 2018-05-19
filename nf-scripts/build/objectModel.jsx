@@ -1203,7 +1203,6 @@ NFHighlightLayer = (function(superClass) {
     if (!NFHighlightLayer.isHighlightLayer(this.layer)) {
       throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect";
     }
-    this.updateProperties();
     this;
   }
 
@@ -1213,21 +1212,47 @@ NFHighlightLayer = (function(superClass) {
 
 
   /**
-  Updates values of all properties. Run after changing anything that buggers these up
+  Returns whether this highlight is bubbled up or not
   @memberof NFHighlightLayer
-  @returns {NFHighlightLayer} self
+  @returns {boolean} if the highlight is bubbled up
    */
 
-  NFHighlightLayer.prototype.updateProperties = function() {
-    var comp, compName, expression, layer, layerName;
-    this.name = this.layer.name;
-    this.bubbled = this.highlighterEffect().property("Spacing").expressionEnabled;
-    this.broken = this.highlighterEffect().property("Spacing").expressionError !== "";
-    if (this.containingPageLayer == null) {
-      this.containingPageLayer = null;
-    }
-    this.connectedPageLayer = null;
-    if (this.bubbled) {
+  NFHighlightLayer.prototype.isBubbled = function() {
+    return this.highlighterEffect().property("Spacing").expressionEnabled;
+  };
+
+
+  /**
+  Returns whether this highlight is has a broken expression
+  @memberof NFHighlightLayer
+  @returns {boolean} if the highlight has a broken expression
+   */
+
+  NFHighlightLayer.prototype.isBroken = function() {
+    return this.highlighterEffect().property("Spacing").expressionError !== "";
+  };
+
+
+  /**
+  Returns the name of the highlight layer
+  @memberof NFHighlightLayer
+  @returns {string} the layer name
+   */
+
+  NFHighlightLayer.prototype.getName = function() {
+    return this.layer.name;
+  };
+
+
+  /**
+  Returns the connected NFPageLayer if it exists
+  @memberof NFHighlightLayer
+  @returns {NFPageLayer | null} the connectedPageLayer or null
+   */
+
+  NFHighlightLayer.prototype.getConnectedPageLayer = function() {
+    var comp, compName, connectedPageLayer, expression, layer, layerName;
+    if (this.isBubbled()) {
       expression = this.highlighterEffect().property("Spacing").expression;
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression);
@@ -1235,11 +1260,11 @@ NFHighlightLayer = (function(superClass) {
       if (comp != null) {
         layer = comp.layer(layerName);
         if (layer != null) {
-          this.connectedPageLayer = new NFPageLayer(layer);
+          return connectedPageLayer = new NFPageLayer(layer);
         }
       }
     }
-    return this;
+    return connectedPageLayer;
   };
 
 
@@ -1272,11 +1297,12 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.connectedPageLayerHighlighterEffect = function() {
-    var effect, effectName, expression;
-    if (this.connectedPageLayer != null) {
+    var connectedPageLayer, effect, effectName, expression;
+    connectedPageLayer = this.getConnectedPageLayer();
+    if (connectedPageLayer != null) {
       expression = this.highlighterEffect().property("Spacing").expression;
       effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression);
-      effect = this.connectedPageLayer.getEffectWithName(effectName);
+      effect = connectedPageLayer.getEffectWithName(effectName);
       return effect;
     }
     return null;
@@ -1292,7 +1318,7 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.canBubbleUp = function() {
-    return !((this.bubbled && !this.broken) || (this.containingPageLayer == null));
+    return !((this.isBubbled() && !this.isBroken()) || (this.containingPageLayer == null));
   };
 
 
@@ -1307,7 +1333,7 @@ NFHighlightLayer = (function(superClass) {
 
   NFHighlightLayer.prototype.bubbleUp = function() {
     var highlighterProperty, j, len, ref, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
-    if (this.bubbled && !this.broken) {
+    if (this.isBubbled() && !this.isBroken()) {
       throw "Cannot bubble highlight if already connected and not broken. Disconnect first";
     }
     if (this.containingPageLayer == null) {
@@ -1316,7 +1342,7 @@ NFHighlightLayer = (function(superClass) {
     targetPageLayerEffects = this.containingPageLayer.effects();
     sourceEffect = this.highlighterEffect();
     targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter');
-    targetHighlighterEffect.name = this.name;
+    targetHighlighterEffect.name = this.layer.name;
     targetComp = this.containingPageLayer.layer.containingComp;
     ref = NF.Util.highlighterProperties;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -1325,7 +1351,6 @@ NFHighlightLayer = (function(superClass) {
       targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
       sourceExpression = "var offsetTime = comp(\"" + targetComp.name + "\").layer(\"" + this.containingPageLayer.layer.name + "\").startTime; comp(\"" + targetComp.name + "\").layer(\"" + this.containingPageLayer.layer.name + "\").effect(\"" + this.name + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
       sourceEffect.property(highlighterProperty).expression = sourceExpression;
-      this.updateProperties();
     }
     return this;
   };
@@ -1339,7 +1364,7 @@ NFHighlightLayer = (function(superClass) {
 
   NFHighlightLayer.prototype.fixExpressionAfterInit = function() {
     var expression, j, len, property, ref;
-    if (this.bubbled) {
+    if (this.isBubbled()) {
       ref = NF.Util.highlighterProperties;
       for (j = 0, len = ref.length; j < len; j++) {
         property = ref[j];
@@ -1359,7 +1384,7 @@ NFHighlightLayer = (function(superClass) {
 
   NFHighlightLayer.prototype.resetExpressionErrors = function() {
     var expression, j, len, property, ref;
-    if (this.bubbled) {
+    if (this.isBubbled()) {
       ref = NF.Util.highlighterProperties;
       for (j = 0, len = ref.length; j < len; j++) {
         property = ref[j];
@@ -1389,7 +1414,6 @@ NFHighlightLayer = (function(superClass) {
       property = effect.property(i);
       property.expression = "";
     }
-    this.updateProperties();
     return this;
   };
 
@@ -1498,7 +1522,7 @@ NFHighlightLayerCollection = (function(superClass) {
     ref = this.layers;
     for (i = 0, len = ref.length; i < len; i++) {
       theLayer = ref[i];
-      nameArr.push(theLayer.name);
+      nameArr.push(theLayer.getName());
     }
     return NF.Util.hasDuplicates(nameArr);
   };
@@ -1718,7 +1742,7 @@ NFPageLayer = (function(superClass) {
     ref = this.highlights().layers;
     for (i = 0, len = ref.length; i < len; i++) {
       highlight = ref[i];
-      if (highlight.bubbled && ((ref1 = highlight.connectedPageLayer) != null ? ref1.sameLayerAs(this) : void 0)) {
+      if (highlight.isBubbled() && ((ref1 = highlight.getConnectedPageLayer()) != null ? ref1.sameLayerAs(this) : void 0)) {
         bubbledHighlights.push(highlight);
       }
     }
