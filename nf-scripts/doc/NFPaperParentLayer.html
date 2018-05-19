@@ -1,1574 +1,4090 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-		<title>NFPaperParentLayer</title>
-		<!--[if lt IE 9]>
-		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
-		<link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
-		<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
-		<link type="text/css" rel="stylesheet" href="css/prism.min.css">
-		<link type="text/css" rel="stylesheet" href="css/template.min.css">
-		<script type="text/javascript">
-			window.TEMPLATE_OPTIONS = {"includeDate":true,"dateFormat":"Do MMM YYYY","systemName":"FooDoc","systemSummary":"A Bootstrap and Handlebars based template for JSDoc3.","systemLogo":"","systemColor":"","navMembers":[{"kind":"class","title":"Classes","summary":"All documented classes."},{"kind":"external","title":"Externals","summary":"All documented external members."},{"kind":"global","title":"Globals","summary":"All documented globals."},{"kind":"mixin","title":"Mixins","summary":"All documented mixins."},{"kind":"interface","title":"Interfaces","summary":"All documented interfaces."},{"kind":"module","title":"Modules","summary":"All documented modules."},{"kind":"namespace","title":"Namespaces","summary":"All documented namespaces."},{"kind":"tutorial","title":"Tutorials","summary":"All available tutorials."}],"footer":"","copyright":"FooDoc Copyright © 2016 The contributors to the JSDoc3 and FooDoc projects.","linenums":true,"collapseSymbols":true,"inverseNav":true,"inlineNav":false,"outputSourceFiles":true,"sourceRootPath":null,"disablePackagePath":true,"outputSourcePath":false,"showTableOfContents":true,"showAccessFilter":true,"analytics":null,"methodHeadingReturns":true,"sort":"linenum, longname, version, since","search":true,"favicon":null,"stylesheets":[],"scripts":[],"monospaceLinks":false,"cleverLinks":false,"default":{"outputSourceFiles":true}};
-			window.DOCLET_TOC_ENABLED = true;
-			window.DOCLET_AFILTER_ENABLED = true;
-		</script>
+    <meta charset="utf-8">
+    <title>Class: NFPaperParentLayer</title>
+    
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="https://fonts.googleapis.com/css?family=Libre+Franklin:400,700" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/main.css">
+    
+    
+    <script>
+    var config = {"monospaceLinks":false,"cleverLinks":false,"default":{"outputSourceFiles":true}};
+    </script>
+    
+
+    
 </head>
 <body>
-	<!-- start:navbar.hbs -->
-	<header class="navbar navbar-default navbar-fixed-top navbar-inverse">
-		<div class="container">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="index.html">
-					FooDoc
-				</a>
-				<!-- displayed on small devices -->
-				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-			</div>
-			<div class="navbar-collapse collapse" id="topNavigation">
-				<ul class="nav navbar-nav">
-								<li class="dropdown">
-									<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Globals<b class="caret"></b></a>
-									<ul class="dropdown-menu">
-											<li><a href="global.html#easingEquations">easingEquations</a></li>
-									</ul>
-								</li>
-								<li class="dropdown">
-									<a href="list_class.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
-									<ul class="dropdown-menu">
-											<li><a href="NFComp.html">NFComp</a></li>
-											<li><a href="NFLayer.html">NFLayer</a></li>
-											<li><a href="NFLayerCollection.html">NFLayerCollection</a></li>
-											<li><a href="NFPageItem.html">NFPageItem</a></li>
-											<li><a href="NFPageLayer.html">NFPageLayer</a></li>
-											<li><a href="NFPageLayerCollection.html">NFPageLayerCollection</a></li>
-											<li><a href="NFPaperLayerGroup.html">NFPaperLayerGroup</a></li>
-											<li><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></li>
-											<li><a href="NFPartComp.html">NFPartComp</a></li>
-											<li><a href="NFPDF.html">NFPDF</a></li>
-									</ul>
-								</li>
-								<li class="dropdown">
-									<a href="list_namespace.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
-									<ul class="dropdown-menu">
-											<li><a href="Layer.html">Layer</a></li>
-											<li><a href="LayerCollection.html">LayerCollection</a></li>
-											<li><a href="Property.html">Property</a></li>
-									</ul>
-								</li>
-				</ul>
-					<!-- start:lunr-search-navbar.hbs -->
-					<form class="navbar-form navbar-right" role="search">
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Search" id="lunr-search-input">
-							<div class="input-group-btn">
-								<button class="btn btn-default" id="lunr-search-submit">
-									<i class="glyphicon glyphicon-search"></i>
-								</button>
-							</div>
-						</div>
-					</form>
-					<!-- start:lunr-search-navbar.hbs -->		</div>
-		</div>
-	</header>
-	<!-- end:navbar.hbs -->		<div class="page-header">
-			<div class="container">
-				<span class="kind">class</span>
-				<h1><span class="name">NFPaperParentLayer</span></h1>
-			</div>
-		</div>
-	<div class="container content">
-		<div class="row">
-			<div class="col-md-9 main-content">
-						<ol class="breadcrumb">
-							<li><a href="index.html">Home</a></li>
-							<li><a href="list_class.html">Classes</a></li>
-							<li class="active">NFPaperParentLayer</li>
-						</ol>
-						<div class="access-filter">
-								<label class="checkbox-inline">
-									<input class="toggle-inherited" type="checkbox" value="" checked>
-									Inherited
-								</label>
-								<label class="checkbox-inline">
-									<input class="toggle-public" type="checkbox" value="" checked>
-									Public
-								</label>
-						</div>
-					<section>
-							<dl class="symbol primary">
-								<dt class="symbol-title class collapsible-symbol expanded">
-			<h2 class="class"><span class="signature-new">new&nbsp;</span><span class="name">NFPaperParentLayer</span><span class="signature-params">( <span class="signature-param">layer</span>&nbsp;)</span><span class="signature-type"></span></h2>
+<div id="wrap" class="clearfix">
+    
+<div class="navigation">
+    <h3 class="applicationName"><a href="index.html"></a></h3>
+    <button id="menuToggle" class="btn btn-link btn-lg menu-toggle">
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
+    </button>
+    <div class="search">
+        <input id="search" type="text" class="form-control input-md" placeholder="Search...">
+    </div>
+    <ul class="list">
+    
+        <li class="item" data-name="Layer">
+            <span class="title namespace ">
+                
+                <span class="namespaceTag">
+                    <span class="glyphicon glyphicon-folder-open"></span>
+                </span>
+                
+                <a href="Layer.html">Layer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="Layer.indexOfMarker"><a href="Layer.html#.indexOfMarker">indexOfMarker</a></li>
+            
+                <li class="parent  " data-name="Layer.removeMarker"><a href="Layer.html#.removeMarker">removeMarker</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="LayerCollection">
+            <span class="title namespace ">
+                
+                <span class="namespaceTag">
+                    <span class="glyphicon glyphicon-folder-open"></span>
+                </span>
+                
+                <a href="LayerCollection.html">LayerCollection</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="LayerCollection.toArr"><a href="LayerCollection.html#.toArr">toArr</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Property">
+            <span class="title namespace ">
+                
+                <span class="namespaceTag">
+                    <span class="glyphicon glyphicon-folder-open"></span>
+                </span>
+                
+                <a href="Property.html">Property</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="Property.expressionStringForValue"><a href="Property.html#.expressionStringForValue">expressionStringForValue</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="global">
+            <span class="title namespace ">
+                
+                <span class="namespaceTag">
+                    <span class="glyphicon glyphicon-globe"></span>
+                </span>
+                
+                <a href="global.html">Global</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li class="parent " data-name="easingEquations"><a href="global.html#easingEquations">easingEquations</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFComp">
+            <span class="title  ">
+                
+                <a href="NFComp.html">NFComp</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFComp#addNull"><a href="NFComp.html#addNull">addNull</a></li>
+            
+                <li class="parent  " data-name="NFComp#getInfo"><a href="NFComp.html#getInfo">getInfo</a></li>
+            
+                <li class="parent  " data-name="NFComp#getZoomer"><a href="NFComp.html#getZoomer">getZoomer</a></li>
+            
+                <li class="parent  " data-name="NFComp#layerWithName"><a href="NFComp.html#layerWithName">layerWithName</a></li>
+            
+                <li class="parent  " data-name="NFComp#selectedLayers"><a href="NFComp.html#selectedLayers">selectedLayers</a></li>
+            
+                <li class="parent  " data-name="NFComp#selectedPageLayers"><a href="NFComp.html#selectedPageLayers">selectedPageLayers</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFEmphasisLayer">
+            <span class="title  ">
+                
+                <a href="NFEmphasisLayer.html">NFEmphasisLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="  " data-name="NFEmphasisLayer#addInOutMarkersForProperty"><a href="NFEmphasisLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#addSlider"><a href="NFEmphasisLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#containingComp"><a href="NFEmphasisLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#getChildren"><a href="NFEmphasisLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#getParent"><a href="NFEmphasisLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#getSpecializedLayer"><a href="NFEmphasisLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#hasNullParent"><a href="NFEmphasisLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#index"><a href="NFEmphasisLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#isHighlightLayer"><a href="NFEmphasisLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#isNullLayer"><a href="NFEmphasisLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#isPageLayer"><a href="NFEmphasisLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#isPaperParentLayer"><a href="NFEmphasisLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#markers"><a href="NFEmphasisLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#moveAfter"><a href="NFEmphasisLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#moveBefore"><a href="NFEmphasisLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#sameLayerAs"><a href="NFEmphasisLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#setParent"><a href="NFEmphasisLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#setZoomer"><a href="NFEmphasisLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFGaussyLayer">
+            <span class="title  ">
+                
+                <a href="NFGaussyLayer.html">NFGaussyLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="  " data-name="NFGaussyLayer#addInOutMarkersForProperty"><a href="NFGaussyLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#addSlider"><a href="NFGaussyLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#containingComp"><a href="NFGaussyLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#getChildren"><a href="NFGaussyLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#getParent"><a href="NFGaussyLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#getSpecializedLayer"><a href="NFGaussyLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#hasNullParent"><a href="NFGaussyLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#index"><a href="NFGaussyLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#isHighlightLayer"><a href="NFGaussyLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#isNullLayer"><a href="NFGaussyLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#isPageLayer"><a href="NFGaussyLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#isPaperParentLayer"><a href="NFGaussyLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#markers"><a href="NFGaussyLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#moveAfter"><a href="NFGaussyLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#moveBefore"><a href="NFGaussyLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#sameLayerAs"><a href="NFGaussyLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#setParent"><a href="NFGaussyLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#setZoomer"><a href="NFGaussyLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFHighlightLayer">
+            <span class="title  ">
+                
+                <a href="NFHighlightLayer.html">NFHighlightLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFHighlightLayer.isHighlightLayer"><a href="NFHighlightLayer.html#.isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#addInOutMarkersForProperty"><a href="NFHighlightLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#addSlider"><a href="NFHighlightLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#bubbleUp"><a href="NFHighlightLayer.html#bubbleUp">bubbleUp</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#canBubbleUp"><a href="NFHighlightLayer.html#canBubbleUp">canBubbleUp</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#connectedPageLayerHighlighterEffect"><a href="NFHighlightLayer.html#connectedPageLayerHighlighterEffect">connectedPageLayerHighlighterEffect</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#containingComp"><a href="NFHighlightLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#disconnect"><a href="NFHighlightLayer.html#disconnect">disconnect</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#fixExpressionAfterInit"><a href="NFHighlightLayer.html#fixExpressionAfterInit">fixExpressionAfterInit</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#getChildren"><a href="NFHighlightLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#getPageItem"><a href="NFHighlightLayer.html#getPageItem">getPageItem</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#getParent"><a href="NFHighlightLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#getSpecializedLayer"><a href="NFHighlightLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#hasNullParent"><a href="NFHighlightLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#highlighterEffect"><a href="NFHighlightLayer.html#highlighterEffect">highlighterEffect</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#index"><a href="NFHighlightLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#isHighlightLayer"><a href="NFHighlightLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#isNullLayer"><a href="NFHighlightLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#isPageLayer"><a href="NFHighlightLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#isPaperParentLayer"><a href="NFHighlightLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#markers"><a href="NFHighlightLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#moveAfter"><a href="NFHighlightLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#moveBefore"><a href="NFHighlightLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#resetExpressionErrors"><a href="NFHighlightLayer.html#resetExpressionErrors">resetExpressionErrors</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#sameLayerAs"><a href="NFHighlightLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#setParent"><a href="NFHighlightLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#setZoomer"><a href="NFHighlightLayer.html#setZoomer">setZoomer</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#updateProperties"><a href="NFHighlightLayer.html#updateProperties">updateProperties</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFHighlightLayerCollection">
+            <span class="title  ">
+                
+                <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection.collectionFromAVLayerArray"><a href="NFHighlightLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#addAVLayer"><a href="NFHighlightLayerCollection.html#addAVLayer">addAVLayer</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#addNFHighlightLayer"><a href="NFHighlightLayerCollection.html#addNFHighlightLayer">addNFHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#addNFLayer"><a href="NFHighlightLayerCollection.html#addNFLayer">addNFLayer</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#bubbleUpHighlights"><a href="NFHighlightLayerCollection.html#bubbleUpHighlights">bubbleUpHighlights</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#containingComp"><a href="NFHighlightLayerCollection.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#count"><a href="NFHighlightLayerCollection.html#count">count</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#disconnectHighlights"><a href="NFHighlightLayerCollection.html#disconnectHighlights">disconnectHighlights</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#duplicateNames"><a href="NFHighlightLayerCollection.html#duplicateNames">duplicateNames</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#fixExpressionsAfterInit"><a href="NFHighlightLayerCollection.html#fixExpressionsAfterInit">fixExpressionsAfterInit</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#getBottommostLayer"><a href="NFHighlightLayerCollection.html#getBottommostLayer">getBottommostLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#getPageLayerCollection"><a href="NFHighlightLayerCollection.html#getPageLayerCollection">getPageLayerCollection</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#getTopmostLayer"><a href="NFHighlightLayerCollection.html#getTopmostLayer">getTopmostLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#inSameComp"><a href="NFHighlightLayerCollection.html#inSameComp">inSameComp</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#isEmpty"><a href="NFHighlightLayerCollection.html#isEmpty">isEmpty</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#nullify"><a href="NFHighlightLayerCollection.html#nullify">nullify</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#onlyContainsPageLayers"><a href="NFHighlightLayerCollection.html#onlyContainsPageLayers">onlyContainsPageLayers</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#remove"><a href="NFHighlightLayerCollection.html#remove">remove</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#resetExpressionErrors"><a href="NFHighlightLayerCollection.html#resetExpressionErrors">resetExpressionErrors</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#setParents"><a href="NFHighlightLayerCollection.html#setParents">setParents</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFImageLayer">
+            <span class="title  ">
+                
+                <a href="NFImageLayer.html">NFImageLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="  " data-name="NFImageLayer#addInOutMarkersForProperty"><a href="NFImageLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFImageLayer#addSlider"><a href="NFImageLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="  " data-name="NFImageLayer#containingComp"><a href="NFImageLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFImageLayer#getChildren"><a href="NFImageLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="  " data-name="NFImageLayer#getParent"><a href="NFImageLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFImageLayer#getSpecializedLayer"><a href="NFImageLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#hasNullParent"><a href="NFImageLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="  " data-name="NFImageLayer#index"><a href="NFImageLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFImageLayer#isHighlightLayer"><a href="NFImageLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#isNullLayer"><a href="NFImageLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#isPageLayer"><a href="NFImageLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#isPaperParentLayer"><a href="NFImageLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#markers"><a href="NFImageLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFImageLayer#moveAfter"><a href="NFImageLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFImageLayer#moveBefore"><a href="NFImageLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFImageLayer#sameLayerAs"><a href="NFImageLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="  " data-name="NFImageLayer#setParent"><a href="NFImageLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFImageLayer#setZoomer"><a href="NFImageLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFLayer">
+            <span class="title  ">
+                
+                <a href="NFLayer.html">NFLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFLayer.getSpecializedLayerFromAVLayer"><a href="NFLayer.html#.getSpecializedLayerFromAVLayer">getSpecializedLayerFromAVLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer.isAVLayer"><a href="NFLayer.html#.isAVLayer">isAVLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer.isCompLayer"><a href="NFLayer.html#.isCompLayer">isCompLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#addInOutMarkersForProperty"><a href="NFLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="parent  " data-name="NFLayer#addSlider"><a href="NFLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="parent  " data-name="NFLayer#containingComp"><a href="NFLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="parent  " data-name="NFLayer#getChildren"><a href="NFLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="parent  " data-name="NFLayer#getParent"><a href="NFLayer.html#getParent">getParent</a></li>
+            
+                <li class="parent  " data-name="NFLayer#getSpecializedLayer"><a href="NFLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#hasNullParent"><a href="NFLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="parent  " data-name="NFLayer#index"><a href="NFLayer.html#index">index</a></li>
+            
+                <li class="parent  " data-name="NFLayer#isHighlightLayer"><a href="NFLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#isNullLayer"><a href="NFLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#isPageLayer"><a href="NFLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#isPaperParentLayer"><a href="NFLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#markers"><a href="NFLayer.html#markers">markers</a></li>
+            
+                <li class="parent  " data-name="NFLayer#moveAfter"><a href="NFLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="parent  " data-name="NFLayer#moveBefore"><a href="NFLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="parent  " data-name="NFLayer#sameLayerAs"><a href="NFLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="parent  " data-name="NFLayer#setParent"><a href="NFLayer.html#setParent">setParent</a></li>
+            
+                <li class="parent  " data-name="NFLayer#setZoomer"><a href="NFLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFLayerCollection">
+            <span class="title  ">
+                
+                <a href="NFLayerCollection.html">NFLayerCollection</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFLayerCollection.collectionFromAVLayerArray"><a href="NFLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#addNFLayer"><a href="NFLayerCollection.html#addNFLayer">addNFLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#containingComp"><a href="NFLayerCollection.html#containingComp">containingComp</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#count"><a href="NFLayerCollection.html#count">count</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#getBottommostLayer"><a href="NFLayerCollection.html#getBottommostLayer">getBottommostLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#getPageLayerCollection"><a href="NFLayerCollection.html#getPageLayerCollection">getPageLayerCollection</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#getTopmostLayer"><a href="NFLayerCollection.html#getTopmostLayer">getTopmostLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#inSameComp"><a href="NFLayerCollection.html#inSameComp">inSameComp</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#isEmpty"><a href="NFLayerCollection.html#isEmpty">isEmpty</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#nullify"><a href="NFLayerCollection.html#nullify">nullify</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#onlyContainsPageLayers"><a href="NFLayerCollection.html#onlyContainsPageLayers">onlyContainsPageLayers</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#remove"><a href="NFLayerCollection.html#remove">remove</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#setParents"><a href="NFLayerCollection.html#setParents">setParents</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPageItem">
+            <span class="title  ">
+                
+                <a href="NFPageItem.html">NFPageItem</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPageItem#getPageNumber"><a href="NFPageItem.html#getPageNumber">getPageNumber</a></li>
+            
+                <li class="parent  " data-name="NFPageItem#getPDFNumber"><a href="NFPageItem.html#getPDFNumber">getPDFNumber</a></li>
+            
+                <li class="parent  " data-name="NFPageItem#highlights"><a href="NFPageItem.html#highlights">highlights</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPageLayer">
+            <span class="title  ">
+                
+                <a href="NFPageLayer.html">NFPageLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPageLayer.isPageLayer"><a href="NFPageLayer.html#.isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#addInOutMarkersForProperty"><a href="NFPageLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFPageLayer#addSlider"><a href="NFPageLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#bubbledHighlights"><a href="NFPageLayer.html#bubbledHighlights">bubbledHighlights</a></li>
+            
+                <li class="  " data-name="NFPageLayer#containingComp"><a href="NFPageLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#findPaperParentLayer"><a href="NFPageLayer.html#findPaperParentLayer">findPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#getChildren"><a href="NFPageLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#getPageNumber"><a href="NFPageLayer.html#getPageNumber">getPageNumber</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#getPaperParentLayer"><a href="NFPageLayer.html#getPaperParentLayer">getPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#getParent"><a href="NFPageLayer.html#getParent">getParent</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#getPDFNumber"><a href="NFPageLayer.html#getPDFNumber">getPDFNumber</a></li>
+            
+                <li class="  " data-name="NFPageLayer#getSpecializedLayer"><a href="NFPageLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#hasNullParent"><a href="NFPageLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#highlights"><a href="NFPageLayer.html#highlights">highlights</a></li>
+            
+                <li class="  " data-name="NFPageLayer#index"><a href="NFPageLayer.html#index">index</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#init"><a href="NFPageLayer.html#init">init</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#initTransforms"><a href="NFPageLayer.html#initTransforms">initTransforms</a></li>
+            
+                <li class="  " data-name="NFPageLayer#isHighlightLayer"><a href="NFPageLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#isInitted"><a href="NFPageLayer.html#isInitted">isInitted</a></li>
+            
+                <li class="  " data-name="NFPageLayer#isNullLayer"><a href="NFPageLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#isPageLayer"><a href="NFPageLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#isPaperParentLayer"><a href="NFPageLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#markers"><a href="NFPageLayer.html#markers">markers</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#markInitted"><a href="NFPageLayer.html#markInitted">markInitted</a></li>
+            
+                <li class="  " data-name="NFPageLayer#moveAfter"><a href="NFPageLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFPageLayer#moveBefore"><a href="NFPageLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFPageLayer#sameLayerAs"><a href="NFPageLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#setDropShadow"><a href="NFPageLayer.html#setDropShadow">setDropShadow</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#setInitPosition"><a href="NFPageLayer.html#setInitPosition">setInitPosition</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#setInitSize"><a href="NFPageLayer.html#setInitSize">setInitSize</a></li>
+            
+                <li class="  " data-name="NFPageLayer#setParent"><a href="NFPageLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFPageLayer#setZoomer"><a href="NFPageLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPageLayerCollection">
+            <span class="title  ">
+                
+                <a href="NFPageLayerCollection.html">NFPageLayerCollection</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPageLayerCollection.collectionFromAVLayerArray"><a href="NFPageLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#addAVLayer"><a href="NFPageLayerCollection.html#addAVLayer">addAVLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#addNFLayer"><a href="NFPageLayerCollection.html#addNFLayer">addNFLayer</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#addNFPageLayer"><a href="NFPageLayerCollection.html#addNFPageLayer">addNFPageLayer</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#assignPaperParentLayer"><a href="NFPageLayerCollection.html#assignPaperParentLayer">assignPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#containingComp"><a href="NFPageLayerCollection.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#count"><a href="NFPageLayerCollection.html#count">count</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#fromSamePDF"><a href="NFPageLayerCollection.html#fromSamePDF">fromSamePDF</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#getBottommostLayer"><a href="NFPageLayerCollection.html#getBottommostLayer">getBottommostLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#getPageLayerCollection"><a href="NFPageLayerCollection.html#getPageLayerCollection">getPageLayerCollection</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#getTopmostLayer"><a href="NFPageLayerCollection.html#getTopmostLayer">getTopmostLayer</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#highlights"><a href="NFPageLayerCollection.html#highlights">highlights</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#initLayers"><a href="NFPageLayerCollection.html#initLayers">initLayers</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#initLayerTransforms"><a href="NFPageLayerCollection.html#initLayerTransforms">initLayerTransforms</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#inSameComp"><a href="NFPageLayerCollection.html#inSameComp">inSameComp</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#isEmpty"><a href="NFPageLayerCollection.html#isEmpty">isEmpty</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#newPaperParentLayer"><a href="NFPageLayerCollection.html#newPaperParentLayer">newPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#nullify"><a href="NFPageLayerCollection.html#nullify">nullify</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#onlyContainsPageLayers"><a href="NFPageLayerCollection.html#onlyContainsPageLayers">onlyContainsPageLayers</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#remove"><a href="NFPageLayerCollection.html#remove">remove</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#setParents"><a href="NFPageLayerCollection.html#setParents">setParents</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPaperLayerGroup">
+            <span class="title  ">
+                
+                <a href="NFPaperLayerGroup.html">NFPaperLayerGroup</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPaperLayerGroup#gatherLayers"><a href="NFPaperLayerGroup.html#gatherLayers">gatherLayers</a></li>
+            
+                <li class="parent  " data-name="NFPaperLayerGroup#getChildren"><a href="NFPaperLayerGroup.html#getChildren">getChildren</a></li>
+            
+                <li class="parent  " data-name="NFPaperLayerGroup#getPages"><a href="NFPaperLayerGroup.html#getPages">getPages</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPaperParentLayer">
+            <span class="title  ">
+                
+                <a href="NFPaperParentLayer.html">NFPaperParentLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPaperParentLayer.getPaperParentNameForPageLayer"><a href="NFPaperParentLayer.html#.getPaperParentNameForPageLayer">getPaperParentNameForPageLayer</a></li>
+            
+                <li class="parent  " data-name="NFPaperParentLayer.isPaperParentLayer"><a href="NFPaperParentLayer.html#.isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#addInOutMarkersForProperty"><a href="NFPaperParentLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#addSlider"><a href="NFPaperParentLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#containingComp"><a href="NFPaperParentLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#getChildren"><a href="NFPaperParentLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#getParent"><a href="NFPaperParentLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#getSpecializedLayer"><a href="NFPaperParentLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#hasNullParent"><a href="NFPaperParentLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#index"><a href="NFPaperParentLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#isHighlightLayer"><a href="NFPaperParentLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#isNullLayer"><a href="NFPaperParentLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#isPageLayer"><a href="NFPaperParentLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#isPaperParentLayer"><a href="NFPaperParentLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#markers"><a href="NFPaperParentLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#moveAfter"><a href="NFPaperParentLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#moveBefore"><a href="NFPaperParentLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#sameLayerAs"><a href="NFPaperParentLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="parent  " data-name="NFPaperParentLayer#setName"><a href="NFPaperParentLayer.html#setName">setName</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#setParent"><a href="NFPaperParentLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#setZoomer"><a href="NFPaperParentLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPartComp">
+            <span class="title  ">
+                
+                <a href="NFPartComp.html">NFPartComp</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="  " data-name="NFPartComp#addNull"><a href="NFPartComp.html#addNull">addNull</a></li>
+            
+                <li class="  " data-name="NFPartComp#getInfo"><a href="NFPartComp.html#getInfo">getInfo</a></li>
+            
+                <li class="  " data-name="NFPartComp#getZoomer"><a href="NFPartComp.html#getZoomer">getZoomer</a></li>
+            
+                <li class="  " data-name="NFPartComp#layerWithName"><a href="NFPartComp.html#layerWithName">layerWithName</a></li>
+            
+                <li class="  " data-name="NFPartComp#selectedLayers"><a href="NFPartComp.html#selectedLayers">selectedLayers</a></li>
+            
+                <li class="  " data-name="NFPartComp#selectedPageLayers"><a href="NFPartComp.html#selectedPageLayers">selectedPageLayers</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPDF">
+            <span class="title  ">
+                
+                <a href="NFPDF.html">NFPDF</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPDF#addNFPageItem"><a href="NFPDF.html#addNFPageItem">addNFPageItem</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+    </ul>
+</div>
+    <div class="main">
+        <h1 class="page-title" data-filename="NFPaperParentLayer.html">Class: NFPaperParentLayer</h1>
+        
+
+
+
+<section>
+    
+<header>
+    <div class="header content-size">
+        <h2>NFPaperParentLayer
+        </h2>
+        
+            <div class="class-description">Subclass of <a href="NFLayer.html">NFLayer</a> for the parent null layer of a group of page layers from the same PDF</div>
+        
+    </div>
+</header>  
+
+<article class="content-size">
+    <div class="container-overview">
+    
+    
+    
+        
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="NFPaperParentLayer">
+            <a class="share-icon" href="#NFPaperParentLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                new NFPaperParentLayer
+            </span>
+            <span class="signature">(layer)</span>
+            
+            
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line2174">objectModel.jsx:2174</a>
+        </div>
+        
+    </div>
+
+    
 </dt>
-<dd class="symbol-details class  collapsible-symbol expanded" style="max-height: 9999px;">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description classdesc">Subclass of <a href="NFLayer.html">NFLayer</a> for the parent null layer of a group of page layers from the same PDF</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>layer</code></td>
-							<td><span class="param-type">AVLayer</span> | <span class="param-type"><a href="NFLayer.html">NFLayer</a></span></td>
-							<td class="last">
-									the target AVLayer or NFLayer
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-info">
-				<h5>Properties</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>layer</code></td>
-							<td><span class="param-type">AVLayer</span></td>
-							<td class="last">
-									the wrapped AVLayer
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Will throw an error if not given an AVLayer that's a null layer or an NFLayer with a similar layer property</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-							<!-- augments -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Augments</label>
-								<div class="col-sm-9">
-										<p class="form-control-static"><a href="NFLayer.html">NFLayer</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-1918">line 1918</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-							</dl>
-							<article class="secondary">
-									<h3>Methods</h3>
-									<dl class="symbol">
-											<hr/>
-											<dt class="symbol-title function public collapsible-symbol">
-			<h4 id="setName" class="function public"><span class="name">setName</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFPaperParentLayer.html">NFPaperParentLayer</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Sets the name of this paper parent layer to the correct name.</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">self</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Throws error if there are no child layers</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-1954">line 1954</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public collapsible-symbol">
-			<h4 id=".isPaperParentLayer" class="function public"><span class="signature-attribs">&lt;static> </span><span class="name">isPaperParentLayer</span><span class="signature-params">( <span class="signature-param">layer</span>&nbsp;)</span><span class="signature-type"> &rarr;&nbsp;{boolean}</span></h4>
-		</dt>
-<dd class="symbol-details function public  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Class Method. Tests an AV layer to see if it can be a paper parent Layer</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>layer</code></td>
-							<td><span class="param-type">AVLayer</span></td>
-							<td class="last">
-									the AVLayer to test
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">boolean</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">whether or not the layer is a valid paper parent</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-1977">line 1977</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public collapsible-symbol">
-			<h4 id=".getPaperParentNameForPageLayer" class="function public"><span class="signature-attribs">&lt;static> </span><span class="name">getPaperParentNameForPageLayer</span><span class="signature-params">( <span class="signature-param">pageLayer</span>&nbsp;)</span><span class="signature-type"> &rarr;&nbsp;{string}</span></h4>
-		</dt>
-<dd class="symbol-details function public  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Class Method. Returns the name string for the paper parent for a given layer</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>pageLayer</code></td>
-							<td><span class="param-type"><a href="NFPageLayer.html">NFPageLayer</a></span></td>
-							<td class="last">
-									the page layer to use to determine the name
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">string</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">The name of the paperParentLayer for the given layer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-1987">line 1987</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="isPageLayer" class="function public inherited"><span class="name">isPageLayer</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{boolean}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Checks if this layer is a valid page Layer</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">boolean</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">if this is a valid page layer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#isPageLayer">NFLayer#isPageLayer</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-147">line 147</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="isNullLayer" class="function public inherited"><span class="name">isNullLayer</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{boolean}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Checks if this layer is a null layer</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">boolean</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">if this is a null layer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#isNullLayer">NFLayer#isNullLayer</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-158">line 158</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="isHighlightLayer" class="function public inherited"><span class="name">isHighlightLayer</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{boolean}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Checks if this layer is a valid highlight layer</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">boolean</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">if this is a valid highlight layer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#isHighlightLayer">NFLayer#isHighlightLayer</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-169">line 169</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="isPaperParentLayer" class="function public inherited"><span class="name">isPaperParentLayer</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{boolean}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Checks if this layer is a valid paper parent layer</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">boolean</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">if this is a valid paper parent layer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#isPaperParentLayer">NFLayer#isPaperParentLayer</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-180">line 180</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="getSpecializedLayer" class="function public inherited"><span class="name">getSpecializedLayer</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFPageLayer.html">NFPageLayer</a>|NFHighlightLayer|<a href="NFPaperParentLayer.html">NFPaperParentLayer</a>|<a href="NFLayer.html">NFLayer</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Returns a new layer of a specialized type for the contents of this layer</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFPageLayer.html">NFPageLayer</a></span> | <span class="param-type">NFHighlightLayer</span> | <span class="param-type"><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></span> | <span class="param-type"><a href="NFLayer.html">NFLayer</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the specialized layer or self if no specialized layer options</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#getSpecializedLayer">NFLayer#getSpecializedLayer</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-191">line 191</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="index" class="function public inherited"><span class="name">index</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{int}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Shorthand for the layer's index</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">int</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the layer's index</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#index">NFLayer#index</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-210">line 210</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="hasNullParent" class="function public inherited"><span class="name">hasNullParent</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{boolean}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Returns true if the layer has a null parent</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">boolean</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">Whether this layer has a parent which is a null layer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#hasNullParent">NFLayer#hasNullParent</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-221">line 221</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="sameLayerAs" class="function public inherited"><span class="name">sameLayerAs</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{boolean}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Checks to see if a given NFLayer's layer is the same as this one's
-			  For example, an NFLayer and an NFPageLayer that refer to the same layer will return true</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">boolean</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">Whether both layers are the same layer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#sameLayerAs">NFLayer#sameLayerAs</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-244">line 244</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="containingComp" class="function public inherited"><span class="name">containingComp</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFComp.html">NFComp</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Returns the containing NFComp</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFComp.html">NFComp</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the containing comp</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#containingComp">NFLayer#containingComp</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-258">line 258</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="getChildren" class="function public inherited"><span class="name">getChildren</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFLayerCollection.html">NFLayerCollection</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Returns an NFLayerCollection of child layers of this layer as specialized layers</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFLayerCollection.html">NFLayerCollection</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the collection of child layers</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#getChildren">NFLayer#getChildren</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-269">line 269</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="getParent" class="function public inherited"><span class="name">getParent</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFLayer.html">NFLayer</a>|null}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Gets the layer's parent NFLayer, if any</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFLayer.html">NFLayer</a></span> | <span class="param-type">null</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the parent layer, or null if no parent</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#getParent">NFLayer#getParent</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-291">line 291</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="setParent" class="function public inherited"><span class="name">setParent</span><span class="signature-params">( <span class="signature-param">newParent</span>&nbsp;)</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFLayer.html">NFLayer</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Sets the layer's parent to a given NFLayer</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>newParent</code></td>
-							<td><span class="param-type"><a href="NFLayer.html">NFLayer</a></span> | <span class="param-type">AVLayer</span> | <span class="param-type">null</span></td>
-							<td class="last">
-									the new parent NFLayer or AVLayer for this layer. Null to set no parent
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFLayer.html">NFLayer</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">self</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Will throw an error if not given an NFLayer or null</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#setParent">NFLayer#setParent</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-307">line 307</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="setZoomer" class="function public inherited"><span class="name">setZoomer</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFLayer.html">NFLayer</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Sets the layer's parent to the zoomer if this layer is in an NFPartComp</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFLayer.html">NFLayer</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">self</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Will throw an error if not given an NFLayer or null</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#setZoomer">NFLayer#setZoomer</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-328">line 328</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="moveBefore" class="function public inherited"><span class="name">moveBefore</span><span class="signature-params">( <span class="signature-param">targetLayer</span>&nbsp;)</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFLayer.html">NFLayer</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Moves this layer's index to immediately before the provided target layer</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>targetLayer</code></td>
-							<td><span class="param-type"><a href="NFLayer.html">NFLayer</a></span></td>
-							<td class="last">
-									the layer to move this layer before
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFLayer.html">NFLayer</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">self</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Will throw an error if not given an NFLayer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#moveBefore">NFLayer#moveBefore</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-346">line 346</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="moveAfter" class="function public inherited"><span class="name">moveAfter</span><span class="signature-params">( <span class="signature-param">targetLayer</span>&nbsp;)</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFLayer.html">NFLayer</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Moves this layer's index to immediately after the provided target layer</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>targetLayer</code></td>
-							<td><span class="param-type"><a href="NFLayer.html">NFLayer</a></span></td>
-							<td class="last">
-									the layer to move this layer after
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFLayer.html">NFLayer</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">self</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Will throw an error if not given an NFLayer</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#moveAfter">NFLayer#moveAfter</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-363">line 363</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="markers" class="function public inherited"><span class="name">markers</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{<a href="Property.html">Property</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Moves this layer's index to immediately after the provided target layer</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="Property.html">Property</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">Marker property</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#markers">NFLayer#markers</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-378">line 378</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="addInOutMarkersForProperty" class="function public inherited"><span class="name">addInOutMarkersForProperty</span><span class="signature-params">( <span class="signature-param">options</span>&nbsp;)</span><span class="signature-type"> &rarr;&nbsp;{<a href="NFLayer.html">NFLayer</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Sets the given property's expression and adds In and Out markers (if not already on the layer) for in and out transitions. Overrides previous expressions</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>options</code></td>
-							<td><span class="param-type">Object</span></td>
-							<td class="last">
-									an object with the chosen equations and in/out values. Equations found in easingEquations.coffee
-										<table class="params table table-striped">
-											<thead>
-											<tr>
-													<th>Name</th>
-												<th>Type</th>
-												<th class="last">Description</th>
-											</tr>
-											</thead>
-											<tbody>
-												<tr>
-														<td><code>property</code></td>
-													<td><span class="param-type"><a href="Property.html">Property</a></span></td>
-													<td class="last">
-															the property to use for the in/outs. required
-													</td>
-												</tr>
-												<tr>
-														<td><code>length</code></td>
-													<td><span class="param-type">float</span></td>
-													<td class="last">
-															the length of the transition. Default 2.0
-													</td>
-												</tr>
-												<tr>
-														<td><code>startEquation</code></td>
-													<td><span class="param-type">string</span></td>
-													<td class="last">
-															the equation to use for the in transition of the property.
-													</td>
-												</tr>
-												<tr>
-														<td><code>endEquation</code></td>
-													<td><span class="param-type">string</span></td>
-													<td class="last">
-															the equation to use for the out transition of the property.
-													</td>
-												</tr>
-												<tr>
-														<td><code>startValue</code></td>
-													<td><span class="param-type">any</span> | <span class="param-type">Array</span></td>
-													<td class="last">
-															the value for this property at its inPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.
-													</td>
-												</tr>
-												<tr>
-														<td><code>endValue</code></td>
-													<td><span class="param-type">any</span> | <span class="param-type">Array</span></td>
-													<td class="last">
-															the value for this property at its outPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.
-													</td>
-												</tr>
-											</tbody>
-										</table>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="NFLayer.html">NFLayer</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">self</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Throws error if not given at least a start or end equation and value</div>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Throws error if the start or end values given are the wrong number of dimensions for this property</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#addInOutMarkersForProperty">NFLayer#addInOutMarkersForProperty</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-398">line 398</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public inherited collapsible-symbol">
-			<h4 id="addSlider" class="function public inherited"><span class="name">addSlider</span><span class="signature-params">( <span class="signature-param">name</span>, <span class="signature-param">value</span>&nbsp;)</span><span class="signature-type"> &rarr;&nbsp;{<a href="Property.html">Property</a>}</span></h4>
-		</dt>
-<dd class="symbol-details function public inherited  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Creates and returns a slider effect on the layer</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>name</code></td>
-							<td><span class="param-type">string</span></td>
-							<td class="last">
-									the slider name
-							</td>
-						</tr>
-						<tr>
-								<td><code>value</code></td>
-							<td><span class="param-type">float</span></td>
-							<td class="last">
-									the initial value of the slider
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type"><a href="Property.html">Property</a></span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the slider property</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-							<!-- inherits -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Inherited From</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="NFLayer.html#addSlider">NFLayer#addSlider</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-525">line 525</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-									</dl>
-							</article>
-					</section>
-			</div>
-				<div class="col-md-3 side-content">
-					<nav class="toc hidden-print hidden-sm hidden-xs"></nav>
-				</div>
-		</div>
-	</div>
-	<footer>
-				<div class="copyright">FooDoc Copyright © 2016 The contributors to the JSDoc3 and FooDoc projects.</div>
-			<div class="generated-by">Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on 18th May 2018 using the <a href="https://github.com/steveush/foodoc">FooDoc template</a>.</div>
-	</footer>
-	<script src="js/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/clipboard.min.js"></script>
-	<script src="js/prism.min.js"></script>
-	<script src="js/template.min.js"></script>
-		<!-- start:lunr-search-modal.hbs -->
-		<div class="modal fade" id="lunr-search-modal">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Search results</h4>
-					</div>
-					<div class="modal-body" id="lunr-search-body">
-					</div>
-					<div class="modal-footer" id="lunr-search-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
-				</div><!-- /.modal-content -->
-			</div><!-- /.modal-dialog -->
-		</div>
-		<!-- end:lunr-search-modal.hbs -->		<script src="js/lunr.min.js"></script>
+<dd>
+    
+    
+    <div class="description">
+        Creates a new NFPaperParentLayer from a given null AVLayer
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
 	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">AVLayer</span>
+|
+
+<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the target AVLayer or NFLayer</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+        <h5 class="subsection-title">Properties:</h5>
+        
+        <dl>
+
+<table class="props">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">AVLayer</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">the wrapped AVLayer</td>
+        </tr>
+	
+	
+	</tbody>
+</table></dl>
+        
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Will throw an error if not given an AVLayer that's a null layer or an NFLayer with a similar layer property
+    
+    </div>
+
+
+        
+    
+    
+    
+    
+</dd>
+
+    
+    </div>
+    
+    
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="NFLayer.html">NFLayer</a></li>
+        </ul>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl class="list-methods">
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".getPaperParentNameForPageLayer">
+            <a class="share-icon" href="#.getPaperParentNameForPageLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                NFPaperParentLayer.getPaperParentNameForPageLayer
+            </span>
+            <span class="signature">(pageLayer)</span><span class="type-signature">string</span>
+            
+            <span class="access-signature">static</span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line2243">objectModel.jsx:2243</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Class Method. Returns the name string for the paper parent for a given layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>pageLayer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="NFPageLayer.html">NFPageLayer</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the page layer to use to determine the name</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            <td class="description last">The name of the paperParentLayer for the given layer</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id=".isPaperParentLayer">
+            <a class="share-icon" href="#.isPaperParentLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                NFPaperParentLayer.isPaperParentLayer
+            </span>
+            <span class="signature">(layer)</span><span class="type-signature">boolean</span>
+            
+            <span class="access-signature">static</span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line2233">objectModel.jsx:2233</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Class Method. Tests an AV layer to see if it can be a paper parent Layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">AVLayer</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the AVLayer to test</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            <td class="description last">whether or not the layer is a valid paper parent</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="addInOutMarkersForProperty">
+            <a class="share-icon" href="#addInOutMarkersForProperty"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                addInOutMarkersForProperty
+            </span>
+            <span class="signature">(options)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#addInOutMarkersForProperty">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line398">objectModel.jsx:398</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets the given property's expression and adds In and Out markers (if not already on the layer) for in and out transitions. Overrides previous expressions
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                an object with the chosen equations and in/out values. Equations found in easingEquations.coffee
+                
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>property</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Property.html">Property</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the property to use for the in/outs. required</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>length</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">float</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the length of the transition. Default 2.0</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>startEquation</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the equation to use for the in transition of the property.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>endEquation</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the equation to use for the out transition of the property.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>startValue</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the value for this property at its inPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>endValue</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the value for this property at its outPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+            </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    <ul>
+            <li>
+
+    <div class="param-desc">
+    
+        Throws error if not given at least a start or end equation and value
+    
+    </div>
+
+</li>
+        
+            <li>
+
+    <div class="param-desc">
+    
+        Throws error if the start or end values given are the wrong number of dimensions for this property
+    
+    </div>
+
+</li>
+        </ul>
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="addSlider">
+            <a class="share-icon" href="#addSlider"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                addSlider
+            </span>
+            <span class="signature">(name, value)</span><span class="type-signature"><a href="Property.html">Property</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#addSlider">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line525">objectModel.jsx:525</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Creates and returns a slider effect on the layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the slider name</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">float</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the initial value of the slider</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="Property.html">Property</a>
+                        
+                    
+            </td>
+            <td class="description last">the slider property</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="containingComp">
+            <a class="share-icon" href="#containingComp"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                containingComp
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFComp.html">NFComp</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#containingComp">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line258">objectModel.jsx:258</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns the containing NFComp
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFComp.html">NFComp</a>
+                        
+                    
+            </td>
+            <td class="description last">the containing comp</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="getChildren">
+            <a class="share-icon" href="#getChildren"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                getChildren
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFLayerCollection.html">NFLayerCollection</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#getChildren">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line269">objectModel.jsx:269</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns an NFLayerCollection of child layers of this layer as specialized layers
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayerCollection.html">NFLayerCollection</a>
+                        
+                    
+            </td>
+            <td class="description last">the collection of child layers</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="getParent">
+            <a class="share-icon" href="#getParent"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                getParent
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a> | null</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#getParent">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line291">objectModel.jsx:291</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the layer's parent NFLayer, if any
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                         | 
+                    
+                        null
+                        
+                    
+            </td>
+            <td class="description last">the parent layer, or null if no parent</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="getSpecializedLayer">
+            <a class="share-icon" href="#getSpecializedLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                getSpecializedLayer
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFPageLayer.html">NFPageLayer</a> | <a href="NFHighlightLayer.html">NFHighlightLayer</a> | <a href="NFPaperParentLayer.html">NFPaperParentLayer</a> | <a href="NFLayer.html">NFLayer</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#getSpecializedLayer">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line191">objectModel.jsx:191</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns a new layer of a specialized type for the contents of this layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFPageLayer.html">NFPageLayer</a>
+                         | 
+                    
+                        <a href="NFHighlightLayer.html">NFHighlightLayer</a>
+                         | 
+                    
+                        <a href="NFPaperParentLayer.html">NFPaperParentLayer</a>
+                         | 
+                    
+                        <a href="NFLayer.html">NFLayer</a>
+                        
+                    
+            </td>
+            <td class="description last">the specialized layer or self if no specialized layer options</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="hasNullParent">
+            <a class="share-icon" href="#hasNullParent"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                hasNullParent
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#hasNullParent">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line221">objectModel.jsx:221</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns true if the layer has a null parent
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            <td class="description last">Whether this layer has a parent which is a null layer</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="index">
+            <a class="share-icon" href="#index"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                index
+            </span>
+            <span class="signature">()</span><span class="type-signature">int</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#index">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line210">objectModel.jsx:210</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Shorthand for the layer's index
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        int
+                        
+                    
+            </td>
+            <td class="description last">the layer's index</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="isHighlightLayer">
+            <a class="share-icon" href="#isHighlightLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                isHighlightLayer
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#isHighlightLayer">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line169">objectModel.jsx:169</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Checks if this layer is a valid highlight layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            <td class="description last">if this is a valid highlight layer</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="isNullLayer">
+            <a class="share-icon" href="#isNullLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                isNullLayer
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#isNullLayer">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line158">objectModel.jsx:158</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Checks if this layer is a null layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            <td class="description last">if this is a null layer</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="isPageLayer">
+            <a class="share-icon" href="#isPageLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                isPageLayer
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#isPageLayer">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line147">objectModel.jsx:147</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Checks if this layer is a valid page Layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            <td class="description last">if this is a valid page layer</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="isPaperParentLayer">
+            <a class="share-icon" href="#isPaperParentLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                isPaperParentLayer
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#isPaperParentLayer">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line180">objectModel.jsx:180</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Checks if this layer is a valid paper parent layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            <td class="description last">if this is a valid paper parent layer</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="markers">
+            <a class="share-icon" href="#markers"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                markers
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="Property.html">Property</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#markers">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line378">objectModel.jsx:378</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Moves this layer's index to immediately after the provided target layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="Property.html">Property</a>
+                        
+                    
+            </td>
+            <td class="description last">Marker property</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="moveAfter">
+            <a class="share-icon" href="#moveAfter"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                moveAfter
+            </span>
+            <span class="signature">(targetLayer)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#moveAfter">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line363">objectModel.jsx:363</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Moves this layer's index to immediately after the provided target layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>targetLayer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the layer to move this layer after</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Will throw an error if not given an NFLayer
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="moveBefore">
+            <a class="share-icon" href="#moveBefore"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                moveBefore
+            </span>
+            <span class="signature">(targetLayer)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#moveBefore">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line346">objectModel.jsx:346</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Moves this layer's index to immediately before the provided target layer
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>targetLayer</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the layer to move this layer before</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Will throw an error if not given an NFLayer
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="sameLayerAs">
+            <a class="share-icon" href="#sameLayerAs"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                sameLayerAs
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#sameLayerAs">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line244">objectModel.jsx:244</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Checks to see if a given NFLayer's layer is the same as this one's
+  For example, an NFLayer and an NFPageLayer that refer to the same layer will return true
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        boolean
+                        
+                    
+            </td>
+            <td class="description last">Whether both layers are the same layer</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="setName">
+            <a class="share-icon" href="#setName"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                setName
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></span>
+            
+            
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line2210">objectModel.jsx:2210</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets the name of this paper parent layer to the correct name.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Throws error if there are no child layers
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFPaperParentLayer.html">NFPaperParentLayer</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="setParent">
+            <a class="share-icon" href="#setParent"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                setParent
+            </span>
+            <span class="signature">(newParent)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#setParent">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line307">objectModel.jsx:307</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets the layer's parent to a given NFLayer
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>newParent</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
+|
+
+<span class="param-type">AVLayer</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the new parent NFLayer or AVLayer for this layer. Null to set no parent</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Will throw an error if not given an NFLayer or null
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="setZoomer">
+            <a class="share-icon" href="#setZoomer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                setZoomer
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#setZoomer">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line328">objectModel.jsx:328</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets the layer's parent to the zoomer if this layer is in an NFPartComp
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Will throw an error if not given an NFLayer or null
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+
+    
+</article>
+
+</section>  
+
+
+
+
+
+        
+
+        <footer class="content-size">
+            <div class="footer">
+                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat May 19 2018 11:28:42 GMT-0700 (PDT)
+            </div>
+        </footer>
+    </div>
+</div>
+<script>prettyPrint();</script>
+<script src="scripts/main.js"></script>
 </body>
 </html>

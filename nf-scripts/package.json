@@ -2,6 +2,7 @@
   "name": "nutrition-facts-ae-scripts",
   "version": "0.1.0",
   "devDependencies": {
+    "@pixi/jsdoc-template": "^2.4.0",
     "docdash": "^0.4.0",
     "foodoc": "0.0.9",
     "grunt": "^0.4.5",
@@ -15,6 +16,7 @@
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-jsdoc": "^2.2.1",
+    "jsdoc-template": "^1.2.0",
     "minami": "^1.2.3"
   }
 }

@@ -1,13 +1,14 @@
-###
-#    NF GAUSSY LAYER
-#
-#    (Subclass of NFLayer)
-#
+###*
+Creates a new NFGaussyLayer from a given AVLayer
+@class NFGaussyLayer
+@classdesc Subclass of {@link NFLayer} for a gaussy layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
 ###
 class NFGaussyLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
     @
-  # MARK: Instance Methods
   getInfo: ->
     return "NFGaussyLayer: '#{@layer.name}'"

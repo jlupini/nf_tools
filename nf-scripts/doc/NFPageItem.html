@@ -1,367 +1,1562 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-		<title>NFPageItem</title>
-		<!--[if lt IE 9]>
-		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
-		<link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
-		<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
-		<link type="text/css" rel="stylesheet" href="css/prism.min.css">
-		<link type="text/css" rel="stylesheet" href="css/template.min.css">
-		<script type="text/javascript">
-			window.TEMPLATE_OPTIONS = {"includeDate":true,"dateFormat":"Do MMM YYYY","systemName":"FooDoc","systemSummary":"A Bootstrap and Handlebars based template for JSDoc3.","systemLogo":"","systemColor":"","navMembers":[{"kind":"class","title":"Classes","summary":"All documented classes."},{"kind":"external","title":"Externals","summary":"All documented external members."},{"kind":"global","title":"Globals","summary":"All documented globals."},{"kind":"mixin","title":"Mixins","summary":"All documented mixins."},{"kind":"interface","title":"Interfaces","summary":"All documented interfaces."},{"kind":"module","title":"Modules","summary":"All documented modules."},{"kind":"namespace","title":"Namespaces","summary":"All documented namespaces."},{"kind":"tutorial","title":"Tutorials","summary":"All available tutorials."}],"footer":"","copyright":"FooDoc Copyright © 2016 The contributors to the JSDoc3 and FooDoc projects.","linenums":true,"collapseSymbols":true,"inverseNav":true,"inlineNav":false,"outputSourceFiles":true,"sourceRootPath":null,"disablePackagePath":true,"outputSourcePath":false,"showTableOfContents":true,"showAccessFilter":true,"analytics":null,"methodHeadingReturns":true,"sort":"linenum, longname, version, since","search":true,"favicon":null,"stylesheets":[],"scripts":[],"monospaceLinks":false,"cleverLinks":false,"default":{"outputSourceFiles":true}};
-			window.DOCLET_TOC_ENABLED = true;
-			window.DOCLET_AFILTER_ENABLED = false;
-		</script>
+    <meta charset="utf-8">
+    <title>Class: NFPageItem</title>
+    
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="https://fonts.googleapis.com/css?family=Libre+Franklin:400,700" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/main.css">
+    
+    
+    <script>
+    var config = {"monospaceLinks":false,"cleverLinks":false,"default":{"outputSourceFiles":true}};
+    </script>
+    
+
+    
 </head>
 <body>
-	<!-- start:navbar.hbs -->
-	<header class="navbar navbar-default navbar-fixed-top navbar-inverse">
-		<div class="container">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="index.html">
-					FooDoc
-				</a>
-				<!-- displayed on small devices -->
-				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-			</div>
-			<div class="navbar-collapse collapse" id="topNavigation">
-				<ul class="nav navbar-nav">
-								<li class="dropdown">
-									<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Globals<b class="caret"></b></a>
-									<ul class="dropdown-menu">
-											<li><a href="global.html#easingEquations">easingEquations</a></li>
-									</ul>
-								</li>
-								<li class="dropdown">
-									<a href="list_class.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
-									<ul class="dropdown-menu">
-											<li><a href="NFComp.html">NFComp</a></li>
-											<li><a href="NFLayer.html">NFLayer</a></li>
-											<li><a href="NFLayerCollection.html">NFLayerCollection</a></li>
-											<li><a href="NFPageItem.html">NFPageItem</a></li>
-											<li><a href="NFPageLayer.html">NFPageLayer</a></li>
-											<li><a href="NFPageLayerCollection.html">NFPageLayerCollection</a></li>
-											<li><a href="NFPaperLayerGroup.html">NFPaperLayerGroup</a></li>
-											<li><a href="NFPaperParentLayer.html">NFPaperParentLayer</a></li>
-											<li><a href="NFPartComp.html">NFPartComp</a></li>
-											<li><a href="NFPDF.html">NFPDF</a></li>
-									</ul>
-								</li>
-								<li class="dropdown">
-									<a href="list_namespace.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
-									<ul class="dropdown-menu">
-											<li><a href="Layer.html">Layer</a></li>
-											<li><a href="LayerCollection.html">LayerCollection</a></li>
-											<li><a href="Property.html">Property</a></li>
-									</ul>
-								</li>
-				</ul>
-					<!-- start:lunr-search-navbar.hbs -->
-					<form class="navbar-form navbar-right" role="search">
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Search" id="lunr-search-input">
-							<div class="input-group-btn">
-								<button class="btn btn-default" id="lunr-search-submit">
-									<i class="glyphicon glyphicon-search"></i>
-								</button>
-							</div>
-						</div>
-					</form>
-					<!-- start:lunr-search-navbar.hbs -->		</div>
-		</div>
-	</header>
-	<!-- end:navbar.hbs -->		<div class="page-header">
-			<div class="container">
-				<span class="kind">class</span>
-				<h1><span class="name">NFPageItem</span></h1>
-			</div>
-		</div>
-	<div class="container content">
-		<div class="row">
-			<div class="col-md-9 main-content">
-						<ol class="breadcrumb">
-							<li><a href="index.html">Home</a></li>
-							<li><a href="list_class.html">Classes</a></li>
-							<li class="active">NFPageItem</li>
-						</ol>
-					<section>
-							<dl class="symbol primary">
-								<dt class="symbol-title class collapsible-symbol expanded">
-			<h2 class="class"><span class="signature-new">new&nbsp;</span><span class="name">NFPageItem</span><span class="signature-params">( <span class="signature-param">item</span>&nbsp;)</span><span class="signature-type"></span></h2>
+<div id="wrap" class="clearfix">
+    
+<div class="navigation">
+    <h3 class="applicationName"><a href="index.html"></a></h3>
+    <button id="menuToggle" class="btn btn-link btn-lg menu-toggle">
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
+    </button>
+    <div class="search">
+        <input id="search" type="text" class="form-control input-md" placeholder="Search...">
+    </div>
+    <ul class="list">
+    
+        <li class="item" data-name="Layer">
+            <span class="title namespace ">
+                
+                <span class="namespaceTag">
+                    <span class="glyphicon glyphicon-folder-open"></span>
+                </span>
+                
+                <a href="Layer.html">Layer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="Layer.indexOfMarker"><a href="Layer.html#.indexOfMarker">indexOfMarker</a></li>
+            
+                <li class="parent  " data-name="Layer.removeMarker"><a href="Layer.html#.removeMarker">removeMarker</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="LayerCollection">
+            <span class="title namespace ">
+                
+                <span class="namespaceTag">
+                    <span class="glyphicon glyphicon-folder-open"></span>
+                </span>
+                
+                <a href="LayerCollection.html">LayerCollection</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="LayerCollection.toArr"><a href="LayerCollection.html#.toArr">toArr</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="Property">
+            <span class="title namespace ">
+                
+                <span class="namespaceTag">
+                    <span class="glyphicon glyphicon-folder-open"></span>
+                </span>
+                
+                <a href="Property.html">Property</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="Property.expressionStringForValue"><a href="Property.html#.expressionStringForValue">expressionStringForValue</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="global">
+            <span class="title namespace ">
+                
+                <span class="namespaceTag">
+                    <span class="glyphicon glyphicon-globe"></span>
+                </span>
+                
+                <a href="global.html">Global</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li class="parent " data-name="easingEquations"><a href="global.html#easingEquations">easingEquations</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFComp">
+            <span class="title  ">
+                
+                <a href="NFComp.html">NFComp</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFComp#addNull"><a href="NFComp.html#addNull">addNull</a></li>
+            
+                <li class="parent  " data-name="NFComp#getInfo"><a href="NFComp.html#getInfo">getInfo</a></li>
+            
+                <li class="parent  " data-name="NFComp#getZoomer"><a href="NFComp.html#getZoomer">getZoomer</a></li>
+            
+                <li class="parent  " data-name="NFComp#layerWithName"><a href="NFComp.html#layerWithName">layerWithName</a></li>
+            
+                <li class="parent  " data-name="NFComp#selectedLayers"><a href="NFComp.html#selectedLayers">selectedLayers</a></li>
+            
+                <li class="parent  " data-name="NFComp#selectedPageLayers"><a href="NFComp.html#selectedPageLayers">selectedPageLayers</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFEmphasisLayer">
+            <span class="title  ">
+                
+                <a href="NFEmphasisLayer.html">NFEmphasisLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="  " data-name="NFEmphasisLayer#addInOutMarkersForProperty"><a href="NFEmphasisLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#addSlider"><a href="NFEmphasisLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#containingComp"><a href="NFEmphasisLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#getChildren"><a href="NFEmphasisLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#getParent"><a href="NFEmphasisLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#getSpecializedLayer"><a href="NFEmphasisLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#hasNullParent"><a href="NFEmphasisLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#index"><a href="NFEmphasisLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#isHighlightLayer"><a href="NFEmphasisLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#isNullLayer"><a href="NFEmphasisLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#isPageLayer"><a href="NFEmphasisLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#isPaperParentLayer"><a href="NFEmphasisLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#markers"><a href="NFEmphasisLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#moveAfter"><a href="NFEmphasisLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#moveBefore"><a href="NFEmphasisLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#sameLayerAs"><a href="NFEmphasisLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#setParent"><a href="NFEmphasisLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFEmphasisLayer#setZoomer"><a href="NFEmphasisLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFGaussyLayer">
+            <span class="title  ">
+                
+                <a href="NFGaussyLayer.html">NFGaussyLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="  " data-name="NFGaussyLayer#addInOutMarkersForProperty"><a href="NFGaussyLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#addSlider"><a href="NFGaussyLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#containingComp"><a href="NFGaussyLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#getChildren"><a href="NFGaussyLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#getParent"><a href="NFGaussyLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#getSpecializedLayer"><a href="NFGaussyLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#hasNullParent"><a href="NFGaussyLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#index"><a href="NFGaussyLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#isHighlightLayer"><a href="NFGaussyLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#isNullLayer"><a href="NFGaussyLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#isPageLayer"><a href="NFGaussyLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#isPaperParentLayer"><a href="NFGaussyLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#markers"><a href="NFGaussyLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#moveAfter"><a href="NFGaussyLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#moveBefore"><a href="NFGaussyLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#sameLayerAs"><a href="NFGaussyLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#setParent"><a href="NFGaussyLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFGaussyLayer#setZoomer"><a href="NFGaussyLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFHighlightLayer">
+            <span class="title  ">
+                
+                <a href="NFHighlightLayer.html">NFHighlightLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFHighlightLayer.isHighlightLayer"><a href="NFHighlightLayer.html#.isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#addInOutMarkersForProperty"><a href="NFHighlightLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#addSlider"><a href="NFHighlightLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#bubbleUp"><a href="NFHighlightLayer.html#bubbleUp">bubbleUp</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#canBubbleUp"><a href="NFHighlightLayer.html#canBubbleUp">canBubbleUp</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#connectedPageLayerHighlighterEffect"><a href="NFHighlightLayer.html#connectedPageLayerHighlighterEffect">connectedPageLayerHighlighterEffect</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#containingComp"><a href="NFHighlightLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#disconnect"><a href="NFHighlightLayer.html#disconnect">disconnect</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#fixExpressionAfterInit"><a href="NFHighlightLayer.html#fixExpressionAfterInit">fixExpressionAfterInit</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#getChildren"><a href="NFHighlightLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#getPageItem"><a href="NFHighlightLayer.html#getPageItem">getPageItem</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#getParent"><a href="NFHighlightLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#getSpecializedLayer"><a href="NFHighlightLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#hasNullParent"><a href="NFHighlightLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#highlighterEffect"><a href="NFHighlightLayer.html#highlighterEffect">highlighterEffect</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#index"><a href="NFHighlightLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#isHighlightLayer"><a href="NFHighlightLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#isNullLayer"><a href="NFHighlightLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#isPageLayer"><a href="NFHighlightLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#isPaperParentLayer"><a href="NFHighlightLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#markers"><a href="NFHighlightLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#moveAfter"><a href="NFHighlightLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#moveBefore"><a href="NFHighlightLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#resetExpressionErrors"><a href="NFHighlightLayer.html#resetExpressionErrors">resetExpressionErrors</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#sameLayerAs"><a href="NFHighlightLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#setParent"><a href="NFHighlightLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFHighlightLayer#setZoomer"><a href="NFHighlightLayer.html#setZoomer">setZoomer</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayer#updateProperties"><a href="NFHighlightLayer.html#updateProperties">updateProperties</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFHighlightLayerCollection">
+            <span class="title  ">
+                
+                <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection.collectionFromAVLayerArray"><a href="NFHighlightLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#addAVLayer"><a href="NFHighlightLayerCollection.html#addAVLayer">addAVLayer</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#addNFHighlightLayer"><a href="NFHighlightLayerCollection.html#addNFHighlightLayer">addNFHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#addNFLayer"><a href="NFHighlightLayerCollection.html#addNFLayer">addNFLayer</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#bubbleUpHighlights"><a href="NFHighlightLayerCollection.html#bubbleUpHighlights">bubbleUpHighlights</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#containingComp"><a href="NFHighlightLayerCollection.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#count"><a href="NFHighlightLayerCollection.html#count">count</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#disconnectHighlights"><a href="NFHighlightLayerCollection.html#disconnectHighlights">disconnectHighlights</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#duplicateNames"><a href="NFHighlightLayerCollection.html#duplicateNames">duplicateNames</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#fixExpressionsAfterInit"><a href="NFHighlightLayerCollection.html#fixExpressionsAfterInit">fixExpressionsAfterInit</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#getBottommostLayer"><a href="NFHighlightLayerCollection.html#getBottommostLayer">getBottommostLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#getPageLayerCollection"><a href="NFHighlightLayerCollection.html#getPageLayerCollection">getPageLayerCollection</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#getTopmostLayer"><a href="NFHighlightLayerCollection.html#getTopmostLayer">getTopmostLayer</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#inSameComp"><a href="NFHighlightLayerCollection.html#inSameComp">inSameComp</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#isEmpty"><a href="NFHighlightLayerCollection.html#isEmpty">isEmpty</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#nullify"><a href="NFHighlightLayerCollection.html#nullify">nullify</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#onlyContainsPageLayers"><a href="NFHighlightLayerCollection.html#onlyContainsPageLayers">onlyContainsPageLayers</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#remove"><a href="NFHighlightLayerCollection.html#remove">remove</a></li>
+            
+                <li class="parent  " data-name="NFHighlightLayerCollection#resetExpressionErrors"><a href="NFHighlightLayerCollection.html#resetExpressionErrors">resetExpressionErrors</a></li>
+            
+                <li class="  " data-name="NFHighlightLayerCollection#setParents"><a href="NFHighlightLayerCollection.html#setParents">setParents</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFImageLayer">
+            <span class="title  ">
+                
+                <a href="NFImageLayer.html">NFImageLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="  " data-name="NFImageLayer#addInOutMarkersForProperty"><a href="NFImageLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFImageLayer#addSlider"><a href="NFImageLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="  " data-name="NFImageLayer#containingComp"><a href="NFImageLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFImageLayer#getChildren"><a href="NFImageLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="  " data-name="NFImageLayer#getParent"><a href="NFImageLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFImageLayer#getSpecializedLayer"><a href="NFImageLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#hasNullParent"><a href="NFImageLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="  " data-name="NFImageLayer#index"><a href="NFImageLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFImageLayer#isHighlightLayer"><a href="NFImageLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#isNullLayer"><a href="NFImageLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#isPageLayer"><a href="NFImageLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#isPaperParentLayer"><a href="NFImageLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFImageLayer#markers"><a href="NFImageLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFImageLayer#moveAfter"><a href="NFImageLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFImageLayer#moveBefore"><a href="NFImageLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFImageLayer#sameLayerAs"><a href="NFImageLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="  " data-name="NFImageLayer#setParent"><a href="NFImageLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFImageLayer#setZoomer"><a href="NFImageLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFLayer">
+            <span class="title  ">
+                
+                <a href="NFLayer.html">NFLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFLayer.getSpecializedLayerFromAVLayer"><a href="NFLayer.html#.getSpecializedLayerFromAVLayer">getSpecializedLayerFromAVLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer.isAVLayer"><a href="NFLayer.html#.isAVLayer">isAVLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer.isCompLayer"><a href="NFLayer.html#.isCompLayer">isCompLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#addInOutMarkersForProperty"><a href="NFLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="parent  " data-name="NFLayer#addSlider"><a href="NFLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="parent  " data-name="NFLayer#containingComp"><a href="NFLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="parent  " data-name="NFLayer#getChildren"><a href="NFLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="parent  " data-name="NFLayer#getParent"><a href="NFLayer.html#getParent">getParent</a></li>
+            
+                <li class="parent  " data-name="NFLayer#getSpecializedLayer"><a href="NFLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#hasNullParent"><a href="NFLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="parent  " data-name="NFLayer#index"><a href="NFLayer.html#index">index</a></li>
+            
+                <li class="parent  " data-name="NFLayer#isHighlightLayer"><a href="NFLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#isNullLayer"><a href="NFLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#isPageLayer"><a href="NFLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#isPaperParentLayer"><a href="NFLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayer#markers"><a href="NFLayer.html#markers">markers</a></li>
+            
+                <li class="parent  " data-name="NFLayer#moveAfter"><a href="NFLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="parent  " data-name="NFLayer#moveBefore"><a href="NFLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="parent  " data-name="NFLayer#sameLayerAs"><a href="NFLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="parent  " data-name="NFLayer#setParent"><a href="NFLayer.html#setParent">setParent</a></li>
+            
+                <li class="parent  " data-name="NFLayer#setZoomer"><a href="NFLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFLayerCollection">
+            <span class="title  ">
+                
+                <a href="NFLayerCollection.html">NFLayerCollection</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFLayerCollection.collectionFromAVLayerArray"><a href="NFLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#addNFLayer"><a href="NFLayerCollection.html#addNFLayer">addNFLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#containingComp"><a href="NFLayerCollection.html#containingComp">containingComp</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#count"><a href="NFLayerCollection.html#count">count</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#getBottommostLayer"><a href="NFLayerCollection.html#getBottommostLayer">getBottommostLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#getPageLayerCollection"><a href="NFLayerCollection.html#getPageLayerCollection">getPageLayerCollection</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#getTopmostLayer"><a href="NFLayerCollection.html#getTopmostLayer">getTopmostLayer</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#inSameComp"><a href="NFLayerCollection.html#inSameComp">inSameComp</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#isEmpty"><a href="NFLayerCollection.html#isEmpty">isEmpty</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#nullify"><a href="NFLayerCollection.html#nullify">nullify</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#onlyContainsPageLayers"><a href="NFLayerCollection.html#onlyContainsPageLayers">onlyContainsPageLayers</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#remove"><a href="NFLayerCollection.html#remove">remove</a></li>
+            
+                <li class="parent  " data-name="NFLayerCollection#setParents"><a href="NFLayerCollection.html#setParents">setParents</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPageItem">
+            <span class="title  ">
+                
+                <a href="NFPageItem.html">NFPageItem</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPageItem#getPageNumber"><a href="NFPageItem.html#getPageNumber">getPageNumber</a></li>
+            
+                <li class="parent  " data-name="NFPageItem#getPDFNumber"><a href="NFPageItem.html#getPDFNumber">getPDFNumber</a></li>
+            
+                <li class="parent  " data-name="NFPageItem#highlights"><a href="NFPageItem.html#highlights">highlights</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPageLayer">
+            <span class="title  ">
+                
+                <a href="NFPageLayer.html">NFPageLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPageLayer.isPageLayer"><a href="NFPageLayer.html#.isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#addInOutMarkersForProperty"><a href="NFPageLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFPageLayer#addSlider"><a href="NFPageLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#bubbledHighlights"><a href="NFPageLayer.html#bubbledHighlights">bubbledHighlights</a></li>
+            
+                <li class="  " data-name="NFPageLayer#containingComp"><a href="NFPageLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#findPaperParentLayer"><a href="NFPageLayer.html#findPaperParentLayer">findPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#getChildren"><a href="NFPageLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#getPageNumber"><a href="NFPageLayer.html#getPageNumber">getPageNumber</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#getPaperParentLayer"><a href="NFPageLayer.html#getPaperParentLayer">getPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#getParent"><a href="NFPageLayer.html#getParent">getParent</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#getPDFNumber"><a href="NFPageLayer.html#getPDFNumber">getPDFNumber</a></li>
+            
+                <li class="  " data-name="NFPageLayer#getSpecializedLayer"><a href="NFPageLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#hasNullParent"><a href="NFPageLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#highlights"><a href="NFPageLayer.html#highlights">highlights</a></li>
+            
+                <li class="  " data-name="NFPageLayer#index"><a href="NFPageLayer.html#index">index</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#init"><a href="NFPageLayer.html#init">init</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#initTransforms"><a href="NFPageLayer.html#initTransforms">initTransforms</a></li>
+            
+                <li class="  " data-name="NFPageLayer#isHighlightLayer"><a href="NFPageLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#isInitted"><a href="NFPageLayer.html#isInitted">isInitted</a></li>
+            
+                <li class="  " data-name="NFPageLayer#isNullLayer"><a href="NFPageLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#isPageLayer"><a href="NFPageLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#isPaperParentLayer"><a href="NFPageLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayer#markers"><a href="NFPageLayer.html#markers">markers</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#markInitted"><a href="NFPageLayer.html#markInitted">markInitted</a></li>
+            
+                <li class="  " data-name="NFPageLayer#moveAfter"><a href="NFPageLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFPageLayer#moveBefore"><a href="NFPageLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFPageLayer#sameLayerAs"><a href="NFPageLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#setDropShadow"><a href="NFPageLayer.html#setDropShadow">setDropShadow</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#setInitPosition"><a href="NFPageLayer.html#setInitPosition">setInitPosition</a></li>
+            
+                <li class="parent  " data-name="NFPageLayer#setInitSize"><a href="NFPageLayer.html#setInitSize">setInitSize</a></li>
+            
+                <li class="  " data-name="NFPageLayer#setParent"><a href="NFPageLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFPageLayer#setZoomer"><a href="NFPageLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPageLayerCollection">
+            <span class="title  ">
+                
+                <a href="NFPageLayerCollection.html">NFPageLayerCollection</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPageLayerCollection.collectionFromAVLayerArray"><a href="NFPageLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#addAVLayer"><a href="NFPageLayerCollection.html#addAVLayer">addAVLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#addNFLayer"><a href="NFPageLayerCollection.html#addNFLayer">addNFLayer</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#addNFPageLayer"><a href="NFPageLayerCollection.html#addNFPageLayer">addNFPageLayer</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#assignPaperParentLayer"><a href="NFPageLayerCollection.html#assignPaperParentLayer">assignPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#containingComp"><a href="NFPageLayerCollection.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#count"><a href="NFPageLayerCollection.html#count">count</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#fromSamePDF"><a href="NFPageLayerCollection.html#fromSamePDF">fromSamePDF</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#getBottommostLayer"><a href="NFPageLayerCollection.html#getBottommostLayer">getBottommostLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#getPageLayerCollection"><a href="NFPageLayerCollection.html#getPageLayerCollection">getPageLayerCollection</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#getTopmostLayer"><a href="NFPageLayerCollection.html#getTopmostLayer">getTopmostLayer</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#highlights"><a href="NFPageLayerCollection.html#highlights">highlights</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#initLayers"><a href="NFPageLayerCollection.html#initLayers">initLayers</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#initLayerTransforms"><a href="NFPageLayerCollection.html#initLayerTransforms">initLayerTransforms</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#inSameComp"><a href="NFPageLayerCollection.html#inSameComp">inSameComp</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#isEmpty"><a href="NFPageLayerCollection.html#isEmpty">isEmpty</a></li>
+            
+                <li class="parent  " data-name="NFPageLayerCollection#newPaperParentLayer"><a href="NFPageLayerCollection.html#newPaperParentLayer">newPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#nullify"><a href="NFPageLayerCollection.html#nullify">nullify</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#onlyContainsPageLayers"><a href="NFPageLayerCollection.html#onlyContainsPageLayers">onlyContainsPageLayers</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#remove"><a href="NFPageLayerCollection.html#remove">remove</a></li>
+            
+                <li class="  " data-name="NFPageLayerCollection#setParents"><a href="NFPageLayerCollection.html#setParents">setParents</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPaperLayerGroup">
+            <span class="title  ">
+                
+                <a href="NFPaperLayerGroup.html">NFPaperLayerGroup</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPaperLayerGroup#gatherLayers"><a href="NFPaperLayerGroup.html#gatherLayers">gatherLayers</a></li>
+            
+                <li class="parent  " data-name="NFPaperLayerGroup#getChildren"><a href="NFPaperLayerGroup.html#getChildren">getChildren</a></li>
+            
+                <li class="parent  " data-name="NFPaperLayerGroup#getPages"><a href="NFPaperLayerGroup.html#getPages">getPages</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPaperParentLayer">
+            <span class="title  ">
+                
+                <a href="NFPaperParentLayer.html">NFPaperParentLayer</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPaperParentLayer.getPaperParentNameForPageLayer"><a href="NFPaperParentLayer.html#.getPaperParentNameForPageLayer">getPaperParentNameForPageLayer</a></li>
+            
+                <li class="parent  " data-name="NFPaperParentLayer.isPaperParentLayer"><a href="NFPaperParentLayer.html#.isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#addInOutMarkersForProperty"><a href="NFPaperParentLayer.html#addInOutMarkersForProperty">addInOutMarkersForProperty</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#addSlider"><a href="NFPaperParentLayer.html#addSlider">addSlider</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#containingComp"><a href="NFPaperParentLayer.html#containingComp">containingComp</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#getChildren"><a href="NFPaperParentLayer.html#getChildren">getChildren</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#getParent"><a href="NFPaperParentLayer.html#getParent">getParent</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#getSpecializedLayer"><a href="NFPaperParentLayer.html#getSpecializedLayer">getSpecializedLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#hasNullParent"><a href="NFPaperParentLayer.html#hasNullParent">hasNullParent</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#index"><a href="NFPaperParentLayer.html#index">index</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#isHighlightLayer"><a href="NFPaperParentLayer.html#isHighlightLayer">isHighlightLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#isNullLayer"><a href="NFPaperParentLayer.html#isNullLayer">isNullLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#isPageLayer"><a href="NFPaperParentLayer.html#isPageLayer">isPageLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#isPaperParentLayer"><a href="NFPaperParentLayer.html#isPaperParentLayer">isPaperParentLayer</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#markers"><a href="NFPaperParentLayer.html#markers">markers</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#moveAfter"><a href="NFPaperParentLayer.html#moveAfter">moveAfter</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#moveBefore"><a href="NFPaperParentLayer.html#moveBefore">moveBefore</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#sameLayerAs"><a href="NFPaperParentLayer.html#sameLayerAs">sameLayerAs</a></li>
+            
+                <li class="parent  " data-name="NFPaperParentLayer#setName"><a href="NFPaperParentLayer.html#setName">setName</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#setParent"><a href="NFPaperParentLayer.html#setParent">setParent</a></li>
+            
+                <li class="  " data-name="NFPaperParentLayer#setZoomer"><a href="NFPaperParentLayer.html#setZoomer">setZoomer</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPartComp">
+            <span class="title  ">
+                
+                <a href="NFPartComp.html">NFPartComp</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="  " data-name="NFPartComp#addNull"><a href="NFPartComp.html#addNull">addNull</a></li>
+            
+                <li class="  " data-name="NFPartComp#getInfo"><a href="NFPartComp.html#getInfo">getInfo</a></li>
+            
+                <li class="  " data-name="NFPartComp#getZoomer"><a href="NFPartComp.html#getZoomer">getZoomer</a></li>
+            
+                <li class="  " data-name="NFPartComp#layerWithName"><a href="NFPartComp.html#layerWithName">layerWithName</a></li>
+            
+                <li class="  " data-name="NFPartComp#selectedLayers"><a href="NFPartComp.html#selectedLayers">selectedLayers</a></li>
+            
+                <li class="  " data-name="NFPartComp#selectedPageLayers"><a href="NFPartComp.html#selectedPageLayers">selectedPageLayers</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+        <li class="item" data-name="NFPDF">
+            <span class="title  ">
+                
+                <a href="NFPDF.html">NFPDF</a>
+            </span>
+            <ul class="members itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li class="parent  " data-name="NFPDF#addNFPageItem"><a href="NFPDF.html#addNFPageItem">addNFPageItem</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+    </ul>
+</div>
+    <div class="main">
+        <h1 class="page-title" data-filename="NFPageItem.html">Class: NFPageItem</h1>
+        
+
+
+
+<section>
+    
+<header>
+    <div class="header content-size">
+        <h2>NFPageItem
+        </h2>
+        
+            <div class="class-description">NF Wrapper object for a page CompItem</div>
+        
+    </div>
+</header>  
+
+<article class="content-size">
+    <div class="container-overview">
+    
+    
+    
+        
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="NFPageItem">
+            <a class="share-icon" href="#NFPageItem"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                new NFPageItem
+            </span>
+            <span class="signature">(item)</span>
+            
+            
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line928">objectModel.jsx:928</a>
+        </div>
+        
+    </div>
+
+    
 </dt>
-<dd class="symbol-details class  collapsible-symbol expanded" style="max-height: 9999px;">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description classdesc">NF Wrapper object for a page CompItem</div>
-			</div>			<div class="callout callout-info">
-				<h5>Parameters</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>item</code></td>
-							<td><span class="param-type">CompItem</span></td>
-							<td class="last">
-									the CompItem to wrap
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-info">
-				<h5>Properties</h5>
-				<table class="params table table-striped">
-					<thead>
-					<tr>
-							<th>Name</th>
-						<th>Type</th>
-						<th class="last">Description</th>
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-								<td><code>item</code></td>
-							<td><span class="param-type">CompItem</span></td>
-							<td class="last">
-									the CompItem
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-928">line 928</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-							</dl>
-							<article class="secondary">
-									<h3>Methods</h3>
-									<dl class="symbol">
-											<hr/>
-											<dt class="symbol-title function public collapsible-symbol">
-			<h4 id="getPDFNumber" class="function public"><span class="name">getPDFNumber</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{string}</span></h4>
-		</dt>
-<dd class="symbol-details function public  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Returns the PDF number as a String</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">string</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the PDF number</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Throws error if the number could not be found in this item</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-956">line 956</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public collapsible-symbol">
-			<h4 id="getPageNumber" class="function public"><span class="name">getPageNumber</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{string}</span></h4>
-		</dt>
-<dd class="symbol-details function public  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Returns the page number as a String</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">string</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">the page number</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-danger"><h5>Throws</h5>		<form class="form-horizontal exceptions">
-							<div class="form-group">
-								<label class="col-sm-3 control-label exceptions-type"></label>
-								<div class="col-sm-9">
-									<div class="form-control-static exceptions-description">Throws error if the number could not be found in this item</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-973">line 973</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-											<hr/>
-											<dt class="symbol-title function public collapsible-symbol">
-			<h4 id="highlights" class="function public"><span class="name">highlights</span><span class="signature-params">()</span><span class="signature-type"> &rarr;&nbsp;{NFHighlightLayerCollection}</span></h4>
-		</dt>
-<dd class="symbol-details function public  collapsible-symbol">
-	<div class="symbol-details-inner">
-			<div class="callout callout-primary"><h5>Description</h5>		<div class="description">Gets the Highlight layers in this item</div>
-			</div>			<div class="callout callout-success"><h5>Returns</h5>		<form class="form-horizontal returns">
-							<div class="form-group">
-								<label class="col-sm-3 control-label returns-type"><span class="param-type">NFHighlightLayerCollection</span></label>
-								<div class="col-sm-9">
-									<div class="form-control-static returns-description">highlight layers in this PageItem</div>
-								</div>
-							</div>
-					</form>
-			</div>			<div class="callout callout-default"><h5>Details</h5>		<form class="form-horizontal details">
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-							<!-- source -->
-							<div class="form-group">
-								<label class="col-sm-3 control-label">Source</label>
-								<div class="col-sm-9">
-									<p class="form-control-static"><a href="objectModel.jsx.html">objectModel.jsx</a>, <a href="objectModel.jsx.html#line-989">line 989</a></p>
-								</div>
-							</div>
-			
-			
-			
-			
-					</form>
-			</div>	</div>
-</dd>
-									</dl>
-							</article>
-					</section>
-			</div>
-				<div class="col-md-3 side-content">
-					<nav class="toc hidden-print hidden-sm hidden-xs"></nav>
-				</div>
-		</div>
-	</div>
-	<footer>
-				<div class="copyright">FooDoc Copyright © 2016 The contributors to the JSDoc3 and FooDoc projects.</div>
-			<div class="generated-by">Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on 18th May 2018 using the <a href="https://github.com/steveush/foodoc">FooDoc template</a>.</div>
-	</footer>
-	<script src="js/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/clipboard.min.js"></script>
-	<script src="js/prism.min.js"></script>
-	<script src="js/template.min.js"></script>
-		<!-- start:lunr-search-modal.hbs -->
-		<div class="modal fade" id="lunr-search-modal">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Search results</h4>
-					</div>
-					<div class="modal-body" id="lunr-search-body">
-					</div>
-					<div class="modal-footer" id="lunr-search-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
-				</div><!-- /.modal-content -->
-			</div><!-- /.modal-dialog -->
-		</div>
-		<!-- end:lunr-search-modal.hbs -->		<script src="js/lunr.min.js"></script>
+<dd>
+    
+    
+    <div class="description">
+        Creates a new NFPageItem from a given CompItem
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
 	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>item</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">CompItem</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                the CompItem to wrap</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+        <h5 class="subsection-title">Properties:</h5>
+        
+        <dl>
+
+<table class="props">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>item</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">CompItem</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">the CompItem</td>
+        </tr>
+	
+	
+	</tbody>
+</table></dl>
+        
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl class="list-methods">
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="getPageNumber">
+            <a class="share-icon" href="#getPageNumber"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                getPageNumber
+            </span>
+            <span class="signature">()</span><span class="type-signature">string</span>
+            
+            
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line973">objectModel.jsx:973</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns the page number as a String
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Throws error if the number could not be found in this item
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            <td class="description last">the page number</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="getPDFNumber">
+            <a class="share-icon" href="#getPDFNumber"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                getPDFNumber
+            </span>
+            <span class="signature">()</span><span class="type-signature">string</span>
+            
+            
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line956">objectModel.jsx:956</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns the PDF number as a String
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Throws error if the number could not be found in this item
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        string
+                        
+                    
+            </td>
+            <td class="description last">the PDF number</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="highlights">
+            <a class="share-icon" href="#highlights"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                highlights
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a></span>
+            
+            
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line989">objectModel.jsx:989</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the Highlight layers in this item
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
+                        
+                    
+            </td>
+            <td class="description last">highlight layers in this PageItem</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+
+    
+</article>
+
+</section>  
+
+
+
+
+
+        
+
+        <footer class="content-size">
+            <div class="footer">
+                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat May 19 2018 11:28:42 GMT-0700 (PDT)
+            </div>
+        </footer>
+    </div>
+</div>
+<script>prettyPrint();</script>
+<script src="scripts/main.js"></script>
 </body>
 </html>

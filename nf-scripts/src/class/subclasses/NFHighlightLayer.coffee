@@ -1,8 +1,11 @@
-###
-#    NF HIGHLIGHT LAYER
-#
-#    (inherits from NFLayer)
-#
+###*
+Creates a new NFHighlightLayer from a given AVLayer
+@class NFHighlightLayer
+@classdesc Subclass of {@link NFLayer} for a highlight layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
+@throws Will throw an error if not given an AVLayer with a highlight
 ###
 class NFHighlightLayer extends NFLayer
   constructor: (layer) ->
@@ -11,8 +14,14 @@ class NFHighlightLayer extends NFLayer
       throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
     @updateProperties()
     @
-  # Instance Methods
-  # Updates values of all Properties. Run after changing anything that buggers these up
+  getInfo: ->
+    return "NFHighlightLayer: '#{@name}'"
+
+  ###*
+  Updates values of all properties. Run after changing anything that buggers these up
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+  ###
   updateProperties: ->
     @name = @layer.name
     @bubbled = @highlighterEffect().property("Spacing").expressionEnabled
@@ -32,15 +41,29 @@ class NFHighlightLayer extends NFLayer
       if comp?
         layer = comp.layer layerName
         @connectedPageLayer = new NFPageLayer(layer) if layer?
-  getInfo: ->
-    return "NFHighlightLayer: '#{@name}'"
-  # Returns the NFPageItem this highlight lives in
+    @
+
+  ###*
+  Returns the NFPageItem this highlight lives in
+  @memberof NFHighlightLayer
+  @returns {NFPageItem} the containing page item for the highlight
+  ###
   getPageItem: ->
     return new NFPageItem(@layer.containingComp)
-  # Returns the AV Highlighter effect
+
+  ###*
+  Returns the AV Highlighter effect
+  @memberof NFHighlightLayer
+  @returns {Property} the AV Highlighter Property for this highlight
+  ###
   highlighterEffect: ->
     return @layer.Effects.property("AV_Highlighter")
-  # Returns the Bubbled Up AV Highlighter effect on a page layer
+
+  ###*
+  Returns the Bubbled Up AV Highlighter effect on a page layer
+  @memberof NFHighlightLayer
+  @returns {Property | null} the AV_Highlighter Property on an NFPageLayer if connected, null if not
+  ###
   connectedPageLayerHighlighterEffect: ->
     if @connectedPageLayer?
       expression = @highlighterEffect().property("Spacing").expression
@@ -48,11 +71,25 @@ class NFHighlightLayer extends NFLayer
       effect = @connectedPageLayer.getEffectWithName(effectName)
       return effect
     return null
-  # Returns true if the highlight can be bubbled up
+
+  ###*
+  Returns true if the highlight can be bubbled up. In other words, true if currently bubbled up
+  and not broken, or if there's no containing page layer. This check relies on the
+  containingPageLayer property being correctly set by the page that creates this object
+  @memberof NFHighlightLayer
+  @returns {boolean} whether the highlight can be bubbled up
+  ###
   canBubbleUp: ->
     return not ((@bubbled and not @broken) or not @containingPageLayer?)
-  # Bubbles up highlight to the containingPageLayer
-  # Will throw an error if there's no containingPageLayer or if (@bubbled and not @broken)
+
+  ###*
+  Bubbles up highlight to the containingPageLayer.
+  Will throw an error if there's no containingPageLayer or if (bubbled and not broken)
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+  @throws Throw error if connected and not broken, so you should have disconnected first
+  @throws Throw error if no containingPageLayer
+  ###
   bubbleUp: ->
     if @bubbled and not @broken
       throw "Cannot bubble highlight if already connected and not broken. Disconnect first"
@@ -76,20 +113,38 @@ class NFHighlightLayer extends NFLayer
       sourceEffect.property(highlighterProperty).expression = sourceExpression
 
       @updateProperties()
-  # Fixes the expression after initting if the page layer name changed and there was already an existing expression
+    @
+
+  ###*
+  Fixes the expression after initting if the page layer name changed and there was already an existing expression
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+  ###
   fixExpressionAfterInit: ->
     if @bubbled
       for property in NF.Util.highlighterProperties
         expression = @highlighterEffect().property(property).expression
         @highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]")
-  # Attempt to clear expresssion errors
+    @
+
+  ###*
+  Attempt to clear expresssion errors
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+  ###
   resetExpressionErrors: ->
     if @bubbled
       for property in NF.Util.highlighterProperties
         expression = @highlighterEffect().property(property).expression
         @highlighterEffect().property(property).expression = ""
         @highlighterEffect().property(property).expression = expression
-  # Disconnects bubbleups in this highlight layer
+    @
+
+  ###*
+  Disconnects bubbleups in this highlight layer
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+  ###
   disconnect: ->
     # Remove the bubbled up AV Highlighter Effect if it exists
     @connectedPageLayerHighlighterEffect()?.remove()
@@ -99,8 +154,14 @@ class NFHighlightLayer extends NFLayer
       property = effect.property(i)
       property.expression = ""
     @updateProperties()
-# Class Methods
+    @
+
 NFHighlightLayer = Object.assign NFHighlightLayer,
-  # Returns whether or not the given AVLayer is a valid Highlight Layer
+
+  ###*
+  Returns whether or not the given AVLayer is a valid Highlight Layer
+  @memberof NFHighlightLayer
+  @returns {boolean} whether the AV layer is a valid highlight layer
+  ###
   isHighlightLayer: (theLayer) ->
     return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"

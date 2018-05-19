@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Class: NFLayer</title>
+    <title>Class: NFEmphasisLayer</title>
     
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -981,7 +981,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="NFLayer.html">Class: NFLayer</h1>
+        <h1 class="page-title" data-filename="NFEmphasisLayer.html">Class: NFEmphasisLayer</h1>
         
 
 
@@ -990,10 +990,10 @@
     
 <header>
     <div class="header content-size">
-        <h2>NFLayer
+        <h2>NFEmphasisLayer
         </h2>
         
-            <div class="class-description">NF Wrapper object for an AVLayer</div>
+            <div class="class-description">Subclass of <a href="NFLayer.html">NFLayer</a> for an emphasis layer</div>
         
     </div>
 </header>  
@@ -1006,10 +1006,10 @@
         
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="NFLayer">
-            <a class="share-icon" href="#NFLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="NFEmphasisLayer">
+            <a class="share-icon" href="#NFEmphasisLayer"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                new NFLayer
+                new NFEmphasisLayer
             </span>
             <span class="signature">(layer)</span>
             
@@ -1020,7 +1020,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line113">objectModel.jsx:113</a>
+            <a href="objectModel.jsx.html#line1112">objectModel.jsx:1112</a>
         </div>
         
     </div>
@@ -1031,7 +1031,7 @@
     
     
     <div class="description">
-        Creates a new NFLayer from a given AVLayer
+        Creates a new NFEmphasisLayer from a given AVLayer
     </div>
     
 
@@ -1081,7 +1081,7 @@
             
             <td class="description last">
                 
-                the target AVLayer or NFLayer (in which case we use it's AVLayer)</td>
+                the target AVLayer or NFLayer</td>
         </tr>
 	
 	
@@ -1171,18 +1171,6 @@
     
     
     
-    <h5>Throws:</h5>
-    
-            
-
-    <div class="param-desc">
-    
-        Will throw an error if not given a valid AVLayer object
-    
-    </div>
-
-
-        
     
     
     
@@ -1192,6 +1180,12 @@
     
     </div>
     
+    
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="NFLayer.html">NFLayer</a></li>
+        </ul>
     
     
     
@@ -1211,471 +1205,6 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".getSpecializedLayerFromAVLayer">
-            <a class="share-icon" href="#.getSpecializedLayerFromAVLayer"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                NFLayer.getSpecializedLayerFromAVLayer
-            </span>
-            <span class="signature">(theLayer)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a> | <a href="NFHighlightLayer.html">NFHighlightLayer</a> | <a href="NFPageLayer.html">NFPageLayer</a> | <a href="NFEmphasisLayer.html">NFEmphasisLayer</a> | <a href="NFGaussyLayer.html">NFGaussyLayer</a> | <a href="NFImageLayer.html">NFImageLayer</a></span>
-            
-            <span class="access-signature">static</span>
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line545">objectModel.jsx:545</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Class Method: Returns a new Specialized NFLayer from an AVLayer
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>theLayer</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">AVLayer</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the AVLayer to use</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        <a href="NFLayer.html">NFLayer</a>
-                         | 
-                    
-                        <a href="NFHighlightLayer.html">NFHighlightLayer</a>
-                         | 
-                    
-                        <a href="NFPageLayer.html">NFPageLayer</a>
-                         | 
-                    
-                        <a href="NFEmphasisLayer.html">NFEmphasisLayer</a>
-                         | 
-                    
-                        <a href="NFGaussyLayer.html">NFGaussyLayer</a>
-                         | 
-                    
-                        <a href="NFImageLayer.html">NFImageLayer</a>
-                        
-                    
-            </td>
-            <td class="description last">the specialized layer</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".isAVLayer">
-            <a class="share-icon" href="#.isAVLayer"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                NFLayer.isAVLayer
-            </span>
-            <span class="signature">(layer)</span><span class="type-signature">boolean</span>
-            
-            <span class="access-signature">static</span>
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line570">objectModel.jsx:570</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns whether or not a given Layer is an AVLayer or one of its subclasses. This is because Layer objects don't play nice with `instanceof`
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>layer</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Layer.html">Layer</a></span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the Layer to check</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        boolean
-                        
-                    
-            </td>
-            <td class="description last">the result</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".isCompLayer">
-            <a class="share-icon" href="#.isCompLayer"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                NFLayer.isCompLayer
-            </span>
-            <span class="signature">(theLayer)</span><span class="type-signature">boolean</span>
-            
-            <span class="access-signature">static</span>
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line560">objectModel.jsx:560</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Class Method: Returns true if the given AVLayer is a comp layer
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>theLayer</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">AVLayer</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the AVLayer to check</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        boolean
-                        
-                    
-            </td>
-            <td class="description last">whether or not the AVLayer is a comp</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
         <h4 class="name" id="addInOutMarkersForProperty">
             <a class="share-icon" href="#addInOutMarkersForProperty"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
@@ -1684,6 +1213,8 @@
             <span class="signature">(options)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#addInOutMarkersForProperty">inherited</a></span>
             
             
         </h4>
@@ -2023,6 +1554,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#addSlider">inherited</a></span>
+            
             
         </h4>
     
@@ -2196,6 +1729,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#containingComp">inherited</a></span>
+            
             
         </h4>
     
@@ -2301,6 +1836,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#getChildren">inherited</a></span>
+            
             
         </h4>
     
@@ -2405,6 +1942,8 @@
             <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a> | null</span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#getParent">inherited</a></span>
             
             
         </h4>
@@ -2513,6 +2052,8 @@
             <span class="signature">()</span><span class="type-signature"><a href="NFPageLayer.html">NFPageLayer</a> | <a href="NFHighlightLayer.html">NFHighlightLayer</a> | <a href="NFPaperParentLayer.html">NFPaperParentLayer</a> | <a href="NFLayer.html">NFLayer</a></span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#getSpecializedLayer">inherited</a></span>
             
             
         </h4>
@@ -2628,6 +2169,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#hasNullParent">inherited</a></span>
+            
             
         </h4>
     
@@ -2732,6 +2275,8 @@
             <span class="signature">()</span><span class="type-signature">int</span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#index">inherited</a></span>
             
             
         </h4>
@@ -2838,6 +2383,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#isHighlightLayer">inherited</a></span>
+            
             
         </h4>
     
@@ -2942,6 +2489,8 @@
             <span class="signature">()</span><span class="type-signature">boolean</span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#isNullLayer">inherited</a></span>
             
             
         </h4>
@@ -3048,6 +2597,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#isPageLayer">inherited</a></span>
+            
             
         </h4>
     
@@ -3152,6 +2703,8 @@
             <span class="signature">()</span><span class="type-signature">boolean</span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#isPaperParentLayer">inherited</a></span>
             
             
         </h4>
@@ -3258,6 +2811,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#markers">inherited</a></span>
+            
             
         </h4>
     
@@ -3362,6 +2917,8 @@
             <span class="signature">(targetLayer)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#moveAfter">inherited</a></span>
             
             
         </h4>
@@ -3525,6 +3082,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#moveBefore">inherited</a></span>
+            
             
         </h4>
     
@@ -3687,6 +3246,8 @@
             
             
             
+                <span class="access-signature inherited"><a href="NFLayer.html#sameLayerAs">inherited</a></span>
+            
             
         </h4>
     
@@ -3792,6 +3353,8 @@
             <span class="signature">(newParent)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#setParent">inherited</a></span>
             
             
         </h4>
@@ -3960,6 +3523,8 @@
             <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayer.html#setZoomer">inherited</a></span>
             
             
         </h4>

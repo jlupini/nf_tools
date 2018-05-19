@@ -688,6 +688,719 @@ window.lunrData = {
           "parent",
           "shouldpar"
         ],
+        "NFHighlightLayer.html": [
+          "class",
+          "highlight",
+          "layer",
+          "nfhighlightlay",
+          "nflayer",
+          "subclass"
+        ],
+        "NFHighlightLayer.html#isPageLayer": [
+          "boolean",
+          "check",
+          "function",
+          "ispagelay",
+          "layer",
+          "nfhighlightlayer#ispagelay",
+          "page",
+          "valid"
+        ],
+        "NFHighlightLayer.html#isNullLayer": [
+          "boolean",
+          "check",
+          "function",
+          "isnulllay",
+          "layer",
+          "nfhighlightlayer#isnulllay",
+          "null"
+        ],
+        "NFHighlightLayer.html#isHighlightLayer": [
+          "boolean",
+          "check",
+          "function",
+          "highlight",
+          "ishighlightlay",
+          "layer",
+          "nfhighlightlayer#ishighlightlay",
+          "valid"
+        ],
+        "NFHighlightLayer.html#isPaperParentLayer": [
+          "boolean",
+          "check",
+          "function",
+          "ispaperparentlay",
+          "layer",
+          "nfhighlightlayer#ispaperparentlay",
+          "paper",
+          "parent",
+          "valid"
+        ],
+        "NFHighlightLayer.html#getSpecializedLayer": [
+          "content",
+          "function",
+          "getspecializedlay",
+          "layer",
+          "new",
+          "nfhighlightlayer#getspecializedlay",
+          "nfpagelayer|nfhighlightlayer|nfpaperparentlayer|nflay",
+          "return",
+          "special",
+          "type"
+        ],
+        "NFHighlightLayer.html#hasNullParent": [
+          "boolean",
+          "function",
+          "hasnullpar",
+          "layer",
+          "nfhighlightlayer#hasnullpar",
+          "null",
+          "parent",
+          "return",
+          "true"
+        ],
+        "NFHighlightLayer.html#sameLayerAs": [
+          "boolean",
+          "check",
+          "exampl",
+          "function",
+          "given",
+          "layer",
+          "nfhighlightlayer#samelayera",
+          "nflayer",
+          "nflayer'",
+          "nfpagelay",
+          "one'",
+          "refer",
+          "return",
+          "same",
+          "samelayera",
+          "see",
+          "true"
+        ],
+        "NFHighlightLayer.html#containingComp": [
+          "contain",
+          "containingcomp",
+          "function",
+          "nfcomp",
+          "nfhighlightlayer#containingcomp",
+          "return"
+        ],
+        "NFHighlightLayer.html#getChildren": [
+          "child",
+          "function",
+          "getchildren",
+          "layer",
+          "nfhighlightlayer#getchildren",
+          "nflayercollect",
+          "return",
+          "special"
+        ],
+        "NFHighlightLayer.html#getParent": [
+          "function",
+          "get",
+          "getpar",
+          "layer'",
+          "nfhighlightlayer#getpar",
+          "nflayer",
+          "nflayer|nul",
+          "parent"
+        ],
+        "NFHighlightLayer.html#setParent": [
+          "function",
+          "given",
+          "layer'",
+          "newpar",
+          "nfhighlightlayer#setpar",
+          "nflayer",
+          "parent",
+          "set",
+          "setpar"
+        ],
+        "NFHighlightLayer.html#setZoomer": [
+          "function",
+          "layer",
+          "layer'",
+          "nfhighlightlayer#setzoom",
+          "nflayer",
+          "nfpartcomp",
+          "parent",
+          "set",
+          "setzoom",
+          "zoomer"
+        ],
+        "NFHighlightLayer.html#moveBefore": [
+          "befor",
+          "function",
+          "immedi",
+          "index",
+          "layer",
+          "layer'",
+          "move",
+          "movebefor",
+          "nfhighlightlayer#movebefor",
+          "nflayer",
+          "provid",
+          "target",
+          "targetlay"
+        ],
+        "NFHighlightLayer.html#moveAfter": [
+          "function",
+          "immedi",
+          "index",
+          "layer",
+          "layer'",
+          "move",
+          "moveaft",
+          "nfhighlightlayer#moveaft",
+          "nflayer",
+          "provid",
+          "target",
+          "targetlay"
+        ],
+        "NFHighlightLayer.html#markers": [
+          "function",
+          "immedi",
+          "index",
+          "layer",
+          "layer'",
+          "marker",
+          "move",
+          "nfhighlightlayer#mark",
+          "properti",
+          "provid",
+          "target"
+        ],
+        "NFHighlightLayer.html#addInOutMarkersForProperty": [
+          "add",
+          "addinoutmarkersforproperti",
+          "alreadi",
+          "express",
+          "function",
+          "given",
+          "layer",
+          "marker",
+          "nfhighlightlayer#addinoutmarkersforproperti",
+          "nflayer",
+          "option",
+          "out",
+          "overrid",
+          "previou",
+          "property'",
+          "set",
+          "transit"
+        ],
+        "NFHighlightLayer.html#addSlider": [
+          "addslid",
+          "creat",
+          "effect",
+          "function",
+          "layer",
+          "name",
+          "nfhighlightlayer#addslid",
+          "properti",
+          "return",
+          "slider",
+          "valu"
+        ],
+        "NFHighlightLayer.html#index": [
+          "function",
+          "index",
+          "int",
+          "layer'",
+          "nfhighlightlayer#index",
+          "shorthand"
+        ],
+        "NFHighlightLayerCollection.html": [
+          "class",
+          "highlight",
+          "layer",
+          "nfhighlightlayercollect",
+          "nflayercollect",
+          "subclass"
+        ],
+        "NFHighlightLayerCollection.html#addNFHighlightLayer": [
+          "add",
+          "addnfhighlightlay",
+          "collect",
+          "function",
+          "newlay",
+          "nfhighlightlay",
+          "nfhighlightlayercollect",
+          "nfhighlightlayercollection#addnfhighlightlay"
+        ],
+        "NFHighlightLayerCollection.html#addAVLayer": [
+          "add",
+          "addavlay",
+          "avlay",
+          "collect",
+          "function",
+          "newlay",
+          "nfhighlightlayercollect",
+          "nfhighlightlayercollection#addavlay",
+          "shapelay",
+          "specif"
+        ],
+        "NFHighlightLayerCollection.html#duplicateNames": [
+          "boolean",
+          "check",
+          "collect",
+          "duplicatenam",
+          "function",
+          "highlight",
+          "name",
+          "nfhighlightlayercollection#duplicatenam",
+          "same",
+          "see",
+          "share"
+        ],
+        "NFHighlightLayerCollection.html#disconnectHighlights": [
+          "disconnect",
+          "disconnecthighlight",
+          "function",
+          "highlight",
+          "layer",
+          "nfhighlightlayercollect",
+          "nfhighlightlayercollection#disconnecthighlight"
+        ],
+        "NFHighlightLayerCollection.html#bubbleUpHighlights": [
+          "bubbl",
+          "bubbleuphighlight",
+          "function",
+          "highlight",
+          "layer",
+          "nfhighlightlayercollect",
+          "nfhighlightlayercollection#bubbleuphighlight",
+          "respect",
+          "up"
+        ],
+        "NFHighlightLayerCollection.html#resetExpressionErrors": [
+          "ae",
+          "appear",
+          "break",
+          "call",
+          "clear",
+          "error",
+          "even",
+          "express",
+          "finish",
+          "fix",
+          "fixexpressionafterinit",
+          "function",
+          "handl",
+          "highlight",
+          "nfhighlightlayercollect",
+          "nfhighlightlayercollection#resetexpressionerror",
+          "reset",
+          "resetexpressionerror",
+          "script",
+          "statu",
+          "still",
+          "that'll",
+          "there'",
+          "way"
+        ],
+        "NFHighlightLayerCollection.html#fixExpressionsAfterInit": [
+          "account",
+          "be",
+          "call",
+          "error",
+          "express",
+          "fixexpressionsafterinit",
+          "function",
+          "highlight",
+          "incorrect",
+          "initi",
+          "layer",
+          "name",
+          "new",
+          "nfhighlightlayercollect",
+          "nfhighlightlayercollection#fixexpressionsafterinit",
+          "prevent",
+          "resetexpressionerror",
+          "updat",
+          "warn"
+        ],
+        "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": [
+          "arr",
+          "array",
+          "avlayers/shapelay",
+          "collectionfromavlayerarray",
+          "function",
+          "instanc",
+          "lt;static&gt",
+          "new",
+          "nfhighlightlayercollect",
+          "nfhighlightlayercollection.collectionfromavlayerarray",
+          "return"
+        ],
+        "NFHighlightLayerCollection.html#addNFLayer": [
+          "add",
+          "addnflay",
+          "collect",
+          "function",
+          "newlay",
+          "nfhighlightlayercollection#addnflay",
+          "nflayer",
+          "nflayercollect"
+        ],
+        "NFHighlightLayerCollection.html#onlyContainsPageLayers": [
+          "boolean",
+          "collect",
+          "contain",
+          "function",
+          "nfhighlightlayercollection#onlycontainspagelay",
+          "nflayer",
+          "nfpagelay",
+          "onlycontainspagelay",
+          "return",
+          "true",
+          "type"
+        ],
+        "NFHighlightLayerCollection.html#inSameComp": [
+          "boolean",
+          "collect",
+          "comp",
+          "function",
+          "insamecomp",
+          "layer",
+          "nfhighlightlayercollection#insamecomp",
+          "return",
+          "same",
+          "true"
+        ],
+        "NFHighlightLayerCollection.html#containingComp": [
+          "comp",
+          "contain",
+          "containingcomp",
+          "fals",
+          "function",
+          "insamecomp",
+          "layer",
+          "nfcomp|nul",
+          "nfhighlightlayercollection#containingcomp",
+          "null",
+          "return"
+        ],
+        "NFHighlightLayerCollection.html#getPageLayerCollection": [
+          "call",
+          "collect",
+          "contain",
+          "function",
+          "getpagelayercollect",
+          "know",
+          "new",
+          "nfhighlightlayercollection#getpagelayercollect",
+          "nfpagelay",
+          "nfpagelayercollect",
+          "return"
+        ],
+        "NFHighlightLayerCollection.html#count": [
+          "access",
+          "collect",
+          "count",
+          "function",
+          "int",
+          "layer",
+          "nfhighlightlayercollection#count",
+          "number",
+          "shortcut"
+        ],
+        "NFHighlightLayerCollection.html#isEmpty": [
+          "boolean",
+          "collect",
+          "empti",
+          "function",
+          "isempti",
+          "nfhighlightlayercollection#isempti",
+          "true"
+        ],
+        "NFHighlightLayerCollection.html#remove": [
+          "collect",
+          "function",
+          "given",
+          "layer",
+          "layertoremov",
+          "nfhighlightlayercollection#remov",
+          "nflayercollect",
+          "remov"
+        ],
+        "NFHighlightLayerCollection.html#getTopmostLayer": [
+          "collect",
+          "function",
+          "get",
+          "gettopmostlay",
+          "nfhighlightlayercollection#gettopmostlay",
+          "nflayer",
+          "nflayer|nul",
+          "topmost"
+        ],
+        "NFHighlightLayerCollection.html#getBottommostLayer": [
+          "bottommost",
+          "collect",
+          "function",
+          "get",
+          "getbottommostlay",
+          "nfhighlightlayercollection#getbottommostlay",
+          "nflayer",
+          "nflayer|nul"
+        ],
+        "NFHighlightLayerCollection.html#setParents": [
+          "function",
+          "given",
+          "layer",
+          "member",
+          "newpar",
+          "nfhighlightlayercollection#setpar",
+          "nflayer",
+          "nflayercollect",
+          "null",
+          "parent",
+          "set",
+          "setpar"
+        ],
+        "NFHighlightLayerCollection.html#nullify": [
+          "abov",
+          "collect",
+          "creat",
+          "function",
+          "index",
+          "layer",
+          "lowest",
+          "new",
+          "nfhighlightlayercollection#nullifi",
+          "nflayer",
+          "null",
+          "nullifi",
+          "on",
+          "overrid",
+          "parent",
+          "posit",
+          "previou"
+        ],
+        "NFImageLayer.html": [
+          "class",
+          "imag",
+          "layer",
+          "nfimagelay",
+          "nflayer",
+          "subclass"
+        ],
+        "NFImageLayer.html#isPageLayer": [
+          "boolean",
+          "check",
+          "function",
+          "ispagelay",
+          "layer",
+          "nfimagelayer#ispagelay",
+          "page",
+          "valid"
+        ],
+        "NFImageLayer.html#isNullLayer": [
+          "boolean",
+          "check",
+          "function",
+          "isnulllay",
+          "layer",
+          "nfimagelayer#isnulllay",
+          "null"
+        ],
+        "NFImageLayer.html#isHighlightLayer": [
+          "boolean",
+          "check",
+          "function",
+          "highlight",
+          "ishighlightlay",
+          "layer",
+          "nfimagelayer#ishighlightlay",
+          "valid"
+        ],
+        "NFImageLayer.html#isPaperParentLayer": [
+          "boolean",
+          "check",
+          "function",
+          "ispaperparentlay",
+          "layer",
+          "nfimagelayer#ispaperparentlay",
+          "paper",
+          "parent",
+          "valid"
+        ],
+        "NFImageLayer.html#getSpecializedLayer": [
+          "content",
+          "function",
+          "getspecializedlay",
+          "layer",
+          "new",
+          "nfimagelayer#getspecializedlay",
+          "nfpagelayer|nfhighlightlayer|nfpaperparentlayer|nflay",
+          "return",
+          "special",
+          "type"
+        ],
+        "NFImageLayer.html#index": [
+          "function",
+          "index",
+          "int",
+          "layer'",
+          "nfimagelayer#index",
+          "shorthand"
+        ],
+        "NFImageLayer.html#hasNullParent": [
+          "boolean",
+          "function",
+          "hasnullpar",
+          "layer",
+          "nfimagelayer#hasnullpar",
+          "null",
+          "parent",
+          "return",
+          "true"
+        ],
+        "NFImageLayer.html#sameLayerAs": [
+          "boolean",
+          "check",
+          "exampl",
+          "function",
+          "given",
+          "layer",
+          "nfimagelayer#samelayera",
+          "nflayer",
+          "nflayer'",
+          "nfpagelay",
+          "one'",
+          "refer",
+          "return",
+          "same",
+          "samelayera",
+          "see",
+          "true"
+        ],
+        "NFImageLayer.html#containingComp": [
+          "contain",
+          "containingcomp",
+          "function",
+          "nfcomp",
+          "nfimagelayer#containingcomp",
+          "return"
+        ],
+        "NFImageLayer.html#getChildren": [
+          "child",
+          "function",
+          "getchildren",
+          "layer",
+          "nfimagelayer#getchildren",
+          "nflayercollect",
+          "return",
+          "special"
+        ],
+        "NFImageLayer.html#getParent": [
+          "function",
+          "get",
+          "getpar",
+          "layer'",
+          "nfimagelayer#getpar",
+          "nflayer",
+          "nflayer|nul",
+          "parent"
+        ],
+        "NFImageLayer.html#setParent": [
+          "function",
+          "given",
+          "layer'",
+          "newpar",
+          "nfimagelayer#setpar",
+          "nflayer",
+          "parent",
+          "set",
+          "setpar"
+        ],
+        "NFImageLayer.html#setZoomer": [
+          "function",
+          "layer",
+          "layer'",
+          "nfimagelayer#setzoom",
+          "nflayer",
+          "nfpartcomp",
+          "parent",
+          "set",
+          "setzoom",
+          "zoomer"
+        ],
+        "NFImageLayer.html#moveBefore": [
+          "befor",
+          "function",
+          "immedi",
+          "index",
+          "layer",
+          "layer'",
+          "move",
+          "movebefor",
+          "nfimagelayer#movebefor",
+          "nflayer",
+          "provid",
+          "target",
+          "targetlay"
+        ],
+        "NFImageLayer.html#moveAfter": [
+          "function",
+          "immedi",
+          "index",
+          "layer",
+          "layer'",
+          "move",
+          "moveaft",
+          "nfimagelayer#moveaft",
+          "nflayer",
+          "provid",
+          "target",
+          "targetlay"
+        ],
+        "NFImageLayer.html#markers": [
+          "function",
+          "immedi",
+          "index",
+          "layer",
+          "layer'",
+          "marker",
+          "move",
+          "nfimagelayer#mark",
+          "properti",
+          "provid",
+          "target"
+        ],
+        "NFImageLayer.html#addInOutMarkersForProperty": [
+          "add",
+          "addinoutmarkersforproperti",
+          "alreadi",
+          "express",
+          "function",
+          "given",
+          "layer",
+          "marker",
+          "nfimagelayer#addinoutmarkersforproperti",
+          "nflayer",
+          "option",
+          "out",
+          "overrid",
+          "previou",
+          "property'",
+          "set",
+          "transit"
+        ],
+        "NFImageLayer.html#addSlider": [
+          "addslid",
+          "creat",
+          "effect",
+          "function",
+          "layer",
+          "name",
+          "nfimagelayer#addslid",
+          "properti",
+          "return",
+          "slider",
+          "valu"
+        ],
         "NFPageLayer.html": [
           "class",
           "layer",
@@ -725,6 +1438,151 @@ window.lunrData = {
           "regardless",
           "return",
           "whether"
+        ],
+        "NFPageLayer.html#highlights": [
+          "function",
+          "highlight",
+          "nfhighlightlayercollect",
+          "nfpagelayer#highlight",
+          "page",
+          "return"
+        ],
+        "NFPageLayer.html#bubbledHighlights": [
+          "bubbl",
+          "bubbledhighlight",
+          "function",
+          "highlight",
+          "layer",
+          "nfhighlightlayercollect",
+          "nfpagelayer#bubbledhighlight",
+          "onto",
+          "page",
+          "return"
+        ],
+        "NFPageLayer.html#isInitted": [
+          "below",
+          "boolean",
+          "function",
+          "init",
+          "isinit",
+          "method",
+          "nfpagelayer#isinit",
+          "page",
+          "return",
+          "whether"
+        ],
+        "NFPageLayer.html#markInitted": [
+          "bubbl",
+          "chang",
+          "function",
+          "highlight",
+          "init",
+          "layer",
+          "mark",
+          "markinit",
+          "name",
+          "nfpagelay",
+          "nfpagelayer#markinit",
+          "page",
+          "updat"
+        ],
+        "NFPageLayer.html#init": [
+          "add",
+          "blur",
+          "dropshadow",
+          "etc",
+          "function",
+          "init",
+          "motion",
+          "nfpagelay",
+          "nfpagelayer#init",
+          "non",
+          "properti",
+          "transform"
+        ],
+        "NFPageLayer.html#setDropShadow": [
+          "drop",
+          "function",
+          "layer",
+          "nfpagelay",
+          "nfpagelayer#setdropshadow",
+          "set",
+          "setdropshadow",
+          "shadow"
+        ],
+        "NFPageLayer.html#initTransforms": [
+          "add",
+          "function",
+          "init",
+          "inittransform",
+          "nfpagelay",
+          "nfpagelayer#inittransform",
+          "posit",
+          "properti",
+          "size",
+          "transform"
+        ],
+        "NFPageLayer.html#setInitSize": [
+          "boolean",
+          "doesn't",
+          "exist",
+          "fals",
+          "function",
+          "init",
+          "keyfram",
+          "layer",
+          "nfpagelayer#setinits",
+          "return",
+          "set",
+          "setinits",
+          "size"
+        ],
+        "NFPageLayer.html#setInitPosition": [
+          "boolean",
+          "doesn't",
+          "exist",
+          "fals",
+          "function",
+          "init",
+          "keyfram",
+          "layer",
+          "nfpagelayer#setinitposit",
+          "posit",
+          "return",
+          "set",
+          "setinitposit"
+        ],
+        "NFPageLayer.html#getPDFNumber": [
+          "function",
+          "getpdfnumb",
+          "nfpagelayer#getpdfnumb",
+          "number",
+          "pdf",
+          "return",
+          "string"
+        ],
+        "NFPageLayer.html#getPageNumber": [
+          "function",
+          "getpagenumb",
+          "nfpagelayer#getpagenumb",
+          "number",
+          "page",
+          "return",
+          "string"
+        ],
+        "NFPageLayer.html#.isPageLayer": [
+          "avlay",
+          "boolean",
+          "function",
+          "given",
+          "ispagelay",
+          "layer",
+          "lt;static&gt",
+          "nfpagelayer.ispagelay",
+          "page",
+          "return",
+          "thelay",
+          "true"
         ],
         "NFPageLayer.html#isPageLayer": [
           "boolean",
@@ -943,15 +1801,10 @@ window.lunrData = {
         ],
         "NFPageLayerCollection.html": [
           "class",
-          "group",
           "layer",
-          "nflayer",
+          "nflayercollect",
           "nfpagelayercollect",
-          "null",
           "page",
-          "parent",
-          "pdf",
-          "same",
           "subclass"
         ],
         "NFPageLayerCollection.html#addNFPageLayer": [
@@ -1570,6 +2423,25 @@ window.lunrData = {
           "return",
           "toarr"
         ],
+        "Property.html": [
+          "class",
+          "effect",
+          "layer",
+          "namespac",
+          "properti"
+        ],
+        "Property.html#.expressionStringForValue": [
+          "comment",
+          "expressionstringforvalu",
+          "function",
+          "given",
+          "index",
+          "lt;static&gt",
+          "marker",
+          "property.expressionstringforvalu",
+          "return",
+          "string"
+        ],
         "Layer.html": [
           "class",
           "effect",
@@ -1598,28 +2470,9 @@ window.lunrData = {
           "marker",
           "remov",
           "removemark"
-        ],
-        "Property.html": [
-          "class",
-          "effect",
-          "layer",
-          "namespac",
-          "properti"
-        ],
-        "Property.html#.expressionStringForValue": [
-          "comment",
-          "expressionstringforvalu",
-          "function",
-          "given",
-          "index",
-          "lt;static&gt",
-          "marker",
-          "property.expressionstringforvalu",
-          "return",
-          "string"
         ]
       },
-      "length": 136
+      "length": 207
     },
     "tokenStore": {
       "root": {
@@ -1718,6 +2571,86 @@ window.lunrData = {
                         "NFLayerCollection.html#isEmpty": {
                           "ref": "NFLayerCollection.html#isEmpty",
                           "tf": 50
+                        },
+                        "NFHighlightLayer.html#isPageLayer": {
+                          "ref": "NFHighlightLayer.html#isPageLayer",
+                          "tf": 50
+                        },
+                        "NFHighlightLayer.html#isNullLayer": {
+                          "ref": "NFHighlightLayer.html#isNullLayer",
+                          "tf": 50
+                        },
+                        "NFHighlightLayer.html#isHighlightLayer": {
+                          "ref": "NFHighlightLayer.html#isHighlightLayer",
+                          "tf": 50
+                        },
+                        "NFHighlightLayer.html#isPaperParentLayer": {
+                          "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                          "tf": 50
+                        },
+                        "NFHighlightLayer.html#hasNullParent": {
+                          "ref": "NFHighlightLayer.html#hasNullParent",
+                          "tf": 50
+                        },
+                        "NFHighlightLayer.html#sameLayerAs": {
+                          "ref": "NFHighlightLayer.html#sameLayerAs",
+                          "tf": 50
+                        },
+                        "NFHighlightLayerCollection.html#duplicateNames": {
+                          "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                          "tf": 50
+                        },
+                        "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                          "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                          "tf": 50
+                        },
+                        "NFHighlightLayerCollection.html#inSameComp": {
+                          "ref": "NFHighlightLayerCollection.html#inSameComp",
+                          "tf": 50
+                        },
+                        "NFHighlightLayerCollection.html#isEmpty": {
+                          "ref": "NFHighlightLayerCollection.html#isEmpty",
+                          "tf": 50
+                        },
+                        "NFImageLayer.html#isPageLayer": {
+                          "ref": "NFImageLayer.html#isPageLayer",
+                          "tf": 50
+                        },
+                        "NFImageLayer.html#isNullLayer": {
+                          "ref": "NFImageLayer.html#isNullLayer",
+                          "tf": 50
+                        },
+                        "NFImageLayer.html#isHighlightLayer": {
+                          "ref": "NFImageLayer.html#isHighlightLayer",
+                          "tf": 50
+                        },
+                        "NFImageLayer.html#isPaperParentLayer": {
+                          "ref": "NFImageLayer.html#isPaperParentLayer",
+                          "tf": 50
+                        },
+                        "NFImageLayer.html#hasNullParent": {
+                          "ref": "NFImageLayer.html#hasNullParent",
+                          "tf": 50
+                        },
+                        "NFImageLayer.html#sameLayerAs": {
+                          "ref": "NFImageLayer.html#sameLayerAs",
+                          "tf": 50
+                        },
+                        "NFPageLayer.html#isInitted": {
+                          "ref": "NFPageLayer.html#isInitted",
+                          "tf": 50
+                        },
+                        "NFPageLayer.html#setInitSize": {
+                          "ref": "NFPageLayer.html#setInitSize",
+                          "tf": 50
+                        },
+                        "NFPageLayer.html#setInitPosition": {
+                          "ref": "NFPageLayer.html#setInitPosition",
+                          "tf": 50
+                        },
+                        "NFPageLayer.html#.isPageLayer": {
+                          "ref": "NFPageLayer.html#.isPageLayer",
+                          "tf": 25
                         },
                         "NFPageLayer.html#isPageLayer": {
                           "ref": "NFPageLayer.html#isPageLayer",
@@ -1822,6 +2755,10 @@ window.lunrData = {
                                 "ref": "NFPaperLayerGroup.html#gatherLayers",
                                 "tf": 2.631578947368421
                               },
+                              "NFHighlightLayerCollection.html#getBottommostLayer": {
+                                "ref": "NFHighlightLayerCollection.html#getBottommostLayer",
+                                "tf": 12.5
+                              },
                               "NFPageLayerCollection.html#getBottommostLayer": {
                                 "ref": "NFPageLayerCollection.html#getBottommostLayer",
                                 "tf": 12.5
@@ -1837,7 +2774,12 @@ window.lunrData = {
             }
           },
           "e": {
-            "docs": {},
+            "docs": {
+              "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                "tf": 3.3333333333333335
+              }
+            },
             "f": {
               "docs": {},
               "o": {
@@ -1846,6 +2788,14 @@ window.lunrData = {
                   "docs": {
                     "NFLayer.html#moveBefore": {
                       "ref": "NFLayer.html#moveBefore",
+                      "tf": 6.25
+                    },
+                    "NFHighlightLayer.html#moveBefore": {
+                      "ref": "NFHighlightLayer.html#moveBefore",
+                      "tf": 6.25
+                    },
+                    "NFImageLayer.html#moveBefore": {
+                      "ref": "NFImageLayer.html#moveBefore",
                       "tf": 6.25
                     },
                     "NFPageLayer.html#moveBefore": {
@@ -1869,7 +2819,143 @@ window.lunrData = {
                     "NFPaperLayerGroup.html#gatherLayers": {
                       "ref": "NFPaperLayerGroup.html#gatherLayers",
                       "tf": 5.263157894736842
+                    },
+                    "NFPageLayer.html#isInitted": {
+                      "ref": "NFPageLayer.html#isInitted",
+                      "tf": 8.333333333333332
                     }
+                  }
+                }
+              }
+            }
+          },
+          "u": {
+            "docs": {},
+            "b": {
+              "docs": {},
+              "b": {
+                "docs": {},
+                "l": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                      "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                      "tf": 10
+                    },
+                    "NFPageLayer.html#bubbledHighlights": {
+                      "ref": "NFPageLayer.html#bubbledHighlights",
+                      "tf": 7.142857142857142
+                    },
+                    "NFPageLayer.html#markInitted": {
+                      "ref": "NFPageLayer.html#markInitted",
+                      "tf": 5
+                    }
+                  },
+                  "e": {
+                    "docs": {},
+                    "u": {
+                      "docs": {},
+                      "p": {
+                        "docs": {},
+                        "h": {
+                          "docs": {},
+                          "i": {
+                            "docs": {},
+                            "g": {
+                              "docs": {},
+                              "h": {
+                                "docs": {},
+                                "l": {
+                                  "docs": {},
+                                  "i": {
+                                    "docs": {},
+                                    "g": {
+                                      "docs": {},
+                                      "h": {
+                                        "docs": {},
+                                        "t": {
+                                          "docs": {
+                                            "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                                              "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                                              "tf": 700
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "d": {
+                      "docs": {},
+                      "h": {
+                        "docs": {},
+                        "i": {
+                          "docs": {},
+                          "g": {
+                            "docs": {},
+                            "h": {
+                              "docs": {},
+                              "l": {
+                                "docs": {},
+                                "i": {
+                                  "docs": {},
+                                  "g": {
+                                    "docs": {},
+                                    "h": {
+                                      "docs": {},
+                                      "t": {
+                                        "docs": {
+                                          "NFPageLayer.html#bubbledHighlights": {
+                                            "ref": "NFPageLayer.html#bubbledHighlights",
+                                            "tf": 700
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "r": {
+            "docs": {},
+            "e": {
+              "docs": {},
+              "a": {
+                "docs": {},
+                "k": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                      "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                      "tf": 1.6666666666666667
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "l": {
+            "docs": {},
+            "u": {
+              "docs": {},
+              "r": {
+                "docs": {
+                  "NFPageLayer.html#init": {
+                    "ref": "NFPageLayer.html#init",
+                    "tf": 5.555555555555555
                   }
                 }
               }
@@ -2118,12 +3204,284 @@ window.lunrData = {
                             "ref": "NFPaperLayerGroup.html#gatherLayers",
                             "tf": 110
                           },
+                          "NFHighlightLayer.html#isPageLayer": {
+                            "ref": "NFHighlightLayer.html#isPageLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#isNullLayer": {
+                            "ref": "NFHighlightLayer.html#isNullLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#isHighlightLayer": {
+                            "ref": "NFHighlightLayer.html#isHighlightLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#isPaperParentLayer": {
+                            "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#getSpecializedLayer": {
+                            "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#hasNullParent": {
+                            "ref": "NFHighlightLayer.html#hasNullParent",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#sameLayerAs": {
+                            "ref": "NFHighlightLayer.html#sameLayerAs",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#containingComp": {
+                            "ref": "NFHighlightLayer.html#containingComp",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#getChildren": {
+                            "ref": "NFHighlightLayer.html#getChildren",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#getParent": {
+                            "ref": "NFHighlightLayer.html#getParent",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#setParent": {
+                            "ref": "NFHighlightLayer.html#setParent",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#setZoomer": {
+                            "ref": "NFHighlightLayer.html#setZoomer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#moveBefore": {
+                            "ref": "NFHighlightLayer.html#moveBefore",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#moveAfter": {
+                            "ref": "NFHighlightLayer.html#moveAfter",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#markers": {
+                            "ref": "NFHighlightLayer.html#markers",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                            "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#addSlider": {
+                            "ref": "NFHighlightLayer.html#addSlider",
+                            "tf": 110
+                          },
+                          "NFHighlightLayer.html#index": {
+                            "ref": "NFHighlightLayer.html#index",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+                            "ref": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#addAVLayer": {
+                            "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#duplicateNames": {
+                            "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#disconnectHighlights": {
+                            "ref": "NFHighlightLayerCollection.html#disconnectHighlights",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                            "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                            "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                            "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                            "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#addNFLayer": {
+                            "ref": "NFHighlightLayerCollection.html#addNFLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                            "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#inSameComp": {
+                            "ref": "NFHighlightLayerCollection.html#inSameComp",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#containingComp": {
+                            "ref": "NFHighlightLayerCollection.html#containingComp",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                            "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#count": {
+                            "ref": "NFHighlightLayerCollection.html#count",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#isEmpty": {
+                            "ref": "NFHighlightLayerCollection.html#isEmpty",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#remove": {
+                            "ref": "NFHighlightLayerCollection.html#remove",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#getTopmostLayer": {
+                            "ref": "NFHighlightLayerCollection.html#getTopmostLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#getBottommostLayer": {
+                            "ref": "NFHighlightLayerCollection.html#getBottommostLayer",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#setParents": {
+                            "ref": "NFHighlightLayerCollection.html#setParents",
+                            "tf": 110
+                          },
+                          "NFHighlightLayerCollection.html#nullify": {
+                            "ref": "NFHighlightLayerCollection.html#nullify",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#isPageLayer": {
+                            "ref": "NFImageLayer.html#isPageLayer",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#isNullLayer": {
+                            "ref": "NFImageLayer.html#isNullLayer",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#isHighlightLayer": {
+                            "ref": "NFImageLayer.html#isHighlightLayer",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#isPaperParentLayer": {
+                            "ref": "NFImageLayer.html#isPaperParentLayer",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#getSpecializedLayer": {
+                            "ref": "NFImageLayer.html#getSpecializedLayer",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#index": {
+                            "ref": "NFImageLayer.html#index",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#hasNullParent": {
+                            "ref": "NFImageLayer.html#hasNullParent",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#sameLayerAs": {
+                            "ref": "NFImageLayer.html#sameLayerAs",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#containingComp": {
+                            "ref": "NFImageLayer.html#containingComp",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#getChildren": {
+                            "ref": "NFImageLayer.html#getChildren",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#getParent": {
+                            "ref": "NFImageLayer.html#getParent",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#setParent": {
+                            "ref": "NFImageLayer.html#setParent",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#setZoomer": {
+                            "ref": "NFImageLayer.html#setZoomer",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#moveBefore": {
+                            "ref": "NFImageLayer.html#moveBefore",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#moveAfter": {
+                            "ref": "NFImageLayer.html#moveAfter",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#markers": {
+                            "ref": "NFImageLayer.html#markers",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#addInOutMarkersForProperty": {
+                            "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                            "tf": 110
+                          },
+                          "NFImageLayer.html#addSlider": {
+                            "ref": "NFImageLayer.html#addSlider",
+                            "tf": 110
+                          },
                           "NFPageLayer.html#getPaperParentLayer": {
                             "ref": "NFPageLayer.html#getPaperParentLayer",
                             "tf": 110
                           },
                           "NFPageLayer.html#findPaperParentLayer": {
                             "ref": "NFPageLayer.html#findPaperParentLayer",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#highlights": {
+                            "ref": "NFPageLayer.html#highlights",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#bubbledHighlights": {
+                            "ref": "NFPageLayer.html#bubbledHighlights",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#isInitted": {
+                            "ref": "NFPageLayer.html#isInitted",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#markInitted": {
+                            "ref": "NFPageLayer.html#markInitted",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#init": {
+                            "ref": "NFPageLayer.html#init",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#setDropShadow": {
+                            "ref": "NFPageLayer.html#setDropShadow",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#initTransforms": {
+                            "ref": "NFPageLayer.html#initTransforms",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#setInitSize": {
+                            "ref": "NFPageLayer.html#setInitSize",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#setInitPosition": {
+                            "ref": "NFPageLayer.html#setInitPosition",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#getPDFNumber": {
+                            "ref": "NFPageLayer.html#getPDFNumber",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#getPageNumber": {
+                            "ref": "NFPageLayer.html#getPageNumber",
+                            "tf": 110
+                          },
+                          "NFPageLayer.html#.isPageLayer": {
+                            "ref": "NFPageLayer.html#.isPageLayer",
                             "tf": 110
                           },
                           "NFPageLayer.html#isPageLayer": {
@@ -2394,16 +3752,16 @@ window.lunrData = {
                             "ref": "LayerCollection.html#.toArr",
                             "tf": 110
                           },
+                          "Property.html#.expressionStringForValue": {
+                            "ref": "Property.html#.expressionStringForValue",
+                            "tf": 110
+                          },
                           "Layer.html#.indexOfMarker": {
                             "ref": "Layer.html#.indexOfMarker",
                             "tf": 110
                           },
                           "Layer.html#.removeMarker": {
                             "ref": "Layer.html#.removeMarker",
-                            "tf": 110
-                          },
-                          "Property.html#.expressionStringForValue": {
-                            "ref": "Property.html#.expressionStringForValue",
                             "tf": 110
                           }
                         }
@@ -2424,6 +3782,18 @@ window.lunrData = {
                     "ref": "NFLayerCollection.html#containingComp",
                     "tf": 7.142857142857142
                   },
+                  "NFHighlightLayerCollection.html#containingComp": {
+                    "ref": "NFHighlightLayerCollection.html#containingComp",
+                    "tf": 7.142857142857142
+                  },
+                  "NFPageLayer.html#setInitSize": {
+                    "ref": "NFPageLayer.html#setInitSize",
+                    "tf": 4.166666666666666
+                  },
+                  "NFPageLayer.html#setInitPosition": {
+                    "ref": "NFPageLayer.html#setInitPosition",
+                    "tf": 4.166666666666666
+                  },
                   "NFPageLayerCollection.html#containingComp": {
                     "ref": "NFPageLayerCollection.html#containingComp",
                     "tf": 7.142857142857142
@@ -2436,6 +3806,20 @@ window.lunrData = {
             "docs": {},
             "n": {
               "docs": {},
+              "i": {
+                "docs": {},
+                "s": {
+                  "docs": {},
+                  "h": {
+                    "docs": {
+                      "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                        "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                        "tf": 3.3333333333333335
+                      }
+                    }
+                  }
+                }
+              },
               "d": {
                 "docs": {},
                 "p": {
@@ -2469,6 +3853,111 @@ window.lunrData = {
                                               "NFPageLayer.html#findPaperParentLayer": {
                                                 "ref": "NFPageLayer.html#findPaperParentLayer",
                                                 "tf": 700
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "x": {
+              "docs": {
+                "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                  "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                  "tf": 1.6666666666666667
+                }
+              },
+              "e": {
+                "docs": {},
+                "x": {
+                  "docs": {},
+                  "p": {
+                    "docs": {},
+                    "r": {
+                      "docs": {},
+                      "e": {
+                        "docs": {},
+                        "s": {
+                          "docs": {},
+                          "s": {
+                            "docs": {},
+                            "i": {
+                              "docs": {},
+                              "o": {
+                                "docs": {},
+                                "n": {
+                                  "docs": {},
+                                  "a": {
+                                    "docs": {},
+                                    "f": {
+                                      "docs": {},
+                                      "t": {
+                                        "docs": {},
+                                        "e": {
+                                          "docs": {},
+                                          "r": {
+                                            "docs": {},
+                                            "i": {
+                                              "docs": {},
+                                              "n": {
+                                                "docs": {},
+                                                "i": {
+                                                  "docs": {},
+                                                  "t": {
+                                                    "docs": {
+                                                      "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                                                        "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                                                        "tf": 1.6666666666666667
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "s": {
+                                    "docs": {},
+                                    "a": {
+                                      "docs": {},
+                                      "f": {
+                                        "docs": {},
+                                        "t": {
+                                          "docs": {},
+                                          "e": {
+                                            "docs": {},
+                                            "r": {
+                                              "docs": {},
+                                              "i": {
+                                                "docs": {},
+                                                "n": {
+                                                  "docs": {},
+                                                  "i": {
+                                                    "docs": {},
+                                                    "t": {
+                                                      "docs": {
+                                                        "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                                                          "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                                                          "tf": 700
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
                                               }
                                             }
                                           }
@@ -2533,7 +4022,12 @@ window.lunrData = {
               "d": {
                 "docs": {},
                 "l": {
-                  "docs": {},
+                  "docs": {
+                    "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                      "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                      "tf": 1.6666666666666667
+                    }
+                  },
                   "e": {
                     "docs": {},
                     "b": {
@@ -2572,6 +4066,14 @@ window.lunrData = {
                             "docs": {
                               "NFLayer.html#hasNullParent": {
                                 "ref": "NFLayer.html#hasNullParent",
+                                "tf": 700
+                              },
+                              "NFHighlightLayer.html#hasNullParent": {
+                                "ref": "NFHighlightLayer.html#hasNullParent",
+                                "tf": 700
+                              },
+                              "NFImageLayer.html#hasNullParent": {
+                                "ref": "NFImageLayer.html#hasNullParent",
                                 "tf": 700
                               },
                               "NFPageLayer.html#hasNullParent": {
@@ -2615,6 +4117,54 @@ window.lunrData = {
                             "NFPageItem.html#highlights": {
                               "ref": "NFPageItem.html#highlights",
                               "tf": 712.5
+                            },
+                            "NFHighlightLayer.html": {
+                              "ref": "NFHighlightLayer.html",
+                              "tf": 12.5
+                            },
+                            "NFHighlightLayer.html#isHighlightLayer": {
+                              "ref": "NFHighlightLayer.html#isHighlightLayer",
+                              "tf": 10
+                            },
+                            "NFHighlightLayerCollection.html": {
+                              "ref": "NFHighlightLayerCollection.html",
+                              "tf": 12.5
+                            },
+                            "NFHighlightLayerCollection.html#duplicateNames": {
+                              "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                              "tf": 7.142857142857142
+                            },
+                            "NFHighlightLayerCollection.html#disconnectHighlights": {
+                              "ref": "NFHighlightLayerCollection.html#disconnectHighlights",
+                              "tf": 16.666666666666664
+                            },
+                            "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                              "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                              "tf": 10
+                            },
+                            "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                              "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                              "tf": 1.6666666666666667
+                            },
+                            "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                              "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                              "tf": 3.3333333333333335
+                            },
+                            "NFImageLayer.html#isHighlightLayer": {
+                              "ref": "NFImageLayer.html#isHighlightLayer",
+                              "tf": 10
+                            },
+                            "NFPageLayer.html#highlights": {
+                              "ref": "NFPageLayer.html#highlights",
+                              "tf": 712.5
+                            },
+                            "NFPageLayer.html#bubbledHighlights": {
+                              "ref": "NFPageLayer.html#bubbledHighlights",
+                              "tf": 7.142857142857142
+                            },
+                            "NFPageLayer.html#markInitted": {
+                              "ref": "NFPageLayer.html#markInitted",
+                              "tf": 5
                             },
                             "NFPageLayer.html#isHighlightLayer": {
                               "ref": "NFPageLayer.html#isHighlightLayer",
@@ -2672,6 +4222,42 @@ window.lunrData = {
                       "ref": "NFLayerCollection.html#nullify",
                       "tf": 3.571428571428571
                     },
+                    "NFHighlightLayer.html#moveBefore": {
+                      "ref": "NFHighlightLayer.html#moveBefore",
+                      "tf": 6.25
+                    },
+                    "NFHighlightLayer.html#moveAfter": {
+                      "ref": "NFHighlightLayer.html#moveAfter",
+                      "tf": 7.142857142857142
+                    },
+                    "NFHighlightLayer.html#markers": {
+                      "ref": "NFHighlightLayer.html#markers",
+                      "tf": 7.142857142857142
+                    },
+                    "NFHighlightLayer.html#index": {
+                      "ref": "NFHighlightLayer.html#index",
+                      "tf": 716.6666666666666
+                    },
+                    "NFHighlightLayerCollection.html#nullify": {
+                      "ref": "NFHighlightLayerCollection.html#nullify",
+                      "tf": 3.571428571428571
+                    },
+                    "NFImageLayer.html#index": {
+                      "ref": "NFImageLayer.html#index",
+                      "tf": 716.6666666666666
+                    },
+                    "NFImageLayer.html#moveBefore": {
+                      "ref": "NFImageLayer.html#moveBefore",
+                      "tf": 6.25
+                    },
+                    "NFImageLayer.html#moveAfter": {
+                      "ref": "NFImageLayer.html#moveAfter",
+                      "tf": 7.142857142857142
+                    },
+                    "NFImageLayer.html#markers": {
+                      "ref": "NFImageLayer.html#markers",
+                      "tf": 7.142857142857142
+                    },
                     "NFPageLayer.html#index": {
                       "ref": "NFPageLayer.html#index",
                       "tf": 716.6666666666666
@@ -2708,12 +4294,12 @@ window.lunrData = {
                       "ref": "NFPaperParentLayer.html#markers",
                       "tf": 7.142857142857142
                     },
-                    "Layer.html#.indexOfMarker": {
-                      "ref": "Layer.html#.indexOfMarker",
-                      "tf": 10
-                    },
                     "Property.html#.expressionStringForValue": {
                       "ref": "Property.html#.expressionStringForValue",
+                      "tf": 10
+                    },
+                    "Layer.html#.indexOfMarker": {
+                      "ref": "Layer.html#.indexOfMarker",
                       "tf": 10
                     }
                   },
@@ -2764,6 +4350,18 @@ window.lunrData = {
                   "ref": "NFLayerCollection.html#count",
                   "tf": 50
                 },
+                "NFHighlightLayer.html#index": {
+                  "ref": "NFHighlightLayer.html#index",
+                  "tf": 50
+                },
+                "NFHighlightLayerCollection.html#count": {
+                  "ref": "NFHighlightLayerCollection.html#count",
+                  "tf": 50
+                },
+                "NFImageLayer.html#index": {
+                  "ref": "NFImageLayer.html#index",
+                  "tf": 50
+                },
                 "NFPageLayer.html#index": {
                   "ref": "NFPageLayer.html#index",
                   "tf": 50
@@ -2805,6 +4403,10 @@ window.lunrData = {
                     "docs": {},
                     "c": {
                       "docs": {
+                        "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                          "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                          "tf": 10
+                        },
                         "NFPageLayerCollection.html#.collectionFromAVLayerArray": {
                           "ref": "NFPageLayerCollection.html#.collectionFromAVLayerArray",
                           "tf": 10
@@ -2850,6 +4452,14 @@ window.lunrData = {
                                 "ref": "NFLayerCollection.html#containingComp",
                                 "tf": 7.142857142857142
                               },
+                              "NFHighlightLayerCollection.html#inSameComp": {
+                                "ref": "NFHighlightLayerCollection.html#inSameComp",
+                                "tf": 700
+                              },
+                              "NFHighlightLayerCollection.html#containingComp": {
+                                "ref": "NFHighlightLayerCollection.html#containingComp",
+                                "tf": 7.142857142857142
+                              },
                               "NFPageLayerCollection.html#inSameComp": {
                                 "ref": "NFPageLayerCollection.html#inSameComp",
                                 "tf": 700
@@ -2867,10 +4477,101 @@ window.lunrData = {
                 }
               }
             },
+            "c": {
+              "docs": {},
+              "o": {
+                "docs": {},
+                "r": {
+                  "docs": {},
+                  "r": {
+                    "docs": {},
+                    "e": {
+                      "docs": {},
+                      "c": {
+                        "docs": {},
+                        "t": {
+                          "docs": {
+                            "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                              "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                              "tf": 3.3333333333333335
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
             "i": {
               "docs": {},
               "t": {
-                "docs": {},
+                "docs": {
+                  "NFPageLayer.html#isInitted": {
+                    "ref": "NFPageLayer.html#isInitted",
+                    "tf": 8.333333333333332
+                  },
+                  "NFPageLayer.html#markInitted": {
+                    "ref": "NFPageLayer.html#markInitted",
+                    "tf": 5
+                  },
+                  "NFPageLayer.html#init": {
+                    "ref": "NFPageLayer.html#init",
+                    "tf": 705.5555555555555
+                  },
+                  "NFPageLayer.html#initTransforms": {
+                    "ref": "NFPageLayer.html#initTransforms",
+                    "tf": 8.333333333333332
+                  },
+                  "NFPageLayer.html#setInitSize": {
+                    "ref": "NFPageLayer.html#setInitSize",
+                    "tf": 4.166666666666666
+                  },
+                  "NFPageLayer.html#setInitPosition": {
+                    "ref": "NFPageLayer.html#setInitPosition",
+                    "tf": 4.166666666666666
+                  }
+                },
+                "i": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                      "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                      "tf": 3.3333333333333335
+                    }
+                  }
+                },
+                "t": {
+                  "docs": {},
+                  "r": {
+                    "docs": {},
+                    "a": {
+                      "docs": {},
+                      "n": {
+                        "docs": {},
+                        "s": {
+                          "docs": {},
+                          "f": {
+                            "docs": {},
+                            "o": {
+                              "docs": {},
+                              "r": {
+                                "docs": {},
+                                "m": {
+                                  "docs": {
+                                    "NFPageLayer.html#initTransforms": {
+                                      "ref": "NFPageLayer.html#initTransforms",
+                                      "tf": 700
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
                 "l": {
                   "docs": {},
                   "a": {
@@ -2946,6 +4647,18 @@ window.lunrData = {
                               "ref": "NFLayer.html#isPageLayer",
                               "tf": 700
                             },
+                            "NFHighlightLayer.html#isPageLayer": {
+                              "ref": "NFHighlightLayer.html#isPageLayer",
+                              "tf": 700
+                            },
+                            "NFImageLayer.html#isPageLayer": {
+                              "ref": "NFImageLayer.html#isPageLayer",
+                              "tf": 700
+                            },
+                            "NFPageLayer.html#.isPageLayer": {
+                              "ref": "NFPageLayer.html#.isPageLayer",
+                              "tf": 675
+                            },
                             "NFPageLayer.html#isPageLayer": {
                               "ref": "NFPageLayer.html#isPageLayer",
                               "tf": 700
@@ -2986,6 +4699,14 @@ window.lunrData = {
                                         "docs": {
                                           "NFLayer.html#isPaperParentLayer": {
                                             "ref": "NFLayer.html#isPaperParentLayer",
+                                            "tf": 700
+                                          },
+                                          "NFHighlightLayer.html#isPaperParentLayer": {
+                                            "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                                            "tf": 700
+                                          },
+                                          "NFImageLayer.html#isPaperParentLayer": {
+                                            "ref": "NFImageLayer.html#isPaperParentLayer",
                                             "tf": 700
                                           },
                                           "NFPageLayer.html#isPaperParentLayer": {
@@ -3033,6 +4754,14 @@ window.lunrData = {
                               "ref": "NFLayer.html#isNullLayer",
                               "tf": 700
                             },
+                            "NFHighlightLayer.html#isNullLayer": {
+                              "ref": "NFHighlightLayer.html#isNullLayer",
+                              "tf": 700
+                            },
+                            "NFImageLayer.html#isNullLayer": {
+                              "ref": "NFImageLayer.html#isNullLayer",
+                              "tf": 700
+                            },
                             "NFPageLayer.html#isNullLayer": {
                               "ref": "NFPageLayer.html#isNullLayer",
                               "tf": 700
@@ -3075,6 +4804,14 @@ window.lunrData = {
                                     "docs": {
                                       "NFLayer.html#isHighlightLayer": {
                                         "ref": "NFLayer.html#isHighlightLayer",
+                                        "tf": 700
+                                      },
+                                      "NFHighlightLayer.html#isHighlightLayer": {
+                                        "ref": "NFHighlightLayer.html#isHighlightLayer",
+                                        "tf": 700
+                                      },
+                                      "NFImageLayer.html#isHighlightLayer": {
+                                        "ref": "NFImageLayer.html#isHighlightLayer",
                                         "tf": 700
                                       },
                                       "NFPageLayer.html#isHighlightLayer": {
@@ -3158,10 +4895,31 @@ window.lunrData = {
                           "ref": "NFLayerCollection.html#isEmpty",
                           "tf": 700
                         },
+                        "NFHighlightLayerCollection.html#isEmpty": {
+                          "ref": "NFHighlightLayerCollection.html#isEmpty",
+                          "tf": 700
+                        },
                         "NFPageLayerCollection.html#isEmpty": {
                           "ref": "NFPageLayerCollection.html#isEmpty",
                           "tf": 700
                         }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "i": {
+              "docs": {},
+              "n": {
+                "docs": {},
+                "i": {
+                  "docs": {},
+                  "t": {
+                    "docs": {
+                      "NFPageLayer.html#isInitted": {
+                        "ref": "NFPageLayer.html#isInitted",
+                        "tf": 700
                       }
                     }
                   }
@@ -3195,6 +4953,30 @@ window.lunrData = {
                         "ref": "NFPaperLayerGroup.html#gatherLayers",
                         "tf": 2.631578947368421
                       },
+                      "NFHighlightLayer.html#moveBefore": {
+                        "ref": "NFHighlightLayer.html#moveBefore",
+                        "tf": 6.25
+                      },
+                      "NFHighlightLayer.html#moveAfter": {
+                        "ref": "NFHighlightLayer.html#moveAfter",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#markers": {
+                        "ref": "NFHighlightLayer.html#markers",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#moveBefore": {
+                        "ref": "NFImageLayer.html#moveBefore",
+                        "tf": 6.25
+                      },
+                      "NFImageLayer.html#moveAfter": {
+                        "ref": "NFImageLayer.html#moveAfter",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#markers": {
+                        "ref": "NFImageLayer.html#markers",
+                        "tf": 7.142857142857142
+                      },
                       "NFPageLayer.html#moveBefore": {
                         "ref": "NFPageLayer.html#moveBefore",
                         "tf": 6.25
@@ -3220,6 +5002,17 @@ window.lunrData = {
                         "tf": 7.142857142857142
                       }
                     }
+                  }
+                }
+              }
+            },
+            "a": {
+              "docs": {},
+              "g": {
+                "docs": {
+                  "NFImageLayer.html": {
+                    "ref": "NFImageLayer.html",
+                    "tf": 12.5
                   }
                 }
               }
@@ -3365,6 +5158,74 @@ window.lunrData = {
                         "ref": "NFPageItem.html#getPageNumber",
                         "tf": 12.5
                       },
+                      "NFHighlightLayer.html#getSpecializedLayer": {
+                        "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#hasNullParent": {
+                        "ref": "NFHighlightLayer.html#hasNullParent",
+                        "tf": 10
+                      },
+                      "NFHighlightLayer.html#sameLayerAs": {
+                        "ref": "NFHighlightLayer.html#sameLayerAs",
+                        "tf": 3.3333333333333335
+                      },
+                      "NFHighlightLayer.html#containingComp": {
+                        "ref": "NFHighlightLayer.html#containingComp",
+                        "tf": 16.666666666666664
+                      },
+                      "NFHighlightLayer.html#getChildren": {
+                        "ref": "NFHighlightLayer.html#getChildren",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#addSlider": {
+                        "ref": "NFHighlightLayer.html#addSlider",
+                        "tf": 10
+                      },
+                      "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                        "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                        "tf": 10
+                      },
+                      "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                        "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayerCollection.html#inSameComp": {
+                        "ref": "NFHighlightLayerCollection.html#inSameComp",
+                        "tf": 8.333333333333332
+                      },
+                      "NFHighlightLayerCollection.html#containingComp": {
+                        "ref": "NFHighlightLayerCollection.html#containingComp",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                        "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                        "tf": 5.555555555555555
+                      },
+                      "NFImageLayer.html#getSpecializedLayer": {
+                        "ref": "NFImageLayer.html#getSpecializedLayer",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#hasNullParent": {
+                        "ref": "NFImageLayer.html#hasNullParent",
+                        "tf": 10
+                      },
+                      "NFImageLayer.html#sameLayerAs": {
+                        "ref": "NFImageLayer.html#sameLayerAs",
+                        "tf": 3.3333333333333335
+                      },
+                      "NFImageLayer.html#containingComp": {
+                        "ref": "NFImageLayer.html#containingComp",
+                        "tf": 16.666666666666664
+                      },
+                      "NFImageLayer.html#getChildren": {
+                        "ref": "NFImageLayer.html#getChildren",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#addSlider": {
+                        "ref": "NFImageLayer.html#addSlider",
+                        "tf": 10
+                      },
                       "NFPageLayer.html#getPaperParentLayer": {
                         "ref": "NFPageLayer.html#getPaperParentLayer",
                         "tf": 9.090909090909092
@@ -3372,6 +5233,38 @@ window.lunrData = {
                       "NFPageLayer.html#findPaperParentLayer": {
                         "ref": "NFPageLayer.html#findPaperParentLayer",
                         "tf": 5.555555555555555
+                      },
+                      "NFPageLayer.html#highlights": {
+                        "ref": "NFPageLayer.html#highlights",
+                        "tf": 12.5
+                      },
+                      "NFPageLayer.html#bubbledHighlights": {
+                        "ref": "NFPageLayer.html#bubbledHighlights",
+                        "tf": 7.142857142857142
+                      },
+                      "NFPageLayer.html#isInitted": {
+                        "ref": "NFPageLayer.html#isInitted",
+                        "tf": 8.333333333333332
+                      },
+                      "NFPageLayer.html#setInitSize": {
+                        "ref": "NFPageLayer.html#setInitSize",
+                        "tf": 4.166666666666666
+                      },
+                      "NFPageLayer.html#setInitPosition": {
+                        "ref": "NFPageLayer.html#setInitPosition",
+                        "tf": 4.166666666666666
+                      },
+                      "NFPageLayer.html#getPDFNumber": {
+                        "ref": "NFPageLayer.html#getPDFNumber",
+                        "tf": 12.5
+                      },
+                      "NFPageLayer.html#getPageNumber": {
+                        "ref": "NFPageLayer.html#getPageNumber",
+                        "tf": 12.5
+                      },
+                      "NFPageLayer.html#.isPageLayer": {
+                        "ref": "NFPageLayer.html#.isPageLayer",
+                        "tf": 8.333333333333332
                       },
                       "NFPageLayer.html#getSpecializedLayer": {
                         "ref": "NFPageLayer.html#getSpecializedLayer",
@@ -3469,12 +5362,12 @@ window.lunrData = {
                         "ref": "LayerCollection.html#.toArr",
                         "tf": 8.333333333333332
                       },
-                      "Layer.html#.indexOfMarker": {
-                        "ref": "Layer.html#.indexOfMarker",
-                        "tf": 10
-                      },
                       "Property.html#.expressionStringForValue": {
                         "ref": "Property.html#.expressionStringForValue",
+                        "tf": 10
+                      },
+                      "Layer.html#.indexOfMarker": {
+                        "ref": "Layer.html#.indexOfMarker",
                         "tf": 10
                       }
                     }
@@ -3522,6 +5415,14 @@ window.lunrData = {
                       "ref": "NFLayer.html#sameLayerAs",
                       "tf": 3.3333333333333335
                     },
+                    "NFHighlightLayer.html#sameLayerAs": {
+                      "ref": "NFHighlightLayer.html#sameLayerAs",
+                      "tf": 3.3333333333333335
+                    },
+                    "NFImageLayer.html#sameLayerAs": {
+                      "ref": "NFImageLayer.html#sameLayerAs",
+                      "tf": 3.3333333333333335
+                    },
                     "NFPageLayer.html#sameLayerAs": {
                       "ref": "NFPageLayer.html#sameLayerAs",
                       "tf": 3.3333333333333335
@@ -3542,6 +5443,10 @@ window.lunrData = {
                   "docs": {
                     "NFLayerCollection.html#remove": {
                       "ref": "NFLayerCollection.html#remove",
+                      "tf": 695.8333333333334
+                    },
+                    "NFHighlightLayerCollection.html#remove": {
+                      "ref": "NFHighlightLayerCollection.html#remove",
                       "tf": 695.8333333333334
                     },
                     "NFPageLayerCollection.html#remove": {
@@ -3566,6 +5471,91 @@ window.lunrData = {
                               "Layer.html#.removeMarker": {
                                 "ref": "Layer.html#.removeMarker",
                                 "tf": 675
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "s": {
+              "docs": {},
+              "p": {
+                "docs": {},
+                "e": {
+                  "docs": {},
+                  "c": {
+                    "docs": {},
+                    "t": {
+                      "docs": {
+                        "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                          "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                          "tf": 10
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "e": {
+                "docs": {},
+                "t": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                      "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                      "tf": 1.6666666666666667
+                    }
+                  },
+                  "e": {
+                    "docs": {},
+                    "x": {
+                      "docs": {},
+                      "p": {
+                        "docs": {},
+                        "r": {
+                          "docs": {},
+                          "e": {
+                            "docs": {},
+                            "s": {
+                              "docs": {},
+                              "s": {
+                                "docs": {},
+                                "i": {
+                                  "docs": {},
+                                  "o": {
+                                    "docs": {},
+                                    "n": {
+                                      "docs": {},
+                                      "e": {
+                                        "docs": {},
+                                        "r": {
+                                          "docs": {},
+                                          "r": {
+                                            "docs": {},
+                                            "o": {
+                                              "docs": {},
+                                              "r": {
+                                                "docs": {
+                                                  "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                                                    "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                                                    "tf": 700
+                                                  },
+                                                  "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                                                    "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                                                    "tf": 3.3333333333333335
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
                               }
                             }
                           }
@@ -3672,6 +5662,18 @@ window.lunrData = {
                     "ref": "NFLayerCollection.html#onlyContainsPageLayers",
                     "tf": 7.142857142857142
                   },
+                  "NFHighlightLayer.html#getSpecializedLayer": {
+                    "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                    "tf": 7.142857142857142
+                  },
+                  "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                    "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                    "tf": 7.142857142857142
+                  },
+                  "NFImageLayer.html#getSpecializedLayer": {
+                    "ref": "NFImageLayer.html#getSpecializedLayer",
+                    "tf": 7.142857142857142
+                  },
                   "NFPageLayer.html#getSpecializedLayer": {
                     "ref": "NFPageLayer.html#getSpecializedLayer",
                     "tf": 7.142857142857142
@@ -3717,6 +5719,38 @@ window.lunrData = {
                   "NFLayerCollection.html#isEmpty": {
                     "ref": "NFLayerCollection.html#isEmpty",
                     "tf": 16.666666666666664
+                  },
+                  "NFHighlightLayer.html#hasNullParent": {
+                    "ref": "NFHighlightLayer.html#hasNullParent",
+                    "tf": 10
+                  },
+                  "NFHighlightLayer.html#sameLayerAs": {
+                    "ref": "NFHighlightLayer.html#sameLayerAs",
+                    "tf": 3.3333333333333335
+                  },
+                  "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                    "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                    "tf": 7.142857142857142
+                  },
+                  "NFHighlightLayerCollection.html#inSameComp": {
+                    "ref": "NFHighlightLayerCollection.html#inSameComp",
+                    "tf": 8.333333333333332
+                  },
+                  "NFHighlightLayerCollection.html#isEmpty": {
+                    "ref": "NFHighlightLayerCollection.html#isEmpty",
+                    "tf": 16.666666666666664
+                  },
+                  "NFImageLayer.html#hasNullParent": {
+                    "ref": "NFImageLayer.html#hasNullParent",
+                    "tf": 10
+                  },
+                  "NFImageLayer.html#sameLayerAs": {
+                    "ref": "NFImageLayer.html#sameLayerAs",
+                    "tf": 3.3333333333333335
+                  },
+                  "NFPageLayer.html#.isPageLayer": {
+                    "ref": "NFPageLayer.html#.isPageLayer",
+                    "tf": 8.333333333333332
                   },
                   "NFPageLayer.html#hasNullParent": {
                     "ref": "NFPageLayer.html#hasNullParent",
@@ -3767,6 +5801,14 @@ window.lunrData = {
                           "ref": "NFLayer.html#addInOutMarkersForProperty",
                           "tf": 3.571428571428571
                         },
+                        "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                          "tf": 3.571428571428571
+                        },
+                        "NFImageLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                          "tf": 3.571428571428571
+                        },
                         "NFPageLayer.html#addInOutMarkersForProperty": {
                           "ref": "NFPageLayer.html#addInOutMarkersForProperty",
                           "tf": 3.571428571428571
@@ -3774,6 +5816,27 @@ window.lunrData = {
                         "NFPaperParentLayer.html#addInOutMarkersForProperty": {
                           "ref": "NFPaperParentLayer.html#addInOutMarkersForProperty",
                           "tf": 3.571428571428571
+                        }
+                      }
+                    }
+                  },
+                  "f": {
+                    "docs": {},
+                    "o": {
+                      "docs": {},
+                      "r": {
+                        "docs": {},
+                        "m": {
+                          "docs": {
+                            "NFPageLayer.html#init": {
+                              "ref": "NFPageLayer.html#init",
+                              "tf": 5.555555555555555
+                            },
+                            "NFPageLayer.html#initTransforms": {
+                              "ref": "NFPageLayer.html#initTransforms",
+                              "tf": 8.333333333333332
+                            }
+                          }
                         }
                       }
                     }
@@ -3802,6 +5865,30 @@ window.lunrData = {
                       },
                       "NFLayer.html#markers": {
                         "ref": "NFLayer.html#markers",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#moveBefore": {
+                        "ref": "NFHighlightLayer.html#moveBefore",
+                        "tf": 6.25
+                      },
+                      "NFHighlightLayer.html#moveAfter": {
+                        "ref": "NFHighlightLayer.html#moveAfter",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#markers": {
+                        "ref": "NFHighlightLayer.html#markers",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#moveBefore": {
+                        "ref": "NFImageLayer.html#moveBefore",
+                        "tf": 6.25
+                      },
+                      "NFImageLayer.html#moveAfter": {
+                        "ref": "NFImageLayer.html#moveAfter",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#markers": {
+                        "ref": "NFImageLayer.html#markers",
                         "tf": 7.142857142857142
                       },
                       "NFPageLayer.html#moveBefore": {
@@ -3841,6 +5928,22 @@ window.lunrData = {
                             },
                             "NFLayer.html#moveAfter": {
                               "ref": "NFLayer.html#moveAfter",
+                              "tf": 33.33333333333333
+                            },
+                            "NFHighlightLayer.html#moveBefore": {
+                              "ref": "NFHighlightLayer.html#moveBefore",
+                              "tf": 33.33333333333333
+                            },
+                            "NFHighlightLayer.html#moveAfter": {
+                              "ref": "NFHighlightLayer.html#moveAfter",
+                              "tf": 33.33333333333333
+                            },
+                            "NFImageLayer.html#moveBefore": {
+                              "ref": "NFImageLayer.html#moveBefore",
+                              "tf": 33.33333333333333
+                            },
+                            "NFImageLayer.html#moveAfter": {
+                              "ref": "NFImageLayer.html#moveAfter",
                               "tf": 33.33333333333333
                             },
                             "NFPageLayer.html#moveBefore": {
@@ -3885,6 +5988,44 @@ window.lunrData = {
                       "NFLayer.html#.isCompLayer": {
                         "ref": "NFLayer.html#.isCompLayer",
                         "tf": 25
+                      },
+                      "NFPageLayer.html#.isPageLayer": {
+                        "ref": "NFPageLayer.html#.isPageLayer",
+                        "tf": 25
+                      }
+                    }
+                  }
+                }
+              },
+              "r": {
+                "docs": {},
+                "e": {
+                  "docs": {},
+                  "'": {
+                    "docs": {
+                      "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                        "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                        "tf": 1.6666666666666667
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "a": {
+              "docs": {},
+              "t": {
+                "docs": {},
+                "'": {
+                  "docs": {},
+                  "l": {
+                    "docs": {},
+                    "l": {
+                      "docs": {
+                        "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                          "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                          "tf": 1.6666666666666667
+                        }
                       }
                     }
                   }
@@ -3906,6 +6047,10 @@ window.lunrData = {
                       "docs": {
                         "NFLayerCollection.html#getTopmostLayer": {
                           "ref": "NFLayerCollection.html#getTopmostLayer",
+                          "tf": 12.5
+                        },
+                        "NFHighlightLayerCollection.html#getTopmostLayer": {
+                          "ref": "NFHighlightLayerCollection.html#getTopmostLayer",
                           "tf": 12.5
                         },
                         "NFPageLayerCollection.html#getTopmostLayer": {
@@ -3982,6 +6127,169 @@ window.lunrData = {
                   }
                 }
               }
+            },
+            "e": {
+              "docs": {},
+              "s": {
+                "docs": {},
+                "n": {
+                  "docs": {},
+                  "'": {
+                    "docs": {},
+                    "t": {
+                      "docs": {
+                        "NFPageLayer.html#setInitSize": {
+                          "ref": "NFPageLayer.html#setInitSize",
+                          "tf": 4.166666666666666
+                        },
+                        "NFPageLayer.html#setInitPosition": {
+                          "ref": "NFPageLayer.html#setInitPosition",
+                          "tf": 4.166666666666666
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "u": {
+            "docs": {},
+            "p": {
+              "docs": {},
+              "l": {
+                "docs": {},
+                "i": {
+                  "docs": {},
+                  "c": {
+                    "docs": {},
+                    "a": {
+                      "docs": {},
+                      "t": {
+                        "docs": {},
+                        "e": {
+                          "docs": {},
+                          "n": {
+                            "docs": {},
+                            "a": {
+                              "docs": {},
+                              "m": {
+                                "docs": {
+                                  "NFHighlightLayerCollection.html#duplicateNames": {
+                                    "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                                    "tf": 700
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "i": {
+            "docs": {},
+            "s": {
+              "docs": {},
+              "c": {
+                "docs": {},
+                "o": {
+                  "docs": {},
+                  "n": {
+                    "docs": {},
+                    "n": {
+                      "docs": {},
+                      "e": {
+                        "docs": {},
+                        "c": {
+                          "docs": {},
+                          "t": {
+                            "docs": {
+                              "NFHighlightLayerCollection.html#disconnectHighlights": {
+                                "ref": "NFHighlightLayerCollection.html#disconnectHighlights",
+                                "tf": 16.666666666666664
+                              }
+                            },
+                            "h": {
+                              "docs": {},
+                              "i": {
+                                "docs": {},
+                                "g": {
+                                  "docs": {},
+                                  "h": {
+                                    "docs": {},
+                                    "l": {
+                                      "docs": {},
+                                      "i": {
+                                        "docs": {},
+                                        "g": {
+                                          "docs": {},
+                                          "h": {
+                                            "docs": {},
+                                            "t": {
+                                              "docs": {
+                                                "NFHighlightLayerCollection.html#disconnectHighlights": {
+                                                  "ref": "NFHighlightLayerCollection.html#disconnectHighlights",
+                                                  "tf": 700
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "r": {
+            "docs": {},
+            "o": {
+              "docs": {},
+              "p": {
+                "docs": {
+                  "NFPageLayer.html#setDropShadow": {
+                    "ref": "NFPageLayer.html#setDropShadow",
+                    "tf": 12.5
+                  }
+                },
+                "s": {
+                  "docs": {},
+                  "h": {
+                    "docs": {},
+                    "a": {
+                      "docs": {},
+                      "d": {
+                        "docs": {},
+                        "o": {
+                          "docs": {},
+                          "w": {
+                            "docs": {
+                              "NFPageLayer.html#init": {
+                                "ref": "NFPageLayer.html#init",
+                                "tf": 5.555555555555555
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -4046,6 +6354,22 @@ window.lunrData = {
                 "NFPaperLayerGroup.html#getPages": {
                   "ref": "NFPaperLayerGroup.html#getPages",
                   "tf": 16.666666666666664
+                },
+                "NFHighlightLayer.html#getParent": {
+                  "ref": "NFHighlightLayer.html#getParent",
+                  "tf": 12.5
+                },
+                "NFHighlightLayerCollection.html#getTopmostLayer": {
+                  "ref": "NFHighlightLayerCollection.html#getTopmostLayer",
+                  "tf": 12.5
+                },
+                "NFHighlightLayerCollection.html#getBottommostLayer": {
+                  "ref": "NFHighlightLayerCollection.html#getBottommostLayer",
+                  "tf": 12.5
+                },
+                "NFImageLayer.html#getParent": {
+                  "ref": "NFImageLayer.html#getParent",
+                  "tf": 12.5
                 },
                 "NFPageLayer.html#getParent": {
                   "ref": "NFPageLayer.html#getParent",
@@ -4150,6 +6474,14 @@ window.lunrData = {
                                               "ref": "NFLayer.html#getSpecializedLayer",
                                               "tf": 700
                                             },
+                                            "NFHighlightLayer.html#getSpecializedLayer": {
+                                              "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                                              "tf": 700
+                                            },
+                                            "NFImageLayer.html#getSpecializedLayer": {
+                                              "ref": "NFImageLayer.html#getSpecializedLayer",
+                                              "tf": 700
+                                            },
                                             "NFPageLayer.html#getSpecializedLayer": {
                                               "ref": "NFPageLayer.html#getSpecializedLayer",
                                               "tf": 700
@@ -4235,6 +6567,14 @@ window.lunrData = {
                                   "ref": "NFPaperLayerGroup.html#getChildren",
                                   "tf": 700
                                 },
+                                "NFHighlightLayer.html#getChildren": {
+                                  "ref": "NFHighlightLayer.html#getChildren",
+                                  "tf": 700
+                                },
+                                "NFImageLayer.html#getChildren": {
+                                  "ref": "NFImageLayer.html#getChildren",
+                                  "tf": 700
+                                },
                                 "NFPageLayer.html#getChildren": {
                                   "ref": "NFPageLayer.html#getChildren",
                                   "tf": 700
@@ -4260,6 +6600,14 @@ window.lunrData = {
                     "docs": {
                       "NFLayer.html#getParent": {
                         "ref": "NFLayer.html#getParent",
+                        "tf": 700
+                      },
+                      "NFHighlightLayer.html#getParent": {
+                        "ref": "NFHighlightLayer.html#getParent",
+                        "tf": 700
+                      },
+                      "NFImageLayer.html#getParent": {
+                        "ref": "NFImageLayer.html#getParent",
                         "tf": 700
                       },
                       "NFPageLayer.html#getParent": {
@@ -4309,6 +6657,10 @@ window.lunrData = {
                                                   "ref": "NFLayerCollection.html#getPageLayerCollection",
                                                   "tf": 700
                                                 },
+                                                "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                                                  "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                                                  "tf": 700
+                                                },
                                                 "NFPageLayerCollection.html#getPageLayerCollection": {
                                                   "ref": "NFPageLayerCollection.html#getPageLayerCollection",
                                                   "tf": 700
@@ -4336,6 +6688,10 @@ window.lunrData = {
                               "docs": {
                                 "NFPageItem.html#getPageNumber": {
                                   "ref": "NFPageItem.html#getPageNumber",
+                                  "tf": 700
+                                },
+                                "NFPageLayer.html#getPageNumber": {
+                                  "ref": "NFPageLayer.html#getPageNumber",
                                   "tf": 700
                                 }
                               }
@@ -4449,6 +6805,10 @@ window.lunrData = {
                               "NFPageItem.html#getPDFNumber": {
                                 "ref": "NFPageItem.html#getPDFNumber",
                                 "tf": 700
+                              },
+                              "NFPageLayer.html#getPDFNumber": {
+                                "ref": "NFPageLayer.html#getPDFNumber",
+                                "tf": 700
                               }
                             }
                           }
@@ -4480,6 +6840,10 @@ window.lunrData = {
                                   "docs": {
                                     "NFLayerCollection.html#getTopmostLayer": {
                                       "ref": "NFLayerCollection.html#getTopmostLayer",
+                                      "tf": 700
+                                    },
+                                    "NFHighlightLayerCollection.html#getTopmostLayer": {
+                                      "ref": "NFHighlightLayerCollection.html#getTopmostLayer",
                                       "tf": 700
                                     },
                                     "NFPageLayerCollection.html#getTopmostLayer": {
@@ -4525,6 +6889,10 @@ window.lunrData = {
                                         "docs": {
                                           "NFLayerCollection.html#getBottommostLayer": {
                                             "ref": "NFLayerCollection.html#getBottommostLayer",
+                                            "tf": 700
+                                          },
+                                          "NFHighlightLayerCollection.html#getBottommostLayer": {
+                                            "ref": "NFHighlightLayerCollection.html#getBottommostLayer",
                                             "tf": 700
                                           },
                                           "NFPageLayerCollection.html#getBottommostLayer": {
@@ -4591,6 +6959,42 @@ window.lunrData = {
                       "ref": "NFPaperLayerGroup.html#gatherLayers",
                       "tf": 2.631578947368421
                     },
+                    "NFHighlightLayer.html#sameLayerAs": {
+                      "ref": "NFHighlightLayer.html#sameLayerAs",
+                      "tf": 3.3333333333333335
+                    },
+                    "NFHighlightLayer.html#setParent": {
+                      "ref": "NFHighlightLayer.html#setParent",
+                      "tf": 10
+                    },
+                    "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                      "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                      "tf": 3.571428571428571
+                    },
+                    "NFHighlightLayerCollection.html#remove": {
+                      "ref": "NFHighlightLayerCollection.html#remove",
+                      "tf": 12.5
+                    },
+                    "NFHighlightLayerCollection.html#setParents": {
+                      "ref": "NFHighlightLayerCollection.html#setParents",
+                      "tf": 7.142857142857142
+                    },
+                    "NFImageLayer.html#sameLayerAs": {
+                      "ref": "NFImageLayer.html#sameLayerAs",
+                      "tf": 3.3333333333333335
+                    },
+                    "NFImageLayer.html#setParent": {
+                      "ref": "NFImageLayer.html#setParent",
+                      "tf": 10
+                    },
+                    "NFImageLayer.html#addInOutMarkersForProperty": {
+                      "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                      "tf": 3.571428571428571
+                    },
+                    "NFPageLayer.html#.isPageLayer": {
+                      "ref": "NFPageLayer.html#.isPageLayer",
+                      "tf": 8.333333333333332
+                    },
                     "NFPageLayer.html#sameLayerAs": {
                       "ref": "NFPageLayer.html#sameLayerAs",
                       "tf": 3.3333333333333335
@@ -4631,6 +7035,10 @@ window.lunrData = {
                       "ref": "NFPartComp.html#layerWithName",
                       "tf": 5.555555555555555
                     },
+                    "Property.html#.expressionStringForValue": {
+                      "ref": "Property.html#.expressionStringForValue",
+                      "tf": 10
+                    },
                     "Layer.html#.indexOfMarker": {
                       "ref": "Layer.html#.indexOfMarker",
                       "tf": 10
@@ -4638,10 +7046,6 @@ window.lunrData = {
                     "Layer.html#.removeMarker": {
                       "ref": "Layer.html#.removeMarker",
                       "tf": 12.5
-                    },
-                    "Property.html#.expressionStringForValue": {
-                      "ref": "Property.html#.expressionStringForValue",
-                      "tf": 10
                     }
                   }
                 }
@@ -4675,10 +7079,6 @@ window.lunrData = {
                     "NFPaperLayerGroup.html#gatherLayers": {
                       "ref": "NFPaperLayerGroup.html#gatherLayers",
                       "tf": 5.263157894736842
-                    },
-                    "NFPageLayerCollection.html": {
-                      "ref": "NFPageLayerCollection.html",
-                      "tf": 5
                     },
                     "NFPaperParentLayer.html": {
                       "ref": "NFPaperParentLayer.html",
@@ -4777,6 +7177,18 @@ window.lunrData = {
                       "ref": "NFPaperLayerGroup.html",
                       "tf": 110
                     },
+                    "NFHighlightLayer.html": {
+                      "ref": "NFHighlightLayer.html",
+                      "tf": 110
+                    },
+                    "NFHighlightLayerCollection.html": {
+                      "ref": "NFHighlightLayerCollection.html",
+                      "tf": 110
+                    },
+                    "NFImageLayer.html": {
+                      "ref": "NFImageLayer.html",
+                      "tf": 110
+                    },
                     "NFPageLayer.html": {
                       "ref": "NFPageLayer.html",
                       "tf": 110
@@ -4805,13 +7217,27 @@ window.lunrData = {
                       "ref": "LayerCollection.html",
                       "tf": 16.666666666666664
                     },
-                    "Layer.html": {
-                      "ref": "Layer.html",
-                      "tf": 16.666666666666664
-                    },
                     "Property.html": {
                       "ref": "Property.html",
                       "tf": 16.666666666666664
+                    },
+                    "Layer.html": {
+                      "ref": "Layer.html",
+                      "tf": 16.666666666666664
+                    }
+                  }
+                }
+              }
+            },
+            "e": {
+              "docs": {},
+              "a": {
+                "docs": {},
+                "r": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                      "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                      "tf": 1.6666666666666667
                     }
                   }
                 }
@@ -4850,6 +7276,14 @@ window.lunrData = {
                   },
                   "NFLayerCollection.html#containingComp": {
                     "ref": "NFLayerCollection.html#containingComp",
+                    "tf": 7.142857142857142
+                  },
+                  "NFHighlightLayerCollection.html#inSameComp": {
+                    "ref": "NFHighlightLayerCollection.html#inSameComp",
+                    "tf": 8.333333333333332
+                  },
+                  "NFHighlightLayerCollection.html#containingComp": {
+                    "ref": "NFHighlightLayerCollection.html#containingComp",
                     "tf": 7.142857142857142
                   },
                   "NFPageLayerCollection.html#inSameComp": {
@@ -4915,6 +7349,10 @@ window.lunrData = {
                     "docs": {},
                     "t": {
                       "docs": {
+                        "Property.html#.expressionStringForValue": {
+                          "ref": "Property.html#.expressionStringForValue",
+                          "tf": 10
+                        },
                         "Layer.html#.indexOfMarker": {
                           "ref": "Layer.html#.indexOfMarker",
                           "tf": 35
@@ -4922,10 +7360,6 @@ window.lunrData = {
                         "Layer.html#.removeMarker": {
                           "ref": "Layer.html#.removeMarker",
                           "tf": 37.5
-                        },
-                        "Property.html#.expressionStringForValue": {
-                          "ref": "Property.html#.expressionStringForValue",
-                          "tf": 10
                         }
                       }
                     }
@@ -4945,6 +7379,14 @@ window.lunrData = {
                       "docs": {
                         "NFLayer.html#getSpecializedLayer": {
                           "ref": "NFLayer.html#getSpecializedLayer",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayer.html#getSpecializedLayer": {
+                          "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                          "tf": 7.142857142857142
+                        },
+                        "NFImageLayer.html#getSpecializedLayer": {
+                          "ref": "NFImageLayer.html#getSpecializedLayer",
                           "tf": 7.142857142857142
                         },
                         "NFPageLayer.html#getSpecializedLayer": {
@@ -4984,6 +7426,26 @@ window.lunrData = {
                         "NFLayerCollection.html#getPageLayerCollection": {
                           "ref": "NFLayerCollection.html#getPageLayerCollection",
                           "tf": 5.555555555555555
+                        },
+                        "NFHighlightLayer.html#containingComp": {
+                          "ref": "NFHighlightLayer.html#containingComp",
+                          "tf": 16.666666666666664
+                        },
+                        "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                          "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayerCollection.html#containingComp": {
+                          "ref": "NFHighlightLayerCollection.html#containingComp",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                          "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                          "tf": 5.555555555555555
+                        },
+                        "NFImageLayer.html#containingComp": {
+                          "ref": "NFImageLayer.html#containingComp",
+                          "tf": 16.666666666666664
                         },
                         "NFPageLayer.html#containingComp": {
                           "ref": "NFPageLayer.html#containingComp",
@@ -5030,6 +7492,18 @@ window.lunrData = {
                                       },
                                       "NFLayerCollection.html#containingComp": {
                                         "ref": "NFLayerCollection.html#containingComp",
+                                        "tf": 700
+                                      },
+                                      "NFHighlightLayer.html#containingComp": {
+                                        "ref": "NFHighlightLayer.html#containingComp",
+                                        "tf": 700
+                                      },
+                                      "NFHighlightLayerCollection.html#containingComp": {
+                                        "ref": "NFHighlightLayerCollection.html#containingComp",
+                                        "tf": 700
+                                      },
+                                      "NFImageLayer.html#containingComp": {
+                                        "ref": "NFImageLayer.html#containingComp",
                                         "tf": 700
                                       },
                                       "NFPageLayer.html#containingComp": {
@@ -5144,6 +7618,58 @@ window.lunrData = {
                         },
                         "NFLayerCollection.html#nullify": {
                           "ref": "NFLayerCollection.html#nullify",
+                          "tf": 3.571428571428571
+                        },
+                        "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+                          "ref": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+                          "tf": 16.666666666666664
+                        },
+                        "NFHighlightLayerCollection.html#addAVLayer": {
+                          "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                          "tf": 10
+                        },
+                        "NFHighlightLayerCollection.html#duplicateNames": {
+                          "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayerCollection.html#addNFLayer": {
+                          "ref": "NFHighlightLayerCollection.html#addNFLayer",
+                          "tf": 16.666666666666664
+                        },
+                        "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                          "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayerCollection.html#inSameComp": {
+                          "ref": "NFHighlightLayerCollection.html#inSameComp",
+                          "tf": 8.333333333333332
+                        },
+                        "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                          "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                          "tf": 11.11111111111111
+                        },
+                        "NFHighlightLayerCollection.html#count": {
+                          "ref": "NFHighlightLayerCollection.html#count",
+                          "tf": 10
+                        },
+                        "NFHighlightLayerCollection.html#isEmpty": {
+                          "ref": "NFHighlightLayerCollection.html#isEmpty",
+                          "tf": 16.666666666666664
+                        },
+                        "NFHighlightLayerCollection.html#remove": {
+                          "ref": "NFHighlightLayerCollection.html#remove",
+                          "tf": 12.5
+                        },
+                        "NFHighlightLayerCollection.html#getTopmostLayer": {
+                          "ref": "NFHighlightLayerCollection.html#getTopmostLayer",
+                          "tf": 12.5
+                        },
+                        "NFHighlightLayerCollection.html#getBottommostLayer": {
+                          "ref": "NFHighlightLayerCollection.html#getBottommostLayer",
+                          "tf": 12.5
+                        },
+                        "NFHighlightLayerCollection.html#nullify": {
+                          "ref": "NFHighlightLayerCollection.html#nullify",
                           "tf": 3.571428571428571
                         },
                         "NFPageLayerCollection.html#addNFPageLayer": {
@@ -5261,6 +7787,10 @@ window.lunrData = {
                                                                 "ref": "NFLayerCollection.html#.collectionFromAVLayerArray",
                                                                 "tf": 683.3333333333334
                                                               },
+                                                              "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                                                                "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                                                                "tf": 675
+                                                              },
                                                               "NFPageLayerCollection.html#.collectionFromAVLayerArray": {
                                                                 "ref": "NFPageLayerCollection.html#.collectionFromAVLayerArray",
                                                                 "tf": 683.3333333333334
@@ -5298,6 +7828,10 @@ window.lunrData = {
                   "docs": {
                     "NFLayerCollection.html#count": {
                       "ref": "NFLayerCollection.html#count",
+                      "tf": 700
+                    },
+                    "NFHighlightLayerCollection.html#count": {
+                      "ref": "NFHighlightLayerCollection.html#count",
                       "tf": 700
                     },
                     "NFPageLayerCollection.html#count": {
@@ -5348,6 +7882,18 @@ window.lunrData = {
                     "NFLayerCollection.html#nullify": {
                       "ref": "NFLayerCollection.html#nullify",
                       "tf": 3.571428571428571
+                    },
+                    "NFHighlightLayer.html#addSlider": {
+                      "ref": "NFHighlightLayer.html#addSlider",
+                      "tf": 10
+                    },
+                    "NFHighlightLayerCollection.html#nullify": {
+                      "ref": "NFHighlightLayerCollection.html#nullify",
+                      "tf": 3.571428571428571
+                    },
+                    "NFImageLayer.html#addSlider": {
+                      "ref": "NFImageLayer.html#addSlider",
+                      "tf": 10
                     },
                     "NFPageLayer.html#addSlider": {
                       "ref": "NFPageLayer.html#addSlider",
@@ -5410,6 +7956,50 @@ window.lunrData = {
                       "ref": "NFPDF.html#addNFPageItem",
                       "tf": 10
                     },
+                    "NFHighlightLayer.html#isPageLayer": {
+                      "ref": "NFHighlightLayer.html#isPageLayer",
+                      "tf": 10
+                    },
+                    "NFHighlightLayer.html#isNullLayer": {
+                      "ref": "NFHighlightLayer.html#isNullLayer",
+                      "tf": 12.5
+                    },
+                    "NFHighlightLayer.html#isHighlightLayer": {
+                      "ref": "NFHighlightLayer.html#isHighlightLayer",
+                      "tf": 10
+                    },
+                    "NFHighlightLayer.html#isPaperParentLayer": {
+                      "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                      "tf": 8.333333333333332
+                    },
+                    "NFHighlightLayer.html#sameLayerAs": {
+                      "ref": "NFHighlightLayer.html#sameLayerAs",
+                      "tf": 3.3333333333333335
+                    },
+                    "NFHighlightLayerCollection.html#duplicateNames": {
+                      "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                      "tf": 7.142857142857142
+                    },
+                    "NFImageLayer.html#isPageLayer": {
+                      "ref": "NFImageLayer.html#isPageLayer",
+                      "tf": 10
+                    },
+                    "NFImageLayer.html#isNullLayer": {
+                      "ref": "NFImageLayer.html#isNullLayer",
+                      "tf": 12.5
+                    },
+                    "NFImageLayer.html#isHighlightLayer": {
+                      "ref": "NFImageLayer.html#isHighlightLayer",
+                      "tf": 10
+                    },
+                    "NFImageLayer.html#isPaperParentLayer": {
+                      "ref": "NFImageLayer.html#isPaperParentLayer",
+                      "tf": 8.333333333333332
+                    },
+                    "NFImageLayer.html#sameLayerAs": {
+                      "ref": "NFImageLayer.html#sameLayerAs",
+                      "tf": 3.3333333333333335
+                    },
                     "NFPageLayer.html#isPageLayer": {
                       "ref": "NFPageLayer.html#isPageLayer",
                       "tf": 10
@@ -5468,6 +8058,14 @@ window.lunrData = {
                       "ref": "NFLayer.html#getChildren",
                       "tf": 7.142857142857142
                     },
+                    "NFHighlightLayer.html#getChildren": {
+                      "ref": "NFHighlightLayer.html#getChildren",
+                      "tf": 7.142857142857142
+                    },
+                    "NFImageLayer.html#getChildren": {
+                      "ref": "NFImageLayer.html#getChildren",
+                      "tf": 7.142857142857142
+                    },
                     "NFPageLayer.html#getChildren": {
                       "ref": "NFPageLayer.html#getChildren",
                       "tf": 7.142857142857142
@@ -5475,6 +8073,20 @@ window.lunrData = {
                     "NFPaperParentLayer.html#getChildren": {
                       "ref": "NFPaperParentLayer.html#getChildren",
                       "tf": 7.142857142857142
+                    }
+                  }
+                }
+              }
+            },
+            "a": {
+              "docs": {},
+              "n": {
+                "docs": {},
+                "g": {
+                  "docs": {
+                    "NFPageLayer.html#markInitted": {
+                      "ref": "NFPageLayer.html#markInitted",
+                      "tf": 5
                     }
                   }
                 }
@@ -5489,6 +8101,18 @@ window.lunrData = {
                 "docs": {
                   "NFLayerCollection.html#getPageLayerCollection": {
                     "ref": "NFLayerCollection.html#getPageLayerCollection",
+                    "tf": 5.555555555555555
+                  },
+                  "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                    "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                    "tf": 1.6666666666666667
+                  },
+                  "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                    "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                    "tf": 3.3333333333333335
+                  },
+                  "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                    "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
                     "tf": 5.555555555555555
                   },
                   "NFPageLayerCollection.html#getPageLayerCollection": {
@@ -5704,6 +8328,166 @@ window.lunrData = {
                       "ref": "NFPaperLayerGroup.html#gatherLayers",
                       "tf": 10.526315789473683
                     },
+                    "NFHighlightLayer.html": {
+                      "ref": "NFHighlightLayer.html",
+                      "tf": 12.5
+                    },
+                    "NFHighlightLayer.html#isPageLayer": {
+                      "ref": "NFHighlightLayer.html#isPageLayer",
+                      "tf": 20
+                    },
+                    "NFHighlightLayer.html#isNullLayer": {
+                      "ref": "NFHighlightLayer.html#isNullLayer",
+                      "tf": 25
+                    },
+                    "NFHighlightLayer.html#isHighlightLayer": {
+                      "ref": "NFHighlightLayer.html#isHighlightLayer",
+                      "tf": 20
+                    },
+                    "NFHighlightLayer.html#isPaperParentLayer": {
+                      "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                      "tf": 16.666666666666664
+                    },
+                    "NFHighlightLayer.html#getSpecializedLayer": {
+                      "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                      "tf": 14.285714285714285
+                    },
+                    "NFHighlightLayer.html#hasNullParent": {
+                      "ref": "NFHighlightLayer.html#hasNullParent",
+                      "tf": 10
+                    },
+                    "NFHighlightLayer.html#sameLayerAs": {
+                      "ref": "NFHighlightLayer.html#sameLayerAs",
+                      "tf": 6.666666666666667
+                    },
+                    "NFHighlightLayer.html#getChildren": {
+                      "ref": "NFHighlightLayer.html#getChildren",
+                      "tf": 21.428571428571427
+                    },
+                    "NFHighlightLayer.html#setZoomer": {
+                      "ref": "NFHighlightLayer.html#setZoomer",
+                      "tf": 8.333333333333332
+                    },
+                    "NFHighlightLayer.html#moveBefore": {
+                      "ref": "NFHighlightLayer.html#moveBefore",
+                      "tf": 6.25
+                    },
+                    "NFHighlightLayer.html#moveAfter": {
+                      "ref": "NFHighlightLayer.html#moveAfter",
+                      "tf": 7.142857142857142
+                    },
+                    "NFHighlightLayer.html#markers": {
+                      "ref": "NFHighlightLayer.html#markers",
+                      "tf": 7.142857142857142
+                    },
+                    "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                      "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                      "tf": 3.571428571428571
+                    },
+                    "NFHighlightLayer.html#addSlider": {
+                      "ref": "NFHighlightLayer.html#addSlider",
+                      "tf": 10
+                    },
+                    "NFHighlightLayerCollection.html": {
+                      "ref": "NFHighlightLayerCollection.html",
+                      "tf": 12.5
+                    },
+                    "NFHighlightLayerCollection.html#disconnectHighlights": {
+                      "ref": "NFHighlightLayerCollection.html#disconnectHighlights",
+                      "tf": 16.666666666666664
+                    },
+                    "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                      "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                      "tf": 10
+                    },
+                    "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                      "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                      "tf": 3.3333333333333335
+                    },
+                    "NFHighlightLayerCollection.html#inSameComp": {
+                      "ref": "NFHighlightLayerCollection.html#inSameComp",
+                      "tf": 8.333333333333332
+                    },
+                    "NFHighlightLayerCollection.html#containingComp": {
+                      "ref": "NFHighlightLayerCollection.html#containingComp",
+                      "tf": 7.142857142857142
+                    },
+                    "NFHighlightLayerCollection.html#count": {
+                      "ref": "NFHighlightLayerCollection.html#count",
+                      "tf": 10
+                    },
+                    "NFHighlightLayerCollection.html#remove": {
+                      "ref": "NFHighlightLayerCollection.html#remove",
+                      "tf": 12.5
+                    },
+                    "NFHighlightLayerCollection.html#setParents": {
+                      "ref": "NFHighlightLayerCollection.html#setParents",
+                      "tf": 7.142857142857142
+                    },
+                    "NFHighlightLayerCollection.html#nullify": {
+                      "ref": "NFHighlightLayerCollection.html#nullify",
+                      "tf": 3.571428571428571
+                    },
+                    "NFImageLayer.html": {
+                      "ref": "NFImageLayer.html",
+                      "tf": 12.5
+                    },
+                    "NFImageLayer.html#isPageLayer": {
+                      "ref": "NFImageLayer.html#isPageLayer",
+                      "tf": 20
+                    },
+                    "NFImageLayer.html#isNullLayer": {
+                      "ref": "NFImageLayer.html#isNullLayer",
+                      "tf": 25
+                    },
+                    "NFImageLayer.html#isHighlightLayer": {
+                      "ref": "NFImageLayer.html#isHighlightLayer",
+                      "tf": 20
+                    },
+                    "NFImageLayer.html#isPaperParentLayer": {
+                      "ref": "NFImageLayer.html#isPaperParentLayer",
+                      "tf": 16.666666666666664
+                    },
+                    "NFImageLayer.html#getSpecializedLayer": {
+                      "ref": "NFImageLayer.html#getSpecializedLayer",
+                      "tf": 14.285714285714285
+                    },
+                    "NFImageLayer.html#hasNullParent": {
+                      "ref": "NFImageLayer.html#hasNullParent",
+                      "tf": 10
+                    },
+                    "NFImageLayer.html#sameLayerAs": {
+                      "ref": "NFImageLayer.html#sameLayerAs",
+                      "tf": 6.666666666666667
+                    },
+                    "NFImageLayer.html#getChildren": {
+                      "ref": "NFImageLayer.html#getChildren",
+                      "tf": 21.428571428571427
+                    },
+                    "NFImageLayer.html#setZoomer": {
+                      "ref": "NFImageLayer.html#setZoomer",
+                      "tf": 8.333333333333332
+                    },
+                    "NFImageLayer.html#moveBefore": {
+                      "ref": "NFImageLayer.html#moveBefore",
+                      "tf": 6.25
+                    },
+                    "NFImageLayer.html#moveAfter": {
+                      "ref": "NFImageLayer.html#moveAfter",
+                      "tf": 7.142857142857142
+                    },
+                    "NFImageLayer.html#markers": {
+                      "ref": "NFImageLayer.html#markers",
+                      "tf": 7.142857142857142
+                    },
+                    "NFImageLayer.html#addInOutMarkersForProperty": {
+                      "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                      "tf": 3.571428571428571
+                    },
+                    "NFImageLayer.html#addSlider": {
+                      "ref": "NFImageLayer.html#addSlider",
+                      "tf": 10
+                    },
                     "NFPageLayer.html": {
                       "ref": "NFPageLayer.html",
                       "tf": 12.5
@@ -5715,6 +8499,30 @@ window.lunrData = {
                     "NFPageLayer.html#findPaperParentLayer": {
                       "ref": "NFPageLayer.html#findPaperParentLayer",
                       "tf": 5.555555555555555
+                    },
+                    "NFPageLayer.html#bubbledHighlights": {
+                      "ref": "NFPageLayer.html#bubbledHighlights",
+                      "tf": 7.142857142857142
+                    },
+                    "NFPageLayer.html#markInitted": {
+                      "ref": "NFPageLayer.html#markInitted",
+                      "tf": 5
+                    },
+                    "NFPageLayer.html#setDropShadow": {
+                      "ref": "NFPageLayer.html#setDropShadow",
+                      "tf": 12.5
+                    },
+                    "NFPageLayer.html#setInitSize": {
+                      "ref": "NFPageLayer.html#setInitSize",
+                      "tf": 4.166666666666666
+                    },
+                    "NFPageLayer.html#setInitPosition": {
+                      "ref": "NFPageLayer.html#setInitPosition",
+                      "tf": 4.166666666666666
+                    },
+                    "NFPageLayer.html#.isPageLayer": {
+                      "ref": "NFPageLayer.html#.isPageLayer",
+                      "tf": 8.333333333333332
                     },
                     "NFPageLayer.html#isPageLayer": {
                       "ref": "NFPageLayer.html#isPageLayer",
@@ -5774,7 +8582,7 @@ window.lunrData = {
                     },
                     "NFPageLayerCollection.html": {
                       "ref": "NFPageLayerCollection.html",
-                      "tf": 10
+                      "tf": 12.5
                     },
                     "NFPageLayerCollection.html#assignPaperParentLayer": {
                       "ref": "NFPageLayerCollection.html#assignPaperParentLayer",
@@ -5900,6 +8708,10 @@ window.lunrData = {
                       "ref": "LayerCollection.html#.toArr",
                       "tf": 8.333333333333332
                     },
+                    "Property.html": {
+                      "ref": "Property.html",
+                      "tf": 16.666666666666664
+                    },
                     "Layer.html": {
                       "ref": "Layer.html",
                       "tf": 1916.6666666666667
@@ -5907,10 +8719,6 @@ window.lunrData = {
                     "Layer.html#.removeMarker": {
                       "ref": "Layer.html#.removeMarker",
                       "tf": 25
-                    },
-                    "Property.html": {
-                      "ref": "Property.html",
-                      "tf": 16.666666666666664
                     }
                   },
                   "w": {
@@ -5971,6 +8779,62 @@ window.lunrData = {
                       },
                       "NFLayer.html#markers": {
                         "ref": "NFLayer.html#markers",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#getParent": {
+                        "ref": "NFHighlightLayer.html#getParent",
+                        "tf": 12.5
+                      },
+                      "NFHighlightLayer.html#setParent": {
+                        "ref": "NFHighlightLayer.html#setParent",
+                        "tf": 10
+                      },
+                      "NFHighlightLayer.html#setZoomer": {
+                        "ref": "NFHighlightLayer.html#setZoomer",
+                        "tf": 8.333333333333332
+                      },
+                      "NFHighlightLayer.html#moveBefore": {
+                        "ref": "NFHighlightLayer.html#moveBefore",
+                        "tf": 6.25
+                      },
+                      "NFHighlightLayer.html#moveAfter": {
+                        "ref": "NFHighlightLayer.html#moveAfter",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#markers": {
+                        "ref": "NFHighlightLayer.html#markers",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#index": {
+                        "ref": "NFHighlightLayer.html#index",
+                        "tf": 16.666666666666664
+                      },
+                      "NFImageLayer.html#index": {
+                        "ref": "NFImageLayer.html#index",
+                        "tf": 16.666666666666664
+                      },
+                      "NFImageLayer.html#getParent": {
+                        "ref": "NFImageLayer.html#getParent",
+                        "tf": 12.5
+                      },
+                      "NFImageLayer.html#setParent": {
+                        "ref": "NFImageLayer.html#setParent",
+                        "tf": 10
+                      },
+                      "NFImageLayer.html#setZoomer": {
+                        "ref": "NFImageLayer.html#setZoomer",
+                        "tf": 8.333333333333332
+                      },
+                      "NFImageLayer.html#moveBefore": {
+                        "ref": "NFImageLayer.html#moveBefore",
+                        "tf": 6.25
+                      },
+                      "NFImageLayer.html#moveAfter": {
+                        "ref": "NFImageLayer.html#moveAfter",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#markers": {
+                        "ref": "NFImageLayer.html#markers",
                         "tf": 7.142857142857142
                       },
                       "NFPageLayer.html#index": {
@@ -6047,6 +8911,10 @@ window.lunrData = {
                                 "docs": {
                                   "NFLayerCollection.html#remove": {
                                     "ref": "NFLayerCollection.html#remove",
+                                    "tf": 33.33333333333333
+                                  },
+                                  "NFHighlightLayerCollection.html#remove": {
+                                    "ref": "NFHighlightLayerCollection.html#remove",
                                     "tf": 33.33333333333333
                                   },
                                   "NFPageLayerCollection.html#remove": {
@@ -6263,6 +9131,14 @@ window.lunrData = {
                                     "ref": "NFLayerCollection.html#.collectionFromAVLayerArray",
                                     "tf": 33.33333333333333
                                   },
+                                  "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                                    "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                                    "tf": 25
+                                  },
+                                  "NFPageLayer.html#.isPageLayer": {
+                                    "ref": "NFPageLayer.html#.isPageLayer",
+                                    "tf": 25
+                                  },
                                   "NFPageLayerCollection.html#.collectionFromAVLayerArray": {
                                     "ref": "NFPageLayerCollection.html#.collectionFromAVLayerArray",
                                     "tf": 33.33333333333333
@@ -6279,6 +9155,10 @@ window.lunrData = {
                                     "ref": "LayerCollection.html#.toArr",
                                     "tf": 33.33333333333333
                                   },
+                                  "Property.html#.expressionStringForValue": {
+                                    "ref": "Property.html#.expressionStringForValue",
+                                    "tf": 33.33333333333333
+                                  },
                                   "Layer.html#.indexOfMarker": {
                                     "ref": "Layer.html#.indexOfMarker",
                                     "tf": 25
@@ -6286,10 +9166,6 @@ window.lunrData = {
                                   "Layer.html#.removeMarker": {
                                     "ref": "Layer.html#.removeMarker",
                                     "tf": 25
-                                  },
-                                  "Property.html#.expressionStringForValue": {
-                                    "ref": "Property.html#.expressionStringForValue",
-                                    "tf": 33.33333333333333
                                   }
                                 }
                               }
@@ -6315,6 +9191,10 @@ window.lunrData = {
                     "docs": {
                       "NFLayerCollection.html#nullify": {
                         "ref": "NFLayerCollection.html#nullify",
+                        "tf": 3.571428571428571
+                      },
+                      "NFHighlightLayerCollection.html#nullify": {
+                        "ref": "NFHighlightLayerCollection.html#nullify",
                         "tf": 3.571428571428571
                       },
                       "NFPageLayerCollection.html#nullify": {
@@ -6343,6 +9223,26 @@ window.lunrData = {
                   "NFLayer.html#addSlider": {
                     "ref": "NFLayer.html#addSlider",
                     "tf": 25
+                  },
+                  "NFHighlightLayer.html#addSlider": {
+                    "ref": "NFHighlightLayer.html#addSlider",
+                    "tf": 25
+                  },
+                  "NFHighlightLayerCollection.html#duplicateNames": {
+                    "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                    "tf": 7.142857142857142
+                  },
+                  "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                    "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                    "tf": 3.3333333333333335
+                  },
+                  "NFImageLayer.html#addSlider": {
+                    "ref": "NFImageLayer.html#addSlider",
+                    "tf": 25
+                  },
+                  "NFPageLayer.html#markInitted": {
+                    "ref": "NFPageLayer.html#markInitted",
+                    "tf": 5
                   },
                   "NFPageLayer.html#addSlider": {
                     "ref": "NFPageLayer.html#addSlider",
@@ -6381,12 +9281,12 @@ window.lunrData = {
                             "ref": "LayerCollection.html",
                             "tf": 110
                           },
-                          "Layer.html": {
-                            "ref": "Layer.html",
-                            "tf": 110
-                          },
                           "Property.html": {
                             "ref": "Property.html",
+                            "tf": 110
+                          },
+                          "Layer.html": {
+                            "ref": "Layer.html",
                             "tf": 110
                           }
                         }
@@ -6438,6 +9338,14 @@ window.lunrData = {
                       },
                       "NFLayer.html#containingComp": {
                         "ref": "NFLayer.html#containingComp",
+                        "tf": 66.66666666666666
+                      },
+                      "NFHighlightLayer.html#containingComp": {
+                        "ref": "NFHighlightLayer.html#containingComp",
+                        "tf": 66.66666666666666
+                      },
+                      "NFImageLayer.html#containingComp": {
+                        "ref": "NFImageLayer.html#containingComp",
                         "tf": 66.66666666666666
                       },
                       "NFPageLayer.html#containingComp": {
@@ -6635,6 +9543,10 @@ window.lunrData = {
                                 "ref": "NFLayerCollection.html#containingComp",
                                 "tf": 50
                               },
+                              "NFHighlightLayerCollection.html#containingComp": {
+                                "ref": "NFHighlightLayerCollection.html#containingComp",
+                                "tf": 50
+                              },
                               "NFPageLayerCollection.html#containingComp": {
                                 "ref": "NFPageLayerCollection.html#containingComp",
                                 "tf": 50
@@ -6734,6 +9646,94 @@ window.lunrData = {
                           "ref": "NFPaperLayerGroup.html#getChildren",
                           "tf": 16.666666666666664
                         },
+                        "NFHighlightLayer.html": {
+                          "ref": "NFHighlightLayer.html",
+                          "tf": 12.5
+                        },
+                        "NFHighlightLayer.html#sameLayerAs": {
+                          "ref": "NFHighlightLayer.html#sameLayerAs",
+                          "tf": 3.3333333333333335
+                        },
+                        "NFHighlightLayer.html#getParent": {
+                          "ref": "NFHighlightLayer.html#getParent",
+                          "tf": 12.5
+                        },
+                        "NFHighlightLayer.html#setParent": {
+                          "ref": "NFHighlightLayer.html#setParent",
+                          "tf": 43.33333333333333
+                        },
+                        "NFHighlightLayer.html#setZoomer": {
+                          "ref": "NFHighlightLayer.html#setZoomer",
+                          "tf": 50
+                        },
+                        "NFHighlightLayer.html#moveBefore": {
+                          "ref": "NFHighlightLayer.html#moveBefore",
+                          "tf": 33.33333333333333
+                        },
+                        "NFHighlightLayer.html#moveAfter": {
+                          "ref": "NFHighlightLayer.html#moveAfter",
+                          "tf": 33.33333333333333
+                        },
+                        "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                          "tf": 33.33333333333333
+                        },
+                        "NFHighlightLayerCollection.html#addNFLayer": {
+                          "ref": "NFHighlightLayerCollection.html#addNFLayer",
+                          "tf": 16.666666666666664
+                        },
+                        "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                          "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayerCollection.html#getTopmostLayer": {
+                          "ref": "NFHighlightLayerCollection.html#getTopmostLayer",
+                          "tf": 12.5
+                        },
+                        "NFHighlightLayerCollection.html#getBottommostLayer": {
+                          "ref": "NFHighlightLayerCollection.html#getBottommostLayer",
+                          "tf": 12.5
+                        },
+                        "NFHighlightLayerCollection.html#setParents": {
+                          "ref": "NFHighlightLayerCollection.html#setParents",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayerCollection.html#nullify": {
+                          "ref": "NFHighlightLayerCollection.html#nullify",
+                          "tf": 50
+                        },
+                        "NFImageLayer.html": {
+                          "ref": "NFImageLayer.html",
+                          "tf": 12.5
+                        },
+                        "NFImageLayer.html#sameLayerAs": {
+                          "ref": "NFImageLayer.html#sameLayerAs",
+                          "tf": 3.3333333333333335
+                        },
+                        "NFImageLayer.html#getParent": {
+                          "ref": "NFImageLayer.html#getParent",
+                          "tf": 12.5
+                        },
+                        "NFImageLayer.html#setParent": {
+                          "ref": "NFImageLayer.html#setParent",
+                          "tf": 43.33333333333333
+                        },
+                        "NFImageLayer.html#setZoomer": {
+                          "ref": "NFImageLayer.html#setZoomer",
+                          "tf": 50
+                        },
+                        "NFImageLayer.html#moveBefore": {
+                          "ref": "NFImageLayer.html#moveBefore",
+                          "tf": 33.33333333333333
+                        },
+                        "NFImageLayer.html#moveAfter": {
+                          "ref": "NFImageLayer.html#moveAfter",
+                          "tf": 33.33333333333333
+                        },
+                        "NFImageLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                          "tf": 33.33333333333333
+                        },
                         "NFPageLayer.html": {
                           "ref": "NFPageLayer.html",
                           "tf": 12.5
@@ -6765,10 +9765,6 @@ window.lunrData = {
                         "NFPageLayer.html#addInOutMarkersForProperty": {
                           "ref": "NFPageLayer.html#addInOutMarkersForProperty",
                           "tf": 33.33333333333333
-                        },
-                        "NFPageLayerCollection.html": {
-                          "ref": "NFPageLayerCollection.html",
-                          "tf": 5
                         },
                         "NFPageLayerCollection.html#addNFLayer": {
                           "ref": "NFPageLayerCollection.html#addNFLayer",
@@ -6881,9 +9877,37 @@ window.lunrData = {
                                         "ref": "NFPaperLayerGroup.html#getChildren",
                                         "tf": 50
                                       },
+                                      "NFHighlightLayer.html#getChildren": {
+                                        "ref": "NFHighlightLayer.html#getChildren",
+                                        "tf": 57.14285714285714
+                                      },
+                                      "NFHighlightLayerCollection.html": {
+                                        "ref": "NFHighlightLayerCollection.html",
+                                        "tf": 12.5
+                                      },
+                                      "NFHighlightLayerCollection.html#addNFLayer": {
+                                        "ref": "NFHighlightLayerCollection.html#addNFLayer",
+                                        "tf": 33.33333333333333
+                                      },
+                                      "NFHighlightLayerCollection.html#remove": {
+                                        "ref": "NFHighlightLayerCollection.html#remove",
+                                        "tf": 33.33333333333333
+                                      },
+                                      "NFHighlightLayerCollection.html#setParents": {
+                                        "ref": "NFHighlightLayerCollection.html#setParents",
+                                        "tf": 33.33333333333333
+                                      },
+                                      "NFImageLayer.html#getChildren": {
+                                        "ref": "NFImageLayer.html#getChildren",
+                                        "tf": 57.14285714285714
+                                      },
                                       "NFPageLayer.html#getChildren": {
                                         "ref": "NFPageLayer.html#getChildren",
                                         "tf": 57.14285714285714
+                                      },
+                                      "NFPageLayerCollection.html": {
+                                        "ref": "NFPageLayerCollection.html",
+                                        "tf": 12.5
                                       },
                                       "NFPageLayerCollection.html#addNFLayer": {
                                         "ref": "NFPageLayerCollection.html#addNFLayer",
@@ -7457,6 +10481,22 @@ window.lunrData = {
                                 },
                                 "NFLayerCollection.html#getBottommostLayer": {
                                   "ref": "NFLayerCollection.html#getBottommostLayer",
+                                  "tf": 50
+                                },
+                                "NFHighlightLayer.html#getParent": {
+                                  "ref": "NFHighlightLayer.html#getParent",
+                                  "tf": 50
+                                },
+                                "NFHighlightLayerCollection.html#getTopmostLayer": {
+                                  "ref": "NFHighlightLayerCollection.html#getTopmostLayer",
+                                  "tf": 50
+                                },
+                                "NFHighlightLayerCollection.html#getBottommostLayer": {
+                                  "ref": "NFHighlightLayerCollection.html#getBottommostLayer",
+                                  "tf": 50
+                                },
+                                "NFImageLayer.html#getParent": {
+                                  "ref": "NFImageLayer.html#getParent",
                                   "tf": 50
                                 },
                                 "NFPageLayer.html#getParent": {
@@ -8276,6 +11316,14 @@ window.lunrData = {
                             "ref": "NFLayer.html#sameLayerAs",
                             "tf": 3.3333333333333335
                           },
+                          "NFHighlightLayer.html#sameLayerAs": {
+                            "ref": "NFHighlightLayer.html#sameLayerAs",
+                            "tf": 3.3333333333333335
+                          },
+                          "NFImageLayer.html#sameLayerAs": {
+                            "ref": "NFImageLayer.html#sameLayerAs",
+                            "tf": 3.3333333333333335
+                          },
                           "NFPageLayer.html#sameLayerAs": {
                             "ref": "NFPageLayer.html#sameLayerAs",
                             "tf": 3.3333333333333335
@@ -8465,9 +11513,41 @@ window.lunrData = {
                               "ref": "NFPaperLayerGroup.html#getPages",
                               "tf": 16.666666666666664
                             },
+                            "NFHighlightLayer.html#sameLayerAs": {
+                              "ref": "NFHighlightLayer.html#sameLayerAs",
+                              "tf": 3.3333333333333335
+                            },
+                            "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                              "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                              "tf": 7.142857142857142
+                            },
+                            "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                              "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                              "tf": 5.555555555555555
+                            },
+                            "NFImageLayer.html#sameLayerAs": {
+                              "ref": "NFImageLayer.html#sameLayerAs",
+                              "tf": 3.3333333333333335
+                            },
                             "NFPageLayer.html": {
                               "ref": "NFPageLayer.html",
                               "tf": 1900
+                            },
+                            "NFPageLayer.html#markInitted": {
+                              "ref": "NFPageLayer.html#markInitted",
+                              "tf": 50
+                            },
+                            "NFPageLayer.html#init": {
+                              "ref": "NFPageLayer.html#init",
+                              "tf": 50
+                            },
+                            "NFPageLayer.html#setDropShadow": {
+                              "ref": "NFPageLayer.html#setDropShadow",
+                              "tf": 50
+                            },
+                            "NFPageLayer.html#initTransforms": {
+                              "ref": "NFPageLayer.html#initTransforms",
+                              "tf": 50
                             },
                             "NFPageLayer.html#sameLayerAs": {
                               "ref": "NFPageLayer.html#sameLayerAs",
@@ -8519,6 +11599,10 @@ window.lunrData = {
                                               "NFPaperLayerGroup.html#getPages": {
                                                 "ref": "NFPaperLayerGroup.html#getPages",
                                                 "tf": 50
+                                              },
+                                              "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                                                "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                                                "tf": 55.55555555555556
                                               },
                                               "NFPageLayerCollection.html": {
                                                 "ref": "NFPageLayerCollection.html",
@@ -9455,6 +12539,14 @@ window.lunrData = {
                                                                                                                       "ref": "NFLayer.html#getSpecializedLayer",
                                                                                                                       "tf": 50
                                                                                                                     },
+                                                                                                                    "NFHighlightLayer.html#getSpecializedLayer": {
+                                                                                                                      "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                                                                                                                      "tf": 50
+                                                                                                                    },
+                                                                                                                    "NFImageLayer.html#getSpecializedLayer": {
+                                                                                                                      "ref": "NFImageLayer.html#getSpecializedLayer",
+                                                                                                                      "tf": 50
+                                                                                                                    },
                                                                                                                     "NFPageLayer.html#getSpecializedLayer": {
                                                                                                                       "ref": "NFPageLayer.html#getSpecializedLayer",
                                                                                                                       "tf": 50
@@ -9626,11 +12718,57 @@ window.lunrData = {
                                               }
                                             }
                                           },
+                                          "g": {
+                                            "docs": {},
+                                            "e": {
+                                              "docs": {},
+                                              "n": {
+                                                "docs": {},
+                                                "u": {
+                                                  "docs": {},
+                                                  "m": {
+                                                    "docs": {},
+                                                    "b": {
+                                                      "docs": {
+                                                        "NFPageLayer.html#getPageNumber": {
+                                                          "ref": "NFPageLayer.html#getPageNumber",
+                                                          "tf": 1150
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
                                           "r": {
                                             "docs": {
                                               "NFPageLayer.html#getParent": {
                                                 "ref": "NFPageLayer.html#getParent",
                                                 "tf": 1150
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "d": {
+                                          "docs": {},
+                                          "f": {
+                                            "docs": {},
+                                            "n": {
+                                              "docs": {},
+                                              "u": {
+                                                "docs": {},
+                                                "m": {
+                                                  "docs": {},
+                                                  "b": {
+                                                    "docs": {
+                                                      "NFPageLayer.html#getPDFNumber": {
+                                                        "ref": "NFPageLayer.html#getPDFNumber",
+                                                        "tf": 1150
+                                                      }
+                                                    }
+                                                  }
+                                                }
                                               }
                                             }
                                           }
@@ -9715,10 +12853,144 @@ window.lunrData = {
                                     }
                                   }
                                 },
+                                "h": {
+                                  "docs": {},
+                                  "i": {
+                                    "docs": {},
+                                    "g": {
+                                      "docs": {},
+                                      "h": {
+                                        "docs": {},
+                                        "l": {
+                                          "docs": {},
+                                          "i": {
+                                            "docs": {},
+                                            "g": {
+                                              "docs": {},
+                                              "h": {
+                                                "docs": {},
+                                                "t": {
+                                                  "docs": {
+                                                    "NFPageLayer.html#highlights": {
+                                                      "ref": "NFPageLayer.html#highlights",
+                                                      "tf": 1150
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "a": {
+                                    "docs": {},
+                                    "s": {
+                                      "docs": {},
+                                      "n": {
+                                        "docs": {},
+                                        "u": {
+                                          "docs": {},
+                                          "l": {
+                                            "docs": {},
+                                            "l": {
+                                              "docs": {},
+                                              "p": {
+                                                "docs": {},
+                                                "a": {
+                                                  "docs": {},
+                                                  "r": {
+                                                    "docs": {
+                                                      "NFPageLayer.html#hasNullParent": {
+                                                        "ref": "NFPageLayer.html#hasNullParent",
+                                                        "tf": 1150
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "b": {
+                                  "docs": {},
+                                  "u": {
+                                    "docs": {},
+                                    "b": {
+                                      "docs": {},
+                                      "b": {
+                                        "docs": {},
+                                        "l": {
+                                          "docs": {},
+                                          "e": {
+                                            "docs": {},
+                                            "d": {
+                                              "docs": {},
+                                              "h": {
+                                                "docs": {},
+                                                "i": {
+                                                  "docs": {},
+                                                  "g": {
+                                                    "docs": {},
+                                                    "h": {
+                                                      "docs": {},
+                                                      "l": {
+                                                        "docs": {},
+                                                        "i": {
+                                                          "docs": {},
+                                                          "g": {
+                                                            "docs": {},
+                                                            "h": {
+                                                              "docs": {},
+                                                              "t": {
+                                                                "docs": {
+                                                                  "NFPageLayer.html#bubbledHighlights": {
+                                                                    "ref": "NFPageLayer.html#bubbledHighlights",
+                                                                    "tf": 1150
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
                                 "i": {
                                   "docs": {},
                                   "s": {
                                     "docs": {},
+                                    "i": {
+                                      "docs": {},
+                                      "n": {
+                                        "docs": {},
+                                        "i": {
+                                          "docs": {},
+                                          "t": {
+                                            "docs": {
+                                              "NFPageLayer.html#isInitted": {
+                                                "ref": "NFPageLayer.html#isInitted",
+                                                "tf": 1150
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
                                     "p": {
                                       "docs": {},
                                       "a": {
@@ -9856,27 +13128,49 @@ window.lunrData = {
                                   },
                                   "n": {
                                     "docs": {},
-                                    "d": {
-                                      "docs": {},
-                                      "e": {
-                                        "docs": {},
-                                        "x": {
-                                          "docs": {
-                                            "NFPageLayer.html#index": {
-                                              "ref": "NFPageLayer.html#index",
-                                              "tf": 1150
-                                            }
-                                          }
-                                        }
-                                      }
-                                    },
                                     "i": {
                                       "docs": {},
                                       "t": {
                                         "docs": {
+                                          "NFPageLayer.html#init": {
+                                            "ref": "NFPageLayer.html#init",
+                                            "tf": 1150
+                                          },
                                           "NFPageLayerCollection.html#initLayers": {
                                             "ref": "NFPageLayerCollection.html#initLayers",
                                             "tf": 12.5
+                                          }
+                                        },
+                                        "t": {
+                                          "docs": {},
+                                          "r": {
+                                            "docs": {},
+                                            "a": {
+                                              "docs": {},
+                                              "n": {
+                                                "docs": {},
+                                                "s": {
+                                                  "docs": {},
+                                                  "f": {
+                                                    "docs": {},
+                                                    "o": {
+                                                      "docs": {},
+                                                      "r": {
+                                                        "docs": {},
+                                                        "m": {
+                                                          "docs": {
+                                                            "NFPageLayer.html#initTransforms": {
+                                                              "ref": "NFPageLayer.html#initTransforms",
+                                                              "tf": 1150
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
                                           }
                                         },
                                         "l": {
@@ -9927,35 +13221,91 @@ window.lunrData = {
                                           }
                                         }
                                       }
+                                    },
+                                    "d": {
+                                      "docs": {},
+                                      "e": {
+                                        "docs": {},
+                                        "x": {
+                                          "docs": {
+                                            "NFPageLayer.html#index": {
+                                              "ref": "NFPageLayer.html#index",
+                                              "tf": 1150
+                                            }
+                                          }
+                                        }
+                                      }
                                     }
                                   }
                                 },
-                                "h": {
+                                "m": {
                                   "docs": {},
                                   "a": {
                                     "docs": {},
-                                    "s": {
+                                    "r": {
                                       "docs": {},
-                                      "n": {
-                                        "docs": {},
-                                        "u": {
+                                      "k": {
+                                        "docs": {
+                                          "NFPageLayer.html#markers": {
+                                            "ref": "NFPageLayer.html#markers",
+                                            "tf": 1150
+                                          }
+                                        },
+                                        "i": {
                                           "docs": {},
-                                          "l": {
+                                          "n": {
                                             "docs": {},
-                                            "l": {
+                                            "i": {
                                               "docs": {},
-                                              "p": {
+                                              "t": {
+                                                "docs": {
+                                                  "NFPageLayer.html#markInitted": {
+                                                    "ref": "NFPageLayer.html#markInitted",
+                                                    "tf": 1150
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "o": {
+                                    "docs": {},
+                                    "v": {
+                                      "docs": {},
+                                      "e": {
+                                        "docs": {},
+                                        "b": {
+                                          "docs": {},
+                                          "e": {
+                                            "docs": {},
+                                            "f": {
+                                              "docs": {},
+                                              "o": {
                                                 "docs": {},
-                                                "a": {
-                                                  "docs": {},
-                                                  "r": {
-                                                    "docs": {
-                                                      "NFPageLayer.html#hasNullParent": {
-                                                        "ref": "NFPageLayer.html#hasNullParent",
-                                                        "tf": 1150
-                                                      }
+                                                "r": {
+                                                  "docs": {
+                                                    "NFPageLayer.html#moveBefore": {
+                                                      "ref": "NFPageLayer.html#moveBefore",
+                                                      "tf": 1150
                                                     }
                                                   }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "a": {
+                                          "docs": {},
+                                          "f": {
+                                            "docs": {},
+                                            "t": {
+                                              "docs": {
+                                                "NFPageLayer.html#moveAfter": {
+                                                  "ref": "NFPageLayer.html#moveAfter",
+                                                  "tf": 1150
                                                 }
                                               }
                                             }
@@ -9967,27 +13317,36 @@ window.lunrData = {
                                 },
                                 "s": {
                                   "docs": {},
-                                  "a": {
+                                  "e": {
                                     "docs": {},
-                                    "m": {
+                                    "t": {
                                       "docs": {},
-                                      "e": {
+                                      "d": {
                                         "docs": {},
-                                        "l": {
+                                        "r": {
                                           "docs": {},
-                                          "a": {
+                                          "o": {
                                             "docs": {},
-                                            "y": {
+                                            "p": {
                                               "docs": {},
-                                              "e": {
+                                              "s": {
                                                 "docs": {},
-                                                "r": {
+                                                "h": {
                                                   "docs": {},
                                                   "a": {
-                                                    "docs": {
-                                                      "NFPageLayer.html#sameLayerAs": {
-                                                        "ref": "NFPageLayer.html#sameLayerAs",
-                                                        "tf": 1150
+                                                    "docs": {},
+                                                    "d": {
+                                                      "docs": {},
+                                                      "o": {
+                                                        "docs": {},
+                                                        "w": {
+                                                          "docs": {
+                                                            "NFPageLayer.html#setDropShadow": {
+                                                              "ref": "NFPageLayer.html#setDropShadow",
+                                                              "tf": 1150
+                                                            }
+                                                          }
+                                                        }
                                                       }
                                                     }
                                                   }
@@ -9996,13 +13355,47 @@ window.lunrData = {
                                             }
                                           }
                                         }
-                                      }
-                                    }
-                                  },
-                                  "e": {
-                                    "docs": {},
-                                    "t": {
-                                      "docs": {},
+                                      },
+                                      "i": {
+                                        "docs": {},
+                                        "n": {
+                                          "docs": {},
+                                          "i": {
+                                            "docs": {},
+                                            "t": {
+                                              "docs": {},
+                                              "s": {
+                                                "docs": {
+                                                  "NFPageLayer.html#setInitSize": {
+                                                    "ref": "NFPageLayer.html#setInitSize",
+                                                    "tf": 1150
+                                                  }
+                                                }
+                                              },
+                                              "p": {
+                                                "docs": {},
+                                                "o": {
+                                                  "docs": {},
+                                                  "s": {
+                                                    "docs": {},
+                                                    "i": {
+                                                      "docs": {},
+                                                      "t": {
+                                                        "docs": {
+                                                          "NFPageLayer.html#setInitPosition": {
+                                                            "ref": "NFPageLayer.html#setInitPosition",
+                                                            "tf": 1150
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
                                       "p": {
                                         "docs": {},
                                         "a": {
@@ -10028,6 +13421,38 @@ window.lunrData = {
                                                 "NFPageLayer.html#setZoomer": {
                                                   "ref": "NFPageLayer.html#setZoomer",
                                                   "tf": 1150
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "a": {
+                                    "docs": {},
+                                    "m": {
+                                      "docs": {},
+                                      "e": {
+                                        "docs": {},
+                                        "l": {
+                                          "docs": {},
+                                          "a": {
+                                            "docs": {},
+                                            "y": {
+                                              "docs": {},
+                                              "e": {
+                                                "docs": {},
+                                                "r": {
+                                                  "docs": {},
+                                                  "a": {
+                                                    "docs": {
+                                                      "NFPageLayer.html#sameLayerAs": {
+                                                        "ref": "NFPageLayer.html#sameLayerAs",
+                                                        "tf": 1150
+                                                      }
+                                                    }
+                                                  }
                                                 }
                                               }
                                             }
@@ -10078,66 +13503,6 @@ window.lunrData = {
                                                 }
                                               }
                                             }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                },
-                                "m": {
-                                  "docs": {},
-                                  "o": {
-                                    "docs": {},
-                                    "v": {
-                                      "docs": {},
-                                      "e": {
-                                        "docs": {},
-                                        "b": {
-                                          "docs": {},
-                                          "e": {
-                                            "docs": {},
-                                            "f": {
-                                              "docs": {},
-                                              "o": {
-                                                "docs": {},
-                                                "r": {
-                                                  "docs": {
-                                                    "NFPageLayer.html#moveBefore": {
-                                                      "ref": "NFPageLayer.html#moveBefore",
-                                                      "tf": 1150
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "a": {
-                                          "docs": {},
-                                          "f": {
-                                            "docs": {},
-                                            "t": {
-                                              "docs": {
-                                                "NFPageLayer.html#moveAfter": {
-                                                  "ref": "NFPageLayer.html#moveAfter",
-                                                  "tf": 1150
-                                                }
-                                              }
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  },
-                                  "a": {
-                                    "docs": {},
-                                    "r": {
-                                      "docs": {},
-                                      "k": {
-                                        "docs": {
-                                          "NFPageLayer.html#markers": {
-                                            "ref": "NFPageLayer.html#markers",
-                                            "tf": 1150
                                           }
                                         }
                                       }
@@ -10235,6 +13600,41 @@ window.lunrData = {
                                                 "NFPageLayer.html#addSlider": {
                                                   "ref": "NFPageLayer.html#addSlider",
                                                   "tf": 1150
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              ".": {
+                                "docs": {},
+                                "i": {
+                                  "docs": {},
+                                  "s": {
+                                    "docs": {},
+                                    "p": {
+                                      "docs": {},
+                                      "a": {
+                                        "docs": {},
+                                        "g": {
+                                          "docs": {},
+                                          "e": {
+                                            "docs": {},
+                                            "l": {
+                                              "docs": {},
+                                              "a": {
+                                                "docs": {},
+                                                "y": {
+                                                  "docs": {
+                                                    "NFPageLayer.html#.isPageLayer": {
+                                                      "ref": "NFPageLayer.html#.isPageLayer",
+                                                      "tf": 1150
+                                                    }
+                                                  }
                                                 }
                                               }
                                             }
@@ -10383,6 +13783,14 @@ window.lunrData = {
                             "docs": {
                               "NFLayer.html#setZoomer": {
                                 "ref": "NFLayer.html#setZoomer",
+                                "tf": 8.333333333333332
+                              },
+                              "NFHighlightLayer.html#setZoomer": {
+                                "ref": "NFHighlightLayer.html#setZoomer",
+                                "tf": 8.333333333333332
+                              },
+                              "NFImageLayer.html#setZoomer": {
+                                "ref": "NFImageLayer.html#setZoomer",
                                 "tf": 8.333333333333332
                               },
                               "NFPageLayer.html#setZoomer": {
@@ -11600,7 +15008,16 @@ window.lunrData = {
                                 "a": {
                                   "docs": {},
                                   "y": {
-                                    "docs": {},
+                                    "docs": {
+                                      "NFHighlightLayer.html": {
+                                        "ref": "NFHighlightLayer.html",
+                                        "tf": 1900
+                                      },
+                                      "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+                                        "ref": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+                                        "tf": 16.666666666666664
+                                      }
+                                    },
                                     "e": {
                                       "docs": {},
                                       "r": {
@@ -11623,12 +15040,2101 @@ window.lunrData = {
                                                           "ref": "NFPageItem.html#highlights",
                                                           "tf": 50
                                                         },
+                                                        "NFHighlightLayerCollection.html": {
+                                                          "ref": "NFHighlightLayerCollection.html",
+                                                          "tf": 1900
+                                                        },
+                                                        "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+                                                          "ref": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+                                                          "tf": 33.33333333333333
+                                                        },
+                                                        "NFHighlightLayerCollection.html#addAVLayer": {
+                                                          "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                                                          "tf": 33.33333333333333
+                                                        },
+                                                        "NFHighlightLayerCollection.html#disconnectHighlights": {
+                                                          "ref": "NFHighlightLayerCollection.html#disconnectHighlights",
+                                                          "tf": 50
+                                                        },
+                                                        "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                                                          "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                                                          "tf": 50
+                                                        },
+                                                        "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                                                          "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                                                          "tf": 50
+                                                        },
+                                                        "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                                                          "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                                                          "tf": 50
+                                                        },
+                                                        "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                                                          "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                                                          "tf": 25
+                                                        },
+                                                        "NFPageLayer.html#highlights": {
+                                                          "ref": "NFPageLayer.html#highlights",
+                                                          "tf": 62.5
+                                                        },
+                                                        "NFPageLayer.html#bubbledHighlights": {
+                                                          "ref": "NFPageLayer.html#bubbledHighlights",
+                                                          "tf": 57.14285714285714
+                                                        },
                                                         "NFPageLayerCollection.html#highlights": {
                                                           "ref": "NFPageLayerCollection.html#highlights",
                                                           "tf": 43.33333333333333
                                                         }
+                                                      },
+                                                      "i": {
+                                                        "docs": {},
+                                                        "o": {
+                                                          "docs": {},
+                                                          "n": {
+                                                            "docs": {},
+                                                            "#": {
+                                                              "docs": {},
+                                                              "a": {
+                                                                "docs": {},
+                                                                "d": {
+                                                                  "docs": {},
+                                                                  "d": {
+                                                                    "docs": {},
+                                                                    "n": {
+                                                                      "docs": {},
+                                                                      "f": {
+                                                                        "docs": {},
+                                                                        "h": {
+                                                                          "docs": {},
+                                                                          "i": {
+                                                                            "docs": {},
+                                                                            "g": {
+                                                                              "docs": {},
+                                                                              "h": {
+                                                                                "docs": {},
+                                                                                "l": {
+                                                                                  "docs": {},
+                                                                                  "i": {
+                                                                                    "docs": {},
+                                                                                    "g": {
+                                                                                      "docs": {},
+                                                                                      "h": {
+                                                                                        "docs": {},
+                                                                                        "t": {
+                                                                                          "docs": {},
+                                                                                          "l": {
+                                                                                            "docs": {},
+                                                                                            "a": {
+                                                                                              "docs": {},
+                                                                                              "y": {
+                                                                                                "docs": {
+                                                                                                  "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+                                                                                                    "ref": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+                                                                                                    "tf": 1150
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        },
+                                                                        "l": {
+                                                                          "docs": {},
+                                                                          "a": {
+                                                                            "docs": {},
+                                                                            "y": {
+                                                                              "docs": {
+                                                                                "NFHighlightLayerCollection.html#addNFLayer": {
+                                                                                  "ref": "NFHighlightLayerCollection.html#addNFLayer",
+                                                                                  "tf": 1150
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                    "a": {
+                                                                      "docs": {},
+                                                                      "v": {
+                                                                        "docs": {},
+                                                                        "l": {
+                                                                          "docs": {},
+                                                                          "a": {
+                                                                            "docs": {},
+                                                                            "y": {
+                                                                              "docs": {
+                                                                                "NFHighlightLayerCollection.html#addAVLayer": {
+                                                                                  "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                                                                                  "tf": 1150
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "d": {
+                                                                "docs": {},
+                                                                "u": {
+                                                                  "docs": {},
+                                                                  "p": {
+                                                                    "docs": {},
+                                                                    "l": {
+                                                                      "docs": {},
+                                                                      "i": {
+                                                                        "docs": {},
+                                                                        "c": {
+                                                                          "docs": {},
+                                                                          "a": {
+                                                                            "docs": {},
+                                                                            "t": {
+                                                                              "docs": {},
+                                                                              "e": {
+                                                                                "docs": {},
+                                                                                "n": {
+                                                                                  "docs": {},
+                                                                                  "a": {
+                                                                                    "docs": {},
+                                                                                    "m": {
+                                                                                      "docs": {
+                                                                                        "NFHighlightLayerCollection.html#duplicateNames": {
+                                                                                          "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                                                                                          "tf": 1150
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "i": {
+                                                                  "docs": {},
+                                                                  "s": {
+                                                                    "docs": {},
+                                                                    "c": {
+                                                                      "docs": {},
+                                                                      "o": {
+                                                                        "docs": {},
+                                                                        "n": {
+                                                                          "docs": {},
+                                                                          "n": {
+                                                                            "docs": {},
+                                                                            "e": {
+                                                                              "docs": {},
+                                                                              "c": {
+                                                                                "docs": {},
+                                                                                "t": {
+                                                                                  "docs": {},
+                                                                                  "h": {
+                                                                                    "docs": {},
+                                                                                    "i": {
+                                                                                      "docs": {},
+                                                                                      "g": {
+                                                                                        "docs": {},
+                                                                                        "h": {
+                                                                                          "docs": {},
+                                                                                          "l": {
+                                                                                            "docs": {},
+                                                                                            "i": {
+                                                                                              "docs": {},
+                                                                                              "g": {
+                                                                                                "docs": {},
+                                                                                                "h": {
+                                                                                                  "docs": {},
+                                                                                                  "t": {
+                                                                                                    "docs": {
+                                                                                                      "NFHighlightLayerCollection.html#disconnectHighlights": {
+                                                                                                        "ref": "NFHighlightLayerCollection.html#disconnectHighlights",
+                                                                                                        "tf": 1150
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "b": {
+                                                                "docs": {},
+                                                                "u": {
+                                                                  "docs": {},
+                                                                  "b": {
+                                                                    "docs": {},
+                                                                    "b": {
+                                                                      "docs": {},
+                                                                      "l": {
+                                                                        "docs": {},
+                                                                        "e": {
+                                                                          "docs": {},
+                                                                          "u": {
+                                                                            "docs": {},
+                                                                            "p": {
+                                                                              "docs": {},
+                                                                              "h": {
+                                                                                "docs": {},
+                                                                                "i": {
+                                                                                  "docs": {},
+                                                                                  "g": {
+                                                                                    "docs": {},
+                                                                                    "h": {
+                                                                                      "docs": {},
+                                                                                      "l": {
+                                                                                        "docs": {},
+                                                                                        "i": {
+                                                                                          "docs": {},
+                                                                                          "g": {
+                                                                                            "docs": {},
+                                                                                            "h": {
+                                                                                              "docs": {},
+                                                                                              "t": {
+                                                                                                "docs": {
+                                                                                                  "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                                                                                                    "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                                                                                                    "tf": 1150
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "r": {
+                                                                "docs": {},
+                                                                "e": {
+                                                                  "docs": {},
+                                                                  "s": {
+                                                                    "docs": {},
+                                                                    "e": {
+                                                                      "docs": {},
+                                                                      "t": {
+                                                                        "docs": {},
+                                                                        "e": {
+                                                                          "docs": {},
+                                                                          "x": {
+                                                                            "docs": {},
+                                                                            "p": {
+                                                                              "docs": {},
+                                                                              "r": {
+                                                                                "docs": {},
+                                                                                "e": {
+                                                                                  "docs": {},
+                                                                                  "s": {
+                                                                                    "docs": {},
+                                                                                    "s": {
+                                                                                      "docs": {},
+                                                                                      "i": {
+                                                                                        "docs": {},
+                                                                                        "o": {
+                                                                                          "docs": {},
+                                                                                          "n": {
+                                                                                            "docs": {},
+                                                                                            "e": {
+                                                                                              "docs": {},
+                                                                                              "r": {
+                                                                                                "docs": {},
+                                                                                                "r": {
+                                                                                                  "docs": {},
+                                                                                                  "o": {
+                                                                                                    "docs": {},
+                                                                                                    "r": {
+                                                                                                      "docs": {
+                                                                                                        "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                                                                                                          "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                                                                                                          "tf": 1150
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "m": {
+                                                                    "docs": {},
+                                                                    "o": {
+                                                                      "docs": {},
+                                                                      "v": {
+                                                                        "docs": {
+                                                                          "NFHighlightLayerCollection.html#remove": {
+                                                                            "ref": "NFHighlightLayerCollection.html#remove",
+                                                                            "tf": 1150
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "f": {
+                                                                "docs": {},
+                                                                "i": {
+                                                                  "docs": {},
+                                                                  "x": {
+                                                                    "docs": {},
+                                                                    "e": {
+                                                                      "docs": {},
+                                                                      "x": {
+                                                                        "docs": {},
+                                                                        "p": {
+                                                                          "docs": {},
+                                                                          "r": {
+                                                                            "docs": {},
+                                                                            "e": {
+                                                                              "docs": {},
+                                                                              "s": {
+                                                                                "docs": {},
+                                                                                "s": {
+                                                                                  "docs": {},
+                                                                                  "i": {
+                                                                                    "docs": {},
+                                                                                    "o": {
+                                                                                      "docs": {},
+                                                                                      "n": {
+                                                                                        "docs": {},
+                                                                                        "s": {
+                                                                                          "docs": {},
+                                                                                          "a": {
+                                                                                            "docs": {},
+                                                                                            "f": {
+                                                                                              "docs": {},
+                                                                                              "t": {
+                                                                                                "docs": {},
+                                                                                                "e": {
+                                                                                                  "docs": {},
+                                                                                                  "r": {
+                                                                                                    "docs": {},
+                                                                                                    "i": {
+                                                                                                      "docs": {},
+                                                                                                      "n": {
+                                                                                                        "docs": {},
+                                                                                                        "i": {
+                                                                                                          "docs": {},
+                                                                                                          "t": {
+                                                                                                            "docs": {
+                                                                                                              "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                                                                                                                "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                                                                                                                "tf": 1150
+                                                                                                              }
+                                                                                                            }
+                                                                                                          }
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "o": {
+                                                                "docs": {},
+                                                                "n": {
+                                                                  "docs": {},
+                                                                  "l": {
+                                                                    "docs": {},
+                                                                    "y": {
+                                                                      "docs": {},
+                                                                      "c": {
+                                                                        "docs": {},
+                                                                        "o": {
+                                                                          "docs": {},
+                                                                          "n": {
+                                                                            "docs": {},
+                                                                            "t": {
+                                                                              "docs": {},
+                                                                              "a": {
+                                                                                "docs": {},
+                                                                                "i": {
+                                                                                  "docs": {},
+                                                                                  "n": {
+                                                                                    "docs": {},
+                                                                                    "s": {
+                                                                                      "docs": {},
+                                                                                      "p": {
+                                                                                        "docs": {},
+                                                                                        "a": {
+                                                                                          "docs": {},
+                                                                                          "g": {
+                                                                                            "docs": {},
+                                                                                            "e": {
+                                                                                              "docs": {},
+                                                                                              "l": {
+                                                                                                "docs": {},
+                                                                                                "a": {
+                                                                                                  "docs": {},
+                                                                                                  "y": {
+                                                                                                    "docs": {
+                                                                                                      "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                                                                                                        "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                                                                                                        "tf": 1150
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "i": {
+                                                                "docs": {},
+                                                                "n": {
+                                                                  "docs": {},
+                                                                  "s": {
+                                                                    "docs": {},
+                                                                    "a": {
+                                                                      "docs": {},
+                                                                      "m": {
+                                                                        "docs": {},
+                                                                        "e": {
+                                                                          "docs": {},
+                                                                          "c": {
+                                                                            "docs": {},
+                                                                            "o": {
+                                                                              "docs": {},
+                                                                              "m": {
+                                                                                "docs": {},
+                                                                                "p": {
+                                                                                  "docs": {
+                                                                                    "NFHighlightLayerCollection.html#inSameComp": {
+                                                                                      "ref": "NFHighlightLayerCollection.html#inSameComp",
+                                                                                      "tf": 1150
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "s": {
+                                                                  "docs": {},
+                                                                  "e": {
+                                                                    "docs": {},
+                                                                    "m": {
+                                                                      "docs": {},
+                                                                      "p": {
+                                                                        "docs": {},
+                                                                        "t": {
+                                                                          "docs": {},
+                                                                          "i": {
+                                                                            "docs": {
+                                                                              "NFHighlightLayerCollection.html#isEmpty": {
+                                                                                "ref": "NFHighlightLayerCollection.html#isEmpty",
+                                                                                "tf": 1150
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "c": {
+                                                                "docs": {},
+                                                                "o": {
+                                                                  "docs": {},
+                                                                  "n": {
+                                                                    "docs": {},
+                                                                    "t": {
+                                                                      "docs": {},
+                                                                      "a": {
+                                                                        "docs": {},
+                                                                        "i": {
+                                                                          "docs": {},
+                                                                          "n": {
+                                                                            "docs": {},
+                                                                            "i": {
+                                                                              "docs": {},
+                                                                              "n": {
+                                                                                "docs": {},
+                                                                                "g": {
+                                                                                  "docs": {},
+                                                                                  "c": {
+                                                                                    "docs": {},
+                                                                                    "o": {
+                                                                                      "docs": {},
+                                                                                      "m": {
+                                                                                        "docs": {},
+                                                                                        "p": {
+                                                                                          "docs": {
+                                                                                            "NFHighlightLayerCollection.html#containingComp": {
+                                                                                              "ref": "NFHighlightLayerCollection.html#containingComp",
+                                                                                              "tf": 1150
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "u": {
+                                                                    "docs": {},
+                                                                    "n": {
+                                                                      "docs": {},
+                                                                      "t": {
+                                                                        "docs": {
+                                                                          "NFHighlightLayerCollection.html#count": {
+                                                                            "ref": "NFHighlightLayerCollection.html#count",
+                                                                            "tf": 1150
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "g": {
+                                                                "docs": {},
+                                                                "e": {
+                                                                  "docs": {},
+                                                                  "t": {
+                                                                    "docs": {},
+                                                                    "p": {
+                                                                      "docs": {},
+                                                                      "a": {
+                                                                        "docs": {},
+                                                                        "g": {
+                                                                          "docs": {},
+                                                                          "e": {
+                                                                            "docs": {},
+                                                                            "l": {
+                                                                              "docs": {},
+                                                                              "a": {
+                                                                                "docs": {},
+                                                                                "y": {
+                                                                                  "docs": {},
+                                                                                  "e": {
+                                                                                    "docs": {},
+                                                                                    "r": {
+                                                                                      "docs": {},
+                                                                                      "c": {
+                                                                                        "docs": {},
+                                                                                        "o": {
+                                                                                          "docs": {},
+                                                                                          "l": {
+                                                                                            "docs": {},
+                                                                                            "l": {
+                                                                                              "docs": {},
+                                                                                              "e": {
+                                                                                                "docs": {},
+                                                                                                "c": {
+                                                                                                  "docs": {},
+                                                                                                  "t": {
+                                                                                                    "docs": {
+                                                                                                      "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                                                                                                        "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                                                                                                        "tf": 1150
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                    "t": {
+                                                                      "docs": {},
+                                                                      "o": {
+                                                                        "docs": {},
+                                                                        "p": {
+                                                                          "docs": {},
+                                                                          "m": {
+                                                                            "docs": {},
+                                                                            "o": {
+                                                                              "docs": {},
+                                                                              "s": {
+                                                                                "docs": {},
+                                                                                "t": {
+                                                                                  "docs": {},
+                                                                                  "l": {
+                                                                                    "docs": {},
+                                                                                    "a": {
+                                                                                      "docs": {},
+                                                                                      "y": {
+                                                                                        "docs": {
+                                                                                          "NFHighlightLayerCollection.html#getTopmostLayer": {
+                                                                                            "ref": "NFHighlightLayerCollection.html#getTopmostLayer",
+                                                                                            "tf": 1150
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                    "b": {
+                                                                      "docs": {},
+                                                                      "o": {
+                                                                        "docs": {},
+                                                                        "t": {
+                                                                          "docs": {},
+                                                                          "t": {
+                                                                            "docs": {},
+                                                                            "o": {
+                                                                              "docs": {},
+                                                                              "m": {
+                                                                                "docs": {},
+                                                                                "m": {
+                                                                                  "docs": {},
+                                                                                  "o": {
+                                                                                    "docs": {},
+                                                                                    "s": {
+                                                                                      "docs": {},
+                                                                                      "t": {
+                                                                                        "docs": {},
+                                                                                        "l": {
+                                                                                          "docs": {},
+                                                                                          "a": {
+                                                                                            "docs": {},
+                                                                                            "y": {
+                                                                                              "docs": {
+                                                                                                "NFHighlightLayerCollection.html#getBottommostLayer": {
+                                                                                                  "ref": "NFHighlightLayerCollection.html#getBottommostLayer",
+                                                                                                  "tf": 1150
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "s": {
+                                                                "docs": {},
+                                                                "e": {
+                                                                  "docs": {},
+                                                                  "t": {
+                                                                    "docs": {},
+                                                                    "p": {
+                                                                      "docs": {},
+                                                                      "a": {
+                                                                        "docs": {},
+                                                                        "r": {
+                                                                          "docs": {
+                                                                            "NFHighlightLayerCollection.html#setParents": {
+                                                                              "ref": "NFHighlightLayerCollection.html#setParents",
+                                                                              "tf": 1150
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "n": {
+                                                                "docs": {},
+                                                                "u": {
+                                                                  "docs": {},
+                                                                  "l": {
+                                                                    "docs": {},
+                                                                    "l": {
+                                                                      "docs": {},
+                                                                      "i": {
+                                                                        "docs": {},
+                                                                        "f": {
+                                                                          "docs": {},
+                                                                          "i": {
+                                                                            "docs": {
+                                                                              "NFHighlightLayerCollection.html#nullify": {
+                                                                                "ref": "NFHighlightLayerCollection.html#nullify",
+                                                                                "tf": 1150
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            ".": {
+                                                              "docs": {},
+                                                              "c": {
+                                                                "docs": {},
+                                                                "o": {
+                                                                  "docs": {},
+                                                                  "l": {
+                                                                    "docs": {},
+                                                                    "l": {
+                                                                      "docs": {},
+                                                                      "e": {
+                                                                        "docs": {},
+                                                                        "c": {
+                                                                          "docs": {},
+                                                                          "t": {
+                                                                            "docs": {},
+                                                                            "i": {
+                                                                              "docs": {},
+                                                                              "o": {
+                                                                                "docs": {},
+                                                                                "n": {
+                                                                                  "docs": {},
+                                                                                  "f": {
+                                                                                    "docs": {},
+                                                                                    "r": {
+                                                                                      "docs": {},
+                                                                                      "o": {
+                                                                                        "docs": {},
+                                                                                        "m": {
+                                                                                          "docs": {},
+                                                                                          "a": {
+                                                                                            "docs": {},
+                                                                                            "v": {
+                                                                                              "docs": {},
+                                                                                              "l": {
+                                                                                                "docs": {},
+                                                                                                "a": {
+                                                                                                  "docs": {},
+                                                                                                  "y": {
+                                                                                                    "docs": {},
+                                                                                                    "e": {
+                                                                                                      "docs": {},
+                                                                                                      "r": {
+                                                                                                        "docs": {},
+                                                                                                        "a": {
+                                                                                                          "docs": {},
+                                                                                                          "r": {
+                                                                                                            "docs": {},
+                                                                                                            "r": {
+                                                                                                              "docs": {},
+                                                                                                              "a": {
+                                                                                                                "docs": {},
+                                                                                                                "y": {
+                                                                                                                  "docs": {
+                                                                                                                    "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                                                                                                                      "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                                                                                                                      "tf": 1150
+                                                                                                                    }
+                                                                                                                  }
+                                                                                                                }
+                                                                                                              }
+                                                                                                            }
+                                                                                                          }
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
                                                       }
                                                     }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "#": {
+                                          "docs": {},
+                                          "i": {
+                                            "docs": {},
+                                            "s": {
+                                              "docs": {},
+                                              "p": {
+                                                "docs": {},
+                                                "a": {
+                                                  "docs": {},
+                                                  "g": {
+                                                    "docs": {},
+                                                    "e": {
+                                                      "docs": {},
+                                                      "l": {
+                                                        "docs": {},
+                                                        "a": {
+                                                          "docs": {},
+                                                          "y": {
+                                                            "docs": {
+                                                              "NFHighlightLayer.html#isPageLayer": {
+                                                                "ref": "NFHighlightLayer.html#isPageLayer",
+                                                                "tf": 1150
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "p": {
+                                                    "docs": {},
+                                                    "e": {
+                                                      "docs": {},
+                                                      "r": {
+                                                        "docs": {},
+                                                        "p": {
+                                                          "docs": {},
+                                                          "a": {
+                                                            "docs": {},
+                                                            "r": {
+                                                              "docs": {},
+                                                              "e": {
+                                                                "docs": {},
+                                                                "n": {
+                                                                  "docs": {},
+                                                                  "t": {
+                                                                    "docs": {},
+                                                                    "l": {
+                                                                      "docs": {},
+                                                                      "a": {
+                                                                        "docs": {},
+                                                                        "y": {
+                                                                          "docs": {
+                                                                            "NFHighlightLayer.html#isPaperParentLayer": {
+                                                                              "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                                                                              "tf": 1150
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "n": {
+                                                "docs": {},
+                                                "u": {
+                                                  "docs": {},
+                                                  "l": {
+                                                    "docs": {},
+                                                    "l": {
+                                                      "docs": {},
+                                                      "l": {
+                                                        "docs": {},
+                                                        "a": {
+                                                          "docs": {},
+                                                          "y": {
+                                                            "docs": {
+                                                              "NFHighlightLayer.html#isNullLayer": {
+                                                                "ref": "NFHighlightLayer.html#isNullLayer",
+                                                                "tf": 1150
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "h": {
+                                                "docs": {},
+                                                "i": {
+                                                  "docs": {},
+                                                  "g": {
+                                                    "docs": {},
+                                                    "h": {
+                                                      "docs": {},
+                                                      "l": {
+                                                        "docs": {},
+                                                        "i": {
+                                                          "docs": {},
+                                                          "g": {
+                                                            "docs": {},
+                                                            "h": {
+                                                              "docs": {},
+                                                              "t": {
+                                                                "docs": {},
+                                                                "l": {
+                                                                  "docs": {},
+                                                                  "a": {
+                                                                    "docs": {},
+                                                                    "y": {
+                                                                      "docs": {
+                                                                        "NFHighlightLayer.html#isHighlightLayer": {
+                                                                          "ref": "NFHighlightLayer.html#isHighlightLayer",
+                                                                          "tf": 1150
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "n": {
+                                              "docs": {},
+                                              "d": {
+                                                "docs": {},
+                                                "e": {
+                                                  "docs": {},
+                                                  "x": {
+                                                    "docs": {
+                                                      "NFHighlightLayer.html#index": {
+                                                        "ref": "NFHighlightLayer.html#index",
+                                                        "tf": 1150
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "g": {
+                                            "docs": {},
+                                            "e": {
+                                              "docs": {},
+                                              "t": {
+                                                "docs": {},
+                                                "s": {
+                                                  "docs": {},
+                                                  "p": {
+                                                    "docs": {},
+                                                    "e": {
+                                                      "docs": {},
+                                                      "c": {
+                                                        "docs": {},
+                                                        "i": {
+                                                          "docs": {},
+                                                          "a": {
+                                                            "docs": {},
+                                                            "l": {
+                                                              "docs": {},
+                                                              "i": {
+                                                                "docs": {},
+                                                                "z": {
+                                                                  "docs": {},
+                                                                  "e": {
+                                                                    "docs": {},
+                                                                    "d": {
+                                                                      "docs": {},
+                                                                      "l": {
+                                                                        "docs": {},
+                                                                        "a": {
+                                                                          "docs": {},
+                                                                          "y": {
+                                                                            "docs": {
+                                                                              "NFHighlightLayer.html#getSpecializedLayer": {
+                                                                                "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                                                                                "tf": 1150
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "c": {
+                                                  "docs": {},
+                                                  "h": {
+                                                    "docs": {},
+                                                    "i": {
+                                                      "docs": {},
+                                                      "l": {
+                                                        "docs": {},
+                                                        "d": {
+                                                          "docs": {},
+                                                          "r": {
+                                                            "docs": {},
+                                                            "e": {
+                                                              "docs": {},
+                                                              "n": {
+                                                                "docs": {
+                                                                  "NFHighlightLayer.html#getChildren": {
+                                                                    "ref": "NFHighlightLayer.html#getChildren",
+                                                                    "tf": 1150
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "p": {
+                                                  "docs": {},
+                                                  "a": {
+                                                    "docs": {},
+                                                    "r": {
+                                                      "docs": {
+                                                        "NFHighlightLayer.html#getParent": {
+                                                          "ref": "NFHighlightLayer.html#getParent",
+                                                          "tf": 1150
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "h": {
+                                            "docs": {},
+                                            "a": {
+                                              "docs": {},
+                                              "s": {
+                                                "docs": {},
+                                                "n": {
+                                                  "docs": {},
+                                                  "u": {
+                                                    "docs": {},
+                                                    "l": {
+                                                      "docs": {},
+                                                      "l": {
+                                                        "docs": {},
+                                                        "p": {
+                                                          "docs": {},
+                                                          "a": {
+                                                            "docs": {},
+                                                            "r": {
+                                                              "docs": {
+                                                                "NFHighlightLayer.html#hasNullParent": {
+                                                                  "ref": "NFHighlightLayer.html#hasNullParent",
+                                                                  "tf": 1150
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "s": {
+                                            "docs": {},
+                                            "a": {
+                                              "docs": {},
+                                              "m": {
+                                                "docs": {},
+                                                "e": {
+                                                  "docs": {},
+                                                  "l": {
+                                                    "docs": {},
+                                                    "a": {
+                                                      "docs": {},
+                                                      "y": {
+                                                        "docs": {},
+                                                        "e": {
+                                                          "docs": {},
+                                                          "r": {
+                                                            "docs": {},
+                                                            "a": {
+                                                              "docs": {
+                                                                "NFHighlightLayer.html#sameLayerAs": {
+                                                                  "ref": "NFHighlightLayer.html#sameLayerAs",
+                                                                  "tf": 1150
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "e": {
+                                              "docs": {},
+                                              "t": {
+                                                "docs": {},
+                                                "p": {
+                                                  "docs": {},
+                                                  "a": {
+                                                    "docs": {},
+                                                    "r": {
+                                                      "docs": {
+                                                        "NFHighlightLayer.html#setParent": {
+                                                          "ref": "NFHighlightLayer.html#setParent",
+                                                          "tf": 1150
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "z": {
+                                                  "docs": {},
+                                                  "o": {
+                                                    "docs": {},
+                                                    "o": {
+                                                      "docs": {},
+                                                      "m": {
+                                                        "docs": {
+                                                          "NFHighlightLayer.html#setZoomer": {
+                                                            "ref": "NFHighlightLayer.html#setZoomer",
+                                                            "tf": 1150
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "c": {
+                                            "docs": {},
+                                            "o": {
+                                              "docs": {},
+                                              "n": {
+                                                "docs": {},
+                                                "t": {
+                                                  "docs": {},
+                                                  "a": {
+                                                    "docs": {},
+                                                    "i": {
+                                                      "docs": {},
+                                                      "n": {
+                                                        "docs": {},
+                                                        "i": {
+                                                          "docs": {},
+                                                          "n": {
+                                                            "docs": {},
+                                                            "g": {
+                                                              "docs": {},
+                                                              "c": {
+                                                                "docs": {},
+                                                                "o": {
+                                                                  "docs": {},
+                                                                  "m": {
+                                                                    "docs": {},
+                                                                    "p": {
+                                                                      "docs": {
+                                                                        "NFHighlightLayer.html#containingComp": {
+                                                                          "ref": "NFHighlightLayer.html#containingComp",
+                                                                          "tf": 1150
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "m": {
+                                            "docs": {},
+                                            "o": {
+                                              "docs": {},
+                                              "v": {
+                                                "docs": {},
+                                                "e": {
+                                                  "docs": {},
+                                                  "b": {
+                                                    "docs": {},
+                                                    "e": {
+                                                      "docs": {},
+                                                      "f": {
+                                                        "docs": {},
+                                                        "o": {
+                                                          "docs": {},
+                                                          "r": {
+                                                            "docs": {
+                                                              "NFHighlightLayer.html#moveBefore": {
+                                                                "ref": "NFHighlightLayer.html#moveBefore",
+                                                                "tf": 1150
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "a": {
+                                                    "docs": {},
+                                                    "f": {
+                                                      "docs": {},
+                                                      "t": {
+                                                        "docs": {
+                                                          "NFHighlightLayer.html#moveAfter": {
+                                                            "ref": "NFHighlightLayer.html#moveAfter",
+                                                            "tf": 1150
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "a": {
+                                              "docs": {},
+                                              "r": {
+                                                "docs": {},
+                                                "k": {
+                                                  "docs": {
+                                                    "NFHighlightLayer.html#markers": {
+                                                      "ref": "NFHighlightLayer.html#markers",
+                                                      "tf": 1150
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "a": {
+                                            "docs": {},
+                                            "d": {
+                                              "docs": {},
+                                              "d": {
+                                                "docs": {},
+                                                "i": {
+                                                  "docs": {},
+                                                  "n": {
+                                                    "docs": {},
+                                                    "o": {
+                                                      "docs": {},
+                                                      "u": {
+                                                        "docs": {},
+                                                        "t": {
+                                                          "docs": {},
+                                                          "m": {
+                                                            "docs": {},
+                                                            "a": {
+                                                              "docs": {},
+                                                              "r": {
+                                                                "docs": {},
+                                                                "k": {
+                                                                  "docs": {},
+                                                                  "e": {
+                                                                    "docs": {},
+                                                                    "r": {
+                                                                      "docs": {},
+                                                                      "s": {
+                                                                        "docs": {},
+                                                                        "f": {
+                                                                          "docs": {},
+                                                                          "o": {
+                                                                            "docs": {},
+                                                                            "r": {
+                                                                              "docs": {},
+                                                                              "p": {
+                                                                                "docs": {},
+                                                                                "r": {
+                                                                                  "docs": {},
+                                                                                  "o": {
+                                                                                    "docs": {},
+                                                                                    "p": {
+                                                                                      "docs": {},
+                                                                                      "e": {
+                                                                                        "docs": {},
+                                                                                        "r": {
+                                                                                          "docs": {},
+                                                                                          "t": {
+                                                                                            "docs": {},
+                                                                                            "i": {
+                                                                                              "docs": {
+                                                                                                "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                                                                                                  "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                                                                                                  "tf": 1150
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "s": {
+                                                  "docs": {},
+                                                  "l": {
+                                                    "docs": {},
+                                                    "i": {
+                                                      "docs": {},
+                                                      "d": {
+                                                        "docs": {
+                                                          "NFHighlightLayer.html#addSlider": {
+                                                            "ref": "NFHighlightLayer.html#addSlider",
+                                                            "tf": 1150
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "i": {
+              "docs": {},
+              "m": {
+                "docs": {},
+                "a": {
+                  "docs": {},
+                  "g": {
+                    "docs": {},
+                    "e": {
+                      "docs": {},
+                      "l": {
+                        "docs": {},
+                        "a": {
+                          "docs": {},
+                          "y": {
+                            "docs": {
+                              "NFImageLayer.html": {
+                                "ref": "NFImageLayer.html",
+                                "tf": 1900
+                              }
+                            },
+                            "e": {
+                              "docs": {},
+                              "r": {
+                                "docs": {},
+                                "#": {
+                                  "docs": {},
+                                  "i": {
+                                    "docs": {},
+                                    "s": {
+                                      "docs": {},
+                                      "p": {
+                                        "docs": {},
+                                        "a": {
+                                          "docs": {},
+                                          "g": {
+                                            "docs": {},
+                                            "e": {
+                                              "docs": {},
+                                              "l": {
+                                                "docs": {},
+                                                "a": {
+                                                  "docs": {},
+                                                  "y": {
+                                                    "docs": {
+                                                      "NFImageLayer.html#isPageLayer": {
+                                                        "ref": "NFImageLayer.html#isPageLayer",
+                                                        "tf": 1150
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "p": {
+                                            "docs": {},
+                                            "e": {
+                                              "docs": {},
+                                              "r": {
+                                                "docs": {},
+                                                "p": {
+                                                  "docs": {},
+                                                  "a": {
+                                                    "docs": {},
+                                                    "r": {
+                                                      "docs": {},
+                                                      "e": {
+                                                        "docs": {},
+                                                        "n": {
+                                                          "docs": {},
+                                                          "t": {
+                                                            "docs": {},
+                                                            "l": {
+                                                              "docs": {},
+                                                              "a": {
+                                                                "docs": {},
+                                                                "y": {
+                                                                  "docs": {
+                                                                    "NFImageLayer.html#isPaperParentLayer": {
+                                                                      "ref": "NFImageLayer.html#isPaperParentLayer",
+                                                                      "tf": 1150
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "n": {
+                                        "docs": {},
+                                        "u": {
+                                          "docs": {},
+                                          "l": {
+                                            "docs": {},
+                                            "l": {
+                                              "docs": {},
+                                              "l": {
+                                                "docs": {},
+                                                "a": {
+                                                  "docs": {},
+                                                  "y": {
+                                                    "docs": {
+                                                      "NFImageLayer.html#isNullLayer": {
+                                                        "ref": "NFImageLayer.html#isNullLayer",
+                                                        "tf": 1150
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "h": {
+                                        "docs": {},
+                                        "i": {
+                                          "docs": {},
+                                          "g": {
+                                            "docs": {},
+                                            "h": {
+                                              "docs": {},
+                                              "l": {
+                                                "docs": {},
+                                                "i": {
+                                                  "docs": {},
+                                                  "g": {
+                                                    "docs": {},
+                                                    "h": {
+                                                      "docs": {},
+                                                      "t": {
+                                                        "docs": {},
+                                                        "l": {
+                                                          "docs": {},
+                                                          "a": {
+                                                            "docs": {},
+                                                            "y": {
+                                                              "docs": {
+                                                                "NFImageLayer.html#isHighlightLayer": {
+                                                                  "ref": "NFImageLayer.html#isHighlightLayer",
+                                                                  "tf": 1150
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "n": {
+                                      "docs": {},
+                                      "d": {
+                                        "docs": {},
+                                        "e": {
+                                          "docs": {},
+                                          "x": {
+                                            "docs": {
+                                              "NFImageLayer.html#index": {
+                                                "ref": "NFImageLayer.html#index",
+                                                "tf": 1150
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "g": {
+                                    "docs": {},
+                                    "e": {
+                                      "docs": {},
+                                      "t": {
+                                        "docs": {},
+                                        "s": {
+                                          "docs": {},
+                                          "p": {
+                                            "docs": {},
+                                            "e": {
+                                              "docs": {},
+                                              "c": {
+                                                "docs": {},
+                                                "i": {
+                                                  "docs": {},
+                                                  "a": {
+                                                    "docs": {},
+                                                    "l": {
+                                                      "docs": {},
+                                                      "i": {
+                                                        "docs": {},
+                                                        "z": {
+                                                          "docs": {},
+                                                          "e": {
+                                                            "docs": {},
+                                                            "d": {
+                                                              "docs": {},
+                                                              "l": {
+                                                                "docs": {},
+                                                                "a": {
+                                                                  "docs": {},
+                                                                  "y": {
+                                                                    "docs": {
+                                                                      "NFImageLayer.html#getSpecializedLayer": {
+                                                                        "ref": "NFImageLayer.html#getSpecializedLayer",
+                                                                        "tf": 1150
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "c": {
+                                          "docs": {},
+                                          "h": {
+                                            "docs": {},
+                                            "i": {
+                                              "docs": {},
+                                              "l": {
+                                                "docs": {},
+                                                "d": {
+                                                  "docs": {},
+                                                  "r": {
+                                                    "docs": {},
+                                                    "e": {
+                                                      "docs": {},
+                                                      "n": {
+                                                        "docs": {
+                                                          "NFImageLayer.html#getChildren": {
+                                                            "ref": "NFImageLayer.html#getChildren",
+                                                            "tf": 1150
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "p": {
+                                          "docs": {},
+                                          "a": {
+                                            "docs": {},
+                                            "r": {
+                                              "docs": {
+                                                "NFImageLayer.html#getParent": {
+                                                  "ref": "NFImageLayer.html#getParent",
+                                                  "tf": 1150
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "h": {
+                                    "docs": {},
+                                    "a": {
+                                      "docs": {},
+                                      "s": {
+                                        "docs": {},
+                                        "n": {
+                                          "docs": {},
+                                          "u": {
+                                            "docs": {},
+                                            "l": {
+                                              "docs": {},
+                                              "l": {
+                                                "docs": {},
+                                                "p": {
+                                                  "docs": {},
+                                                  "a": {
+                                                    "docs": {},
+                                                    "r": {
+                                                      "docs": {
+                                                        "NFImageLayer.html#hasNullParent": {
+                                                          "ref": "NFImageLayer.html#hasNullParent",
+                                                          "tf": 1150
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "s": {
+                                    "docs": {},
+                                    "a": {
+                                      "docs": {},
+                                      "m": {
+                                        "docs": {},
+                                        "e": {
+                                          "docs": {},
+                                          "l": {
+                                            "docs": {},
+                                            "a": {
+                                              "docs": {},
+                                              "y": {
+                                                "docs": {},
+                                                "e": {
+                                                  "docs": {},
+                                                  "r": {
+                                                    "docs": {},
+                                                    "a": {
+                                                      "docs": {
+                                                        "NFImageLayer.html#sameLayerAs": {
+                                                          "ref": "NFImageLayer.html#sameLayerAs",
+                                                          "tf": 1150
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "e": {
+                                      "docs": {},
+                                      "t": {
+                                        "docs": {},
+                                        "p": {
+                                          "docs": {},
+                                          "a": {
+                                            "docs": {},
+                                            "r": {
+                                              "docs": {
+                                                "NFImageLayer.html#setParent": {
+                                                  "ref": "NFImageLayer.html#setParent",
+                                                  "tf": 1150
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "z": {
+                                          "docs": {},
+                                          "o": {
+                                            "docs": {},
+                                            "o": {
+                                              "docs": {},
+                                              "m": {
+                                                "docs": {
+                                                  "NFImageLayer.html#setZoomer": {
+                                                    "ref": "NFImageLayer.html#setZoomer",
+                                                    "tf": 1150
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "c": {
+                                    "docs": {},
+                                    "o": {
+                                      "docs": {},
+                                      "n": {
+                                        "docs": {},
+                                        "t": {
+                                          "docs": {},
+                                          "a": {
+                                            "docs": {},
+                                            "i": {
+                                              "docs": {},
+                                              "n": {
+                                                "docs": {},
+                                                "i": {
+                                                  "docs": {},
+                                                  "n": {
+                                                    "docs": {},
+                                                    "g": {
+                                                      "docs": {},
+                                                      "c": {
+                                                        "docs": {},
+                                                        "o": {
+                                                          "docs": {},
+                                                          "m": {
+                                                            "docs": {},
+                                                            "p": {
+                                                              "docs": {
+                                                                "NFImageLayer.html#containingComp": {
+                                                                  "ref": "NFImageLayer.html#containingComp",
+                                                                  "tf": 1150
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "m": {
+                                    "docs": {},
+                                    "o": {
+                                      "docs": {},
+                                      "v": {
+                                        "docs": {},
+                                        "e": {
+                                          "docs": {},
+                                          "b": {
+                                            "docs": {},
+                                            "e": {
+                                              "docs": {},
+                                              "f": {
+                                                "docs": {},
+                                                "o": {
+                                                  "docs": {},
+                                                  "r": {
+                                                    "docs": {
+                                                      "NFImageLayer.html#moveBefore": {
+                                                        "ref": "NFImageLayer.html#moveBefore",
+                                                        "tf": 1150
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "a": {
+                                            "docs": {},
+                                            "f": {
+                                              "docs": {},
+                                              "t": {
+                                                "docs": {
+                                                  "NFImageLayer.html#moveAfter": {
+                                                    "ref": "NFImageLayer.html#moveAfter",
+                                                    "tf": 1150
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "a": {
+                                      "docs": {},
+                                      "r": {
+                                        "docs": {},
+                                        "k": {
+                                          "docs": {
+                                            "NFImageLayer.html#markers": {
+                                              "ref": "NFImageLayer.html#markers",
+                                              "tf": 1150
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "a": {
+                                    "docs": {},
+                                    "d": {
+                                      "docs": {},
+                                      "d": {
+                                        "docs": {},
+                                        "i": {
+                                          "docs": {},
+                                          "n": {
+                                            "docs": {},
+                                            "o": {
+                                              "docs": {},
+                                              "u": {
+                                                "docs": {},
+                                                "t": {
+                                                  "docs": {},
+                                                  "m": {
+                                                    "docs": {},
+                                                    "a": {
+                                                      "docs": {},
+                                                      "r": {
+                                                        "docs": {},
+                                                        "k": {
+                                                          "docs": {},
+                                                          "e": {
+                                                            "docs": {},
+                                                            "r": {
+                                                              "docs": {},
+                                                              "s": {
+                                                                "docs": {},
+                                                                "f": {
+                                                                  "docs": {},
+                                                                  "o": {
+                                                                    "docs": {},
+                                                                    "r": {
+                                                                      "docs": {},
+                                                                      "p": {
+                                                                        "docs": {},
+                                                                        "r": {
+                                                                          "docs": {},
+                                                                          "o": {
+                                                                            "docs": {},
+                                                                            "p": {
+                                                                              "docs": {},
+                                                                              "e": {
+                                                                                "docs": {},
+                                                                                "r": {
+                                                                                  "docs": {},
+                                                                                  "t": {
+                                                                                    "docs": {},
+                                                                                    "i": {
+                                                                                      "docs": {
+                                                                                        "NFImageLayer.html#addInOutMarkersForProperty": {
+                                                                                          "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                                                                                          "tf": 1150
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "s": {
+                                          "docs": {},
+                                          "l": {
+                                            "docs": {},
+                                            "i": {
+                                              "docs": {},
+                                              "d": {
+                                                "docs": {
+                                                  "NFImageLayer.html#addSlider": {
+                                                    "ref": "NFImageLayer.html#addSlider",
+                                                    "tf": 1150
                                                   }
                                                 }
                                               }
@@ -11657,6 +17163,10 @@ window.lunrData = {
                 "NFPageLayer.html#getPaperParentLayer": {
                   "ref": "NFPageLayer.html#getPaperParentLayer",
                   "tf": 4.545454545454546
+                },
+                "NFPageLayer.html#init": {
+                  "ref": "NFPageLayer.html#init",
+                  "tf": 5.555555555555555
                 }
               },
               "e": {
@@ -11707,6 +17217,34 @@ window.lunrData = {
                     "ref": "NFLayerCollection.html#nullify",
                     "tf": 3.571428571428571
                   },
+                  "NFHighlightLayer.html#isNullLayer": {
+                    "ref": "NFHighlightLayer.html#isNullLayer",
+                    "tf": 12.5
+                  },
+                  "NFHighlightLayer.html#hasNullParent": {
+                    "ref": "NFHighlightLayer.html#hasNullParent",
+                    "tf": 10
+                  },
+                  "NFHighlightLayerCollection.html#containingComp": {
+                    "ref": "NFHighlightLayerCollection.html#containingComp",
+                    "tf": 7.142857142857142
+                  },
+                  "NFHighlightLayerCollection.html#setParents": {
+                    "ref": "NFHighlightLayerCollection.html#setParents",
+                    "tf": 7.142857142857142
+                  },
+                  "NFHighlightLayerCollection.html#nullify": {
+                    "ref": "NFHighlightLayerCollection.html#nullify",
+                    "tf": 3.571428571428571
+                  },
+                  "NFImageLayer.html#isNullLayer": {
+                    "ref": "NFImageLayer.html#isNullLayer",
+                    "tf": 12.5
+                  },
+                  "NFImageLayer.html#hasNullParent": {
+                    "ref": "NFImageLayer.html#hasNullParent",
+                    "tf": 10
+                  },
                   "NFPageLayer.html#isNullLayer": {
                     "ref": "NFPageLayer.html#isNullLayer",
                     "tf": 12.5
@@ -11714,10 +17252,6 @@ window.lunrData = {
                   "NFPageLayer.html#hasNullParent": {
                     "ref": "NFPageLayer.html#hasNullParent",
                     "tf": 10
-                  },
-                  "NFPageLayerCollection.html": {
-                    "ref": "NFPageLayerCollection.html",
-                    "tf": 5
                   },
                   "NFPageLayerCollection.html#containingComp": {
                     "ref": "NFPageLayerCollection.html#containingComp",
@@ -11762,6 +17296,10 @@ window.lunrData = {
                           "ref": "NFLayerCollection.html#nullify",
                           "tf": 700
                         },
+                        "NFHighlightLayerCollection.html#nullify": {
+                          "ref": "NFHighlightLayerCollection.html#nullify",
+                          "tf": 700
+                        },
                         "NFPageLayerCollection.html#nullify": {
                           "ref": "NFPageLayerCollection.html#nullify",
                           "tf": 700
@@ -11790,6 +17328,18 @@ window.lunrData = {
                       },
                       "NFPageItem.html#getPageNumber": {
                         "ref": "NFPageItem.html#getPageNumber",
+                        "tf": 12.5
+                      },
+                      "NFHighlightLayerCollection.html#count": {
+                        "ref": "NFHighlightLayerCollection.html#count",
+                        "tf": 10
+                      },
+                      "NFPageLayer.html#getPDFNumber": {
+                        "ref": "NFPageLayer.html#getPDFNumber",
+                        "tf": 12.5
+                      },
+                      "NFPageLayer.html#getPageNumber": {
+                        "ref": "NFPageLayer.html#getPageNumber",
                         "tf": 12.5
                       },
                       "NFPageLayerCollection.html#count": {
@@ -11828,6 +17378,30 @@ window.lunrData = {
                 },
                 "NFLayerCollection.html#.collectionFromAVLayerArray": {
                   "ref": "NFLayerCollection.html#.collectionFromAVLayerArray",
+                  "tf": 7.142857142857142
+                },
+                "NFHighlightLayer.html#getSpecializedLayer": {
+                  "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                  "tf": 7.142857142857142
+                },
+                "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                  "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                  "tf": 3.3333333333333335
+                },
+                "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                  "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                  "tf": 10
+                },
+                "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                  "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                  "tf": 5.555555555555555
+                },
+                "NFHighlightLayerCollection.html#nullify": {
+                  "ref": "NFHighlightLayerCollection.html#nullify",
+                  "tf": 3.571428571428571
+                },
+                "NFImageLayer.html#getSpecializedLayer": {
+                  "ref": "NFImageLayer.html#getSpecializedLayer",
                   "tf": 7.142857142857142
                 },
                 "NFPageLayer.html#getSpecializedLayer": {
@@ -11875,6 +17449,18 @@ window.lunrData = {
                       },
                       "NFLayerCollection.html#setParents": {
                         "ref": "NFLayerCollection.html#setParents",
+                        "tf": 33.33333333333333
+                      },
+                      "NFHighlightLayer.html#setParent": {
+                        "ref": "NFHighlightLayer.html#setParent",
+                        "tf": 33.33333333333333
+                      },
+                      "NFHighlightLayerCollection.html#setParents": {
+                        "ref": "NFHighlightLayerCollection.html#setParents",
+                        "tf": 33.33333333333333
+                      },
+                      "NFImageLayer.html#setParent": {
+                        "ref": "NFImageLayer.html#setParent",
                         "tf": 33.33333333333333
                       },
                       "NFPageLayer.html#setParent": {
@@ -11952,6 +17538,18 @@ window.lunrData = {
                         "ref": "NFLayerCollection.html#addNFLayer",
                         "tf": 33.33333333333333
                       },
+                      "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+                        "ref": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+                        "tf": 33.33333333333333
+                      },
+                      "NFHighlightLayerCollection.html#addAVLayer": {
+                        "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                        "tf": 33.33333333333333
+                      },
+                      "NFHighlightLayerCollection.html#addNFLayer": {
+                        "ref": "NFHighlightLayerCollection.html#addNFLayer",
+                        "tf": 33.33333333333333
+                      },
                       "NFPageLayerCollection.html#addNFPageLayer": {
                         "ref": "NFPageLayerCollection.html#addNFPageLayer",
                         "tf": 33.33333333333333
@@ -12009,6 +17607,10 @@ window.lunrData = {
                         "ref": "NFLayerCollection.html#count",
                         "tf": 10
                       },
+                      "NFHighlightLayerCollection.html#count": {
+                        "ref": "NFHighlightLayerCollection.html#count",
+                        "tf": 10
+                      },
                       "NFPageLayerCollection.html#count": {
                         "ref": "NFPageLayerCollection.html#count",
                         "tf": 10
@@ -12016,6 +17618,23 @@ window.lunrData = {
                       "NFPartComp.html": {
                         "ref": "NFPartComp.html",
                         "tf": 4.545454545454546
+                      }
+                    }
+                  }
+                }
+              },
+              "o": {
+                "docs": {},
+                "u": {
+                  "docs": {},
+                  "n": {
+                    "docs": {},
+                    "t": {
+                      "docs": {
+                        "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                          "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                          "tf": 3.3333333333333335
+                        }
                       }
                     }
                   }
@@ -12057,6 +17676,14 @@ window.lunrData = {
                           "ref": "NFLayer.html#addInOutMarkersForProperty",
                           "tf": 3.571428571428571
                         },
+                        "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                          "tf": 3.571428571428571
+                        },
+                        "NFImageLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                          "tf": 3.571428571428571
+                        },
                         "NFPageLayer.html#addInOutMarkersForProperty": {
                           "ref": "NFPageLayer.html#addInOutMarkersForProperty",
                           "tf": 3.571428571428571
@@ -12083,6 +17710,34 @@ window.lunrData = {
                 "NFLayerCollection.html#addNFLayer": {
                   "ref": "NFLayerCollection.html#addNFLayer",
                   "tf": 16.666666666666664
+                },
+                "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                  "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                  "tf": 3.571428571428571
+                },
+                "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+                  "ref": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+                  "tf": 16.666666666666664
+                },
+                "NFHighlightLayerCollection.html#addAVLayer": {
+                  "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                  "tf": 10
+                },
+                "NFHighlightLayerCollection.html#addNFLayer": {
+                  "ref": "NFHighlightLayerCollection.html#addNFLayer",
+                  "tf": 16.666666666666664
+                },
+                "NFImageLayer.html#addInOutMarkersForProperty": {
+                  "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                  "tf": 3.571428571428571
+                },
+                "NFPageLayer.html#init": {
+                  "ref": "NFPageLayer.html#init",
+                  "tf": 5.555555555555555
+                },
+                "NFPageLayer.html#initTransforms": {
+                  "ref": "NFPageLayer.html#initTransforms",
+                  "tf": 8.333333333333332
                 },
                 "NFPageLayer.html#addInOutMarkersForProperty": {
                   "ref": "NFPageLayer.html#addInOutMarkersForProperty",
@@ -12134,6 +17789,10 @@ window.lunrData = {
                             "ref": "NFLayerCollection.html#addNFLayer",
                             "tf": 683.3333333333334
                           },
+                          "NFHighlightLayerCollection.html#addNFLayer": {
+                            "ref": "NFHighlightLayerCollection.html#addNFLayer",
+                            "tf": 683.3333333333334
+                          },
                           "NFPageLayerCollection.html#addNFLayer": {
                             "ref": "NFPageLayerCollection.html#addNFLayer",
                             "tf": 683.3333333333334
@@ -12176,6 +17835,47 @@ window.lunrData = {
                                   "NFPageLayerCollection.html#addNFPageLayer": {
                                     "ref": "NFPageLayerCollection.html#addNFPageLayer",
                                     "tf": 683.3333333333334
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "h": {
+                    "docs": {},
+                    "i": {
+                      "docs": {},
+                      "g": {
+                        "docs": {},
+                        "h": {
+                          "docs": {},
+                          "l": {
+                            "docs": {},
+                            "i": {
+                              "docs": {},
+                              "g": {
+                                "docs": {},
+                                "h": {
+                                  "docs": {},
+                                  "t": {
+                                    "docs": {},
+                                    "l": {
+                                      "docs": {},
+                                      "a": {
+                                        "docs": {},
+                                        "y": {
+                                          "docs": {
+                                            "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+                                              "ref": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+                                              "tf": 683.3333333333334
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -12237,6 +17937,14 @@ window.lunrData = {
                                                                 "ref": "NFLayer.html#addInOutMarkersForProperty",
                                                                 "tf": 683.3333333333334
                                                               },
+                                                              "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                                                                "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                                                                "tf": 683.3333333333334
+                                                              },
+                                                              "NFImageLayer.html#addInOutMarkersForProperty": {
+                                                                "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                                                                "tf": 683.3333333333334
+                                                              },
                                                               "NFPageLayer.html#addInOutMarkersForProperty": {
                                                                 "ref": "NFPageLayer.html#addInOutMarkersForProperty",
                                                                 "tf": 683.3333333333334
@@ -12281,6 +17989,14 @@ window.lunrData = {
                           "ref": "NFLayer.html#addSlider",
                           "tf": 675
                         },
+                        "NFHighlightLayer.html#addSlider": {
+                          "ref": "NFHighlightLayer.html#addSlider",
+                          "tf": 675
+                        },
+                        "NFImageLayer.html#addSlider": {
+                          "ref": "NFImageLayer.html#addSlider",
+                          "tf": 675
+                        },
                         "NFPageLayer.html#addSlider": {
                           "ref": "NFPageLayer.html#addSlider",
                           "tf": 675
@@ -12304,6 +18020,10 @@ window.lunrData = {
                       "docs": {},
                       "y": {
                         "docs": {
+                          "NFHighlightLayerCollection.html#addAVLayer": {
+                            "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                            "tf": 683.3333333333334
+                          },
                           "NFPageLayerCollection.html#addAVLayer": {
                             "ref": "NFPageLayerCollection.html#addAVLayer",
                             "tf": 683.3333333333334
@@ -12349,6 +18069,14 @@ window.lunrData = {
                       "ref": "NFLayerCollection.html#.collectionFromAVLayerArray",
                       "tf": 7.142857142857142
                     },
+                    "NFHighlightLayerCollection.html#addAVLayer": {
+                      "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                      "tf": 10
+                    },
+                    "NFPageLayer.html#.isPageLayer": {
+                      "ref": "NFPageLayer.html#.isPageLayer",
+                      "tf": 8.333333333333332
+                    },
                     "NFPageLayerCollection.html#addAVLayer": {
                       "ref": "NFPageLayerCollection.html#addAVLayer",
                       "tf": 16.666666666666664
@@ -12356,6 +18084,47 @@ window.lunrData = {
                     "NFPageLayerCollection.html#.collectionFromAVLayerArray": {
                       "ref": "NFPageLayerCollection.html#.collectionFromAVLayerArray",
                       "tf": 10
+                    }
+                  },
+                  "e": {
+                    "docs": {},
+                    "r": {
+                      "docs": {},
+                      "s": {
+                        "docs": {},
+                        "/": {
+                          "docs": {},
+                          "s": {
+                            "docs": {},
+                            "h": {
+                              "docs": {},
+                              "a": {
+                                "docs": {},
+                                "p": {
+                                  "docs": {},
+                                  "e": {
+                                    "docs": {},
+                                    "l": {
+                                      "docs": {},
+                                      "a": {
+                                        "docs": {},
+                                        "y": {
+                                          "docs": {
+                                            "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                                              "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                                              "tf": 10
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -12365,7 +18134,12 @@ window.lunrData = {
           "r": {
             "docs": {},
             "r": {
-              "docs": {},
+              "docs": {
+                "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                  "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                  "tf": 25
+                }
+              },
               "a": {
                 "docs": {},
                 "y": {
@@ -12377,6 +18151,10 @@ window.lunrData = {
                     "NFLayerCollection.html#.collectionFromAVLayerArray": {
                       "ref": "NFLayerCollection.html#.collectionFromAVLayerArray",
                       "tf": 7.142857142857142
+                    },
+                    "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+                      "ref": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+                      "tf": 10
                     },
                     "NFPageLayerCollection.html#.collectionFromAVLayerArray": {
                       "ref": "NFPageLayerCollection.html#.collectionFromAVLayerArray",
@@ -12405,9 +18183,41 @@ window.lunrData = {
                     "ref": "NFPaperLayerGroup.html#gatherLayers",
                     "tf": 2.631578947368421
                   },
+                  "NFHighlightLayerCollection.html#nullify": {
+                    "ref": "NFHighlightLayerCollection.html#nullify",
+                    "tf": 3.571428571428571
+                  },
                   "NFPageLayerCollection.html#nullify": {
                     "ref": "NFPageLayerCollection.html#nullify",
                     "tf": 3.571428571428571
+                  }
+                }
+              }
+            }
+          },
+          "e": {
+            "docs": {
+              "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                "tf": 1.6666666666666667
+              }
+            }
+          },
+          "p": {
+            "docs": {},
+            "p": {
+              "docs": {},
+              "e": {
+                "docs": {},
+                "a": {
+                  "docs": {},
+                  "r": {
+                    "docs": {
+                      "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                        "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                        "tf": 1.6666666666666667
+                      }
+                    }
                   }
                 }
               }
@@ -12530,7 +18340,12 @@ window.lunrData = {
             "r": {
               "docs": {},
               "k": {
-                "docs": {},
+                "docs": {
+                  "NFPageLayer.html#markInitted": {
+                    "ref": "NFPageLayer.html#markInitted",
+                    "tf": 5
+                  }
+                },
                 "e": {
                   "docs": {},
                   "r": {
@@ -12541,6 +18356,22 @@ window.lunrData = {
                       },
                       "NFLayer.html#addInOutMarkersForProperty": {
                         "ref": "NFLayer.html#addInOutMarkersForProperty",
+                        "tf": 3.571428571428571
+                      },
+                      "NFHighlightLayer.html#markers": {
+                        "ref": "NFHighlightLayer.html#markers",
+                        "tf": 700
+                      },
+                      "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                        "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                        "tf": 3.571428571428571
+                      },
+                      "NFImageLayer.html#markers": {
+                        "ref": "NFImageLayer.html#markers",
+                        "tf": 700
+                      },
+                      "NFImageLayer.html#addInOutMarkersForProperty": {
+                        "ref": "NFImageLayer.html#addInOutMarkersForProperty",
                         "tf": 3.571428571428571
                       },
                       "NFPageLayer.html#markers": {
@@ -12559,6 +18390,10 @@ window.lunrData = {
                         "ref": "NFPaperParentLayer.html#addInOutMarkersForProperty",
                         "tf": 3.571428571428571
                       },
+                      "Property.html#.expressionStringForValue": {
+                        "ref": "Property.html#.expressionStringForValue",
+                        "tf": 10
+                      },
                       "Layer.html#.indexOfMarker": {
                         "ref": "Layer.html#.indexOfMarker",
                         "tf": 10
@@ -12566,10 +18401,23 @@ window.lunrData = {
                       "Layer.html#.removeMarker": {
                         "ref": "Layer.html#.removeMarker",
                         "tf": 12.5
-                      },
-                      "Property.html#.expressionStringForValue": {
-                        "ref": "Property.html#.expressionStringForValue",
-                        "tf": 10
+                      }
+                    }
+                  }
+                },
+                "i": {
+                  "docs": {},
+                  "n": {
+                    "docs": {},
+                    "i": {
+                      "docs": {},
+                      "t": {
+                        "docs": {
+                          "NFPageLayer.html#markInitted": {
+                            "ref": "NFPageLayer.html#markInitted",
+                            "tf": 700
+                          }
+                        }
                       }
                     }
                   }
@@ -12598,6 +18446,30 @@ window.lunrData = {
                   "NFPaperLayerGroup.html#gatherLayers": {
                     "ref": "NFPaperLayerGroup.html#gatherLayers",
                     "tf": 2.631578947368421
+                  },
+                  "NFHighlightLayer.html#moveBefore": {
+                    "ref": "NFHighlightLayer.html#moveBefore",
+                    "tf": 6.25
+                  },
+                  "NFHighlightLayer.html#moveAfter": {
+                    "ref": "NFHighlightLayer.html#moveAfter",
+                    "tf": 7.142857142857142
+                  },
+                  "NFHighlightLayer.html#markers": {
+                    "ref": "NFHighlightLayer.html#markers",
+                    "tf": 7.142857142857142
+                  },
+                  "NFImageLayer.html#moveBefore": {
+                    "ref": "NFImageLayer.html#moveBefore",
+                    "tf": 6.25
+                  },
+                  "NFImageLayer.html#moveAfter": {
+                    "ref": "NFImageLayer.html#moveAfter",
+                    "tf": 7.142857142857142
+                  },
+                  "NFImageLayer.html#markers": {
+                    "ref": "NFImageLayer.html#markers",
+                    "tf": 7.142857142857142
                   },
                   "NFPageLayer.html#moveBefore": {
                     "ref": "NFPageLayer.html#moveBefore",
@@ -12638,6 +18510,14 @@ window.lunrData = {
                               "ref": "NFLayer.html#moveBefore",
                               "tf": 683.3333333333334
                             },
+                            "NFHighlightLayer.html#moveBefore": {
+                              "ref": "NFHighlightLayer.html#moveBefore",
+                              "tf": 683.3333333333334
+                            },
+                            "NFImageLayer.html#moveBefore": {
+                              "ref": "NFImageLayer.html#moveBefore",
+                              "tf": 683.3333333333334
+                            },
                             "NFPageLayer.html#moveBefore": {
                               "ref": "NFPageLayer.html#moveBefore",
                               "tf": 683.3333333333334
@@ -12662,6 +18542,14 @@ window.lunrData = {
                           "ref": "NFLayer.html#moveAfter",
                           "tf": 683.3333333333334
                         },
+                        "NFHighlightLayer.html#moveAfter": {
+                          "ref": "NFHighlightLayer.html#moveAfter",
+                          "tf": 683.3333333333334
+                        },
+                        "NFImageLayer.html#moveAfter": {
+                          "ref": "NFImageLayer.html#moveAfter",
+                          "tf": 683.3333333333334
+                        },
                         "NFPageLayer.html#moveAfter": {
                           "ref": "NFPageLayer.html#moveAfter",
                           "tf": 683.3333333333334
@@ -12670,6 +18558,23 @@ window.lunrData = {
                           "ref": "NFPaperParentLayer.html#moveAfter",
                           "tf": 683.3333333333334
                         }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "t": {
+              "docs": {},
+              "i": {
+                "docs": {},
+                "o": {
+                  "docs": {},
+                  "n": {
+                    "docs": {
+                      "NFPageLayer.html#init": {
+                        "ref": "NFPageLayer.html#init",
+                        "tf": 5.555555555555555
                       }
                     }
                   }
@@ -12699,6 +18604,10 @@ window.lunrData = {
                         "ref": "NFLayerCollection.html#.collectionFromAVLayerArray",
                         "tf": 7.142857142857142
                       },
+                      "NFPageLayer.html#isInitted": {
+                        "ref": "NFPageLayer.html#isInitted",
+                        "tf": 8.333333333333332
+                      },
                       "NFPaperParentLayer.html#.isPaperParentLayer": {
                         "ref": "NFPaperParentLayer.html#.isPaperParentLayer",
                         "tf": 5.555555555555555
@@ -12722,6 +18631,10 @@ window.lunrData = {
                     "docs": {
                       "NFLayerCollection.html#setParents": {
                         "ref": "NFLayerCollection.html#setParents",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayerCollection.html#setParents": {
+                        "ref": "NFHighlightLayerCollection.html#setParents",
                         "tf": 7.142857142857142
                       },
                       "NFPageLayerCollection.html#setParents": {
@@ -12803,6 +18716,10 @@ window.lunrData = {
                 "ref": "NFLayerCollection.html#nullify",
                 "tf": 3.571428571428571
               },
+              "NFHighlightLayerCollection.html#nullify": {
+                "ref": "NFHighlightLayerCollection.html#nullify",
+                "tf": 3.571428571428571
+              },
               "NFPageLayer.html#getPaperParentLayer": {
                 "ref": "NFPageLayer.html#getPaperParentLayer",
                 "tf": 4.545454545454546
@@ -12822,6 +18739,14 @@ window.lunrData = {
                 "docs": {
                   "NFLayer.html#sameLayerAs": {
                     "ref": "NFLayer.html#sameLayerAs",
+                    "tf": 3.3333333333333335
+                  },
+                  "NFHighlightLayer.html#sameLayerAs": {
+                    "ref": "NFHighlightLayer.html#sameLayerAs",
+                    "tf": 3.3333333333333335
+                  },
+                  "NFImageLayer.html#sameLayerAs": {
+                    "ref": "NFImageLayer.html#sameLayerAs",
                     "tf": 3.3333333333333335
                   },
                   "NFPageLayer.html#sameLayerAs": {
@@ -12873,6 +18798,10 @@ window.lunrData = {
                                                   "ref": "NFLayerCollection.html#onlyContainsPageLayers",
                                                   "tf": 700
                                                 },
+                                                "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+                                                  "ref": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+                                                  "tf": 700
+                                                },
                                                 "NFPageLayerCollection.html#onlyContainsPageLayers": {
                                                   "ref": "NFPageLayerCollection.html#onlyContainsPageLayers",
                                                   "tf": 700
@@ -12894,6 +18823,17 @@ window.lunrData = {
                   }
                 }
               }
+            },
+            "t": {
+              "docs": {},
+              "o": {
+                "docs": {
+                  "NFPageLayer.html#bubbledHighlights": {
+                    "ref": "NFPageLayer.html#bubbledHighlights",
+                    "tf": 7.142857142857142
+                  }
+                }
+              }
             }
           },
           "p": {
@@ -12908,6 +18848,14 @@ window.lunrData = {
                     "docs": {
                       "NFLayer.html#addInOutMarkersForProperty": {
                         "ref": "NFLayer.html#addInOutMarkersForProperty",
+                        "tf": 33.33333333333333
+                      },
+                      "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                        "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                        "tf": 33.33333333333333
+                      },
+                      "NFImageLayer.html#addInOutMarkersForProperty": {
+                        "ref": "NFImageLayer.html#addInOutMarkersForProperty",
                         "tf": 33.33333333333333
                       },
                       "NFPageLayer.html#addInOutMarkersForProperty": {
@@ -12930,6 +18878,14 @@ window.lunrData = {
               "docs": {
                 "NFLayer.html#addInOutMarkersForProperty": {
                   "ref": "NFLayer.html#addInOutMarkersForProperty",
+                  "tf": 7.142857142857142
+                },
+                "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                  "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                  "tf": 7.142857142857142
+                },
+                "NFImageLayer.html#addInOutMarkersForProperty": {
+                  "ref": "NFImageLayer.html#addInOutMarkersForProperty",
                   "tf": 7.142857142857142
                 },
                 "NFPageLayer.html#addInOutMarkersForProperty": {
@@ -12961,6 +18917,18 @@ window.lunrData = {
                         },
                         "NFLayerCollection.html#nullify": {
                           "ref": "NFLayerCollection.html#nullify",
+                          "tf": 3.571428571428571
+                        },
+                        "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                          "tf": 3.571428571428571
+                        },
+                        "NFHighlightLayerCollection.html#nullify": {
+                          "ref": "NFHighlightLayerCollection.html#nullify",
+                          "tf": 3.571428571428571
+                        },
+                        "NFImageLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFImageLayer.html#addInOutMarkersForProperty",
                           "tf": 3.571428571428571
                         },
                         "NFPageLayer.html#addInOutMarkersForProperty": {
@@ -13073,9 +19041,35 @@ window.lunrData = {
                         "NFPageLayer.html#findPaperParentLayer": {
                           "ref": "NFPageLayer.html#findPaperParentLayer",
                           "tf": 5.555555555555555
+                        },
+                        "NFPageLayer.html#isInitted": {
+                          "ref": "NFPageLayer.html#isInitted",
+                          "tf": 8.333333333333332
                         }
                       }
                     }
+                  }
+                }
+              }
+            }
+          },
+          "a": {
+            "docs": {},
+            "y": {
+              "docs": {
+                "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                  "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                  "tf": 1.6666666666666667
+                }
+              }
+            },
+            "r": {
+              "docs": {},
+              "n": {
+                "docs": {
+                  "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                    "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                    "tf": 3.3333333333333335
                   }
                 }
               }
@@ -13175,6 +19169,18 @@ window.lunrData = {
                   "ref": "NFLayer.html#sameLayerAs",
                   "tf": 3.3333333333333335
                 },
+                "NFHighlightLayer.html#sameLayerAs": {
+                  "ref": "NFHighlightLayer.html#sameLayerAs",
+                  "tf": 3.3333333333333335
+                },
+                "NFHighlightLayerCollection.html#duplicateNames": {
+                  "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                  "tf": 7.142857142857142
+                },
+                "NFImageLayer.html#sameLayerAs": {
+                  "ref": "NFImageLayer.html#sameLayerAs",
+                  "tf": 3.3333333333333335
+                },
                 "NFPageLayer.html#sameLayerAs": {
                   "ref": "NFPageLayer.html#sameLayerAs",
                   "tf": 3.3333333333333335
@@ -13206,6 +19212,46 @@ window.lunrData = {
                 "NFLayerCollection.html#setParents": {
                   "ref": "NFLayerCollection.html#setParents",
                   "tf": 7.142857142857142
+                },
+                "NFHighlightLayer.html#setParent": {
+                  "ref": "NFHighlightLayer.html#setParent",
+                  "tf": 10
+                },
+                "NFHighlightLayer.html#setZoomer": {
+                  "ref": "NFHighlightLayer.html#setZoomer",
+                  "tf": 8.333333333333332
+                },
+                "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                  "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                  "tf": 3.571428571428571
+                },
+                "NFHighlightLayerCollection.html#setParents": {
+                  "ref": "NFHighlightLayerCollection.html#setParents",
+                  "tf": 7.142857142857142
+                },
+                "NFImageLayer.html#setParent": {
+                  "ref": "NFImageLayer.html#setParent",
+                  "tf": 10
+                },
+                "NFImageLayer.html#setZoomer": {
+                  "ref": "NFImageLayer.html#setZoomer",
+                  "tf": 8.333333333333332
+                },
+                "NFImageLayer.html#addInOutMarkersForProperty": {
+                  "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                  "tf": 3.571428571428571
+                },
+                "NFPageLayer.html#setDropShadow": {
+                  "ref": "NFPageLayer.html#setDropShadow",
+                  "tf": 12.5
+                },
+                "NFPageLayer.html#setInitSize": {
+                  "ref": "NFPageLayer.html#setInitSize",
+                  "tf": 8.333333333333332
+                },
+                "NFPageLayer.html#setInitPosition": {
+                  "ref": "NFPageLayer.html#setInitPosition",
+                  "tf": 8.333333333333332
                 },
                 "NFPageLayer.html#setParent": {
                   "ref": "NFPageLayer.html#setParent",
@@ -13258,6 +19304,18 @@ window.lunrData = {
                         "ref": "NFLayerCollection.html#setParents",
                         "tf": 683.3333333333334
                       },
+                      "NFHighlightLayer.html#setParent": {
+                        "ref": "NFHighlightLayer.html#setParent",
+                        "tf": 683.3333333333334
+                      },
+                      "NFHighlightLayerCollection.html#setParents": {
+                        "ref": "NFHighlightLayerCollection.html#setParents",
+                        "tf": 683.3333333333334
+                      },
+                      "NFImageLayer.html#setParent": {
+                        "ref": "NFImageLayer.html#setParent",
+                        "tf": 683.3333333333334
+                      },
                       "NFPageLayer.html#setParent": {
                         "ref": "NFPageLayer.html#setParent",
                         "tf": 683.3333333333334
@@ -13286,6 +19344,14 @@ window.lunrData = {
                           "ref": "NFLayer.html#setZoomer",
                           "tf": 700
                         },
+                        "NFHighlightLayer.html#setZoomer": {
+                          "ref": "NFHighlightLayer.html#setZoomer",
+                          "tf": 700
+                        },
+                        "NFImageLayer.html#setZoomer": {
+                          "ref": "NFImageLayer.html#setZoomer",
+                          "tf": 700
+                        },
                         "NFPageLayer.html#setZoomer": {
                           "ref": "NFPageLayer.html#setZoomer",
                           "tf": 700
@@ -13293,6 +19359,81 @@ window.lunrData = {
                         "NFPaperParentLayer.html#setZoomer": {
                           "ref": "NFPaperParentLayer.html#setZoomer",
                           "tf": 700
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "d": {
+                "docs": {},
+                "r": {
+                  "docs": {},
+                  "o": {
+                    "docs": {},
+                    "p": {
+                      "docs": {},
+                      "s": {
+                        "docs": {},
+                        "h": {
+                          "docs": {},
+                          "a": {
+                            "docs": {},
+                            "d": {
+                              "docs": {},
+                              "o": {
+                                "docs": {},
+                                "w": {
+                                  "docs": {
+                                    "NFPageLayer.html#setDropShadow": {
+                                      "ref": "NFPageLayer.html#setDropShadow",
+                                      "tf": 700
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "i": {
+                "docs": {},
+                "n": {
+                  "docs": {},
+                  "i": {
+                    "docs": {},
+                    "t": {
+                      "docs": {},
+                      "s": {
+                        "docs": {
+                          "NFPageLayer.html#setInitSize": {
+                            "ref": "NFPageLayer.html#setInitSize",
+                            "tf": 700
+                          }
+                        }
+                      },
+                      "p": {
+                        "docs": {},
+                        "o": {
+                          "docs": {},
+                          "s": {
+                            "docs": {},
+                            "i": {
+                              "docs": {},
+                              "t": {
+                                "docs": {
+                                  "NFPageLayer.html#setInitPosition": {
+                                    "ref": "NFPageLayer.html#setInitPosition",
+                                    "tf": 700
+                                  }
+                                }
+                              }
+                            }
+                          }
                         }
                       }
                     }
@@ -13337,6 +19478,14 @@ window.lunrData = {
                         "ref": "NFPageItem.html#getPageNumber",
                         "tf": 62.5
                       },
+                      "NFPageLayer.html#getPDFNumber": {
+                        "ref": "NFPageLayer.html#getPDFNumber",
+                        "tf": 62.5
+                      },
+                      "NFPageLayer.html#getPageNumber": {
+                        "ref": "NFPageLayer.html#getPageNumber",
+                        "tf": 62.5
+                      },
                       "NFPaperParentLayer.html#.getPaperParentNameForPageLayer": {
                         "ref": "NFPaperParentLayer.html#.getPaperParentNameForPageLayer",
                         "tf": 30.555555555555557
@@ -13349,6 +19498,34 @@ window.lunrData = {
                         "ref": "Property.html#.expressionStringForValue",
                         "tf": 33.33333333333333
                       }
+                    }
+                  }
+                }
+              }
+            },
+            "a": {
+              "docs": {},
+              "t": {
+                "docs": {},
+                "u": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                      "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                      "tf": 1.6666666666666667
+                    }
+                  }
+                }
+              }
+            },
+            "i": {
+              "docs": {},
+              "l": {
+                "docs": {},
+                "l": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                      "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                      "tf": 3.3333333333333335
                     }
                   }
                 }
@@ -13379,6 +19556,22 @@ window.lunrData = {
                           "ref": "NFLayer.html#.getSpecializedLayerFromAVLayer",
                           "tf": 7.142857142857142
                         },
+                        "NFHighlightLayer.html#getSpecializedLayer": {
+                          "ref": "NFHighlightLayer.html#getSpecializedLayer",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayer.html#getChildren": {
+                          "ref": "NFHighlightLayer.html#getChildren",
+                          "tf": 7.142857142857142
+                        },
+                        "NFImageLayer.html#getSpecializedLayer": {
+                          "ref": "NFImageLayer.html#getSpecializedLayer",
+                          "tf": 7.142857142857142
+                        },
+                        "NFImageLayer.html#getChildren": {
+                          "ref": "NFImageLayer.html#getChildren",
+                          "tf": 7.142857142857142
+                        },
                         "NFPageLayer.html#getSpecializedLayer": {
                           "ref": "NFPageLayer.html#getSpecializedLayer",
                           "tf": 7.142857142857142
@@ -13395,6 +19588,14 @@ window.lunrData = {
                           "ref": "NFPaperParentLayer.html#getChildren",
                           "tf": 7.142857142857142
                         }
+                      }
+                    }
+                  },
+                  "f": {
+                    "docs": {
+                      "NFHighlightLayerCollection.html#addAVLayer": {
+                        "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                        "tf": 10
                       }
                     }
                   }
@@ -13422,6 +19623,14 @@ window.lunrData = {
                               "ref": "NFLayer.html#index",
                               "tf": 16.666666666666664
                             },
+                            "NFHighlightLayer.html#index": {
+                              "ref": "NFHighlightLayer.html#index",
+                              "tf": 16.666666666666664
+                            },
+                            "NFImageLayer.html#index": {
+                              "ref": "NFImageLayer.html#index",
+                              "tf": 16.666666666666664
+                            },
                             "NFPageLayer.html#index": {
                               "ref": "NFPageLayer.html#index",
                               "tf": 16.666666666666664
@@ -13443,6 +19652,10 @@ window.lunrData = {
                         "docs": {
                           "NFLayerCollection.html#count": {
                             "ref": "NFLayerCollection.html#count",
+                            "tf": 10
+                          },
+                          "NFHighlightLayerCollection.html#count": {
+                            "ref": "NFHighlightLayerCollection.html#count",
                             "tf": 10
                           },
                           "NFPageLayerCollection.html#count": {
@@ -13492,6 +19705,54 @@ window.lunrData = {
                   }
                 }
               }
+            },
+            "a": {
+              "docs": {},
+              "p": {
+                "docs": {},
+                "e": {
+                  "docs": {},
+                  "l": {
+                    "docs": {},
+                    "a": {
+                      "docs": {},
+                      "y": {
+                        "docs": {
+                          "NFHighlightLayerCollection.html#addAVLayer": {
+                            "ref": "NFHighlightLayerCollection.html#addAVLayer",
+                            "tf": 10
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "r": {
+                "docs": {},
+                "e": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#duplicateNames": {
+                      "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                      "tf": 7.142857142857142
+                    }
+                  }
+                }
+              },
+              "d": {
+                "docs": {},
+                "o": {
+                  "docs": {},
+                  "w": {
+                    "docs": {
+                      "NFPageLayer.html#setDropShadow": {
+                        "ref": "NFPageLayer.html#setDropShadow",
+                        "tf": 12.5
+                      }
+                    }
+                  }
+                }
+              }
             }
           },
           "a": {
@@ -13512,13 +19773,25 @@ window.lunrData = {
                     "ref": "NFPaperLayerGroup.html",
                     "tf": 6.25
                   },
+                  "NFHighlightLayer.html#sameLayerAs": {
+                    "ref": "NFHighlightLayer.html#sameLayerAs",
+                    "tf": 6.666666666666667
+                  },
+                  "NFHighlightLayerCollection.html#duplicateNames": {
+                    "ref": "NFHighlightLayerCollection.html#duplicateNames",
+                    "tf": 7.142857142857142
+                  },
+                  "NFHighlightLayerCollection.html#inSameComp": {
+                    "ref": "NFHighlightLayerCollection.html#inSameComp",
+                    "tf": 8.333333333333332
+                  },
+                  "NFImageLayer.html#sameLayerAs": {
+                    "ref": "NFImageLayer.html#sameLayerAs",
+                    "tf": 6.666666666666667
+                  },
                   "NFPageLayer.html#sameLayerAs": {
                     "ref": "NFPageLayer.html#sameLayerAs",
                     "tf": 6.666666666666667
-                  },
-                  "NFPageLayerCollection.html": {
-                    "ref": "NFPageLayerCollection.html",
-                    "tf": 5
                   },
                   "NFPageLayerCollection.html#fromSamePDF": {
                     "ref": "NFPageLayerCollection.html#fromSamePDF",
@@ -13553,6 +19826,14 @@ window.lunrData = {
                                 "ref": "NFLayer.html#sameLayerAs",
                                 "tf": 700
                               },
+                              "NFHighlightLayer.html#sameLayerAs": {
+                                "ref": "NFHighlightLayer.html#sameLayerAs",
+                                "tf": 700
+                              },
+                              "NFImageLayer.html#sameLayerAs": {
+                                "ref": "NFImageLayer.html#sameLayerAs",
+                                "tf": 700
+                              },
                               "NFPageLayer.html#sameLayerAs": {
                                 "ref": "NFPageLayer.html#sameLayerAs",
                                 "tf": 700
@@ -13583,6 +19864,14 @@ window.lunrData = {
                     "docs": {
                       "NFLayer.html#addSlider": {
                         "ref": "NFLayer.html#addSlider",
+                        "tf": 10
+                      },
+                      "NFHighlightLayer.html#addSlider": {
+                        "ref": "NFHighlightLayer.html#addSlider",
+                        "tf": 10
+                      },
+                      "NFImageLayer.html#addSlider": {
+                        "ref": "NFImageLayer.html#addSlider",
                         "tf": 10
                       },
                       "NFPageLayer.html#addSlider": {
@@ -13617,13 +19906,25 @@ window.lunrData = {
                             "ref": "NFLayer.html#.isAVLayer",
                             "tf": 3.8461538461538463
                           },
+                          "NFHighlightLayer.html": {
+                            "ref": "NFHighlightLayer.html",
+                            "tf": 12.5
+                          },
+                          "NFHighlightLayerCollection.html": {
+                            "ref": "NFHighlightLayerCollection.html",
+                            "tf": 12.5
+                          },
+                          "NFImageLayer.html": {
+                            "ref": "NFImageLayer.html",
+                            "tf": 12.5
+                          },
                           "NFPageLayer.html": {
                             "ref": "NFPageLayer.html",
                             "tf": 12.5
                           },
                           "NFPageLayerCollection.html": {
                             "ref": "NFPageLayerCollection.html",
-                            "tf": 5
+                            "tf": 12.5
                           },
                           "NFPaperParentLayer.html": {
                             "ref": "NFPaperParentLayer.html",
@@ -13632,6 +19933,44 @@ window.lunrData = {
                         }
                       }
                     }
+                  }
+                }
+              }
+            }
+          },
+          "c": {
+            "docs": {},
+            "r": {
+              "docs": {},
+              "i": {
+                "docs": {},
+                "p": {
+                  "docs": {},
+                  "t": {
+                    "docs": {
+                      "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                        "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                        "tf": 6.666666666666667
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "i": {
+            "docs": {},
+            "z": {
+              "docs": {},
+              "e": {
+                "docs": {
+                  "NFPageLayer.html#initTransforms": {
+                    "ref": "NFPageLayer.html#initTransforms",
+                    "tf": 8.333333333333332
+                  },
+                  "NFPageLayer.html#setInitSize": {
+                    "ref": "NFPageLayer.html#setInitSize",
+                    "tf": 12.5
                   }
                 }
               }
@@ -13666,9 +20005,41 @@ window.lunrData = {
                     "ref": "NFPageItem.html#getPageNumber",
                     "tf": 12.5
                   },
+                  "NFHighlightLayer.html#isPageLayer": {
+                    "ref": "NFHighlightLayer.html#isPageLayer",
+                    "tf": 10
+                  },
+                  "NFImageLayer.html#isPageLayer": {
+                    "ref": "NFImageLayer.html#isPageLayer",
+                    "tf": 10
+                  },
                   "NFPageLayer.html": {
                     "ref": "NFPageLayer.html",
                     "tf": 12.5
+                  },
+                  "NFPageLayer.html#highlights": {
+                    "ref": "NFPageLayer.html#highlights",
+                    "tf": 12.5
+                  },
+                  "NFPageLayer.html#bubbledHighlights": {
+                    "ref": "NFPageLayer.html#bubbledHighlights",
+                    "tf": 7.142857142857142
+                  },
+                  "NFPageLayer.html#isInitted": {
+                    "ref": "NFPageLayer.html#isInitted",
+                    "tf": 8.333333333333332
+                  },
+                  "NFPageLayer.html#markInitted": {
+                    "ref": "NFPageLayer.html#markInitted",
+                    "tf": 10
+                  },
+                  "NFPageLayer.html#getPageNumber": {
+                    "ref": "NFPageLayer.html#getPageNumber",
+                    "tf": 12.5
+                  },
+                  "NFPageLayer.html#.isPageLayer": {
+                    "ref": "NFPageLayer.html#.isPageLayer",
+                    "tf": 8.333333333333332
                   },
                   "NFPageLayer.html#isPageLayer": {
                     "ref": "NFPageLayer.html#isPageLayer",
@@ -13676,7 +20047,7 @@ window.lunrData = {
                   },
                   "NFPageLayerCollection.html": {
                     "ref": "NFPageLayerCollection.html",
-                    "tf": 5
+                    "tf": 12.5
                   },
                   "NFPageLayerCollection.html#highlights": {
                     "ref": "NFPageLayerCollection.html#highlights",
@@ -13735,6 +20106,14 @@ window.lunrData = {
                   "docs": {
                     "NFLayer.html#isPaperParentLayer": {
                       "ref": "NFLayer.html#isPaperParentLayer",
+                      "tf": 8.333333333333332
+                    },
+                    "NFHighlightLayer.html#isPaperParentLayer": {
+                      "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                      "tf": 8.333333333333332
+                    },
+                    "NFImageLayer.html#isPaperParentLayer": {
+                      "ref": "NFImageLayer.html#isPaperParentLayer",
                       "tf": 8.333333333333332
                     },
                     "NFPageLayer.html#getPaperParentLayer": {
@@ -13841,6 +20220,54 @@ window.lunrData = {
                         "ref": "NFPaperLayerGroup.html#gatherLayers",
                         "tf": 5.263157894736842
                       },
+                      "NFHighlightLayer.html#isPaperParentLayer": {
+                        "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                        "tf": 8.333333333333332
+                      },
+                      "NFHighlightLayer.html#hasNullParent": {
+                        "ref": "NFHighlightLayer.html#hasNullParent",
+                        "tf": 10
+                      },
+                      "NFHighlightLayer.html#getParent": {
+                        "ref": "NFHighlightLayer.html#getParent",
+                        "tf": 12.5
+                      },
+                      "NFHighlightLayer.html#setParent": {
+                        "ref": "NFHighlightLayer.html#setParent",
+                        "tf": 10
+                      },
+                      "NFHighlightLayer.html#setZoomer": {
+                        "ref": "NFHighlightLayer.html#setZoomer",
+                        "tf": 8.333333333333332
+                      },
+                      "NFHighlightLayerCollection.html#setParents": {
+                        "ref": "NFHighlightLayerCollection.html#setParents",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayerCollection.html#nullify": {
+                        "ref": "NFHighlightLayerCollection.html#nullify",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#isPaperParentLayer": {
+                        "ref": "NFImageLayer.html#isPaperParentLayer",
+                        "tf": 8.333333333333332
+                      },
+                      "NFImageLayer.html#hasNullParent": {
+                        "ref": "NFImageLayer.html#hasNullParent",
+                        "tf": 10
+                      },
+                      "NFImageLayer.html#getParent": {
+                        "ref": "NFImageLayer.html#getParent",
+                        "tf": 12.5
+                      },
+                      "NFImageLayer.html#setParent": {
+                        "ref": "NFImageLayer.html#setParent",
+                        "tf": 10
+                      },
+                      "NFImageLayer.html#setZoomer": {
+                        "ref": "NFImageLayer.html#setZoomer",
+                        "tf": 8.333333333333332
+                      },
                       "NFPageLayer.html#getPaperParentLayer": {
                         "ref": "NFPageLayer.html#getPaperParentLayer",
                         "tf": 4.545454545454546
@@ -13864,10 +20291,6 @@ window.lunrData = {
                       "NFPageLayer.html#setZoomer": {
                         "ref": "NFPageLayer.html#setZoomer",
                         "tf": 8.333333333333332
-                      },
-                      "NFPageLayerCollection.html": {
-                        "ref": "NFPageLayerCollection.html",
-                        "tf": 5
                       },
                       "NFPageLayerCollection.html#assignPaperParentLayer": {
                         "ref": "NFPageLayerCollection.html#assignPaperParentLayer",
@@ -13957,6 +20380,30 @@ window.lunrData = {
                         "ref": "NFLayer.html#markers",
                         "tf": 7.142857142857142
                       },
+                      "NFHighlightLayer.html#moveBefore": {
+                        "ref": "NFHighlightLayer.html#moveBefore",
+                        "tf": 6.25
+                      },
+                      "NFHighlightLayer.html#moveAfter": {
+                        "ref": "NFHighlightLayer.html#moveAfter",
+                        "tf": 7.142857142857142
+                      },
+                      "NFHighlightLayer.html#markers": {
+                        "ref": "NFHighlightLayer.html#markers",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#moveBefore": {
+                        "ref": "NFImageLayer.html#moveBefore",
+                        "tf": 6.25
+                      },
+                      "NFImageLayer.html#moveAfter": {
+                        "ref": "NFImageLayer.html#moveAfter",
+                        "tf": 7.142857142857142
+                      },
+                      "NFImageLayer.html#markers": {
+                        "ref": "NFImageLayer.html#markers",
+                        "tf": 7.142857142857142
+                      },
                       "NFPageLayer.html#moveBefore": {
                         "ref": "NFPageLayer.html#moveBefore",
                         "tf": 6.25
@@ -14003,6 +20450,30 @@ window.lunrData = {
                             "ref": "NFLayer.html#addSlider",
                             "tf": 25
                           },
+                          "NFHighlightLayer.html#markers": {
+                            "ref": "NFHighlightLayer.html#markers",
+                            "tf": 50
+                          },
+                          "NFHighlightLayer.html#addSlider": {
+                            "ref": "NFHighlightLayer.html#addSlider",
+                            "tf": 25
+                          },
+                          "NFImageLayer.html#markers": {
+                            "ref": "NFImageLayer.html#markers",
+                            "tf": 50
+                          },
+                          "NFImageLayer.html#addSlider": {
+                            "ref": "NFImageLayer.html#addSlider",
+                            "tf": 25
+                          },
+                          "NFPageLayer.html#init": {
+                            "ref": "NFPageLayer.html#init",
+                            "tf": 5.555555555555555
+                          },
+                          "NFPageLayer.html#initTransforms": {
+                            "ref": "NFPageLayer.html#initTransforms",
+                            "tf": 8.333333333333332
+                          },
                           "NFPageLayer.html#markers": {
                             "ref": "NFPageLayer.html#markers",
                             "tf": 50
@@ -14031,6 +20502,14 @@ window.lunrData = {
                           "docs": {
                             "NFLayer.html#addInOutMarkersForProperty": {
                               "ref": "NFLayer.html#addInOutMarkersForProperty",
+                              "tf": 3.571428571428571
+                            },
+                            "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                              "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                              "tf": 3.571428571428571
+                            },
+                            "NFImageLayer.html#addInOutMarkersForProperty": {
+                              "ref": "NFImageLayer.html#addInOutMarkersForProperty",
                               "tf": 3.571428571428571
                             },
                             "NFPageLayer.html#addInOutMarkersForProperty": {
@@ -14144,6 +20623,18 @@ window.lunrData = {
                           "ref": "NFLayerCollection.html#nullify",
                           "tf": 3.571428571428571
                         },
+                        "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                          "tf": 3.571428571428571
+                        },
+                        "NFHighlightLayerCollection.html#nullify": {
+                          "ref": "NFHighlightLayerCollection.html#nullify",
+                          "tf": 3.571428571428571
+                        },
+                        "NFImageLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFImageLayer.html#addInOutMarkersForProperty",
+                          "tf": 3.571428571428571
+                        },
                         "NFPageLayer.html#addInOutMarkersForProperty": {
                           "ref": "NFPageLayer.html#addInOutMarkersForProperty",
                           "tf": 3.571428571428571
@@ -14155,6 +20646,20 @@ window.lunrData = {
                         "NFPaperParentLayer.html#addInOutMarkersForProperty": {
                           "ref": "NFPaperParentLayer.html#addInOutMarkersForProperty",
                           "tf": 3.571428571428571
+                        }
+                      }
+                    }
+                  }
+                },
+                "e": {
+                  "docs": {},
+                  "n": {
+                    "docs": {},
+                    "t": {
+                      "docs": {
+                        "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                          "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                          "tf": 3.3333333333333335
                         }
                       }
                     }
@@ -14189,6 +20694,18 @@ window.lunrData = {
                       "ref": "NFLayerCollection.html#nullify",
                       "tf": 3.571428571428571
                     },
+                    "NFHighlightLayerCollection.html#nullify": {
+                      "ref": "NFHighlightLayerCollection.html#nullify",
+                      "tf": 3.571428571428571
+                    },
+                    "NFPageLayer.html#initTransforms": {
+                      "ref": "NFPageLayer.html#initTransforms",
+                      "tf": 8.333333333333332
+                    },
+                    "NFPageLayer.html#setInitPosition": {
+                      "ref": "NFPageLayer.html#setInitPosition",
+                      "tf": 12.5
+                    },
                     "NFPageLayerCollection.html#nullify": {
                       "ref": "NFPageLayerCollection.html#nullify",
                       "tf": 3.571428571428571
@@ -14210,9 +20727,9 @@ window.lunrData = {
                   "ref": "NFPaperLayerGroup.html",
                   "tf": 6.25
                 },
-                "NFPageLayerCollection.html": {
-                  "ref": "NFPageLayerCollection.html",
-                  "tf": 5
+                "NFPageLayer.html#getPDFNumber": {
+                  "ref": "NFPageLayer.html#getPDFNumber",
+                  "tf": 12.5
                 },
                 "NFPageLayerCollection.html#fromSamePDF": {
                   "ref": "NFPageLayerCollection.html#fromSamePDF",
@@ -14244,6 +20761,14 @@ window.lunrData = {
                       },
                       "NFLayer.html#setZoomer": {
                         "ref": "NFLayer.html#setZoomer",
+                        "tf": 8.333333333333332
+                      },
+                      "NFHighlightLayer.html#setZoomer": {
+                        "ref": "NFHighlightLayer.html#setZoomer",
+                        "tf": 8.333333333333332
+                      },
+                      "NFImageLayer.html#setZoomer": {
+                        "ref": "NFImageLayer.html#setZoomer",
                         "tf": 8.333333333333332
                       },
                       "NFPageLayer.html#setZoomer": {
@@ -14291,6 +20816,30 @@ window.lunrData = {
                       "ref": "NFPDF.html#addNFPageItem",
                       "tf": 10
                     },
+                    "NFHighlightLayer.html#isPageLayer": {
+                      "ref": "NFHighlightLayer.html#isPageLayer",
+                      "tf": 10
+                    },
+                    "NFHighlightLayer.html#isHighlightLayer": {
+                      "ref": "NFHighlightLayer.html#isHighlightLayer",
+                      "tf": 10
+                    },
+                    "NFHighlightLayer.html#isPaperParentLayer": {
+                      "ref": "NFHighlightLayer.html#isPaperParentLayer",
+                      "tf": 8.333333333333332
+                    },
+                    "NFImageLayer.html#isPageLayer": {
+                      "ref": "NFImageLayer.html#isPageLayer",
+                      "tf": 10
+                    },
+                    "NFImageLayer.html#isHighlightLayer": {
+                      "ref": "NFImageLayer.html#isHighlightLayer",
+                      "tf": 10
+                    },
+                    "NFImageLayer.html#isPaperParentLayer": {
+                      "ref": "NFImageLayer.html#isPaperParentLayer",
+                      "tf": 8.333333333333332
+                    },
                     "NFPageLayer.html#isPageLayer": {
                       "ref": "NFPageLayer.html#isPageLayer",
                       "tf": 10
@@ -14328,6 +20877,14 @@ window.lunrData = {
                     "ref": "NFLayer.html#addSlider",
                     "tf": 25
                   },
+                  "NFHighlightLayer.html#addSlider": {
+                    "ref": "NFHighlightLayer.html#addSlider",
+                    "tf": 25
+                  },
+                  "NFImageLayer.html#addSlider": {
+                    "ref": "NFImageLayer.html#addSlider",
+                    "tf": 25
+                  },
                   "NFPageLayer.html#addSlider": {
                     "ref": "NFPageLayer.html#addSlider",
                     "tf": 25
@@ -14357,6 +20914,14 @@ window.lunrData = {
                         "ref": "NFLayer.html#sameLayerAs",
                         "tf": 3.3333333333333335
                       },
+                      "NFHighlightLayer.html#sameLayerAs": {
+                        "ref": "NFHighlightLayer.html#sameLayerAs",
+                        "tf": 3.3333333333333335
+                      },
+                      "NFImageLayer.html#sameLayerAs": {
+                        "ref": "NFImageLayer.html#sameLayerAs",
+                        "tf": 3.3333333333333335
+                      },
                       "NFPageLayer.html#sameLayerAs": {
                         "ref": "NFPageLayer.html#sameLayerAs",
                         "tf": 3.3333333333333335
@@ -14382,6 +20947,22 @@ window.lunrData = {
                       "docs": {
                         "NFLayer.html#addInOutMarkersForProperty": {
                           "ref": "NFLayer.html#addInOutMarkersForProperty",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFHighlightLayer.html#addInOutMarkersForProperty",
+                          "tf": 7.142857142857142
+                        },
+                        "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                          "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                          "tf": 6.666666666666667
+                        },
+                        "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                          "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                          "tf": 3.3333333333333335
+                        },
+                        "NFImageLayer.html#addInOutMarkersForProperty": {
+                          "ref": "NFImageLayer.html#addInOutMarkersForProperty",
                           "tf": 7.142857142857142
                         },
                         "NFPageLayer.html#addInOutMarkersForProperty": {
@@ -14461,6 +21042,14 @@ window.lunrData = {
                       "ref": "NFPageLayer.html#findPaperParentLayer",
                       "tf": 5.555555555555555
                     },
+                    "NFPageLayer.html#setInitSize": {
+                      "ref": "NFPageLayer.html#setInitSize",
+                      "tf": 4.166666666666666
+                    },
+                    "NFPageLayer.html#setInitPosition": {
+                      "ref": "NFPageLayer.html#setInitPosition",
+                      "tf": 4.166666666666666
+                    },
                     "NFPageLayerCollection.html#assignPaperParentLayer": {
                       "ref": "NFPageLayerCollection.html#assignPaperParentLayer",
                       "tf": 7.142857142857142
@@ -14484,6 +21073,14 @@ window.lunrData = {
                         "ref": "NFLayer.html#addSlider",
                         "tf": 10
                       },
+                      "NFHighlightLayer.html#addSlider": {
+                        "ref": "NFHighlightLayer.html#addSlider",
+                        "tf": 10
+                      },
+                      "NFImageLayer.html#addSlider": {
+                        "ref": "NFImageLayer.html#addSlider",
+                        "tf": 10
+                      },
                       "NFPageLayer.html#addSlider": {
                         "ref": "NFPageLayer.html#addSlider",
                         "tf": 10
@@ -14496,12 +21093,12 @@ window.lunrData = {
                         "ref": "LayerCollection.html",
                         "tf": 16.666666666666664
                       },
-                      "Layer.html": {
-                        "ref": "Layer.html",
-                        "tf": 16.666666666666664
-                      },
                       "Property.html": {
                         "ref": "Property.html",
+                        "tf": 16.666666666666664
+                      },
+                      "Layer.html": {
+                        "ref": "Layer.html",
                         "tf": 16.666666666666664
                       }
                     }
@@ -14522,11 +21119,61 @@ window.lunrData = {
                       "ref": "NFLayerCollection.html#isEmpty",
                       "tf": 16.666666666666664
                     },
+                    "NFHighlightLayerCollection.html#isEmpty": {
+                      "ref": "NFHighlightLayerCollection.html#isEmpty",
+                      "tf": 16.666666666666664
+                    },
                     "NFPageLayerCollection.html#isEmpty": {
                       "ref": "NFPageLayerCollection.html#isEmpty",
                       "tf": 16.666666666666664
                     }
                   }
+                }
+              }
+            }
+          },
+          "r": {
+            "docs": {},
+            "r": {
+              "docs": {},
+              "o": {
+                "docs": {},
+                "r": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                      "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                      "tf": 5
+                    },
+                    "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                      "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                      "tf": 3.3333333333333335
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "v": {
+            "docs": {},
+            "e": {
+              "docs": {},
+              "n": {
+                "docs": {
+                  "NFHighlightLayerCollection.html#resetExpressionErrors": {
+                    "ref": "NFHighlightLayerCollection.html#resetExpressionErrors",
+                    "tf": 1.6666666666666667
+                  }
+                }
+              }
+            }
+          },
+          "t": {
+            "docs": {},
+            "c": {
+              "docs": {
+                "NFPageLayer.html#init": {
+                  "ref": "NFPageLayer.html#init",
+                  "tf": 5.555555555555555
                 }
               }
             }
@@ -14564,9 +21211,40 @@ window.lunrData = {
                     "ref": "NFLayerCollection.html#getPageLayerCollection",
                     "tf": 5.555555555555555
                   },
+                  "NFHighlightLayerCollection.html#getPageLayerCollection": {
+                    "ref": "NFHighlightLayerCollection.html#getPageLayerCollection",
+                    "tf": 5.555555555555555
+                  },
                   "NFPageLayerCollection.html#getPageLayerCollection": {
                     "ref": "NFPageLayerCollection.html#getPageLayerCollection",
                     "tf": 5.555555555555555
+                  }
+                }
+              }
+            }
+          },
+          "e": {
+            "docs": {},
+            "y": {
+              "docs": {},
+              "f": {
+                "docs": {},
+                "r": {
+                  "docs": {},
+                  "a": {
+                    "docs": {},
+                    "m": {
+                      "docs": {
+                        "NFPageLayer.html#setInitSize": {
+                          "ref": "NFPageLayer.html#setInitSize",
+                          "tf": 4.166666666666666
+                        },
+                        "NFPageLayer.html#setInitPosition": {
+                          "ref": "NFPageLayer.html#setInitPosition",
+                          "tf": 4.166666666666666
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -14575,6 +21253,32 @@ window.lunrData = {
         },
         "u": {
           "docs": {},
+          "p": {
+            "docs": {
+              "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+                "ref": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+                "tf": 10
+              }
+            },
+            "d": {
+              "docs": {},
+              "a": {
+                "docs": {},
+                "t": {
+                  "docs": {
+                    "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+                      "ref": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+                      "tf": 3.3333333333333335
+                    },
+                    "NFPageLayer.html#markInitted": {
+                      "ref": "NFPageLayer.html#markInitted",
+                      "tf": 5
+                    }
+                  }
+                }
+              }
+            }
+          },
           "s": {
             "docs": {
               "NFPartComp.html": {
@@ -14585,36 +21289,50 @@ window.lunrData = {
           }
         }
       },
-      "length": 1307
+      "length": 2018
     },
     "corpusTokens": [
       "abov",
       "access",
+      "account",
       "add",
       "addavlay",
       "addinoutmarkersforproperti",
+      "addnfhighlightlay",
       "addnflay",
       "addnfpageitem",
       "addnfpagelay",
       "addnul",
       "addslid",
+      "ae",
       "allow",
       "alreadi",
+      "appear",
+      "arr",
       "array",
       "assignpaperparentlay",
       "av",
       "avlay",
+      "avlayers/shapelay",
       "base",
+      "be",
       "befor",
       "below",
+      "blur",
       "boolean",
       "bootstrap",
       "bottom",
       "bottommost",
+      "break",
+      "bubbl",
+      "bubbledhighlight",
+      "bubbleuphighlight",
       "call",
+      "chang",
       "check",
       "child",
       "class",
+      "clear",
       "collect",
       "collectionfromavlayerarray",
       "comment",
@@ -14628,17 +21346,30 @@ window.lunrData = {
       "correct",
       "count",
       "creat",
+      "disconnect",
+      "disconnecthighlight",
       "document",
+      "doesn't",
       "don't",
+      "drop",
+      "dropshadow",
+      "duplicatenam",
       "easier",
       "effect",
       "empti",
+      "error",
+      "etc",
+      "even",
       "exampl",
       "exist",
       "express",
       "expressionstringforvalu",
       "fals",
       "findpaperparentlay",
+      "finish",
+      "fix",
+      "fixexpressionafterinit",
+      "fixexpressionsafterinit",
       "foodoc",
       "found",
       "fromsamepdf",
@@ -14663,15 +21394,21 @@ window.lunrData = {
       "global",
       "go",
       "group",
+      "handl",
       "handlebar",
       "hasnullpar",
       "highlight",
+      "imag",
       "immedi",
+      "incorrect",
       "index",
       "indexofmark",
       "indic",
+      "init",
+      "initi",
       "initlay",
       "initlayertransform",
+      "inittransform",
       "insamecomp",
       "instanc",
       "instanceof",
@@ -14681,11 +21418,13 @@ window.lunrData = {
       "iscomplay",
       "isempti",
       "ishighlightlay",
+      "isinit",
       "isnulllay",
       "ispagelay",
       "ispaperparentlay",
       "item",
       "jsdoc3",
+      "keyfram",
       "know",
       "layer",
       "layer'",
@@ -14704,9 +21443,12 @@ window.lunrData = {
       "manag",
       "manipl",
       "manipul",
+      "mark",
       "marker",
+      "markinit",
       "member",
       "method",
+      "motion",
       "move",
       "moveaft",
       "movebefor",
@@ -14726,7 +21468,65 @@ window.lunrData = {
       "nfcomp#selectedlay",
       "nfcomp#selectedpagelay",
       "nfcomp|nul",
+      "nfhighlightlay",
+      "nfhighlightlayer#addinoutmarkersforproperti",
+      "nfhighlightlayer#addslid",
+      "nfhighlightlayer#containingcomp",
+      "nfhighlightlayer#getchildren",
+      "nfhighlightlayer#getpar",
+      "nfhighlightlayer#getspecializedlay",
+      "nfhighlightlayer#hasnullpar",
+      "nfhighlightlayer#index",
+      "nfhighlightlayer#ishighlightlay",
+      "nfhighlightlayer#isnulllay",
+      "nfhighlightlayer#ispagelay",
+      "nfhighlightlayer#ispaperparentlay",
+      "nfhighlightlayer#mark",
+      "nfhighlightlayer#moveaft",
+      "nfhighlightlayer#movebefor",
+      "nfhighlightlayer#samelayera",
+      "nfhighlightlayer#setpar",
+      "nfhighlightlayer#setzoom",
       "nfhighlightlayercollect",
+      "nfhighlightlayercollection#addavlay",
+      "nfhighlightlayercollection#addnfhighlightlay",
+      "nfhighlightlayercollection#addnflay",
+      "nfhighlightlayercollection#bubbleuphighlight",
+      "nfhighlightlayercollection#containingcomp",
+      "nfhighlightlayercollection#count",
+      "nfhighlightlayercollection#disconnecthighlight",
+      "nfhighlightlayercollection#duplicatenam",
+      "nfhighlightlayercollection#fixexpressionsafterinit",
+      "nfhighlightlayercollection#getbottommostlay",
+      "nfhighlightlayercollection#getpagelayercollect",
+      "nfhighlightlayercollection#gettopmostlay",
+      "nfhighlightlayercollection#insamecomp",
+      "nfhighlightlayercollection#isempti",
+      "nfhighlightlayercollection#nullifi",
+      "nfhighlightlayercollection#onlycontainspagelay",
+      "nfhighlightlayercollection#remov",
+      "nfhighlightlayercollection#resetexpressionerror",
+      "nfhighlightlayercollection#setpar",
+      "nfhighlightlayercollection.collectionfromavlayerarray",
+      "nfimagelay",
+      "nfimagelayer#addinoutmarkersforproperti",
+      "nfimagelayer#addslid",
+      "nfimagelayer#containingcomp",
+      "nfimagelayer#getchildren",
+      "nfimagelayer#getpar",
+      "nfimagelayer#getspecializedlay",
+      "nfimagelayer#hasnullpar",
+      "nfimagelayer#index",
+      "nfimagelayer#ishighlightlay",
+      "nfimagelayer#isnulllay",
+      "nfimagelayer#ispagelay",
+      "nfimagelayer#ispaperparentlay",
+      "nfimagelayer#mark",
+      "nfimagelayer#moveaft",
+      "nfimagelayer#movebefor",
+      "nfimagelayer#samelayera",
+      "nfimagelayer#setpar",
+      "nfimagelayer#setzoom",
       "nflayer",
       "nflayer#addinoutmarkersforproperti",
       "nflayer#addslid",
@@ -14773,26 +21573,37 @@ window.lunrData = {
       "nfpagelay",
       "nfpagelayer#addinoutmarkersforproperti",
       "nfpagelayer#addslid",
+      "nfpagelayer#bubbledhighlight",
       "nfpagelayer#containingcomp",
       "nfpagelayer#findpaperparentlay",
       "nfpagelayer#getchildren",
+      "nfpagelayer#getpagenumb",
       "nfpagelayer#getpaperparentlay",
       "nfpagelayer#getpar",
+      "nfpagelayer#getpdfnumb",
       "nfpagelayer#getspecializedlay",
       "nfpagelayer#hasnullpar",
+      "nfpagelayer#highlight",
       "nfpagelayer#index",
       "nfpagelayer#init",
       "nfpagelayer#initlayertransform",
+      "nfpagelayer#inittransform",
       "nfpagelayer#ishighlightlay",
+      "nfpagelayer#isinit",
       "nfpagelayer#isnulllay",
       "nfpagelayer#ispagelay",
       "nfpagelayer#ispaperparentlay",
       "nfpagelayer#mark",
+      "nfpagelayer#markinit",
       "nfpagelayer#moveaft",
       "nfpagelayer#movebefor",
       "nfpagelayer#samelayera",
+      "nfpagelayer#setdropshadow",
+      "nfpagelayer#setinitposit",
+      "nfpagelayer#setinits",
       "nfpagelayer#setpar",
       "nfpagelayer#setzoom",
+      "nfpagelayer.ispagelay",
       "nfpagelayercollect",
       "nfpagelayercollection#addavlay",
       "nfpagelayercollection#addnflay",
@@ -14862,6 +21673,7 @@ window.lunrData = {
       "on",
       "one'",
       "onlycontainspagelay",
+      "onto",
       "option",
       "otherwis",
       "out",
@@ -14875,6 +21687,7 @@ window.lunrData = {
       "pdf",
       "play",
       "posit",
+      "prevent",
       "previou",
       "properti",
       "property'",
@@ -14886,39 +21699,60 @@ window.lunrData = {
       "remov",
       "removemark",
       "represent",
+      "reset",
+      "resetexpressionerror",
+      "respect",
       "return",
       "run",
       "same",
       "samelayera",
+      "script",
       "see",
       "select",
       "selectedlay",
       "selectedpagelay",
       "set",
+      "setdropshadow",
+      "setinitposit",
+      "setinits",
       "setnam",
       "setpar",
       "setzoom",
+      "shadow",
+      "shapelay",
+      "share",
       "shortcut",
       "shorthand",
       "shouldmov",
       "shouldpar",
+      "size",
       "slider",
       "special",
+      "specif",
+      "statu",
+      "still",
       "string",
       "subclass",
       "target",
       "targetlay",
       "templat",
       "test",
+      "that'll",
       "thelay",
+      "there'",
       "toarr",
       "topmost",
+      "transform",
       "transit",
       "true",
       "type",
+      "up",
+      "updat",
       "us",
       "valid",
       "valu",
+      "warn",
+      "way",
       "whether",
       "wrapper",
       "zoomer"
@@ -15510,6 +22344,599 @@ window.lunrData = {
       "summary": "",
       "description": "Moves the given layers into the group and parents if indicated. Layers below the bottommost layer in the group will go at the bottom, and layers above the parent will go immediately below it."
     },
+    "NFHighlightLayer.html": {
+      "id": "NFHighlightLayer.html",
+      "kind": "class",
+      "title": "NFHighlightLayer",
+      "longname": "NFHighlightLayer",
+      "name": "NFHighlightLayer",
+      "tags": "NFHighlightLayer",
+      "summary": "",
+      "description": "Subclass of NFLayer for a highlight layer",
+      "body": ""
+    },
+    "NFHighlightLayer.html#isPageLayer": {
+      "id": "NFHighlightLayer.html#isPageLayer",
+      "kind": "function",
+      "title": "isPageLayer() → {boolean}",
+      "longname": "NFHighlightLayer#isPageLayer",
+      "name": "isPageLayer",
+      "tags": "NFHighlightLayer#isPageLayer isPageLayer",
+      "summary": "",
+      "description": "Checks if this layer is a valid page Layer"
+    },
+    "NFHighlightLayer.html#isNullLayer": {
+      "id": "NFHighlightLayer.html#isNullLayer",
+      "kind": "function",
+      "title": "isNullLayer() → {boolean}",
+      "longname": "NFHighlightLayer#isNullLayer",
+      "name": "isNullLayer",
+      "tags": "NFHighlightLayer#isNullLayer isNullLayer",
+      "summary": "",
+      "description": "Checks if this layer is a null layer"
+    },
+    "NFHighlightLayer.html#isHighlightLayer": {
+      "id": "NFHighlightLayer.html#isHighlightLayer",
+      "kind": "function",
+      "title": "isHighlightLayer() → {boolean}",
+      "longname": "NFHighlightLayer#isHighlightLayer",
+      "name": "isHighlightLayer",
+      "tags": "NFHighlightLayer#isHighlightLayer isHighlightLayer",
+      "summary": "",
+      "description": "Checks if this layer is a valid highlight layer"
+    },
+    "NFHighlightLayer.html#isPaperParentLayer": {
+      "id": "NFHighlightLayer.html#isPaperParentLayer",
+      "kind": "function",
+      "title": "isPaperParentLayer() → {boolean}",
+      "longname": "NFHighlightLayer#isPaperParentLayer",
+      "name": "isPaperParentLayer",
+      "tags": "NFHighlightLayer#isPaperParentLayer isPaperParentLayer",
+      "summary": "",
+      "description": "Checks if this layer is a valid paper parent layer"
+    },
+    "NFHighlightLayer.html#getSpecializedLayer": {
+      "id": "NFHighlightLayer.html#getSpecializedLayer",
+      "kind": "function",
+      "title": "getSpecializedLayer() → {NFPageLayer|NFHighlightLayer|NFPaperParentLayer|NFLayer}",
+      "longname": "NFHighlightLayer#getSpecializedLayer",
+      "name": "getSpecializedLayer",
+      "tags": "NFHighlightLayer#getSpecializedLayer getSpecializedLayer",
+      "summary": "",
+      "description": "Returns a new layer of a specialized type for the contents of this layer"
+    },
+    "NFHighlightLayer.html#hasNullParent": {
+      "id": "NFHighlightLayer.html#hasNullParent",
+      "kind": "function",
+      "title": "hasNullParent() → {boolean}",
+      "longname": "NFHighlightLayer#hasNullParent",
+      "name": "hasNullParent",
+      "tags": "NFHighlightLayer#hasNullParent hasNullParent",
+      "summary": "",
+      "description": "Returns true if the layer has a null parent"
+    },
+    "NFHighlightLayer.html#sameLayerAs": {
+      "id": "NFHighlightLayer.html#sameLayerAs",
+      "kind": "function",
+      "title": "sameLayerAs() → {boolean}",
+      "longname": "NFHighlightLayer#sameLayerAs",
+      "name": "sameLayerAs",
+      "tags": "NFHighlightLayer#sameLayerAs sameLayerAs",
+      "summary": "",
+      "description": "Checks to see if a given NFLayer's layer is the same as this one's For example, an NFLayer and an NFPageLayer that refer to the same layer will return true"
+    },
+    "NFHighlightLayer.html#containingComp": {
+      "id": "NFHighlightLayer.html#containingComp",
+      "kind": "function",
+      "title": "containingComp() → {NFComp}",
+      "longname": "NFHighlightLayer#containingComp",
+      "name": "containingComp",
+      "tags": "NFHighlightLayer#containingComp containingComp",
+      "summary": "",
+      "description": "Returns the containing NFComp"
+    },
+    "NFHighlightLayer.html#getChildren": {
+      "id": "NFHighlightLayer.html#getChildren",
+      "kind": "function",
+      "title": "getChildren() → {NFLayerCollection}",
+      "longname": "NFHighlightLayer#getChildren",
+      "name": "getChildren",
+      "tags": "NFHighlightLayer#getChildren getChildren",
+      "summary": "",
+      "description": "Returns an NFLayerCollection of child layers of this layer as specialized layers"
+    },
+    "NFHighlightLayer.html#getParent": {
+      "id": "NFHighlightLayer.html#getParent",
+      "kind": "function",
+      "title": "getParent() → {NFLayer|null}",
+      "longname": "NFHighlightLayer#getParent",
+      "name": "getParent",
+      "tags": "NFHighlightLayer#getParent getParent",
+      "summary": "",
+      "description": "Gets the layer's parent NFLayer, if any"
+    },
+    "NFHighlightLayer.html#setParent": {
+      "id": "NFHighlightLayer.html#setParent",
+      "kind": "function",
+      "title": "setParent( newParent ) → {NFLayer}",
+      "longname": "NFHighlightLayer#setParent",
+      "name": "setParent",
+      "tags": "NFHighlightLayer#setParent setParent",
+      "summary": "",
+      "description": "Sets the layer's parent to a given NFLayer"
+    },
+    "NFHighlightLayer.html#setZoomer": {
+      "id": "NFHighlightLayer.html#setZoomer",
+      "kind": "function",
+      "title": "setZoomer() → {NFLayer}",
+      "longname": "NFHighlightLayer#setZoomer",
+      "name": "setZoomer",
+      "tags": "NFHighlightLayer#setZoomer setZoomer",
+      "summary": "",
+      "description": "Sets the layer's parent to the zoomer if this layer is in an NFPartComp"
+    },
+    "NFHighlightLayer.html#moveBefore": {
+      "id": "NFHighlightLayer.html#moveBefore",
+      "kind": "function",
+      "title": "moveBefore( targetLayer ) → {NFLayer}",
+      "longname": "NFHighlightLayer#moveBefore",
+      "name": "moveBefore",
+      "tags": "NFHighlightLayer#moveBefore moveBefore",
+      "summary": "",
+      "description": "Moves this layer's index to immediately before the provided target layer"
+    },
+    "NFHighlightLayer.html#moveAfter": {
+      "id": "NFHighlightLayer.html#moveAfter",
+      "kind": "function",
+      "title": "moveAfter( targetLayer ) → {NFLayer}",
+      "longname": "NFHighlightLayer#moveAfter",
+      "name": "moveAfter",
+      "tags": "NFHighlightLayer#moveAfter moveAfter",
+      "summary": "",
+      "description": "Moves this layer's index to immediately after the provided target layer"
+    },
+    "NFHighlightLayer.html#markers": {
+      "id": "NFHighlightLayer.html#markers",
+      "kind": "function",
+      "title": "markers() → {Property}",
+      "longname": "NFHighlightLayer#markers",
+      "name": "markers",
+      "tags": "NFHighlightLayer#markers markers",
+      "summary": "",
+      "description": "Moves this layer's index to immediately after the provided target layer"
+    },
+    "NFHighlightLayer.html#addInOutMarkersForProperty": {
+      "id": "NFHighlightLayer.html#addInOutMarkersForProperty",
+      "kind": "function",
+      "title": "addInOutMarkersForProperty( options ) → {NFLayer}",
+      "longname": "NFHighlightLayer#addInOutMarkersForProperty",
+      "name": "addInOutMarkersForProperty",
+      "tags": "NFHighlightLayer#addInOutMarkersForProperty addInOutMarkersForProperty",
+      "summary": "",
+      "description": "Sets the given property's expression and adds In and Out markers (if not already on the layer) for in and out transitions. Overrides previous expressions"
+    },
+    "NFHighlightLayer.html#addSlider": {
+      "id": "NFHighlightLayer.html#addSlider",
+      "kind": "function",
+      "title": "addSlider( name, value ) → {Property}",
+      "longname": "NFHighlightLayer#addSlider",
+      "name": "addSlider",
+      "tags": "NFHighlightLayer#addSlider addSlider",
+      "summary": "",
+      "description": "Creates and returns a slider effect on the layer"
+    },
+    "NFHighlightLayer.html#index": {
+      "id": "NFHighlightLayer.html#index",
+      "kind": "function",
+      "title": "index() → {int}",
+      "longname": "NFHighlightLayer#index",
+      "name": "index",
+      "tags": "NFHighlightLayer#index index",
+      "summary": "",
+      "description": "Shorthand for the layer's index"
+    },
+    "NFHighlightLayerCollection.html": {
+      "id": "NFHighlightLayerCollection.html",
+      "kind": "class",
+      "title": "NFHighlightLayerCollection",
+      "longname": "NFHighlightLayerCollection",
+      "name": "NFHighlightLayerCollection",
+      "tags": "NFHighlightLayerCollection",
+      "summary": "",
+      "description": "Subclass of NFLayerCollection for highlight layers",
+      "body": ""
+    },
+    "NFHighlightLayerCollection.html#addNFHighlightLayer": {
+      "id": "NFHighlightLayerCollection.html#addNFHighlightLayer",
+      "kind": "function",
+      "title": "addNFHighlightLayer( newLayer ) → {NFHighlightLayerCollection}",
+      "longname": "NFHighlightLayerCollection#addNFHighlightLayer",
+      "name": "addNFHighlightLayer",
+      "tags": "NFHighlightLayerCollection#addNFHighlightLayer addNFHighlightLayer",
+      "summary": "",
+      "description": "Adds an NFHighlightLayer to this collection"
+    },
+    "NFHighlightLayerCollection.html#addAVLayer": {
+      "id": "NFHighlightLayerCollection.html#addAVLayer",
+      "kind": "function",
+      "title": "addAVLayer( newLayer ) → {NFHighlightLayerCollection}",
+      "longname": "NFHighlightLayerCollection#addAVLayer",
+      "name": "addAVLayer",
+      "tags": "NFHighlightLayerCollection#addAVLayer addAVLayer",
+      "summary": "",
+      "description": "Adds an AVLayer (specifically a ShapeLayer) to the collection."
+    },
+    "NFHighlightLayerCollection.html#duplicateNames": {
+      "id": "NFHighlightLayerCollection.html#duplicateNames",
+      "kind": "function",
+      "title": "duplicateNames() → {boolean}",
+      "longname": "NFHighlightLayerCollection#duplicateNames",
+      "name": "duplicateNames",
+      "tags": "NFHighlightLayerCollection#duplicateNames duplicateNames",
+      "summary": "",
+      "description": "Checks to see if any highlights in the collection share the same name"
+    },
+    "NFHighlightLayerCollection.html#disconnectHighlights": {
+      "id": "NFHighlightLayerCollection.html#disconnectHighlights",
+      "kind": "function",
+      "title": "disconnectHighlights() → {NFHighlightLayerCollection}",
+      "longname": "NFHighlightLayerCollection#disconnectHighlights",
+      "name": "disconnectHighlights",
+      "tags": "NFHighlightLayerCollection#disconnectHighlights disconnectHighlights",
+      "summary": "",
+      "description": "Disconnect all highlights in all layers"
+    },
+    "NFHighlightLayerCollection.html#bubbleUpHighlights": {
+      "id": "NFHighlightLayerCollection.html#bubbleUpHighlights",
+      "kind": "function",
+      "title": "bubbleUpHighlights() → {NFHighlightLayerCollection}",
+      "longname": "NFHighlightLayerCollection#bubbleUpHighlights",
+      "name": "bubbleUpHighlights",
+      "tags": "NFHighlightLayerCollection#bubbleUpHighlights bubbleUpHighlights",
+      "summary": "",
+      "description": "Bubble up all highlights to their respective layers."
+    },
+    "NFHighlightLayerCollection.html#resetExpressionErrors": {
+      "id": "NFHighlightLayerCollection.html#resetExpressionErrors",
+      "kind": "function",
+      "title": "resetExpressionErrors() → {NFHighlightLayerCollection}",
+      "longname": "NFHighlightLayerCollection#resetExpressionErrors",
+      "name": "resetExpressionErrors",
+      "tags": "NFHighlightLayerCollection#resetExpressionErrors resetExpressionErrors",
+      "summary": "",
+      "description": "Reset expression error status for all highlights. This is to be called after #fixExpressionAfterInit. Because of the way AE handles scripting, if a script breaks an expression, then even if it fixes it, the expression error will be there when the script finishes. This just clears that. If there's still an expression error after the script finishes, that'll still appear."
+    },
+    "NFHighlightLayerCollection.html#fixExpressionsAfterInit": {
+      "id": "NFHighlightLayerCollection.html#fixExpressionsAfterInit",
+      "kind": "function",
+      "title": "fixExpressionsAfterInit() → {NFHighlightLayerCollection}",
+      "longname": "NFHighlightLayerCollection#fixExpressionsAfterInit",
+      "name": "fixExpressionsAfterInit",
+      "tags": "NFHighlightLayerCollection#fixExpressionsAfterInit fixExpressionsAfterInit",
+      "summary": "",
+      "description": "Updates the expressions on highlights to account for the new name of the layer after being initialized. Call #resetExpressionErrors after this to prevent incorrect error warnings."
+    },
+    "NFHighlightLayerCollection.html#.collectionFromAVLayerArray": {
+      "id": "NFHighlightLayerCollection.html#.collectionFromAVLayerArray",
+      "kind": "function",
+      "title": "&lt;static&gt; collectionFromAVLayerArray( arr ) → {NFHighlightLayerCollection}",
+      "longname": "NFHighlightLayerCollection.collectionFromAVLayerArray",
+      "name": "collectionFromAVLayerArray",
+      "tags": "NFHighlightLayerCollection.collectionFromAVLayerArray collectionFromAVLayerArray",
+      "summary": "",
+      "description": "Returns a new instance from an array of AVLayers/ShapeLayers"
+    },
+    "NFHighlightLayerCollection.html#addNFLayer": {
+      "id": "NFHighlightLayerCollection.html#addNFLayer",
+      "kind": "function",
+      "title": "addNFLayer( newLayer ) → {NFLayerCollection}",
+      "longname": "NFHighlightLayerCollection#addNFLayer",
+      "name": "addNFLayer",
+      "tags": "NFHighlightLayerCollection#addNFLayer addNFLayer",
+      "summary": "",
+      "description": "Adds an NFLayer to this collection"
+    },
+    "NFHighlightLayerCollection.html#onlyContainsPageLayers": {
+      "id": "NFHighlightLayerCollection.html#onlyContainsPageLayers",
+      "kind": "function",
+      "title": "onlyContainsPageLayers() → {boolean}",
+      "longname": "NFHighlightLayerCollection#onlyContainsPageLayers",
+      "name": "onlyContainsPageLayers",
+      "tags": "NFHighlightLayerCollection#onlyContainsPageLayers onlyContainsPageLayers",
+      "summary": "",
+      "description": "Returns true if the collection only contains NFPageLayers and no other types of NFLayers"
+    },
+    "NFHighlightLayerCollection.html#inSameComp": {
+      "id": "NFHighlightLayerCollection.html#inSameComp",
+      "kind": "function",
+      "title": "inSameComp() → {boolean}",
+      "longname": "NFHighlightLayerCollection#inSameComp",
+      "name": "inSameComp",
+      "tags": "NFHighlightLayerCollection#inSameComp inSameComp",
+      "summary": "",
+      "description": "Returns true if the layers in the collection are all in the same comp"
+    },
+    "NFHighlightLayerCollection.html#containingComp": {
+      "id": "NFHighlightLayerCollection.html#containingComp",
+      "kind": "function",
+      "title": "containingComp() → {NFComp|null}",
+      "longname": "NFHighlightLayerCollection#containingComp",
+      "name": "containingComp",
+      "tags": "NFHighlightLayerCollection#containingComp containingComp",
+      "summary": "",
+      "description": "Returns the containing comp for the layers, or null if #inSameComp is false"
+    },
+    "NFHighlightLayerCollection.html#getPageLayerCollection": {
+      "id": "NFHighlightLayerCollection.html#getPageLayerCollection",
+      "kind": "function",
+      "title": "getPageLayerCollection() → {NFPageLayerCollection}",
+      "longname": "NFHighlightLayerCollection#getPageLayerCollection",
+      "name": "getPageLayerCollection",
+      "tags": "NFHighlightLayerCollection#getPageLayerCollection getPageLayerCollection",
+      "summary": "",
+      "description": "Returns a new NFPageLayerCollection from this collection. Only call if you know this collection only contains NFPageLayers"
+    },
+    "NFHighlightLayerCollection.html#count": {
+      "id": "NFHighlightLayerCollection.html#count",
+      "kind": "function",
+      "title": "count() → {int}",
+      "longname": "NFHighlightLayerCollection#count",
+      "name": "count",
+      "tags": "NFHighlightLayerCollection#count count",
+      "summary": "",
+      "description": "Shortcut to access the number of layers in the collection"
+    },
+    "NFHighlightLayerCollection.html#isEmpty": {
+      "id": "NFHighlightLayerCollection.html#isEmpty",
+      "kind": "function",
+      "title": "isEmpty() → {boolean}",
+      "longname": "NFHighlightLayerCollection#isEmpty",
+      "name": "isEmpty",
+      "tags": "NFHighlightLayerCollection#isEmpty isEmpty",
+      "summary": "",
+      "description": "True if the collection is empty"
+    },
+    "NFHighlightLayerCollection.html#remove": {
+      "id": "NFHighlightLayerCollection.html#remove",
+      "kind": "function",
+      "title": "remove( layerToRemove ) → {NFLayerCollection}",
+      "longname": "NFHighlightLayerCollection#remove",
+      "name": "remove",
+      "tags": "NFHighlightLayerCollection#remove remove",
+      "summary": "",
+      "description": "Removes a given layer from this collection"
+    },
+    "NFHighlightLayerCollection.html#getTopmostLayer": {
+      "id": "NFHighlightLayerCollection.html#getTopmostLayer",
+      "kind": "function",
+      "title": "getTopmostLayer() → {NFLayer|null}",
+      "longname": "NFHighlightLayerCollection#getTopmostLayer",
+      "name": "getTopmostLayer",
+      "tags": "NFHighlightLayerCollection#getTopmostLayer getTopmostLayer",
+      "summary": "",
+      "description": "Gets the topmost NFLayer in this collection"
+    },
+    "NFHighlightLayerCollection.html#getBottommostLayer": {
+      "id": "NFHighlightLayerCollection.html#getBottommostLayer",
+      "kind": "function",
+      "title": "getBottommostLayer() → {NFLayer|null}",
+      "longname": "NFHighlightLayerCollection#getBottommostLayer",
+      "name": "getBottommostLayer",
+      "tags": "NFHighlightLayerCollection#getBottommostLayer getBottommostLayer",
+      "summary": "",
+      "description": "Gets the bottommost NFLayer in this collection"
+    },
+    "NFHighlightLayerCollection.html#setParents": {
+      "id": "NFHighlightLayerCollection.html#setParents",
+      "kind": "function",
+      "title": "setParents( newParent ) → {NFLayerCollection}",
+      "longname": "NFHighlightLayerCollection#setParents",
+      "name": "setParents",
+      "tags": "NFHighlightLayerCollection#setParents setParents",
+      "summary": "",
+      "description": "Sets all member layers' parents to a given NFLayer or null"
+    },
+    "NFHighlightLayerCollection.html#nullify": {
+      "id": "NFHighlightLayerCollection.html#nullify",
+      "kind": "function",
+      "title": "nullify() → {NFLayer}",
+      "longname": "NFHighlightLayerCollection#nullify",
+      "name": "nullify",
+      "tags": "NFHighlightLayerCollection#nullify nullify",
+      "summary": "",
+      "description": "Creates a new null parent to all the layers in the collection, positioned above the one with the lowest index. Will override previous parenting."
+    },
+    "NFImageLayer.html": {
+      "id": "NFImageLayer.html",
+      "kind": "class",
+      "title": "NFImageLayer",
+      "longname": "NFImageLayer",
+      "name": "NFImageLayer",
+      "tags": "NFImageLayer",
+      "summary": "",
+      "description": "Subclass of NFLayer for an image layer",
+      "body": ""
+    },
+    "NFImageLayer.html#isPageLayer": {
+      "id": "NFImageLayer.html#isPageLayer",
+      "kind": "function",
+      "title": "isPageLayer() → {boolean}",
+      "longname": "NFImageLayer#isPageLayer",
+      "name": "isPageLayer",
+      "tags": "NFImageLayer#isPageLayer isPageLayer",
+      "summary": "",
+      "description": "Checks if this layer is a valid page Layer"
+    },
+    "NFImageLayer.html#isNullLayer": {
+      "id": "NFImageLayer.html#isNullLayer",
+      "kind": "function",
+      "title": "isNullLayer() → {boolean}",
+      "longname": "NFImageLayer#isNullLayer",
+      "name": "isNullLayer",
+      "tags": "NFImageLayer#isNullLayer isNullLayer",
+      "summary": "",
+      "description": "Checks if this layer is a null layer"
+    },
+    "NFImageLayer.html#isHighlightLayer": {
+      "id": "NFImageLayer.html#isHighlightLayer",
+      "kind": "function",
+      "title": "isHighlightLayer() → {boolean}",
+      "longname": "NFImageLayer#isHighlightLayer",
+      "name": "isHighlightLayer",
+      "tags": "NFImageLayer#isHighlightLayer isHighlightLayer",
+      "summary": "",
+      "description": "Checks if this layer is a valid highlight layer"
+    },
+    "NFImageLayer.html#isPaperParentLayer": {
+      "id": "NFImageLayer.html#isPaperParentLayer",
+      "kind": "function",
+      "title": "isPaperParentLayer() → {boolean}",
+      "longname": "NFImageLayer#isPaperParentLayer",
+      "name": "isPaperParentLayer",
+      "tags": "NFImageLayer#isPaperParentLayer isPaperParentLayer",
+      "summary": "",
+      "description": "Checks if this layer is a valid paper parent layer"
+    },
+    "NFImageLayer.html#getSpecializedLayer": {
+      "id": "NFImageLayer.html#getSpecializedLayer",
+      "kind": "function",
+      "title": "getSpecializedLayer() → {NFPageLayer|NFHighlightLayer|NFPaperParentLayer|NFLayer}",
+      "longname": "NFImageLayer#getSpecializedLayer",
+      "name": "getSpecializedLayer",
+      "tags": "NFImageLayer#getSpecializedLayer getSpecializedLayer",
+      "summary": "",
+      "description": "Returns a new layer of a specialized type for the contents of this layer"
+    },
+    "NFImageLayer.html#index": {
+      "id": "NFImageLayer.html#index",
+      "kind": "function",
+      "title": "index() → {int}",
+      "longname": "NFImageLayer#index",
+      "name": "index",
+      "tags": "NFImageLayer#index index",
+      "summary": "",
+      "description": "Shorthand for the layer's index"
+    },
+    "NFImageLayer.html#hasNullParent": {
+      "id": "NFImageLayer.html#hasNullParent",
+      "kind": "function",
+      "title": "hasNullParent() → {boolean}",
+      "longname": "NFImageLayer#hasNullParent",
+      "name": "hasNullParent",
+      "tags": "NFImageLayer#hasNullParent hasNullParent",
+      "summary": "",
+      "description": "Returns true if the layer has a null parent"
+    },
+    "NFImageLayer.html#sameLayerAs": {
+      "id": "NFImageLayer.html#sameLayerAs",
+      "kind": "function",
+      "title": "sameLayerAs() → {boolean}",
+      "longname": "NFImageLayer#sameLayerAs",
+      "name": "sameLayerAs",
+      "tags": "NFImageLayer#sameLayerAs sameLayerAs",
+      "summary": "",
+      "description": "Checks to see if a given NFLayer's layer is the same as this one's For example, an NFLayer and an NFPageLayer that refer to the same layer will return true"
+    },
+    "NFImageLayer.html#containingComp": {
+      "id": "NFImageLayer.html#containingComp",
+      "kind": "function",
+      "title": "containingComp() → {NFComp}",
+      "longname": "NFImageLayer#containingComp",
+      "name": "containingComp",
+      "tags": "NFImageLayer#containingComp containingComp",
+      "summary": "",
+      "description": "Returns the containing NFComp"
+    },
+    "NFImageLayer.html#getChildren": {
+      "id": "NFImageLayer.html#getChildren",
+      "kind": "function",
+      "title": "getChildren() → {NFLayerCollection}",
+      "longname": "NFImageLayer#getChildren",
+      "name": "getChildren",
+      "tags": "NFImageLayer#getChildren getChildren",
+      "summary": "",
+      "description": "Returns an NFLayerCollection of child layers of this layer as specialized layers"
+    },
+    "NFImageLayer.html#getParent": {
+      "id": "NFImageLayer.html#getParent",
+      "kind": "function",
+      "title": "getParent() → {NFLayer|null}",
+      "longname": "NFImageLayer#getParent",
+      "name": "getParent",
+      "tags": "NFImageLayer#getParent getParent",
+      "summary": "",
+      "description": "Gets the layer's parent NFLayer, if any"
+    },
+    "NFImageLayer.html#setParent": {
+      "id": "NFImageLayer.html#setParent",
+      "kind": "function",
+      "title": "setParent( newParent ) → {NFLayer}",
+      "longname": "NFImageLayer#setParent",
+      "name": "setParent",
+      "tags": "NFImageLayer#setParent setParent",
+      "summary": "",
+      "description": "Sets the layer's parent to a given NFLayer"
+    },
+    "NFImageLayer.html#setZoomer": {
+      "id": "NFImageLayer.html#setZoomer",
+      "kind": "function",
+      "title": "setZoomer() → {NFLayer}",
+      "longname": "NFImageLayer#setZoomer",
+      "name": "setZoomer",
+      "tags": "NFImageLayer#setZoomer setZoomer",
+      "summary": "",
+      "description": "Sets the layer's parent to the zoomer if this layer is in an NFPartComp"
+    },
+    "NFImageLayer.html#moveBefore": {
+      "id": "NFImageLayer.html#moveBefore",
+      "kind": "function",
+      "title": "moveBefore( targetLayer ) → {NFLayer}",
+      "longname": "NFImageLayer#moveBefore",
+      "name": "moveBefore",
+      "tags": "NFImageLayer#moveBefore moveBefore",
+      "summary": "",
+      "description": "Moves this layer's index to immediately before the provided target layer"
+    },
+    "NFImageLayer.html#moveAfter": {
+      "id": "NFImageLayer.html#moveAfter",
+      "kind": "function",
+      "title": "moveAfter( targetLayer ) → {NFLayer}",
+      "longname": "NFImageLayer#moveAfter",
+      "name": "moveAfter",
+      "tags": "NFImageLayer#moveAfter moveAfter",
+      "summary": "",
+      "description": "Moves this layer's index to immediately after the provided target layer"
+    },
+    "NFImageLayer.html#markers": {
+      "id": "NFImageLayer.html#markers",
+      "kind": "function",
+      "title": "markers() → {Property}",
+      "longname": "NFImageLayer#markers",
+      "name": "markers",
+      "tags": "NFImageLayer#markers markers",
+      "summary": "",
+      "description": "Moves this layer's index to immediately after the provided target layer"
+    },
+    "NFImageLayer.html#addInOutMarkersForProperty": {
+      "id": "NFImageLayer.html#addInOutMarkersForProperty",
+      "kind": "function",
+      "title": "addInOutMarkersForProperty( options ) → {NFLayer}",
+      "longname": "NFImageLayer#addInOutMarkersForProperty",
+      "name": "addInOutMarkersForProperty",
+      "tags": "NFImageLayer#addInOutMarkersForProperty addInOutMarkersForProperty",
+      "summary": "",
+      "description": "Sets the given property's expression and adds In and Out markers (if not already on the layer) for in and out transitions. Overrides previous expressions"
+    },
+    "NFImageLayer.html#addSlider": {
+      "id": "NFImageLayer.html#addSlider",
+      "kind": "function",
+      "title": "addSlider( name, value ) → {Property}",
+      "longname": "NFImageLayer#addSlider",
+      "name": "addSlider",
+      "tags": "NFImageLayer#addSlider addSlider",
+      "summary": "",
+      "description": "Creates and returns a slider effect on the layer"
+    },
     "NFPageLayer.html": {
       "id": "NFPageLayer.html",
       "kind": "class",
@@ -15540,6 +22967,126 @@ window.lunrData = {
       "tags": "NFPageLayer#findPaperParentLayer findPaperParentLayer",
       "summary": "",
       "description": "Returns the paperParentLayer for this layer, if it exists, REGARDLESS OF WHETHER ITS CONNECTED. Not to be confused with NFPageLayer#getPaperParentLayer"
+    },
+    "NFPageLayer.html#highlights": {
+      "id": "NFPageLayer.html#highlights",
+      "kind": "function",
+      "title": "highlights() → {NFHighlightLayerCollection}",
+      "longname": "NFPageLayer#highlights",
+      "name": "highlights",
+      "tags": "NFPageLayer#highlights highlights",
+      "summary": "",
+      "description": "Returns NFHighlightLayerCollection of all highlights in this page"
+    },
+    "NFPageLayer.html#bubbledHighlights": {
+      "id": "NFPageLayer.html#bubbledHighlights",
+      "kind": "function",
+      "title": "bubbledHighlights() → {NFHighlightLayerCollection}",
+      "longname": "NFPageLayer#bubbledHighlights",
+      "name": "bubbledHighlights",
+      "tags": "NFPageLayer#bubbledHighlights bubbledHighlights",
+      "summary": "",
+      "description": "Returns NFHighlightLayerCollection of all highlights bubbled onto this page layer"
+    },
+    "NFPageLayer.html#isInitted": {
+      "id": "NFPageLayer.html#isInitted",
+      "kind": "function",
+      "title": "isInitted() → {boolean}",
+      "longname": "NFPageLayer#isInitted",
+      "name": "isInitted",
+      "tags": "NFPageLayer#isInitted isInitted",
+      "summary": "",
+      "description": "Returns whether or not the page has been initted with the below methods"
+    },
+    "NFPageLayer.html#markInitted": {
+      "id": "NFPageLayer.html#markInitted",
+      "kind": "function",
+      "title": "markInitted() → {NFPageLayer}",
+      "longname": "NFPageLayer#markInitted",
+      "name": "markInitted",
+      "tags": "NFPageLayer#markInitted markInitted",
+      "summary": "",
+      "description": "Changes the page name to mark the page layer as initted, and updates bubbled highlights"
+    },
+    "NFPageLayer.html#init": {
+      "id": "NFPageLayer.html#init",
+      "kind": "function",
+      "title": "init() → {NFPageLayer}",
+      "longname": "NFPageLayer#init",
+      "name": "init",
+      "tags": "NFPageLayer#init init",
+      "summary": "",
+      "description": "Adds the non-transform init properties (dropshadow, motion blur, etc)"
+    },
+    "NFPageLayer.html#setDropShadow": {
+      "id": "NFPageLayer.html#setDropShadow",
+      "kind": "function",
+      "title": "setDropShadow() → {NFPageLayer}",
+      "longname": "NFPageLayer#setDropShadow",
+      "name": "setDropShadow",
+      "tags": "NFPageLayer#setDropShadow setDropShadow",
+      "summary": "",
+      "description": "Sets the drop shadow for the layer"
+    },
+    "NFPageLayer.html#initTransforms": {
+      "id": "NFPageLayer.html#initTransforms",
+      "kind": "function",
+      "title": "initTransforms() → {NFPageLayer}",
+      "longname": "NFPageLayer#initTransforms",
+      "name": "initTransforms",
+      "tags": "NFPageLayer#initTransforms initTransforms",
+      "summary": "",
+      "description": "Adds the transform init properties (size, position)"
+    },
+    "NFPageLayer.html#setInitSize": {
+      "id": "NFPageLayer.html#setInitSize",
+      "kind": "function",
+      "title": "setInitSize() → {boolean}",
+      "longname": "NFPageLayer#setInitSize",
+      "name": "setInitSize",
+      "tags": "NFPageLayer#setInitSize setInitSize",
+      "summary": "",
+      "description": "Sets the size of the layer to the Init size. Returns false and doesn't set size if there are existing keyframes"
+    },
+    "NFPageLayer.html#setInitPosition": {
+      "id": "NFPageLayer.html#setInitPosition",
+      "kind": "function",
+      "title": "setInitPosition() → {boolean}",
+      "longname": "NFPageLayer#setInitPosition",
+      "name": "setInitPosition",
+      "tags": "NFPageLayer#setInitPosition setInitPosition",
+      "summary": "",
+      "description": "Sets the position of the layer to the Init position. Returns false and doesn't set position if there are existing keyframes"
+    },
+    "NFPageLayer.html#getPDFNumber": {
+      "id": "NFPageLayer.html#getPDFNumber",
+      "kind": "function",
+      "title": "getPDFNumber() → {string}",
+      "longname": "NFPageLayer#getPDFNumber",
+      "name": "getPDFNumber",
+      "tags": "NFPageLayer#getPDFNumber getPDFNumber",
+      "summary": "",
+      "description": "Returns the PDF number as a String"
+    },
+    "NFPageLayer.html#getPageNumber": {
+      "id": "NFPageLayer.html#getPageNumber",
+      "kind": "function",
+      "title": "getPageNumber() → {string}",
+      "longname": "NFPageLayer#getPageNumber",
+      "name": "getPageNumber",
+      "tags": "NFPageLayer#getPageNumber getPageNumber",
+      "summary": "",
+      "description": "Returns the page number as a String"
+    },
+    "NFPageLayer.html#.isPageLayer": {
+      "id": "NFPageLayer.html#.isPageLayer",
+      "kind": "function",
+      "title": "&lt;static&gt; isPageLayer( theLayer ) → {boolean}",
+      "longname": "NFPageLayer.isPageLayer",
+      "name": "isPageLayer",
+      "tags": "NFPageLayer.isPageLayer isPageLayer",
+      "summary": "",
+      "description": "Returns true if the given AVLayer is a Page Layer"
     },
     "NFPageLayer.html#isPageLayer": {
       "id": "NFPageLayer.html#isPageLayer",
@@ -15729,7 +23276,7 @@ window.lunrData = {
       "name": "NFPageLayerCollection",
       "tags": "NFPageLayerCollection",
       "summary": "",
-      "description": "Subclass of NFLayer for the parent null layer of a group of page layers from the same PDF",
+      "description": "Subclass of NFLayerCollection for page layers",
       "body": ""
     },
     "NFPageLayerCollection.html#addNFPageLayer": {
@@ -16255,6 +23802,27 @@ window.lunrData = {
       "summary": "",
       "description": "Returns an Array of all the layers in this collection for easier manipulation"
     },
+    "Property.html": {
+      "id": "Property.html",
+      "kind": "namespace",
+      "title": "Property",
+      "longname": "Property",
+      "name": "Property",
+      "tags": "Property",
+      "summary": "",
+      "description": "The After Effects Layer Class",
+      "body": ""
+    },
+    "Property.html#.expressionStringForValue": {
+      "id": "Property.html#.expressionStringForValue",
+      "kind": "function",
+      "title": "&lt;static&gt; expressionStringForValue() → {string}",
+      "longname": "Property.expressionStringForValue",
+      "name": "expressionStringForValue",
+      "tags": "Property.expressionStringForValue expressionStringForValue",
+      "summary": "",
+      "description": "Returns the index of the marker with the given comment"
+    },
     "Layer.html": {
       "id": "Layer.html",
       "kind": "namespace",
@@ -16285,27 +23853,6 @@ window.lunrData = {
       "tags": "Layer.removeMarker removeMarker",
       "summary": "",
       "description": "Removes the marker with a given comment"
-    },
-    "Property.html": {
-      "id": "Property.html",
-      "kind": "namespace",
-      "title": "Property",
-      "longname": "Property",
-      "name": "Property",
-      "tags": "Property",
-      "summary": "",
-      "description": "The After Effects Layer Class",
-      "body": ""
-    },
-    "Property.html#.expressionStringForValue": {
-      "id": "Property.html#.expressionStringForValue",
-      "kind": "function",
-      "title": "&lt;static&gt; expressionStringForValue() → {string}",
-      "longname": "Property.expressionStringForValue",
-      "name": "expressionStringForValue",
-      "tags": "Property.expressionStringForValue expressionStringForValue",
-      "summary": "",
-      "description": "Returns the index of the marker with the given comment"
     }
   }
 };

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Class: NFLayer</title>
+    <title>Class: NFHighlightLayerCollection</title>
     
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -981,7 +981,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="NFLayer.html">Class: NFLayer</h1>
+        <h1 class="page-title" data-filename="NFHighlightLayerCollection.html">Class: NFHighlightLayerCollection</h1>
         
 
 
@@ -990,10 +990,10 @@
     
 <header>
     <div class="header content-size">
-        <h2>NFLayer
+        <h2>NFHighlightLayerCollection
         </h2>
         
-            <div class="class-description">NF Wrapper object for an AVLayer</div>
+            <div class="class-description">Subclass of <a href="NFLayerCollection.html">NFLayerCollection</a> for highlight layers</div>
         
     </div>
 </header>  
@@ -1006,12 +1006,12 @@
         
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="NFLayer">
-            <a class="share-icon" href="#NFLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="NFHighlightLayerCollection">
+            <a class="share-icon" href="#NFHighlightLayerCollection"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                new NFLayer
+                new NFHighlightLayerCollection
             </span>
-            <span class="signature">(layer)</span>
+            <span class="signature">(layerArr)</span>
             
             
             
@@ -1020,7 +1020,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line113">objectModel.jsx:113</a>
+            <a href="objectModel.jsx.html#line1399">objectModel.jsx:1399</a>
         </div>
         
     </div>
@@ -1031,7 +1031,7 @@
     
     
     <div class="description">
-        Creates a new NFLayer from a given AVLayer
+        Creates a new NFHighlightLayerCollection from a given array of NFHighlightLayers
     </div>
     
 
@@ -1062,16 +1062,13 @@
 	
         <tr>
             
-                <td class="name"><code>layer</code></td>
+                <td class="name"><code>layerArr</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">AVLayer</span>
-|
-
-<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
+<span class="param-type">Array.&lt;<a href="NFHighlightLayer.html">NFHighlightLayer</a>></span>
 
 
             
@@ -1081,7 +1078,7 @@
             
             <td class="description last">
                 
-                the target AVLayer or NFLayer (in which case we use it's AVLayer)</td>
+                array of layers to use</td>
         </tr>
 	
 	
@@ -1119,13 +1116,13 @@
 	
         <tr>
             
-                <td class="name"><code>layer</code></td>
+                <td class="name"><code>layers</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">AVLayer</span>
+<span class="param-type">Array.&lt;<a href="NFHighlightLayer.html">NFHighlightLayer</a>></span>
 
 
             
@@ -1135,7 +1132,7 @@
             
             
             
-            <td class="description last">the wrapped AVLayer</td>
+            <td class="description last">array of layers</td>
         </tr>
 	
 	
@@ -1177,7 +1174,7 @@
 
     <div class="param-desc">
     
-        Will throw an error if not given a valid AVLayer object
+        Will throw an error if the array does not contain valid highlight layers
     
     </div>
 
@@ -1192,6 +1189,12 @@
     
     </div>
     
+    
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="NFLayerCollection.html">NFLayerCollection</a></li>
+        </ul>
     
     
     
@@ -1211,12 +1214,12 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".getSpecializedLayerFromAVLayer">
-            <a class="share-icon" href="#.getSpecializedLayerFromAVLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id=".collectionFromAVLayerArray">
+            <a class="share-icon" href="#.collectionFromAVLayerArray"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                NFLayer.getSpecializedLayerFromAVLayer
+                NFHighlightLayerCollection.collectionFromAVLayerArray
             </span>
-            <span class="signature">(theLayer)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a> | <a href="NFHighlightLayer.html">NFHighlightLayer</a> | <a href="NFPageLayer.html">NFPageLayer</a> | <a href="NFEmphasisLayer.html">NFEmphasisLayer</a> | <a href="NFGaussyLayer.html">NFGaussyLayer</a> | <a href="NFImageLayer.html">NFImageLayer</a></span>
+            <span class="signature">(arr)</span><span class="type-signature"><a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a></span>
             
             <span class="access-signature">static</span>
             
@@ -1225,7 +1228,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line545">objectModel.jsx:545</a>
+            <a href="objectModel.jsx.html#line1607">objectModel.jsx:1607</a>
         </div>
         
     </div>
@@ -1236,7 +1239,7 @@
     
     
     <div class="description">
-        Class Method: Returns a new Specialized NFLayer from an AVLayer
+        Returns a new instance from an array of AVLayers/ShapeLayers
     </div>
     
 
@@ -1267,13 +1270,13 @@
 	
         <tr>
             
-                <td class="name"><code>theLayer</code></td>
+                <td class="name"><code>arr</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">AVLayer</span>
+<span class="param-type">Array.&lt;ShapeLayer></span>
 
 
             
@@ -1283,7 +1286,7 @@
             
             <td class="description last">
                 
-                the AVLayer to use</td>
+                the array of ShapeLayers</td>
         </tr>
 	
 	
@@ -1342,26 +1345,11 @@
             
             <td class="type">
             
-                        <a href="NFLayer.html">NFLayer</a>
-                         | 
-                    
-                        <a href="NFHighlightLayer.html">NFHighlightLayer</a>
-                         | 
-                    
-                        <a href="NFPageLayer.html">NFPageLayer</a>
-                         | 
-                    
-                        <a href="NFEmphasisLayer.html">NFEmphasisLayer</a>
-                         | 
-                    
-                        <a href="NFGaussyLayer.html">NFGaussyLayer</a>
-                         | 
-                    
-                        <a href="NFImageLayer.html">NFImageLayer</a>
+                        <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
                         
                     
             </td>
-            <td class="description last">the specialized layer</td>
+            <td class="description last">the new instance</td>
         </tr>
     
     </tbody>
@@ -1376,21 +1364,21 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".isAVLayer">
-            <a class="share-icon" href="#.isAVLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="addAVLayer">
+            <a class="share-icon" href="#addAVLayer"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                NFLayer.isAVLayer
+                addAVLayer
             </span>
-            <span class="signature">(layer)</span><span class="type-signature">boolean</span>
+            <span class="signature">(newLayer)</span><span class="type-signature"><a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a></span>
             
-            <span class="access-signature">static</span>
+            
             
             
         </h4>
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line570">objectModel.jsx:570</a>
+            <a href="objectModel.jsx.html#line1482">objectModel.jsx:1482</a>
         </div>
         
     </div>
@@ -1401,7 +1389,7 @@
     
     
     <div class="description">
-        Returns whether or not a given Layer is an AVLayer or one of its subclasses. This is because Layer objects don't play nice with `instanceof`
+        Adds an AVLayer (specifically a ShapeLayer) to the collection.
     </div>
     
 
@@ -1432,13 +1420,13 @@
 	
         <tr>
             
-                <td class="name"><code>layer</code></td>
+                <td class="name"><code>newLayer</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type"><a href="Layer.html">Layer</a></span>
+<span class="param-type">ShapeLayer</span>
 
 
             
@@ -1448,473 +1436,7 @@
             
             <td class="description last">
                 
-                the Layer to check</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        boolean
-                        
-                    
-            </td>
-            <td class="description last">the result</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id=".isCompLayer">
-            <a class="share-icon" href="#.isCompLayer"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                NFLayer.isCompLayer
-            </span>
-            <span class="signature">(theLayer)</span><span class="type-signature">boolean</span>
-            
-            <span class="access-signature">static</span>
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line560">objectModel.jsx:560</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Class Method: Returns true if the given AVLayer is a comp layer
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>theLayer</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">AVLayer</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the AVLayer to check</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        boolean
-                        
-                    
-            </td>
-            <td class="description last">whether or not the AVLayer is a comp</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="addInOutMarkersForProperty">
-            <a class="share-icon" href="#addInOutMarkersForProperty"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                addInOutMarkersForProperty
-            </span>
-            <span class="signature">(options)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
-            
-            
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line398">objectModel.jsx:398</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Sets the given property's expression and adds In and Out markers (if not already on the layer) for in and out transitions. Overrides previous expressions
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                an object with the chosen equations and in/out values. Equations found in easingEquations.coffee
-                
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>property</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Property.html">Property</a></span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the property to use for the in/outs. required</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>length</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">float</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the length of the transition. Default 2.0</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>startEquation</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the equation to use for the in transition of the property.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>endEquation</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the equation to use for the out transition of the property.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>startValue</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
-|
-
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the value for this property at its inPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>endValue</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
-|
-
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the value for this property at its outPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-            </td>
+                the layer to add to this collection</td>
         </tr>
 	
 	
@@ -1954,27 +1476,17 @@
     
     
     <h5>Throws:</h5>
-    <ul>
-            <li>
+    
+            
 
     <div class="param-desc">
     
-        Throws error if not given at least a start or end equation and value
+        Throws error if not adding a ShapeLayer
     
     </div>
 
-</li>
+
         
-            <li>
-
-    <div class="param-desc">
-    
-        Throws error if the start or end values given are the wrong number of dimensions for this property
-    
-    </div>
-
-</li>
-        </ul>
     
     
     <h5>Returns:</h5>
@@ -1995,7 +1507,7 @@
             
             <td class="type">
             
-                        <a href="NFLayer.html">NFLayer</a>
+                        <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
                         
                     
             </td>
@@ -2014,12 +1526,12 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="addSlider">
-            <a class="share-icon" href="#addSlider"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="addNFHighlightLayer">
+            <a class="share-icon" href="#addNFHighlightLayer"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                addSlider
+                addNFHighlightLayer
             </span>
-            <span class="signature">(name, value)</span><span class="type-signature"><a href="Property.html">Property</a></span>
+            <span class="signature">(newLayer)</span><span class="type-signature"><a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a></span>
             
             
             
@@ -2028,7 +1540,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line525">objectModel.jsx:525</a>
+            <a href="objectModel.jsx.html#line1464">objectModel.jsx:1464</a>
         </div>
         
     </div>
@@ -2039,7 +1551,7 @@
     
     
     <div class="description">
-        Creates and returns a slider effect on the layer
+        Adds an NFHighlightLayer to this collection
     </div>
     
 
@@ -2070,13 +1582,13 @@
 	
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>newLayer</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type"><a href="NFHighlightLayer.html">NFHighlightLayer</a></span>
 
 
             
@@ -2086,20 +1598,163 @@
             
             <td class="description last">
                 
-                the slider name</td>
+                the layer to add to this collection</td>
         </tr>
 	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Throws error if not given an NFHighlightLayer
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="addNFLayer">
+            <a class="share-icon" href="#addNFLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                addNFLayer
+            </span>
+            <span class="signature">(newLayer)</span><span class="type-signature"><a href="NFLayerCollection.html">NFLayerCollection</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#addNFLayer">inherited</a></span>
+            
+            
+                <span class="access-signature overrides"><a href="NFLayerCollection.html#addNFLayer">overrides</a></span>
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line624">objectModel.jsx:624</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Adds an NFLayer to this collection
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
 	
 	
         <tr>
             
-                <td class="name"><code>value</code></td>
+                <td class="name"><code>newLayer</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">float</span>
+<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
 
 
             
@@ -2109,7 +1764,7 @@
             
             <td class="description last">
                 
-                the initial value of the slider</td>
+                the layer to add</td>
         </tr>
 	
 	
@@ -2168,11 +1823,128 @@
             
             <td class="type">
             
-                        <a href="Property.html">Property</a>
+                        <a href="NFLayerCollection.html">NFLayerCollection</a>
                         
                     
             </td>
-            <td class="description last">the slider property</td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="bubbleUpHighlights">
+            <a class="share-icon" href="#bubbleUpHighlights"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                bubbleUpHighlights
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a></span>
+            
+            
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line1546">objectModel.jsx:1546</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Bubble up all highlights to their respective layers.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Throws error if any highlight is already bubbled up (so use #disconnectHighlights first)
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
         </tr>
     
     </tbody>
@@ -2192,16 +1964,18 @@
             <span class="">
                 containingComp
             </span>
-            <span class="signature">()</span><span class="type-signature"><a href="NFComp.html">NFComp</a></span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFComp.html">NFComp</a> | null</span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#containingComp">inherited</a></span>
             
             
         </h4>
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line258">objectModel.jsx:258</a>
+            <a href="objectModel.jsx.html#line682">objectModel.jsx:682</a>
         </div>
         
     </div>
@@ -2212,7 +1986,7 @@
     
     
     <div class="description">
-        Returns the containing NFComp
+        Returns the containing comp for the layers, or null if #inSameComp is false
     </div>
     
 
@@ -2274,6 +2048,9 @@
             <td class="type">
             
                         <a href="NFComp.html">NFComp</a>
+                         | 
+                    
+                        null
                         
                     
             </td>
@@ -2292,453 +2069,23 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="getChildren">
-            <a class="share-icon" href="#getChildren"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="count">
+            <a class="share-icon" href="#count"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                getChildren
-            </span>
-            <span class="signature">()</span><span class="type-signature"><a href="NFLayerCollection.html">NFLayerCollection</a></span>
-            
-            
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line269">objectModel.jsx:269</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns an NFLayerCollection of child layers of this layer as specialized layers
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        <a href="NFLayerCollection.html">NFLayerCollection</a>
-                        
-                    
-            </td>
-            <td class="description last">the collection of child layers</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="getParent">
-            <a class="share-icon" href="#getParent"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                getParent
-            </span>
-            <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a> | null</span>
-            
-            
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line291">objectModel.jsx:291</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Gets the layer's parent NFLayer, if any
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        <a href="NFLayer.html">NFLayer</a>
-                         | 
-                    
-                        null
-                        
-                    
-            </td>
-            <td class="description last">the parent layer, or null if no parent</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="getSpecializedLayer">
-            <a class="share-icon" href="#getSpecializedLayer"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                getSpecializedLayer
-            </span>
-            <span class="signature">()</span><span class="type-signature"><a href="NFPageLayer.html">NFPageLayer</a> | <a href="NFHighlightLayer.html">NFHighlightLayer</a> | <a href="NFPaperParentLayer.html">NFPaperParentLayer</a> | <a href="NFLayer.html">NFLayer</a></span>
-            
-            
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line191">objectModel.jsx:191</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns a new layer of a specialized type for the contents of this layer
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        <a href="NFPageLayer.html">NFPageLayer</a>
-                         | 
-                    
-                        <a href="NFHighlightLayer.html">NFHighlightLayer</a>
-                         | 
-                    
-                        <a href="NFPaperParentLayer.html">NFPaperParentLayer</a>
-                         | 
-                    
-                        <a href="NFLayer.html">NFLayer</a>
-                        
-                    
-            </td>
-            <td class="description last">the specialized layer or self if no specialized layer options</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="hasNullParent">
-            <a class="share-icon" href="#hasNullParent"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                hasNullParent
-            </span>
-            <span class="signature">()</span><span class="type-signature">boolean</span>
-            
-            
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line221">objectModel.jsx:221</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns true if the layer has a null parent
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        boolean
-                        
-                    
-            </td>
-            <td class="description last">Whether this layer has a parent which is a null layer</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="index">
-            <a class="share-icon" href="#index"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                index
+                count
             </span>
             <span class="signature">()</span><span class="type-signature">int</span>
             
             
             
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#count">inherited</a></span>
+            
             
         </h4>
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line210">objectModel.jsx:210</a>
+            <a href="objectModel.jsx.html#line708">objectModel.jsx:708</a>
         </div>
         
     </div>
@@ -2749,7 +2096,7 @@
     
     
     <div class="description">
-        Shorthand for the layer's index
+        Shortcut to access the number of layers in the collection
     </div>
     
 
@@ -2814,7 +2161,7 @@
                         
                     
             </td>
-            <td class="description last">the layer's index</td>
+            <td class="description last">the number of layers in the collection</td>
         </tr>
     
     </tbody>
@@ -2829,12 +2176,12 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="isHighlightLayer">
-            <a class="share-icon" href="#isHighlightLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="disconnectHighlights">
+            <a class="share-icon" href="#disconnectHighlights"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                isHighlightLayer
+                disconnectHighlights
             </span>
-            <span class="signature">()</span><span class="type-signature">boolean</span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a></span>
             
             
             
@@ -2843,7 +2190,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line169">objectModel.jsx:169</a>
+            <a href="objectModel.jsx.html#line1528">objectModel.jsx:1528</a>
         </div>
         
     </div>
@@ -2854,7 +2201,112 @@
     
     
     <div class="description">
-        Checks if this layer is a valid highlight layer
+        Disconnect all highlights in all layers
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="duplicateNames">
+            <a class="share-icon" href="#duplicateNames"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                duplicateNames
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line1510">objectModel.jsx:1510</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Checks to see if any highlights in the collection share the same name
     </div>
     
 
@@ -2919,7 +2371,7 @@
                         
                     
             </td>
-            <td class="description last">if this is a valid highlight layer</td>
+            <td class="description last">whether or not any highlights in the collection share the same name</td>
         </tr>
     
     </tbody>
@@ -2934,12 +2386,12 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="isNullLayer">
-            <a class="share-icon" href="#isNullLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="fixExpressionsAfterInit">
+            <a class="share-icon" href="#fixExpressionsAfterInit"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                isNullLayer
+                fixExpressionsAfterInit
             </span>
-            <span class="signature">()</span><span class="type-signature">boolean</span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a></span>
             
             
             
@@ -2948,7 +2400,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line158">objectModel.jsx:158</a>
+            <a href="objectModel.jsx.html#line1584">objectModel.jsx:1584</a>
         </div>
         
     </div>
@@ -2959,7 +2411,467 @@
     
     
     <div class="description">
-        Checks if this layer is a null layer
+        Updates the expressions on highlights to account for the new name of the layer after being
+  initialized. Call #resetExpressionErrors after this to prevent incorrect error warnings.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
+                        
+                    
+            </td>
+            <td class="description last">self</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="getBottommostLayer">
+            <a class="share-icon" href="#getBottommostLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                getBottommostLayer
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a> | null</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#getBottommostLayer">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line779">objectModel.jsx:779</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the bottommost NFLayer in this collection
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Throws an error if the layers are in different comps
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                         | 
+                    
+                        null
+                        
+                    
+            </td>
+            <td class="description last">the bottommost layer or null if empty</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="getPageLayerCollection">
+            <a class="share-icon" href="#getPageLayerCollection"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                getPageLayerCollection
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFPageLayerCollection.html">NFPageLayerCollection</a></span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#getPageLayerCollection">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line697">objectModel.jsx:697</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns a new NFPageLayerCollection from this collection. Only call if you know
+  this collection only contains NFPageLayers
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFPageLayerCollection.html">NFPageLayerCollection</a>
+                        
+                    
+            </td>
+            <td class="description last">the new collection</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="getTopmostLayer">
+            <a class="share-icon" href="#getTopmostLayer"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                getTopmostLayer
+            </span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a> | null</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#getTopmostLayer">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line752">objectModel.jsx:752</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the topmost NFLayer in this collection
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        Throws an error if the layers are in different comps
+    
+    </div>
+
+
+        
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                         | 
+                    
+                        null
+                        
+                    
+            </td>
+            <td class="description last">the topmost layer or null if empty</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="inSameComp">
+            <a class="share-icon" href="#inSameComp"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                inSameComp
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#inSameComp">inherited</a></span>
+            
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line659">objectModel.jsx:659</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns true if the layers in the collection are all in the same comp
     </div>
     
 
@@ -3024,7 +2936,7 @@
                         
                     
             </td>
-            <td class="description last">if this is a null layer</td>
+            <td class="description last">if the layers in this collection are all in the same containing comp</td>
         </tr>
     
     </tbody>
@@ -3039,21 +2951,23 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="isPageLayer">
-            <a class="share-icon" href="#isPageLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="isEmpty">
+            <a class="share-icon" href="#isEmpty"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                isPageLayer
+                isEmpty
             </span>
             <span class="signature">()</span><span class="type-signature">boolean</span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#isEmpty">inherited</a></span>
             
             
         </h4>
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line147">objectModel.jsx:147</a>
+            <a href="objectModel.jsx.html#line719">objectModel.jsx:719</a>
         </div>
         
     </div>
@@ -3064,7 +2978,7 @@
     
     
     <div class="description">
-        Checks if this layer is a valid page Layer
+        True if the collection is empty
     </div>
     
 
@@ -3129,7 +3043,7 @@
                         
                     
             </td>
-            <td class="description last">if this is a valid page layer</td>
+            <td class="description last">whether or not the collection is empty</td>
         </tr>
     
     </tbody>
@@ -3144,21 +3058,23 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="isPaperParentLayer">
-            <a class="share-icon" href="#isPaperParentLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="nullify">
+            <a class="share-icon" href="#nullify"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                isPaperParentLayer
+                nullify
             </span>
-            <span class="signature">()</span><span class="type-signature">boolean</span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#nullify">inherited</a></span>
             
             
         </h4>
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line180">objectModel.jsx:180</a>
+            <a href="objectModel.jsx.html#line825">objectModel.jsx:825</a>
         </div>
         
     </div>
@@ -3169,7 +3085,116 @@
     
     
     <div class="description">
-        Checks if this layer is a valid paper parent layer
+        Creates a new null parent to all the layers in the collection, positioned above the one with the lowest index. Will override previous parenting.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="NFLayer.html">NFLayer</a>
+                        
+                    
+            </td>
+            <td class="description last">the new null NFLayer</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="onlyContainsPageLayers">
+            <a class="share-icon" href="#onlyContainsPageLayers"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                onlyContainsPageLayers
+            </span>
+            <span class="signature">()</span><span class="type-signature">boolean</span>
+            
+            
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#onlyContainsPageLayers">inherited</a></span>
+            
+            
+                <span class="access-signature overrides"><a href="NFLayerCollection.html#onlyContainsPageLayers">overrides</a></span>
+            
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="objectModel.jsx.html#line640">objectModel.jsx:640</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns true if the collection only contains NFPageLayers and no other types of NFLayers
     </div>
     
 
@@ -3234,7 +3259,7 @@
                         
                     
             </td>
-            <td class="description last">if this is a valid paper parent layer</td>
+            <td class="description last">if the layers in this collection are all <a href="NFPageLayer.html">NFPageLayer</a> objects</td>
         </tr>
     
     </tbody>
@@ -3249,21 +3274,23 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="markers">
-            <a class="share-icon" href="#markers"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="remove">
+            <a class="share-icon" href="#remove"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                markers
+                remove
             </span>
-            <span class="signature">()</span><span class="type-signature"><a href="Property.html">Property</a></span>
+            <span class="signature">(layerToRemove)</span><span class="type-signature"><a href="NFLayerCollection.html">NFLayerCollection</a></span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#remove">inherited</a></span>
             
             
         </h4>
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line378">objectModel.jsx:378</a>
+            <a href="objectModel.jsx.html#line732">objectModel.jsx:732</a>
         </div>
         
     </div>
@@ -3274,112 +3301,7 @@
     
     
     <div class="description">
-        Moves this layer's index to immediately after the provided target layer
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        <a href="Property.html">Property</a>
-                        
-                    
-            </td>
-            <td class="description last">Marker property</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="moveAfter">
-            <a class="share-icon" href="#moveAfter"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                moveAfter
-            </span>
-            <span class="signature">(targetLayer)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
-            
-            
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line363">objectModel.jsx:363</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Moves this layer's index to immediately after the provided target layer
+        Removes a given layer from this collection
     </div>
     
 
@@ -3410,7 +3332,7 @@
 	
         <tr>
             
-                <td class="name"><code>targetLayer</code></td>
+                <td class="name"><code>layerToRemove</code></td>
             
             
             <td class="type">
@@ -3426,7 +3348,7 @@
             
             <td class="description last">
                 
-                the layer to move this layer after</td>
+                the layer to be removed</td>
         </tr>
 	
 	
@@ -3471,7 +3393,7 @@
 
     <div class="param-desc">
     
-        Will throw an error if not given an NFLayer
+        Throws an error if the layers couldn't be found in this collection
     
     </div>
 
@@ -3497,7 +3419,7 @@
             
             <td class="type">
             
-                        <a href="NFLayer.html">NFLayer</a>
+                        <a href="NFLayerCollection.html">NFLayerCollection</a>
                         
                     
             </td>
@@ -3516,12 +3438,12 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="moveBefore">
-            <a class="share-icon" href="#moveBefore"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="resetExpressionErrors">
+            <a class="share-icon" href="#resetExpressionErrors"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                moveBefore
+                resetExpressionErrors
             </span>
-            <span class="signature">(targetLayer)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
+            <span class="signature">()</span><span class="type-signature"><a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a></span>
             
             
             
@@ -3530,7 +3452,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line346">objectModel.jsx:346</a>
+            <a href="objectModel.jsx.html#line1566">objectModel.jsx:1566</a>
         </div>
         
     </div>
@@ -3541,170 +3463,10 @@
     
     
     <div class="description">
-        Moves this layer's index to immediately before the provided target layer
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>targetLayer</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                the layer to move this layer before</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    <h5>Throws:</h5>
-    
-            
-
-    <div class="param-desc">
-    
-        Will throw an error if not given an NFLayer
-    
-    </div>
-
-
-        
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        <a href="NFLayer.html">NFLayer</a>
-                        
-                    
-            </td>
-            <td class="description last">self</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="sameLayerAs">
-            <a class="share-icon" href="#sameLayerAs"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                sameLayerAs
-            </span>
-            <span class="signature">()</span><span class="type-signature">boolean</span>
-            
-            
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line244">objectModel.jsx:244</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Checks to see if a given NFLayer's layer is the same as this one's
-  For example, an NFLayer and an NFPageLayer that refer to the same layer will return true
+        Reset expression error status for all highlights. This is to be called after #fixExpressionAfterInit.
+  Because of the way AE handles scripting, if a script breaks an expression, then even if it fixes it,
+  the expression error will be there when the script finishes. This just clears that. If there's still
+  an expression error after the script finishes, that'll still appear.
     </div>
     
 
@@ -3765,11 +3527,11 @@
             
             <td class="type">
             
-                        boolean
+                        <a href="NFHighlightLayerCollection.html">NFHighlightLayerCollection</a>
                         
                     
             </td>
-            <td class="description last">Whether both layers are the same layer</td>
+            <td class="description last">self</td>
         </tr>
     
     </tbody>
@@ -3784,21 +3546,23 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="setParent">
-            <a class="share-icon" href="#setParent"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="setParents">
+            <a class="share-icon" href="#setParents"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                setParent
+                setParents
             </span>
-            <span class="signature">(newParent)</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
+            <span class="signature">(newParent)</span><span class="type-signature"><a href="NFLayerCollection.html">NFLayerCollection</a></span>
             
             
+            
+                <span class="access-signature inherited"><a href="NFLayerCollection.html#setParents">inherited</a></span>
             
             
         </h4>
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line307">objectModel.jsx:307</a>
+            <a href="objectModel.jsx.html#line806">objectModel.jsx:806</a>
         </div>
         
     </div>
@@ -3809,7 +3573,7 @@
     
     
     <div class="description">
-        Sets the layer's parent to a given NFLayer
+        Sets all member layers' parents to a given <a href="NFLayer.html">NFLayer</a> or null
     </div>
     
 
@@ -3849,9 +3613,6 @@
 <span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
 |
 
-<span class="param-type">AVLayer</span>
-|
-
 <span class="param-type">null</span>
 
 
@@ -3862,7 +3623,7 @@
             
             <td class="description last">
                 
-                the new parent NFLayer or AVLayer for this layer. Null to set no parent</td>
+                the new parent for the member layers</td>
         </tr>
 	
 	
@@ -3901,18 +3662,6 @@
     
     
     
-    <h5>Throws:</h5>
-    
-            
-
-    <div class="param-desc">
-    
-        Will throw an error if not given an NFLayer or null
-    
-    </div>
-
-
-        
     
     
     <h5>Returns:</h5>
@@ -3933,124 +3682,7 @@
             
             <td class="type">
             
-                        <a href="NFLayer.html">NFLayer</a>
-                        
-                    
-            </td>
-            <td class="description last">self</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="setZoomer">
-            <a class="share-icon" href="#setZoomer"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                setZoomer
-            </span>
-            <span class="signature">()</span><span class="type-signature"><a href="NFLayer.html">NFLayer</a></span>
-            
-            
-            
-            
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="objectModel.jsx.html#line328">objectModel.jsx:328</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Sets the layer's parent to the zoomer if this layer is in an NFPartComp
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    <h5>Throws:</h5>
-    
-            
-
-    <div class="param-desc">
-    
-        Will throw an error if not given an NFLayer or null
-    
-    </div>
-
-
-        
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        <a href="NFLayer.html">NFLayer</a>
+                        <a href="NFLayerCollection.html">NFLayerCollection</a>
                         
                     
             </td>

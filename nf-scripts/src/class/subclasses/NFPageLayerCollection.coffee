@@ -1,7 +1,7 @@
 ###*
 Creates a new NFPageLayerCollection from a given array of NFPageLayers
 @class NFPageLayerCollection
-@classdesc Subclass of {@link NFLayer} for the parent null layer of a group of page layers from the same PDF
+@classdesc Subclass of {@link NFLayerCollection} for page layers
 @param {NFPageLayer[]} layerArr - array of layers to use
 @property {NFPageLayer[]} layers - array of layers
 @extends NFLayerCollection

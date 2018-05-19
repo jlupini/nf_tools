@@ -1109,11 +1109,13 @@ NFPaperLayerGroup = (function() {
 })();
 
 
-/*
- *    NF EMPHASIS LAYER
- *
- *    (Subclass of NFLayer)
- *
+/**
+Creates a new NFEmphasisLayer from a given AVLayer
+@class NFEmphasisLayer
+@classdesc Subclass of {@link NFLayer} for an emphasis layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
  */
 var NFEmphasisLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1136,11 +1138,13 @@ NFEmphasisLayer = (function(superClass) {
 })(NFLayer);
 
 
-/*
- *    NF GAUSSY LAYER
- *
- *    (Subclass of NFLayer)
- *
+/**
+Creates a new NFGaussyLayer from a given AVLayer
+@class NFGaussyLayer
+@classdesc Subclass of {@link NFLayer} for a gaussy layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
  */
 var NFGaussyLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1163,11 +1167,14 @@ NFGaussyLayer = (function(superClass) {
 })(NFLayer);
 
 
-/*
- *    NF HIGHLIGHT LAYER
- *
- *    (inherits from NFLayer)
- *
+/**
+Creates a new NFHighlightLayer from a given AVLayer
+@class NFHighlightLayer
+@classdesc Subclass of {@link NFLayer} for a highlight layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
+@throws Will throw an error if not given an AVLayer with a highlight
  */
 var NFHighlightLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1184,6 +1191,17 @@ NFHighlightLayer = (function(superClass) {
     this.updateProperties();
     this;
   }
+
+  NFHighlightLayer.prototype.getInfo = function() {
+    return "NFHighlightLayer: '" + this.name + "'";
+  };
+
+
+  /**
+  Updates values of all properties. Run after changing anything that buggers these up
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+   */
 
   NFHighlightLayer.prototype.updateProperties = function() {
     var comp, compName, expression, layer, layerName;
@@ -1202,23 +1220,41 @@ NFHighlightLayer = (function(superClass) {
       if (comp != null) {
         layer = comp.layer(layerName);
         if (layer != null) {
-          return this.connectedPageLayer = new NFPageLayer(layer);
+          this.connectedPageLayer = new NFPageLayer(layer);
         }
       }
     }
+    return this;
   };
 
-  NFHighlightLayer.prototype.getInfo = function() {
-    return "NFHighlightLayer: '" + this.name + "'";
-  };
+
+  /**
+  Returns the NFPageItem this highlight lives in
+  @memberof NFHighlightLayer
+  @returns {NFPageItem} the containing page item for the highlight
+   */
 
   NFHighlightLayer.prototype.getPageItem = function() {
     return new NFPageItem(this.layer.containingComp);
   };
 
+
+  /**
+  Returns the AV Highlighter effect
+  @memberof NFHighlightLayer
+  @returns {Property} the AV Highlighter Property for this highlight
+   */
+
   NFHighlightLayer.prototype.highlighterEffect = function() {
     return this.layer.Effects.property("AV_Highlighter");
   };
+
+
+  /**
+  Returns the Bubbled Up AV Highlighter effect on a page layer
+  @memberof NFHighlightLayer
+  @returns {Property | null} the AV_Highlighter Property on an NFPageLayer if connected, null if not
+   */
 
   NFHighlightLayer.prototype.connectedPageLayerHighlighterEffect = function() {
     var effect, effectName, expression;
@@ -1231,12 +1267,31 @@ NFHighlightLayer = (function(superClass) {
     return null;
   };
 
+
+  /**
+  Returns true if the highlight can be bubbled up. In other words, true if currently bubbled up
+  and not broken, or if there's no containing page layer. This check relies on the
+  containingPageLayer property being correctly set by the page that creates this object
+  @memberof NFHighlightLayer
+  @returns {boolean} whether the highlight can be bubbled up
+   */
+
   NFHighlightLayer.prototype.canBubbleUp = function() {
     return !((this.bubbled && !this.broken) || (this.containingPageLayer == null));
   };
 
+
+  /**
+  Bubbles up highlight to the containingPageLayer.
+  Will throw an error if there's no containingPageLayer or if (bubbled and not broken)
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+  @throws Throw error if connected and not broken, so you should have disconnected first
+  @throws Throw error if no containingPageLayer
+   */
+
   NFHighlightLayer.prototype.bubbleUp = function() {
-    var highlighterProperty, j, len, ref, results, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
+    var highlighterProperty, j, len, ref, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
     if (this.bubbled && !this.broken) {
       throw "Cannot bubble highlight if already connected and not broken. Disconnect first";
     }
@@ -1249,46 +1304,64 @@ NFHighlightLayer = (function(superClass) {
     targetHighlighterEffect.name = this.name;
     targetComp = this.containingPageLayer.layer.containingComp;
     ref = NF.Util.highlighterProperties;
-    results = [];
     for (j = 0, len = ref.length; j < len; j++) {
       highlighterProperty = ref[j];
       sourceValue = sourceEffect.property(highlighterProperty).value;
       targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
       sourceExpression = "var offsetTime = comp(\"" + targetComp.name + "\").layer(\"" + this.containingPageLayer.layer.name + "\").startTime; comp(\"" + targetComp.name + "\").layer(\"" + this.containingPageLayer.layer.name + "\").effect(\"" + this.name + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
       sourceEffect.property(highlighterProperty).expression = sourceExpression;
-      results.push(this.updateProperties());
+      this.updateProperties();
     }
-    return results;
+    return this;
   };
 
+
+  /**
+  Fixes the expression after initting if the page layer name changed and there was already an existing expression
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+   */
+
   NFHighlightLayer.prototype.fixExpressionAfterInit = function() {
-    var expression, j, len, property, ref, results;
+    var expression, j, len, property, ref;
     if (this.bubbled) {
       ref = NF.Util.highlighterProperties;
-      results = [];
       for (j = 0, len = ref.length; j < len; j++) {
         property = ref[j];
         expression = this.highlighterEffect().property(property).expression;
-        results.push(this.highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]"));
+        this.highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]");
       }
-      return results;
     }
+    return this;
   };
 
+
+  /**
+  Attempt to clear expresssion errors
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+   */
+
   NFHighlightLayer.prototype.resetExpressionErrors = function() {
-    var expression, j, len, property, ref, results;
+    var expression, j, len, property, ref;
     if (this.bubbled) {
       ref = NF.Util.highlighterProperties;
-      results = [];
       for (j = 0, len = ref.length; j < len; j++) {
         property = ref[j];
         expression = this.highlighterEffect().property(property).expression;
         this.highlighterEffect().property(property).expression = "";
-        results.push(this.highlighterEffect().property(property).expression = expression);
+        this.highlighterEffect().property(property).expression = expression;
       }
-      return results;
     }
+    return this;
   };
+
+
+  /**
+  Disconnects bubbleups in this highlight layer
+  @memberof NFHighlightLayer
+  @returns {NFHighlightLayer} self
+   */
 
   NFHighlightLayer.prototype.disconnect = function() {
     var effect, i, j, property, propertyCount, ref, ref1;
@@ -1301,7 +1374,8 @@ NFHighlightLayer = (function(superClass) {
       property = effect.property(i);
       property.expression = "";
     }
-    return this.updateProperties();
+    this.updateProperties();
+    return this;
   };
 
   return NFHighlightLayer;
@@ -1309,6 +1383,12 @@ NFHighlightLayer = (function(superClass) {
 })(NFLayer);
 
 NFHighlightLayer = Object.assign(NFHighlightLayer, {
+
+  /**
+  Returns whether or not the given AVLayer is a valid Highlight Layer
+  @memberof NFHighlightLayer
+  @returns {boolean} whether the AV layer is a valid highlight layer
+   */
   isHighlightLayer: function(theLayer) {
     var ref;
     return theLayer instanceof ShapeLayer && ((ref = theLayer.Effects.property(1)) != null ? ref.matchName : void 0) === "AV_Highlighter";
@@ -1316,11 +1396,14 @@ NFHighlightLayer = Object.assign(NFHighlightLayer, {
 });
 
 
-/*
- *    NF HIGHLIGHT LAYER COLLECTION
- *
- *    A collection of NF Highlight Layers
- *
+/**
+Creates a new NFHighlightLayerCollection from a given array of NFHighlightLayers
+@class NFHighlightLayerCollection
+@classdesc Subclass of {@link NFLayerCollection} for highlight layers
+@param {NFHighlightLayer[]} layerArr - array of layers to use
+@property {NFHighlightLayer[]} layers - array of layers
+@extends NFLayerCollection
+@throws Will throw an error if the array does not contain valid highlight layers
  */
 var NFHighlightLayerCollection,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1354,29 +1437,75 @@ NFHighlightLayerCollection = (function(superClass) {
     return infoString += "]";
   };
 
+
+  /**
+  Adds an NFLayer to this collection
+  @memberof NFHighlightLayerCollection
+  @param {NFLayer} newLayer - the layer to add to this collection
+  @override
+  @returns {NFHighlightLayerCollection} self
+  @throws Throws error if not given an NFHighlightLayer since this just calls #addNFHighlightLayer
+   */
+
   NFHighlightLayerCollection.prototype.addNFLayer = function(newLayer) {
-    return this.addNFHighlightLayer(newLayer);
+    this.addNFHighlightLayer(newLayer);
+    return this;
   };
+
+
+  /**
+  Adds an NFHighlightLayer to this collection
+  @memberof NFHighlightLayerCollection
+  @param {NFHighlightLayer} newLayer - the layer to add to this collection
+  @returns {NFHighlightLayerCollection} self
+  @throws Throws error if not given an NFHighlightLayer
+   */
 
   NFHighlightLayerCollection.prototype.addNFHighlightLayer = function(newLayer) {
     if (newLayer instanceof NFHighlightLayer) {
-      return this.layers.push(newLayer);
+      this.layers.push(newLayer);
     } else {
       throw "addNFHighlightLayer() can only be used to add NFHighlightLayers to an NFHighlightLayerCollection";
     }
+    return this;
   };
+
+
+  /**
+  Adds an AVLayer (specifically a ShapeLayer) to the collection.
+  @memberof NFHighlightLayerCollection
+  @param {ShapeLayer} newLayer - the layer to add to this collection
+  @returns {NFHighlightLayerCollection} self
+  @throws Throws error if not adding a ShapeLayer
+   */
 
   NFHighlightLayerCollection.prototype.addAVLayer = function(newLayer) {
     if (newLayer instanceof ShapeLayer) {
-      return this.layers.push(new NFHighlightLayer(newLayer));
+      this.layers.push(new NFHighlightLayer(newLayer));
     } else {
       throw "addAVLayer() can only be used to add AVLayers to an NFHighlightLayerCollection";
     }
+    return this;
   };
+
+
+  /**
+  Always returns false since this object cannot contain page layers
+  @memberof NFHighlightLayerCollection
+  @override
+  @returns {boolean} false
+   */
 
   NFHighlightLayerCollection.prototype.onlyContainsPageLayers = function() {
     return false;
   };
+
+
+  /**
+  Checks to see if any highlights in the collection share the same name
+  @memberof NFHighlightLayerCollection
+  @returns {boolean} whether or not any highlights in the collection share the same name
+   */
 
   NFHighlightLayerCollection.prototype.duplicateNames = function() {
     var i, len, nameArr, ref, theLayer;
@@ -1389,38 +1518,68 @@ NFHighlightLayerCollection = (function(superClass) {
     return NF.Util.hasDuplicates(nameArr);
   };
 
+
+  /**
+  Disconnect all highlights in all layers
+  @memberof NFHighlightLayerCollection
+  @returns {NFHighlightLayerCollection} self
+   */
+
   NFHighlightLayerCollection.prototype.disconnectHighlights = function() {
-    var highlight, i, len, ref, results;
+    var highlight, i, len, ref;
     ref = this.layers;
-    results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       highlight = ref[i];
-      results.push(highlight.disconnect());
+      highlight.disconnect();
     }
-    return results;
+    return this;
   };
+
+
+  /**
+  Bubble up all highlights to their respective layers.
+  @memberof NFHighlightLayerCollection
+  @returns {NFHighlightLayerCollection} self
+  @throws Throws error if any highlight is already bubbled up (so use #disconnectHighlights first)
+   */
 
   NFHighlightLayerCollection.prototype.bubbleUpHighlights = function() {
-    var highlight, i, len, ref, results;
+    var highlight, i, len, ref;
     ref = this.layers;
-    results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       highlight = ref[i];
-      results.push(highlight.bubbleUp());
+      highlight.bubbleUp();
     }
-    return results;
+    return this;
   };
 
+
+  /**
+  Reset expression error status for all highlights. This is to be called after #fixExpressionAfterInit.
+  Because of the way AE handles scripting, if a script breaks an expression, then even if it fixes it,
+  the expression error will be there when the script finishes. This just clears that. If there's still
+  an expression error after the script finishes, that'll still appear.
+  @memberof NFHighlightLayerCollection
+  @returns {NFHighlightLayerCollection} self
+   */
+
   NFHighlightLayerCollection.prototype.resetExpressionErrors = function() {
-    var highlight, i, len, ref, results;
+    var highlight, i, len, ref;
     ref = this.layers;
-    results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       highlight = ref[i];
-      results.push(highlight.resetExpressionErrors());
+      highlight.resetExpressionErrors();
     }
-    return results;
+    return this;
   };
+
+
+  /**
+  Updates the expressions on highlights to account for the new name of the layer after being
+  initialized. Call #resetExpressionErrors after this to prevent incorrect error warnings.
+  @memberof NFHighlightLayerCollection
+  @returns {NFHighlightLayerCollection} self
+   */
 
   NFHighlightLayerCollection.prototype.fixExpressionsAfterInit = function() {
     var highlight, i, len, ref, results;
@@ -1438,6 +1597,13 @@ NFHighlightLayerCollection = (function(superClass) {
 })(NFLayerCollection);
 
 NFHighlightLayerCollection = Object.assign(NFHighlightLayerCollection, {
+
+  /**
+  Returns a new instance from an array of AVLayers/ShapeLayers
+  @memberof NFHighlightLayerCollection
+  @param {ShapeLayer[]} arr - the array of ShapeLayers
+  @returns {NFHighlightLayerCollection} the new instance
+   */
   collectionFromAVLayerArray: function(arr) {
     var layer, newArray, newLayer;
     newArray = (function() {
@@ -1454,11 +1620,13 @@ NFHighlightLayerCollection = Object.assign(NFHighlightLayerCollection, {
 });
 
 
-/*
- *    NF IMAGE LAYER
- *
- *    (Subclass of NFLayer)
- *
+/**
+Creates a new NFImageLayer from a given AVLayer
+@class NFImageLayer
+@classdesc Subclass of {@link NFLayer} for an image layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
  */
 var NFImageLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1541,9 +1709,23 @@ NFPageLayer = (function(superClass) {
     return paperParent;
   };
 
+
+  /**
+  Returns NFHighlightLayerCollection of all highlights in this page
+  @memberof NFPageLayer
+  @returns {NFHighlightLayerCollection} The collection of highlights
+   */
+
   NFPageLayer.prototype.highlights = function() {
     return this.pageItem.highlights();
   };
+
+
+  /**
+  Returns NFHighlightLayerCollection of all highlights bubbled onto this page layer
+  @memberof NFPageLayer
+  @returns {NFHighlightLayerCollection} The collection of highlights
+   */
 
   NFPageLayer.prototype.bubbledHighlights = function() {
     var bubbledHighlights, highlight, i, len, ref, ref1;
@@ -1558,9 +1740,23 @@ NFPageLayer = (function(superClass) {
     return new NFHighlightLayerCollection(bubbledHighlights);
   };
 
+
+  /**
+  Returns whether or not the page has been initted with the below methods
+  @memberof NFPageLayer
+  @returns {boolean} the init state
+   */
+
   NFPageLayer.prototype.isInitted = function() {
     return this.layer.name.indexOf("[+]") >= 0;
   };
+
+
+  /**
+  Changes the page name to mark the page layer as initted, and updates bubbled highlights
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+   */
 
   NFPageLayer.prototype.markInitted = function() {
     var bubbledHighlights;
@@ -1570,15 +1766,31 @@ NFPageLayer = (function(superClass) {
         bubbledHighlights.fixExpressionsAfterInit();
       }
       this.layer.name = this.layer.name.replace(" NFPage", " [+]");
-      return bubbledHighlights.resetExpressionErrors();
+      bubbledHighlights.resetExpressionErrors();
     }
+    return this;
   };
+
+
+  /**
+  Adds the non-transform init properties (dropshadow, motion blur, etc)
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+   */
 
   NFPageLayer.prototype.init = function() {
     this.layer.motionBlur = true;
     this.setDropShadow();
-    return this.markInitted();
+    this.markInitted();
+    return this;
   };
+
+
+  /**
+  Sets the drop shadow for the layer
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+   */
 
   NFPageLayer.prototype.setDropShadow = function() {
     var ref, shadowProp;
@@ -1586,13 +1798,29 @@ NFPageLayer = (function(superClass) {
     shadowProp.property('Opacity').setValue(191.25);
     shadowProp.property('Direction').setValue(0);
     shadowProp.property('Distance').setValue(20);
-    return shadowProp.property('Softness').setValue(300);
+    shadowProp.property('Softness').setValue(300);
+    return this;
   };
+
+
+  /**
+  Adds the transform init properties (size, position)
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+   */
 
   NFPageLayer.prototype.initTransforms = function() {
     this.setInitSize();
-    return this.setInitPosition();
+    this.setInitPosition();
+    return this;
   };
+
+
+  /**
+  Sets the size of the layer to the Init size. Returns false and doesn't set size if there are existing keyframes
+  @memberof NFPageLayer
+  @returns {boolean} whether or not the size was updated
+   */
 
   NFPageLayer.prototype.setInitSize = function() {
     if (this.layer.property('Transform').property('Scale').numKeys > 0) {
@@ -1601,6 +1829,13 @@ NFPageLayer = (function(superClass) {
     this.layer.property('Transform').property('Scale').setValue([50, 50, 50]);
     return true;
   };
+
+
+  /**
+  Sets the position of the layer to the Init position. Returns false and doesn't set position if there are existing keyframes
+  @memberof NFPageLayer
+  @returns {boolean} whether or not the position was updated
+   */
 
   NFPageLayer.prototype.setInitPosition = function() {
     var layerHeight, newPosition, oldPosition;
@@ -1616,9 +1851,23 @@ NFPageLayer = (function(superClass) {
     return true;
   };
 
+
+  /**
+  Returns the PDF number as a String
+  @memberof NFPageLayer
+  @returns {string} the PDF number of the page
+   */
+
   NFPageLayer.prototype.getPDFNumber = function() {
     return this.pageItem.getPDFNumber();
   };
+
+
+  /**
+  Returns the page number as a String
+  @memberof NFPageLayer
+  @returns {string} the page number of the page
+   */
 
   NFPageLayer.prototype.getPageNumber = function() {
     return this.pageItem.getPageNumber();
@@ -1629,6 +1878,13 @@ NFPageLayer = (function(superClass) {
 })(NFLayer);
 
 NFPageLayer = Object.assign(NFPageLayer, {
+
+  /**
+  Returns true if the given AVLayer is a Page Layer
+  @memberof NFPageLayer
+  @param {AVLayer} theLayer - the layer to test
+  @returns {boolean} if the given layer is a page layer
+   */
   isPageLayer: function(theLayer) {
     return NFLayer.isCompLayer(theLayer) && theLayer.source.name.indexOf("NFPage") >= 0;
   }
@@ -1638,7 +1894,7 @@ NFPageLayer = Object.assign(NFPageLayer, {
 /**
 Creates a new NFPageLayerCollection from a given array of NFPageLayers
 @class NFPageLayerCollection
-@classdesc Subclass of {@link NFLayer} for the parent null layer of a group of page layers from the same PDF
+@classdesc Subclass of {@link NFLayerCollection} for page layers
 @param {NFPageLayer[]} layerArr - array of layers to use
 @property {NFPageLayer[]} layers - array of layers
 @extends NFLayerCollection
