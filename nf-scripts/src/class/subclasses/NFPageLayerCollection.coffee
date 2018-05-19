@@ -23,43 +23,20 @@ class NFPageLayerCollection extends NFLayerCollection
     infoString += "]"
 
   ###*
-  Adds an NFLayer to this collection
+  Adds an NFLayer or AVLayer to this collection
   @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
   @override
-  @returns {NFPageLayerCollection} self
-  @param {NFPageLayer} newLayer - the layer to add
-  @throws Throw error if not adding a NFPageLayer (because this function just calls #addNFPageLayer)
+  @param {NFPageLayer | AVLayer} newLayer - the layer to add
+  @throws Throw error if not adding a NFPageLayer or an AVLayer that's a valid NFPageLayer
   ###
-  addNFLayer: (newLayer) ->
-    @addNFPageLayer(newLayer)
-    @
-
-  ###*
-  Adds an NFPageLayer to this collection
-  @memberof NFPageLayerCollection
-  @returns {NFPageLayerCollection} self
-  @param {NFPageLayer} newLayer - the layer to add
-  @throws Throw error if not adding a NFPageLayer
-  ###
-  addNFPageLayer: (newLayer) ->
-    if newLayer instanceof NFPageLayer
-      @layers.push newLayer
-    else
-      throw "addNFPageLayer() can only be used to add NFPageLayers to an NFPageLayerCollection"
-    @
-
-  ###*
-  Adds an AVLayer to this collection
-  @memberof NFPageLayerCollection
-  @returns {NFPageLayerCollection} self
-  @param {AVLayer} newLayer - the layer to add
-  @throws Throw error if not adding an AVLayer that's a valid NFPageLayer
-  ###
-  addAVLayer: (newLayer) ->
+  addLayer: (newLayer) ->
     if NFLayer.isAVLayer newLayer
       @layers.push new NFPageLayer(newLayer)
+    else if newLayer instanceof NFPageLayer
+      @layers.push newLayer
     else
-      throw "addAVLayer() can only be used to add AVLayers to an NFPageLayerCollection"
+      throw "addLayer() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection"
     @
 
   ###*

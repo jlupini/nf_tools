@@ -22,43 +22,20 @@ class NFHighlightLayerCollection extends NFLayerCollection
     infoString += "]"
 
   ###*
-  Adds an NFLayer to this collection
+  Adds an NFHighlightLayer or AVLayer to this collection
   @memberof NFHighlightLayerCollection
-  @param {NFLayer} newLayer - the layer to add to this collection
+  @param {NFHighlightLayer | AVLayer} newLayer - the layer to add to this collection
   @override
   @returns {NFHighlightLayerCollection} self
-  @throws Throws error if not given an NFHighlightLayer since this just calls #addNFHighlightLayer
+  @throws Throws error if not given an NFHighlightLayer or valid highlight AVLayer (ShapeLayer)
   ###
-  addNFLayer: (newLayer) ->
-    @addNFHighlightLayer(newLayer)
-    @
-
-  ###*
-  Adds an NFHighlightLayer to this collection
-  @memberof NFHighlightLayerCollection
-  @param {NFHighlightLayer} newLayer - the layer to add to this collection
-  @returns {NFHighlightLayerCollection} self
-  @throws Throws error if not given an NFHighlightLayer
-  ###
-  addNFHighlightLayer: (newLayer) ->
-    if newLayer instanceof NFHighlightLayer
+  addLayer: (newLayer) ->
+    if NFLayer.isAVLayer newLayer
+      @layers.push new NFHighlightLayer(newLayer)
+    else if newLayer instanceof NFHighlightLayer
       @layers.push newLayer
     else
-      throw "addNFHighlightLayer() can only be used to add NFHighlightLayers to an NFHighlightLayerCollection"
-    @
-
-  ###*
-  Adds an AVLayer (specifically a ShapeLayer) to the collection.
-  @memberof NFHighlightLayerCollection
-  @param {ShapeLayer} newLayer - the layer to add to this collection
-  @returns {NFHighlightLayerCollection} self
-  @throws Throws error if not adding a ShapeLayer
-  ###
-  addAVLayer: (newLayer) ->
-    if newLayer instanceof ShapeLayer
-      @layers.push new NFHighlightLayer(newLayer)
-    else
-      throw "addAVLayer() can only be used to add AVLayers to an NFHighlightLayerCollection"
+      throw "addLayer() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection"
     @
 
   ###*

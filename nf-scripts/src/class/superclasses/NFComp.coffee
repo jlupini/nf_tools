@@ -40,7 +40,7 @@ class NFComp
   selectedPageLayers: ->
     selectedPageLayers = new NFPageLayerCollection
     for layer in @selectedLayers().layers
-      selectedPageLayers.addNFPageLayer(layer) if layer instanceof NFPageLayer
+      selectedPageLayers.addLayer(layer) if layer instanceof NFPageLayer
     return selectedPageLayers
 
   ###*

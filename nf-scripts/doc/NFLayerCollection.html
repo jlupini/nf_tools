@@ -416,11 +416,7 @@
             
                 <li class="parent  " data-name="NFHighlightLayerCollection.collectionFromAVLayerArray"><a href="NFHighlightLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
             
-                <li class="parent  " data-name="NFHighlightLayerCollection#addAVLayer"><a href="NFHighlightLayerCollection.html#addAVLayer">addAVLayer</a></li>
-            
-                <li class="parent  " data-name="NFHighlightLayerCollection#addNFHighlightLayer"><a href="NFHighlightLayerCollection.html#addNFHighlightLayer">addNFHighlightLayer</a></li>
-            
-                <li class="  " data-name="NFHighlightLayerCollection#addNFLayer"><a href="NFHighlightLayerCollection.html#addNFLayer">addNFLayer</a></li>
+                <li class="  " data-name="NFHighlightLayerCollection#addLayer"><a href="NFHighlightLayerCollection.html#addLayer">addLayer</a></li>
             
                 <li class="parent  " data-name="NFHighlightLayerCollection#bubbleUpHighlights"><a href="NFHighlightLayerCollection.html#bubbleUpHighlights">bubbleUpHighlights</a></li>
             
@@ -606,7 +602,7 @@
             
                 <li class="parent  " data-name="NFLayerCollection.collectionFromAVLayerArray"><a href="NFLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
             
-                <li class="parent  " data-name="NFLayerCollection#addNFLayer"><a href="NFLayerCollection.html#addNFLayer">addNFLayer</a></li>
+                <li class="parent  " data-name="NFLayerCollection#addLayer"><a href="NFLayerCollection.html#addLayer">addLayer</a></li>
             
                 <li class="parent  " data-name="NFLayerCollection#containingComp"><a href="NFLayerCollection.html#containingComp">containingComp</a></li>
             
@@ -774,11 +770,7 @@
             
                 <li class="parent  " data-name="NFPageLayerCollection.collectionFromAVLayerArray"><a href="NFPageLayerCollection.html#.collectionFromAVLayerArray">collectionFromAVLayerArray</a></li>
             
-                <li class="parent  " data-name="NFPageLayerCollection#addAVLayer"><a href="NFPageLayerCollection.html#addAVLayer">addAVLayer</a></li>
-            
-                <li class="  " data-name="NFPageLayerCollection#addNFLayer"><a href="NFPageLayerCollection.html#addNFLayer">addNFLayer</a></li>
-            
-                <li class="parent  " data-name="NFPageLayerCollection#addNFPageLayer"><a href="NFPageLayerCollection.html#addNFPageLayer">addNFPageLayer</a></li>
+                <li class="  " data-name="NFPageLayerCollection#addLayer"><a href="NFPageLayerCollection.html#addLayer">addLayer</a></li>
             
                 <li class="parent  " data-name="NFPageLayerCollection#assignPaperParentLayer"><a href="NFPageLayerCollection.html#assignPaperParentLayer">assignPaperParentLayer</a></li>
             
@@ -1222,7 +1214,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line851">objectModel.jsx:851</a>
+            <a href="objectModel.jsx.html#line865">objectModel.jsx:865</a>
         </div>
         
     </div>
@@ -1325,10 +1317,10 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="addNFLayer">
-            <a class="share-icon" href="#addNFLayer"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="addLayer">
+            <a class="share-icon" href="#addLayer"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                addNFLayer
+                addLayer
             </span>
             <span class="signature">(newLayer)</span><span class="type-signature"><a href="NFLayerCollection.html">NFLayerCollection</a></span>
             
@@ -1339,7 +1331,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line624">objectModel.jsx:624</a>
+            <a href="objectModel.jsx.html#line636">objectModel.jsx:636</a>
         </div>
         
     </div>
@@ -1350,7 +1342,7 @@
     
     
     <div class="description">
-        Adds an NFLayer to this collection
+        Adds an NFLayer or AVLayer to this collection. AVLayers will be added as specialized layers
     </div>
     
 
@@ -1388,6 +1380,9 @@
             
                 
 <span class="param-type"><a href="NFLayer.html">NFLayer</a></span>
+|
+
+<span class="param-type">AVLayer</span>
 
 
             
@@ -1489,7 +1484,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line682">objectModel.jsx:682</a>
+            <a href="objectModel.jsx.html#line696">objectModel.jsx:696</a>
         </div>
         
     </div>
@@ -1597,7 +1592,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line708">objectModel.jsx:708</a>
+            <a href="objectModel.jsx.html#line722">objectModel.jsx:722</a>
         </div>
         
     </div>
@@ -1702,7 +1697,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line779">objectModel.jsx:779</a>
+            <a href="objectModel.jsx.html#line793">objectModel.jsx:793</a>
         </div>
         
     </div>
@@ -1822,7 +1817,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line697">objectModel.jsx:697</a>
+            <a href="objectModel.jsx.html#line711">objectModel.jsx:711</a>
         </div>
         
     </div>
@@ -1928,7 +1923,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line752">objectModel.jsx:752</a>
+            <a href="objectModel.jsx.html#line766">objectModel.jsx:766</a>
         </div>
         
     </div>
@@ -2048,7 +2043,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line659">objectModel.jsx:659</a>
+            <a href="objectModel.jsx.html#line673">objectModel.jsx:673</a>
         </div>
         
     </div>
@@ -2153,7 +2148,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line719">objectModel.jsx:719</a>
+            <a href="objectModel.jsx.html#line733">objectModel.jsx:733</a>
         </div>
         
     </div>
@@ -2258,7 +2253,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line825">objectModel.jsx:825</a>
+            <a href="objectModel.jsx.html#line839">objectModel.jsx:839</a>
         </div>
         
     </div>
@@ -2363,7 +2358,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line640">objectModel.jsx:640</a>
+            <a href="objectModel.jsx.html#line654">objectModel.jsx:654</a>
         </div>
         
     </div>
@@ -2468,7 +2463,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line732">objectModel.jsx:732</a>
+            <a href="objectModel.jsx.html#line746">objectModel.jsx:746</a>
         </div>
         
     </div>
@@ -2630,7 +2625,7 @@
     
         
         <div class="tag-source">
-            <a href="objectModel.jsx.html#line806">objectModel.jsx:806</a>
+            <a href="objectModel.jsx.html#line820">objectModel.jsx:820</a>
         </div>
         
     </div>
@@ -2785,7 +2780,7 @@
 
         <footer class="content-size">
             <div class="footer">
-                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat May 19 2018 11:28:42 GMT-0700 (PDT)
+                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat May 19 2018 13:55:15 GMT-0700 (PDT)
             </div>
         </footer>
     </div>

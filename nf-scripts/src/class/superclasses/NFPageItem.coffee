@@ -49,5 +49,5 @@ class NFPageItem
     highlightLayers = new NFHighlightLayerCollection()
     for theLayer in sourceLayers
       if NFHighlightLayer.isHighlightLayer(theLayer)
-        highlightLayers.addAVLayer(theLayer)
+        highlightLayers.addLayer(theLayer)
     return highlightLayers

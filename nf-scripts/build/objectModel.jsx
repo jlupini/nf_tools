@@ -57,7 +57,7 @@ NFComp = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       layer = ref[i];
       if (layer instanceof NFPageLayer) {
-        selectedPageLayers.addNFPageLayer(layer);
+        selectedPageLayers.addLayer(layer);
       }
     }
     return selectedPageLayers;
@@ -589,13 +589,25 @@ NFLayerCollection = (function(superClass) {
   extend(NFLayerCollection, superClass);
 
   function NFLayerCollection(layerArr) {
-    var j, len, theLayer;
+    var expectingAVLayers, expectingNFLayers, j, len, theLayer;
     this.layers = layerArr != null ? layerArr : [];
     if (layerArr != null) {
+      expectingAVLayers = false;
+      expectingNFLayers = false;
       for (j = 0, len = layerArr.length; j < len; j++) {
         theLayer = layerArr[j];
-        if (!(theLayer instanceof NFLayer)) {
-          throw "You can only add NFLayers to an NFLayerCollection";
+        if (NFLayer.isAVLayer(theLayer)) {
+          if (expectingNFLayers) {
+            throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers";
+          }
+          expectingAVLayers = true;
+        } else if (theLayer instanceof NFLayer) {
+          if (expectingAVLayers) {
+            throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers";
+          }
+          expectingNFLayers = true;
+        } else {
+          throw "You can only add NFLayers or AVLayers to an NFLayerCollection";
         }
       }
     }
@@ -615,17 +627,19 @@ NFLayerCollection = (function(superClass) {
 
 
   /**
-  Adds an NFLayer to this collection
+  Adds an NFLayer or AVLayer to this collection. AVLayers will be added as specialized layers
   @memberof NFLayerCollection
-  @param {NFLayer} newLayer - the layer to add
+  @param {NFLayer | AVLayer} newLayer - the layer to add
   @returns {NFLayerCollection} self
    */
 
-  NFLayerCollection.prototype.addNFLayer = function(newLayer) {
+  NFLayerCollection.prototype.addLayer = function(newLayer) {
     if (newLayer instanceof NFLayer) {
       this.layers.push(newLayer);
+    } else if (NFLayer.isAVLayer(newLayer)) {
+      this.layers.push(NFLayer.getSpecializedLayerFromAVLayer(newLayer));
     } else {
-      throw "You can only add NFLayers to an NFLayerCollection";
+      throw "You can only add NFLayers or AVLayers to an NFLayerCollection";
     }
     return this;
   };
@@ -993,7 +1007,7 @@ NFPageItem = (function() {
     for (i = 0, len = sourceLayers.length; i < len; i++) {
       theLayer = sourceLayers[i];
       if (NFHighlightLayer.isHighlightLayer(theLayer)) {
-        highlightLayers.addAVLayer(theLayer);
+        highlightLayers.addLayer(theLayer);
       }
     }
     return highlightLayers;
@@ -1052,7 +1066,7 @@ NFPaperLayerGroup = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       layer = ref[i];
       if (layer instanceof NFPageLayer) {
-        pageChildren.addNFPageLayer(layer);
+        pageChildren.addLayer(layer);
       }
     }
     return pageChildren;
@@ -1082,10 +1096,10 @@ NFPaperLayerGroup = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       layer = ref[i];
       if (layer.index() < this.paperParent.index()) {
-        layersAboveGroup.addNFLayer(layer);
+        layersAboveGroup.addLayer(layer);
       }
       if (layer.index() > childLayers.getBottommostLayer().index()) {
-        layersBelowGroup.addNFLayer(layer);
+        layersBelowGroup.addLayer(layer);
       }
     }
     while (layersAboveGroup.count() > 0) {
@@ -1439,51 +1453,21 @@ NFHighlightLayerCollection = (function(superClass) {
 
 
   /**
-  Adds an NFLayer to this collection
+  Adds an NFHighlightLayer or AVLayer to this collection
   @memberof NFHighlightLayerCollection
-  @param {NFLayer} newLayer - the layer to add to this collection
+  @param {NFHighlightLayer | AVLayer} newLayer - the layer to add to this collection
   @override
   @returns {NFHighlightLayerCollection} self
-  @throws Throws error if not given an NFHighlightLayer since this just calls #addNFHighlightLayer
+  @throws Throws error if not given an NFHighlightLayer or valid highlight AVLayer (ShapeLayer)
    */
 
-  NFHighlightLayerCollection.prototype.addNFLayer = function(newLayer) {
-    this.addNFHighlightLayer(newLayer);
-    return this;
-  };
-
-
-  /**
-  Adds an NFHighlightLayer to this collection
-  @memberof NFHighlightLayerCollection
-  @param {NFHighlightLayer} newLayer - the layer to add to this collection
-  @returns {NFHighlightLayerCollection} self
-  @throws Throws error if not given an NFHighlightLayer
-   */
-
-  NFHighlightLayerCollection.prototype.addNFHighlightLayer = function(newLayer) {
-    if (newLayer instanceof NFHighlightLayer) {
+  NFHighlightLayerCollection.prototype.addLayer = function(newLayer) {
+    if (NFLayer.isAVLayer(newLayer)) {
+      this.layers.push(new NFHighlightLayer(newLayer));
+    } else if (newLayer instanceof NFHighlightLayer) {
       this.layers.push(newLayer);
     } else {
-      throw "addNFHighlightLayer() can only be used to add NFHighlightLayers to an NFHighlightLayerCollection";
-    }
-    return this;
-  };
-
-
-  /**
-  Adds an AVLayer (specifically a ShapeLayer) to the collection.
-  @memberof NFHighlightLayerCollection
-  @param {ShapeLayer} newLayer - the layer to add to this collection
-  @returns {NFHighlightLayerCollection} self
-  @throws Throws error if not adding a ShapeLayer
-   */
-
-  NFHighlightLayerCollection.prototype.addAVLayer = function(newLayer) {
-    if (newLayer instanceof ShapeLayer) {
-      this.layers.push(new NFHighlightLayer(newLayer));
-    } else {
-      throw "addAVLayer() can only be used to add AVLayers to an NFHighlightLayerCollection";
+      throw "addLayer() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection";
     }
     return this;
   };
@@ -1935,51 +1919,21 @@ NFPageLayerCollection = (function(superClass) {
 
 
   /**
-  Adds an NFLayer to this collection
+  Adds an NFLayer or AVLayer to this collection
   @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
   @override
-  @returns {NFPageLayerCollection} self
-  @param {NFPageLayer} newLayer - the layer to add
-  @throws Throw error if not adding a NFPageLayer (because this function just calls #addNFPageLayer)
+  @param {NFPageLayer | AVLayer} newLayer - the layer to add
+  @throws Throw error if not adding a NFPageLayer or an AVLayer that's a valid NFPageLayer
    */
 
-  NFPageLayerCollection.prototype.addNFLayer = function(newLayer) {
-    this.addNFPageLayer(newLayer);
-    return this;
-  };
-
-
-  /**
-  Adds an NFPageLayer to this collection
-  @memberof NFPageLayerCollection
-  @returns {NFPageLayerCollection} self
-  @param {NFPageLayer} newLayer - the layer to add
-  @throws Throw error if not adding a NFPageLayer
-   */
-
-  NFPageLayerCollection.prototype.addNFPageLayer = function(newLayer) {
-    if (newLayer instanceof NFPageLayer) {
-      this.layers.push(newLayer);
-    } else {
-      throw "addNFPageLayer() can only be used to add NFPageLayers to an NFPageLayerCollection";
-    }
-    return this;
-  };
-
-
-  /**
-  Adds an AVLayer to this collection
-  @memberof NFPageLayerCollection
-  @returns {NFPageLayerCollection} self
-  @param {AVLayer} newLayer - the layer to add
-  @throws Throw error if not adding an AVLayer that's a valid NFPageLayer
-   */
-
-  NFPageLayerCollection.prototype.addAVLayer = function(newLayer) {
+  NFPageLayerCollection.prototype.addLayer = function(newLayer) {
     if (NFLayer.isAVLayer(newLayer)) {
       this.layers.push(new NFPageLayer(newLayer));
+    } else if (newLayer instanceof NFPageLayer) {
+      this.layers.push(newLayer);
     } else {
-      throw "addAVLayer() can only be used to add AVLayers to an NFPageLayerCollection";
+      throw "addLayer() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection";
     }
     return this;
   };

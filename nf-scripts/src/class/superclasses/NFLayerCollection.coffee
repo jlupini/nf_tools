@@ -11,8 +11,17 @@ class NFLayerCollection extends Array
     # TODO: accept an array of AVLayers here as well
     @layers = layerArr ? []
     if layerArr?
+      expectingAVLayers = no
+      expectingNFLayers = no
       for theLayer in layerArr
-        throw "You can only add NFLayers to an NFLayerCollection" unless theLayer instanceof NFLayer
+        if NFLayer.isAVLayer(theLayer)
+          throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers" if expectingNFLayers
+          expectingAVLayers = yes
+        else if theLayer instanceof NFLayer
+          throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers" if expectingAVLayers
+          expectingNFLayers = yes
+        else
+          throw "You can only add NFLayers or AVLayers to an NFLayerCollection"
     @
   # MARK: Instance Methods
   getInfo: ->
@@ -22,16 +31,18 @@ class NFLayerCollection extends Array
     infoString += "]"
 
   ###*
-  Adds an NFLayer to this collection
+  Adds an NFLayer or AVLayer to this collection. AVLayers will be added as specialized layers
   @memberof NFLayerCollection
-  @param {NFLayer} newLayer - the layer to add
+  @param {NFLayer | AVLayer} newLayer - the layer to add
   @returns {NFLayerCollection} self
   ###
-  addNFLayer: (newLayer) ->
+  addLayer: (newLayer) ->
     if newLayer instanceof NFLayer
       @layers.push newLayer
+    else if NFLayer.isAVLayer(newLayer)
+      @layers.push NFLayer.getSpecializedLayerFromAVLayer(newLayer)
     else
-      throw "You can only add NFLayers to an NFLayerCollection"
+      throw "You can only add NFLayers or AVLayers to an NFLayerCollection"
     @
 
   ###*
