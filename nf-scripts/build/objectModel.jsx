@@ -122,7 +122,7 @@ var NFLayer;
 
 NFLayer = (function() {
   function NFLayer(layer) {
-    if (NFLayer.isAVLayer(layer)) {
+    if (layer.isAVLayer()) {
       this.layer = layer;
     } else if (layer instanceof NFLayer) {
       this.layer = layer.layer;
@@ -146,6 +146,17 @@ NFLayer = (function() {
 
   NFLayer.prototype.isPageLayer = function() {
     return NFPageLayer.isPageLayer(this.layer);
+  };
+
+
+  /**
+  Checks if this layer is an AVLayer and ALWAYS RETURNS FALSE
+  @memberof NFLayer
+  @returns {boolean} if this is a valid AVLayer... so no.
+   */
+
+  NFLayer.prototype.isAVLayer = function() {
+    return false;
   };
 
 
@@ -305,7 +316,7 @@ NFLayer = (function() {
    */
 
   NFLayer.prototype.setParent = function(newParent) {
-    if (NFLayer.isAVLayer(newParent)) {
+    if (newParent.isAVLayer()) {
       this.layer.parent = newParent;
     } else if (newParent instanceof NFLayer) {
       this.layer.parent = newParent != null ? newParent.layer : void 0;
@@ -544,7 +555,7 @@ NFLayer = Object.assign(NFLayer, {
    */
   getSpecializedLayerFromAVLayer: function(theLayer) {
     var tmpLayer;
-    if (!NFLayer.isAVLayer(theLayer)) {
+    if (!theLayer.isAVLayer()) {
       throw "Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer";
     }
     tmpLayer = new NFLayer(theLayer);
@@ -558,17 +569,7 @@ NFLayer = Object.assign(NFLayer, {
   @returns {boolean} whether or not the AVLayer is a comp
    */
   isCompLayer: function(theLayer) {
-    return NFLayer.isAVLayer(theLayer) && theLayer.source instanceof CompItem;
-  },
-
-  /**
-  Returns whether or not a given Layer is an AVLayer or one of its subclasses. This is because Layer objects don't play nice with `instanceof`
-  @memberof NFLayer
-  @param {Layer} layer - the Layer to check
-  @returns {boolean} the result
-   */
-  isAVLayer: function(layer) {
-    return layer instanceof AVLayer || layer instanceof ShapeLayer || layer instanceof TextLayer;
+    return theLayer.isAVLayer() && theLayer.source instanceof CompItem;
   }
 });
 
@@ -596,7 +597,7 @@ NFLayerCollection = (function(superClass) {
       expectingNFLayers = false;
       for (j = 0, len = layerArr.length; j < len; j++) {
         theLayer = layerArr[j];
-        if (NFLayer.isAVLayer(theLayer)) {
+        if (theLayer.isAVLayer()) {
           if (expectingNFLayers) {
             throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers";
           }
@@ -636,7 +637,7 @@ NFLayerCollection = (function(superClass) {
   NFLayerCollection.prototype.addLayer = function(newLayer) {
     if (newLayer instanceof NFLayer) {
       this.layers.push(newLayer);
-    } else if (NFLayer.isAVLayer(newLayer)) {
+    } else if (newLayer.isAVLayer()) {
       this.layers.push(NFLayer.getSpecializedLayerFromAVLayer(newLayer));
     } else {
       throw "You can only add NFLayers or AVLayers to an NFLayerCollection";
@@ -869,7 +870,7 @@ NFLayerCollection = Object.assign(NFLayerCollection, {
       results = [];
       for (j = 0, len = arr.length; j < len; j++) {
         layer = arr[j];
-        if (!NFLayer.isAVLayer(layer)) {
+        if (!layer.isAVLayer()) {
           throw "Cannot run collectionFromAVLayerArray() because not all layers provided are AVLayers";
         }
         newLayer = new NFLayer(layer);
@@ -1462,7 +1463,7 @@ NFHighlightLayerCollection = (function(superClass) {
    */
 
   NFHighlightLayerCollection.prototype.addLayer = function(newLayer) {
-    if (NFLayer.isAVLayer(newLayer)) {
+    if (newLayer.isAVLayer()) {
       this.layers.push(new NFHighlightLayer(newLayer));
     } else if (newLayer instanceof NFHighlightLayer) {
       this.layers.push(newLayer);
@@ -1928,7 +1929,7 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.addLayer = function(newLayer) {
-    if (NFLayer.isAVLayer(newLayer)) {
+    if (newLayer.isAVLayer()) {
       this.layers.push(new NFPageLayer(newLayer));
     } else if (newLayer instanceof NFPageLayer) {
       this.layers.push(newLayer);

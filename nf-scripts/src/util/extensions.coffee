@@ -42,6 +42,25 @@ The After Effects Layer Class
 ###
 
 ###*
+Returns whether or not a given Layer is an AVLayer or one of its subclasses. This is because Layer objects don't play nice with `instanceof`
+@memberof Layer
+@function isAVLayer
+@returns {boolean} if the layer is an AVLayer
+###
+Layer::isAVLayer = ->
+  return @ instanceof AVLayer or @ instanceof ShapeLayer or @ instanceof TextLayer
+AVLayer::isAVLayer = ->
+  yes
+ShapeLayer::isAVLayer = ->
+  yes
+CameraLayer::isAVLayer = ->
+  no
+LightLayer::isAVLayer = ->
+  no
+TextLayer::isAVLayer = ->
+  yes
+
+###*
 Returns the index of the marker with the given comment
 @memberof Layer
 @function indexOfMarker

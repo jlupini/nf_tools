@@ -8,7 +8,7 @@ Creates a new NFLayer from a given AVLayer
 ###
 class NFLayer
   constructor: (layer) ->
-    if NFLayer.isAVLayer layer
+    if layer.isAVLayer()
       @layer = layer
     else if layer instanceof NFLayer
       @layer  = layer.layer
@@ -28,6 +28,14 @@ class NFLayer
   ###
   isPageLayer: ->
     return NFPageLayer.isPageLayer(@layer)
+
+  ###*
+  Checks if this layer is an AVLayer and ALWAYS RETURNS FALSE
+  @memberof NFLayer
+  @returns {boolean} if this is a valid AVLayer... so no.
+  ###
+  isAVLayer: ->
+    return no
 
   ###*
   Checks if this layer is a null layer
@@ -145,7 +153,7 @@ class NFLayer
   @throws Will throw an error if not given an NFLayer or null
   ###
   setParent: (newParent) ->
-    if NFLayer.isAVLayer(newParent)
+    if newParent.isAVLayer()
       @layer.parent = newParent
     else if newParent instanceof NFLayer
       @layer.parent = newParent?.layer
@@ -322,7 +330,7 @@ NFLayer = Object.assign NFLayer,
   @returns {NFLayer | NFHighlightLayer | NFPageLayer | NFEmphasisLayer | NFGaussyLayer | NFImageLayer} the specialized layer
   ###
   getSpecializedLayerFromAVLayer: (theLayer) ->
-    throw "Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer" unless NFLayer.isAVLayer theLayer
+    throw "Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer" unless theLayer.isAVLayer()
     tmpLayer = new NFLayer theLayer
     return tmpLayer.getSpecializedLayer()
 
@@ -333,13 +341,4 @@ NFLayer = Object.assign NFLayer,
   @returns {boolean} whether or not the AVLayer is a comp
   ###
   isCompLayer: (theLayer) ->
-    return NFLayer.isAVLayer(theLayer) and theLayer.source instanceof CompItem
-
-  ###*
-  Returns whether or not a given Layer is an AVLayer or one of its subclasses. This is because Layer objects don't play nice with `instanceof`
-  @memberof NFLayer
-  @param {Layer} layer - the Layer to check
-  @returns {boolean} the result
-  ###
-  isAVLayer: (layer) ->
-    return layer instanceof AVLayer or layer instanceof ShapeLayer or layer instanceof TextLayer
+    return theLayer.isAVLayer() and theLayer.source instanceof CompItem

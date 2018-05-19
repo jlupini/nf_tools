@@ -14,7 +14,7 @@ class NFLayerCollection extends Array
       expectingAVLayers = no
       expectingNFLayers = no
       for theLayer in layerArr
-        if NFLayer.isAVLayer(theLayer)
+        if theLayer.isAVLayer()
           throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers" if expectingNFLayers
           expectingAVLayers = yes
         else if theLayer instanceof NFLayer
@@ -39,7 +39,7 @@ class NFLayerCollection extends Array
   addLayer: (newLayer) ->
     if newLayer instanceof NFLayer
       @layers.push newLayer
-    else if NFLayer.isAVLayer(newLayer)
+    else if newLayer.isAVLayer()
       @layers.push NFLayer.getSpecializedLayerFromAVLayer(newLayer)
     else
       throw "You can only add NFLayers or AVLayers to an NFLayerCollection"
@@ -182,7 +182,7 @@ NFLayerCollection = Object.assign NFLayerCollection,
   ###
   collectionFromAVLayerArray: (arr) ->
     newArray = for layer in arr
-      throw "Cannot run collectionFromAVLayerArray() because not all layers provided are AVLayers" unless NFLayer.isAVLayer layer
+      throw "Cannot run collectionFromAVLayerArray() because not all layers provided are AVLayers" unless layer.isAVLayer()
       newLayer = new NFLayer(layer)
       newLayer.getSpecializedLayer()
     return new NFLayerCollection newArray

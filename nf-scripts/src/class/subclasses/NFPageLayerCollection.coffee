@@ -31,7 +31,7 @@ class NFPageLayerCollection extends NFLayerCollection
   @throws Throw error if not adding a NFPageLayer or an AVLayer that's a valid NFPageLayer
   ###
   addLayer: (newLayer) ->
-    if NFLayer.isAVLayer newLayer
+    if newLayer.isAVLayer()
       @layers.push new NFPageLayer(newLayer)
     else if newLayer instanceof NFPageLayer
       @layers.push newLayer

@@ -30,7 +30,7 @@ class NFHighlightLayerCollection extends NFLayerCollection
   @throws Throws error if not given an NFHighlightLayer or valid highlight AVLayer (ShapeLayer)
   ###
   addLayer: (newLayer) ->
-    if NFLayer.isAVLayer newLayer
+    if newLayer.isAVLayer()
       @layers.push new NFHighlightLayer(newLayer)
     else if newLayer instanceof NFHighlightLayer
       @layers.push newLayer
