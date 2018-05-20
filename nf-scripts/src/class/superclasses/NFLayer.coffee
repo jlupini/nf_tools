@@ -22,6 +22,14 @@ class NFLayer
     return "NFLayer: '#{@layer.name}'"
 
   ###*
+  Returns the name of the layer
+  @memberof NFLayer
+  @returns {string} the layer name
+  ###
+  getName: ->
+    return @layer.name
+
+  ###*
   Checks if this layer is a valid page Layer
   @memberof NFLayer
   @returns {boolean} if this is a valid page layer
@@ -94,8 +102,22 @@ class NFLayer
     if @layer.parent?
       return @layer.parent.nullLayer
     return false
+
+  ###*
+  Returns the effects Property for the layer
+  @memberof NFLayer
+  @returns {Property} the effects property
+  ###
   effects: ->
     return @layer.Effects
+
+  ###*
+  Returns the effect property with a given name, only one level under Effects.
+  Uses `Effects.property(effectName)``
+  @memberof NFLayer
+  @param {string} effectName - the name of the effect to look for
+  @returns {Property | null} the property or null if not found
+  ###
   getEffectWithName: (effectName) ->
     return @layer.Effects.property(effectName)
 

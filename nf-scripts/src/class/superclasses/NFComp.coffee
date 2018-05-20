@@ -15,14 +15,19 @@ class NFComp
     @name = @comp?.name
     @id = @comp?.id
     @
-
-  ###*
-  Returns a string representation of the object
-  @memberof NFComp
-  @returns {string} string representation of the object
-  ###
   getInfo: ->
     return "NFComp: '#{@name}'"
+
+  ###*
+  Checks to see if two NFComps have the same ID
+  @memberof NFComp
+  @param {NFComp} testComp - the comp to compare
+  @returns {boolean} if they're referrring to the same object
+  @throws Throws error if testComp is not an NFComp or subclass
+  ###
+  is: (testComp) ->
+    throw "Can't compare an NFComp to a different type of object" unless testComp instanceof NFComp
+    return @id is testComp.id
 
   ###*
   Gets the selected layers in this comp

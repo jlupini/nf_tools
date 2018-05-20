@@ -50,15 +50,25 @@ class NFPageLayerCollection extends NFLayerCollection
     containingLayerArray = []
     for theLayer in @layers
       if theLayer instanceof NFPageLayer
-        # Get the layer's NFPageItem
+        # Get the layer's NFPageComp
         for highlight in theLayer.highlights().layers
           highlightArray.push highlight
           containingLayerArray.push theLayer
     highlights = new NFHighlightLayerCollection(highlightArray)
-    return highlights if highlights.isEmpty()
-    for i in [0..highlights.count()-1]
-      highlights.layers[i].containingPageLayer = containingLayerArray[i]
     return highlights
+
+  ###*
+  Bubbles up the highlights in the given NFHighlightLayerCollection onto the
+  page layers in this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  @param {NFHighlightLayerCollection} highlightCollection - the highlights to bubble up
+  ###
+  bubbleUpHighlights: (highlightCollection) ->
+    for layer in @layers
+      pageHighlights = highlightCollection.getHighlightsInPage layer.getpageComp()
+      layer.bubbleUp pageHighlights
+    @
 
   ###*
   Returns true if the collection only contains pages from the same PDF

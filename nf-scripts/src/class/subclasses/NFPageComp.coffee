@@ -1,22 +1,24 @@
 ###*
-Creates a new NFPageItem from a given CompItem
-@class NFPageItem
+Creates a new NFPageComp from a given CompItem
+@class NFPageComp
 @classdesc NF Wrapper object for a page CompItem
-@param {CompItem} item - the CompItem to wrap
-@property {CompItem} item - the CompItem
+@extends NFComp
+@param {CompItem} comp - the CompItem to wrap
+@property {CompItem} comp - the CompItem
 ###
-class NFPageItem
-  constructor: (item) ->
+class NFPageComp extends NFComp
+  constructor: (comp) ->
+    NFComp.call(this, comp)
     # FIXME: Check to make sure we've been given a valid item and throw error if not
-    @item = item
-    @name = @item.name
+    @comp = comp
+    @name = @comp.name
     @
   getInfo: ->
-    return "NFPageItem: '#{@name}'"
+    return "NFPageComp: '#{@name}'"
 
   ###*
   Returns the PDF number as a String
-  @memberof NFPageItem
+  @memberof NFPageComp
   @throws Throws error if the number could not be found in this item
   @returns {string} the PDF number
   ###
@@ -24,11 +26,11 @@ class NFPageItem
     # Assuming every page number is two digits long
     endIdx = @name.indexOf("_")
     return @name.substr(0, endIdx) if endIdx > 0
-    throw "Could not get the PDF Number from this NFPageItem"
+    throw "Could not get the PDF Number from this NFPageComp"
 
   ###*
   Returns the page number as a String
-  @memberof NFPageItem
+  @memberof NFPageComp
   @throws Throws error if the number could not be found in this item
   @returns {string} the page number
   ###
@@ -36,16 +38,16 @@ class NFPageItem
     # Assuming every page number is two digits long
     searchIndex = @name.indexOf("pg")
     return @name.substr(searchIndex + 2, 2) if searchIndex > 0
-    throw "Could not get the Page Number from this NFPageItem"
+    throw "Could not get the Page Number from this NFPageComp"
 
   ###*
   Gets the Highlight layers in this item
-  @memberof NFPageItem
-  @returns {NFHighlightLayerCollection} highlight layers in this PageItem
+  @memberof NFPageComp
+  @returns {NFHighlightLayerCollection} highlight layers in this pageComp
   ###
   highlights: ->
     # We're working with AVLayers here
-    sourceLayers = NF.Util.collectionToArray(@item.layers)
+    sourceLayers = NF.Util.collectionToArray(@comp.layers)
     highlightLayers = new NFHighlightLayerCollection()
     for theLayer in sourceLayers
       if NFHighlightLayer.isHighlightLayer(theLayer)

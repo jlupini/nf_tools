@@ -71,8 +71,8 @@ presentUI = function() {
     ref1 = allHighlights.layers;
     for (j = 0, len1 = ref1.length; j < len1; j++) {
       highlight = ref1[j];
-      displayName = highlight.name + " - pg" + highlight.getPageItem().getPageNumber();
-      highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.getConnectedPageLayer());
+      displayName = highlight.getName() + " - pg" + highlight.getpageComp().getPageNumber();
+      highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer(highlight.getConnectedPageLayer());
       if (highlight.isBubbled()) {
         if (highlight.isBroken()) {
           displayName += " (OVERRIDE/BROKEN)";
@@ -84,9 +84,9 @@ presentUI = function() {
       } else if (highlight.isBroken()) {
         displayName += " (BROKEN)";
       }
-      highlightCheckboxes[highlight.name] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
-      highlightCheckboxes[highlight.name].value = !highlight.isBubbled();
-      highlightCheckboxes[highlight.name].enabled = !highlightAlreadyConnectedToThisLayer;
+      highlightCheckboxes[highlight.getName()] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
+      highlightCheckboxes[highlight.getName()].value = !highlight.isBubbled();
+      highlightCheckboxes[highlight.getName()].enabled = !highlightAlreadyConnectedToThisLayer;
     }
     buttonGroup = initTab.add('group', void 0);
     okButton = buttonGroup.add('button', void 0, 'Continue');
@@ -100,7 +100,7 @@ presentUI = function() {
       ref2 = allHighlights.layers;
       for (k = 0, len2 = ref2.length; k < len2; k++) {
         highlight = ref2[k];
-        checkbox = highlightCheckboxes[highlight.name];
+        checkbox = highlightCheckboxes[highlight.getName()];
         if (checkbox.value === true) {
           highlightChoices.addLayer(highlight);
         }
@@ -132,7 +132,7 @@ presentUI = function() {
         }
       }
       highlightChoices.disconnectHighlights();
-      highlightChoices.bubbleUpHighlights();
+      _.selectedPages.bubbleUpHighlights(highlightChoices);
       return w.hide();
     };
   }
@@ -156,8 +156,8 @@ presentUI = function() {
     for (k = 0, len2 = ref2.length; k < len2; k++) {
       highlight = ref2[k];
       if (highlight.isBubbled()) {
-        highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add("checkbox {text: '" + highlight.name + "'}");
-        highlightDisconnectCheckboxes[highlight.name].value = false;
+        highlightDisconnectCheckboxes[highlight.getName()] = highlightDisconnectPanel.add("checkbox {text: '" + highlight.name + "'}");
+        highlightDisconnectCheckboxes[highlight.getName()].value = false;
       }
     }
     disButtonGroup = disconnectTab.add('group', void 0);
@@ -171,7 +171,7 @@ presentUI = function() {
       ref3 = allHighlights.layers;
       for (l = 0, len3 = ref3.length; l < len3; l++) {
         highlight = ref3[l];
-        disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name];
+        disconnectCheckbox = highlightDisconnectCheckboxes[highlight.getName()];
         if (disconnectCheckbox != null) {
           if (disconnectCheckbox.value === true) {
             if (removeCheckbox.value === true) {

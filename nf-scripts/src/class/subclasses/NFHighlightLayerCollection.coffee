@@ -67,14 +67,19 @@ class NFHighlightLayerCollection extends NFLayerCollection
     @
 
   ###*
-  Bubble up all highlights to their respective layers.
+  Returns a new NFHighlightLayerCollection with all the highlights for a given page item
   @memberof NFHighlightLayerCollection
-  @returns {NFHighlightLayerCollection} self
-  @throws Throws error if any highlight is already bubbled up (so use #disconnectHighlights first)
+  @returns {NFHighlightLayerCollection} the new collection
+  @param {NFPageComp} page - the page the resulting highlights are in
+  @throws Throw error if page is not an NFPageComp
   ###
-  bubbleUpHighlights: ->
-    highlight.bubbleUp() for highlight in @layers
-    @
+  getHighlightsInPage: (page) ->
+    # FIXME: Pickup here this is what's broken and not working properly
+    throw "Can't getHighlightsInPage() when not given an NFPageComp" unless page instanceof NFPageComp
+    highlightsInPage = new NFHighlightLayerCollection()
+    for highlight in @layers
+      highlightsInPage.addLayer highlight if highlight.getpageComp().is page
+    return highlightsInPage
 
   ###*
   Reset expression error status for all highlights. This is to be called after #fixExpressionAfterInit.

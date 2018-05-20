@@ -21,15 +21,24 @@ NFComp = (function() {
     this;
   }
 
-
-  /**
-  Returns a string representation of the object
-  @memberof NFComp
-  @returns {string} string representation of the object
-   */
-
   NFComp.prototype.getInfo = function() {
     return "NFComp: '" + this.name + "'";
+  };
+
+
+  /**
+  Checks to see if two NFComps have the same ID
+  @memberof NFComp
+  @param {NFComp} testComp - the comp to compare
+  @returns {boolean} if they're referrring to the same object
+  @throws Throws error if testComp is not an NFComp or subclass
+   */
+
+  NFComp.prototype.is = function(testComp) {
+    if (!(testComp instanceof NFComp)) {
+      throw "Can't compare an NFComp to a different type of object";
+    }
+    return this.id === testComp.id;
   };
 
 
@@ -139,6 +148,17 @@ NFLayer = (function() {
 
 
   /**
+  Returns the name of the layer
+  @memberof NFLayer
+  @returns {string} the layer name
+   */
+
+  NFLayer.prototype.getName = function() {
+    return this.layer.name;
+  };
+
+
+  /**
   Checks if this layer is a valid page Layer
   @memberof NFLayer
   @returns {boolean} if this is a valid page layer
@@ -236,9 +256,25 @@ NFLayer = (function() {
     return false;
   };
 
+
+  /**
+  Returns the effects Property for the layer
+  @memberof NFLayer
+  @returns {Property} the effects property
+   */
+
   NFLayer.prototype.effects = function() {
     return this.layer.Effects;
   };
+
+
+  /**
+  Returns the effect property with a given name, only one level under Effects.
+  Uses `Effects.property(effectName)``
+  @memberof NFLayer
+  @param {string} effectName - the name of the effect to look for
+  @returns {Property | null} the property or null if not found
+   */
 
   NFLayer.prototype.getEffectWithName = function(effectName) {
     return this.layer.Effects.property(effectName);
@@ -666,6 +702,26 @@ NFLayerCollection = (function(superClass) {
 
 
   /**
+  Returns true if the given layer is in the collection
+  @memberof NFLayerCollection
+  @param {NFLayer} testLayer - the layer to check
+  @returns {boolean} if the layer is in the collection
+   */
+
+  NFLayerCollection.prototype.containsLayer = function(testLayer) {
+    var j, len, ref, theLayer;
+    ref = this.layers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
+      if (theLayer.sameLayerAs(testLayer)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+
+  /**
   Returns true if the layers in the collection are all in the same comp
   @memberof NFLayerCollection
   @returns {boolean} if the layers in this collection are all in the same containing comp
@@ -838,7 +894,7 @@ NFLayerCollection = (function(superClass) {
    */
 
   NFLayerCollection.prototype.nullify = function() {
-    var newNull;
+    var newNull, topLayer;
     if (!this.inSameComp()) {
       throw "Cannot nullify layers in different compositions at the same time";
     }
@@ -847,7 +903,8 @@ NFLayerCollection = (function(superClass) {
     }
     newNull = this.containingComp().addNull();
     this.setParents(newNull);
-    newNull.moveBefore(this.getTopmostLayer().layer);
+    topLayer = this.getTopmostLayer();
+    newNull.moveBefore(topLayer.layer);
     return newNull;
   };
 
@@ -886,10 +943,10 @@ NFLayerCollection = Object.assign(NFLayerCollection, {
 /**
 Creates a new NFPDF from a given array of pages
 @class NFPDF
-@classdesc NF Wrapper object for a group of NFPageItems
-@param {NFPageItem[]} pageArr - an array of NFPageItems
-@property {NFPageItem[]} pages - the array ofitems
-@throws Throws error if one object in the array is not an NFPageItem
+@classdesc NF Wrapper object for a group of NFPageComps
+@param {NFPageComp[]} pageArr - an array of NFPageComps
+@property {NFPageComp[]} pages - the array ofitems
+@throws Throws error if one object in the array is not an NFPageComp
  */
 var NFPDF;
 
@@ -904,11 +961,11 @@ NFPDF = (function() {
         results = [];
         for (i = 0, len = ref.length; i < len; i++) {
           page = ref[i];
-          results.push(page instanceof NFPageItem);
+          results.push(page instanceof NFPageComp);
         }
         return results;
       }).call(this)) {
-        throw "You can only add NFPageItems to an NFPDF";
+        throw "You can only add NFPageComps to an NFPDF";
       }
     }
   }
@@ -921,100 +978,21 @@ NFPDF = (function() {
   /**
   Checks if this layer is a valid page Layer
   @memberof NFPDF
-  @param {NFPageItem} newPage - the page to add
-  @throws Throws error if you try to add a non-NFPageItem
+  @param {NFPageComp} newPage - the page to add
+  @throws Throws error if you try to add a non-NFPageComp
   @returns {NFPDF} self
    */
 
-  NFPDF.prototype.addNFPageItem = function(newPage) {
-    if (newPage instanceof NFPageItem) {
+  NFPDF.prototype.addNFPageComp = function(newPage) {
+    if (newPage instanceof NFPageComp) {
       this.layers.push(newPage);
     } else {
-      throw "You can only add NFPageItems to an NFPDF";
+      throw "You can only add NFPageComps to an NFPDF";
     }
     return this;
   };
 
   return NFPDF;
-
-})();
-
-
-/**
-Creates a new NFPageItem from a given CompItem
-@class NFPageItem
-@classdesc NF Wrapper object for a page CompItem
-@param {CompItem} item - the CompItem to wrap
-@property {CompItem} item - the CompItem
- */
-var NFPageItem;
-
-NFPageItem = (function() {
-  function NFPageItem(item) {
-    this.item = item;
-    this.name = this.item.name;
-    this;
-  }
-
-  NFPageItem.prototype.getInfo = function() {
-    return "NFPageItem: '" + this.name + "'";
-  };
-
-
-  /**
-  Returns the PDF number as a String
-  @memberof NFPageItem
-  @throws Throws error if the number could not be found in this item
-  @returns {string} the PDF number
-   */
-
-  NFPageItem.prototype.getPDFNumber = function() {
-    var endIdx;
-    endIdx = this.name.indexOf("_");
-    if (endIdx > 0) {
-      return this.name.substr(0, endIdx);
-    }
-    throw "Could not get the PDF Number from this NFPageItem";
-  };
-
-
-  /**
-  Returns the page number as a String
-  @memberof NFPageItem
-  @throws Throws error if the number could not be found in this item
-  @returns {string} the page number
-   */
-
-  NFPageItem.prototype.getPageNumber = function() {
-    var searchIndex;
-    searchIndex = this.name.indexOf("pg");
-    if (searchIndex > 0) {
-      return this.name.substr(searchIndex + 2, 2);
-    }
-    throw "Could not get the Page Number from this NFPageItem";
-  };
-
-
-  /**
-  Gets the Highlight layers in this item
-  @memberof NFPageItem
-  @returns {NFHighlightLayerCollection} highlight layers in this PageItem
-   */
-
-  NFPageItem.prototype.highlights = function() {
-    var highlightLayers, i, len, sourceLayers, theLayer;
-    sourceLayers = NF.Util.collectionToArray(this.item.layers);
-    highlightLayers = new NFHighlightLayerCollection();
-    for (i = 0, len = sourceLayers.length; i < len; i++) {
-      theLayer = sourceLayers[i];
-      if (NFHighlightLayer.isHighlightLayer(theLayer)) {
-        highlightLayers.addLayer(theLayer);
-      }
-    }
-    return highlightLayers;
-  };
-
-  return NFPageItem;
 
 })();
 
@@ -1234,17 +1212,6 @@ NFHighlightLayer = (function(superClass) {
 
 
   /**
-  Returns the name of the highlight layer
-  @memberof NFHighlightLayer
-  @returns {string} the layer name
-   */
-
-  NFHighlightLayer.prototype.getName = function() {
-    return this.layer.name;
-  };
-
-
-  /**
   Returns the connected NFPageLayer if it exists
   @memberof NFHighlightLayer
   @returns {NFPageLayer | null} the connectedPageLayer or null
@@ -1269,13 +1236,13 @@ NFHighlightLayer = (function(superClass) {
 
 
   /**
-  Returns the NFPageItem this highlight lives in
+  Returns the NFPageComp this highlight lives in
   @memberof NFHighlightLayer
-  @returns {NFPageItem} the containing page item for the highlight
+  @returns {NFPageComp} the containing page item for the highlight
    */
 
-  NFHighlightLayer.prototype.getPageItem = function() {
-    return new NFPageItem(this.layer.containingComp);
+  NFHighlightLayer.prototype.getpageComp = function() {
+    return new NFPageComp(this.layer.containingComp);
   };
 
 
@@ -1310,49 +1277,14 @@ NFHighlightLayer = (function(superClass) {
 
 
   /**
-  Returns true if the highlight can be bubbled up. In other words, true if currently bubbled up
-  and not broken, or if there's no containing page layer. This check relies on the
-  containingPageLayer property being correctly set by the page that creates this object
+  Returns true if the highlight can be bubbled up. In other words, true if not currently bubbled up
+  unless it's also broken
   @memberof NFHighlightLayer
   @returns {boolean} whether the highlight can be bubbled up
    */
 
   NFHighlightLayer.prototype.canBubbleUp = function() {
-    return !((this.isBubbled() && !this.isBroken()) || (this.containingPageLayer == null));
-  };
-
-
-  /**
-  Bubbles up highlight to the containingPageLayer.
-  Will throw an error if there's no containingPageLayer or if (bubbled and not broken)
-  @memberof NFHighlightLayer
-  @returns {NFHighlightLayer} self
-  @throws Throw error if connected and not broken, so you should have disconnected first
-  @throws Throw error if no containingPageLayer
-   */
-
-  NFHighlightLayer.prototype.bubbleUp = function() {
-    var highlighterProperty, j, len, ref, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
-    if (this.isBubbled() && !this.isBroken()) {
-      throw "Cannot bubble highlight if already connected and not broken. Disconnect first";
-    }
-    if (this.containingPageLayer == null) {
-      throw "Cannot bubble highlight without a containingPageLayer";
-    }
-    targetPageLayerEffects = this.containingPageLayer.effects();
-    sourceEffect = this.highlighterEffect();
-    targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter');
-    targetHighlighterEffect.name = this.layer.name;
-    targetComp = this.containingPageLayer.layer.containingComp;
-    ref = NF.Util.highlighterProperties;
-    for (j = 0, len = ref.length; j < len; j++) {
-      highlighterProperty = ref[j];
-      sourceValue = sourceEffect.property(highlighterProperty).value;
-      targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
-      sourceExpression = "var offsetTime = comp(\"" + targetComp.name + "\").layer(\"" + this.containingPageLayer.layer.name + "\").startTime; comp(\"" + targetComp.name + "\").layer(\"" + this.containingPageLayer.layer.name + "\").effect(\"" + this.name + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
-      sourceEffect.property(highlighterProperty).expression = sourceExpression;
-    }
-    return this;
+    return (!this.isBubbled()) || this.isBroken();
   };
 
 
@@ -1546,20 +1478,27 @@ NFHighlightLayerCollection = (function(superClass) {
 
 
   /**
-  Bubble up all highlights to their respective layers.
+  Returns a new NFHighlightLayerCollection with all the highlights for a given page item
   @memberof NFHighlightLayerCollection
-  @returns {NFHighlightLayerCollection} self
-  @throws Throws error if any highlight is already bubbled up (so use #disconnectHighlights first)
+  @returns {NFHighlightLayerCollection} the new collection
+  @param {NFPageComp} page - the page the resulting highlights are in
+  @throws Throw error if page is not an NFPageComp
    */
 
-  NFHighlightLayerCollection.prototype.bubbleUpHighlights = function() {
-    var highlight, i, len, ref;
+  NFHighlightLayerCollection.prototype.getHighlightsInPage = function(page) {
+    var highlight, highlightsInPage, i, len, ref;
+    if (!(page instanceof NFPageComp)) {
+      throw "Can't getHighlightsInPage() when not given an NFPageComp";
+    }
+    highlightsInPage = new NFHighlightLayerCollection();
     ref = this.layers;
     for (i = 0, len = ref.length; i < len; i++) {
       highlight = ref[i];
-      highlight.bubbleUp();
+      if (highlight.getpageComp().is(page)) {
+        highlightsInPage.addLayer(highlight);
+      }
     }
-    return this;
+    return highlightsInPage;
   };
 
 
@@ -1659,6 +1598,91 @@ NFImageLayer = (function(superClass) {
 
 
 /**
+Creates a new NFPageComp from a given CompItem
+@class NFPageComp
+@classdesc NF Wrapper object for a page CompItem
+@extends NFComp
+@param {CompItem} comp - the CompItem to wrap
+@property {CompItem} comp - the CompItem
+ */
+var NFPageComp,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+NFPageComp = (function(superClass) {
+  extend(NFPageComp, superClass);
+
+  function NFPageComp(comp) {
+    NFComp.call(this, comp);
+    this.comp = comp;
+    this.name = this.comp.name;
+    this;
+  }
+
+  NFPageComp.prototype.getInfo = function() {
+    return "NFPageComp: '" + this.name + "'";
+  };
+
+
+  /**
+  Returns the PDF number as a String
+  @memberof NFPageComp
+  @throws Throws error if the number could not be found in this item
+  @returns {string} the PDF number
+   */
+
+  NFPageComp.prototype.getPDFNumber = function() {
+    var endIdx;
+    endIdx = this.name.indexOf("_");
+    if (endIdx > 0) {
+      return this.name.substr(0, endIdx);
+    }
+    throw "Could not get the PDF Number from this NFPageComp";
+  };
+
+
+  /**
+  Returns the page number as a String
+  @memberof NFPageComp
+  @throws Throws error if the number could not be found in this item
+  @returns {string} the page number
+   */
+
+  NFPageComp.prototype.getPageNumber = function() {
+    var searchIndex;
+    searchIndex = this.name.indexOf("pg");
+    if (searchIndex > 0) {
+      return this.name.substr(searchIndex + 2, 2);
+    }
+    throw "Could not get the Page Number from this NFPageComp";
+  };
+
+
+  /**
+  Gets the Highlight layers in this item
+  @memberof NFPageComp
+  @returns {NFHighlightLayerCollection} highlight layers in this pageComp
+   */
+
+  NFPageComp.prototype.highlights = function() {
+    var highlightLayers, i, len, sourceLayers, theLayer;
+    sourceLayers = NF.Util.collectionToArray(this.comp.layers);
+    highlightLayers = new NFHighlightLayerCollection();
+    for (i = 0, len = sourceLayers.length; i < len; i++) {
+      theLayer = sourceLayers[i];
+      if (NFHighlightLayer.isHighlightLayer(theLayer)) {
+        highlightLayers.addLayer(theLayer);
+      }
+    }
+    return highlightLayers;
+  };
+
+  return NFPageComp;
+
+})(NFComp);
+
+
+/**
 Creates a new NFPageLayer from a given AVLayer
 @class NFPageLayer
 @classdesc Subclass of {@link NFLayer} for a page layer
@@ -1679,7 +1703,7 @@ NFPageLayer = (function(superClass) {
     if (layer.source == null) {
       throw "Cannot create an NFPageLayer from a layer without a source";
     }
-    this.pageItem = new NFPageItem(layer.source);
+    this.pageComp = new NFPageComp(layer.source);
     this;
   }
 
@@ -1700,6 +1724,29 @@ NFPageLayer = (function(superClass) {
     } else {
       return null;
     }
+  };
+
+
+  /**
+  Gets the comp this layer is in
+  @memberof NFPageLayer
+  @override
+  @returns {NFComp} The containing Comp
+   */
+
+  NFPageLayer.prototype.containingComp = function() {
+    return new NFComp(this.layer.containingComp);
+  };
+
+
+  /**
+  Returns the pageComp for this layer
+  @memberof NFPageLayer
+  @returns {NFPageComp} The page item
+   */
+
+  NFPageLayer.prototype.getpageComp = function() {
+    return this.pageComp;
   };
 
 
@@ -1726,7 +1773,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.highlights = function() {
-    return this.pageItem.highlights();
+    return this.pageComp.highlights();
   };
 
 
@@ -1747,6 +1794,51 @@ NFPageLayer = (function(superClass) {
       }
     }
     return new NFHighlightLayerCollection(bubbledHighlights);
+  };
+
+
+  /**
+  Bubbles up given highlights or highlight to this layer.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {NFHighlightLayer | NFHighlightLayerCollection}
+  @throws Throw error if any highlight choices are connected and not broken,
+  so you should have disconnected them first
+  @throws Throw error if the given highlight is not in this page
+  @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
+   */
+
+  NFPageLayer.prototype.bubbleUp = function(highlightsToBubble) {
+    var highlight, highlighterProperty, i, j, len, len1, ref, ref1, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
+    if (highlightsToBubble instanceof NFHighlightLayer) {
+      highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble]);
+    }
+    if (!highlightsToBubble.isEmpty()) {
+      ref = highlightsToBubble.layers;
+      for (i = 0, len = ref.length; i < len; i++) {
+        highlight = ref[i];
+        if (!highlight.canBubbleUp()) {
+          throw "Cannot bubble highlight if already connected and not broken. Disconnect first";
+        }
+        if (!this.getpageComp().is(highlight.getpageComp())) {
+          throw "Cannot bubble highlight because it is not in this page!";
+        }
+        targetPageLayerEffects = this.effects();
+        sourceEffect = highlight.highlighterEffect();
+        targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter');
+        targetHighlighterEffect.name = highlight.layer.name;
+        targetComp = this.containingComp();
+        ref1 = NF.Util.highlighterProperties;
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          highlighterProperty = ref1[j];
+          sourceValue = sourceEffect.property(highlighterProperty).value;
+          targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
+          sourceExpression = "var offsetTime = comp(\"" + targetComp.comp.name + "\").layer(\"" + this.layer.name + "\").startTime; comp(\"" + targetComp.comp.name + "\").layer(\"" + this.layer.name + "\").effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
+          sourceEffect.property(highlighterProperty).expression = sourceExpression;
+        }
+      }
+    }
+    return this;
   };
 
 
@@ -1868,7 +1960,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.getPDFNumber = function() {
-    return this.pageItem.getPDFNumber();
+    return this.pageComp.getPDFNumber();
   };
 
 
@@ -1879,7 +1971,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.getPageNumber = function() {
-    return this.pageItem.getPageNumber();
+    return this.pageComp.getPageNumber();
   };
 
   return NFPageLayer;
@@ -1917,12 +2009,12 @@ NFPageLayerCollection = (function(superClass) {
   extend(NFPageLayerCollection, superClass);
 
   function NFPageLayerCollection(layerArr) {
-    var j, len, ref, theLayer;
+    var i, len, ref, theLayer;
     NFLayerCollection.call(this, layerArr);
     if (this.layers != null) {
       ref = this.layers;
-      for (j = 0, len = ref.length; j < len; j++) {
-        theLayer = ref[j];
+      for (i = 0, len = ref.length; i < len; i++) {
+        theLayer = ref[i];
         if (!(theLayer instanceof NFPageLayer)) {
           throw "You can only add NFPageLayers to an NFPageLayerCollection";
         }
@@ -1932,11 +2024,11 @@ NFPageLayerCollection = (function(superClass) {
   }
 
   NFPageLayerCollection.prototype.getInfo = function() {
-    var infoString, j, len, ref, theLayer;
+    var i, infoString, len, ref, theLayer;
     infoString = "NFPageLayerCollection: [";
     ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      theLayer = ref[j];
+    for (i = 0, len = ref.length; i < len; i++) {
+      theLayer = ref[i];
       infoString += theLayer.getInfo() + ", ";
     }
     return infoString += "]";
@@ -1972,29 +2064,43 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.highlights = function() {
-    var containingLayerArray, highlight, highlightArray, highlights, i, j, k, l, len, len1, ref, ref1, ref2, theLayer;
+    var containingLayerArray, highlight, highlightArray, highlights, i, j, len, len1, ref, ref1, theLayer;
     highlightArray = [];
     containingLayerArray = [];
     ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      theLayer = ref[j];
+    for (i = 0, len = ref.length; i < len; i++) {
+      theLayer = ref[i];
       if (theLayer instanceof NFPageLayer) {
         ref1 = theLayer.highlights().layers;
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
-          highlight = ref1[k];
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          highlight = ref1[j];
           highlightArray.push(highlight);
           containingLayerArray.push(theLayer);
         }
       }
     }
     highlights = new NFHighlightLayerCollection(highlightArray);
-    if (highlights.isEmpty()) {
-      return highlights;
-    }
-    for (i = l = 0, ref2 = highlights.count() - 1; 0 <= ref2 ? l <= ref2 : l >= ref2; i = 0 <= ref2 ? ++l : --l) {
-      highlights.layers[i].containingPageLayer = containingLayerArray[i];
-    }
     return highlights;
+  };
+
+
+  /**
+  Bubbles up the highlights in the given NFHighlightLayerCollection onto the
+  page layers in this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  @param {NFHighlightLayerCollection} highlightCollection - the highlights to bubble up
+   */
+
+  NFPageLayerCollection.prototype.bubbleUpHighlights = function(highlightCollection) {
+    var i, layer, len, pageHighlights, ref;
+    ref = this.layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      layer = ref[i];
+      pageHighlights = highlightCollection.getHighlightsInPage(layer.getpageComp());
+      layer.bubbleUp(pageHighlights);
+    }
+    return this;
   };
 
 
@@ -2005,14 +2111,14 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.fromSamePDF = function() {
-    var j, layer, len, ref, testNumber;
+    var i, layer, len, ref, testNumber;
     if (this.count() === 0) {
       return true;
     }
     testNumber = this.layers[0].getPDFNumber();
     ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      layer = ref[j];
+    for (i = 0, len = ref.length; i < len; i++) {
+      layer = ref[i];
       if (layer.getPDFNumber() !== testNumber) {
         return false;
       }
@@ -2040,10 +2146,10 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.initLayers = function() {
-    var j, len, page, ref;
+    var i, len, page, ref;
     ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      page = ref[j];
+    for (i = 0, len = ref.length; i < len; i++) {
+      page = ref[i];
       page.init();
     }
     return this;
@@ -2057,11 +2163,11 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.initLayerTransforms = function() {
-    var j, len, page, ref, results;
+    var i, len, page, ref, results;
     ref = this.layers;
     results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
-      page = ref[j];
+    for (i = 0, len = ref.length; i < len; i++) {
+      page = ref[i];
       results.push(page.initTransforms());
     }
     return results;
@@ -2136,10 +2242,10 @@ NFPageLayerCollection = Object.assign(NFPageLayerCollection, {
   collectionFromAVLayerArray: function(arr) {
     var layer, newArray, newLayer;
     newArray = (function() {
-      var j, len, results;
+      var i, len, results;
       results = [];
-      for (j = 0, len = arr.length; j < len; j++) {
-        layer = arr[j];
+      for (i = 0, len = arr.length; i < len; i++) {
+        layer = arr[i];
         newLayer = new NFLayer(layer);
         results.push(newLayer.getSpecializedLayer());
       }

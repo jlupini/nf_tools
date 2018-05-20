@@ -56,6 +56,17 @@ class NFLayerCollection extends Array
     return true
 
   ###*
+  Returns true if the given layer is in the collection
+  @memberof NFLayerCollection
+  @param {NFLayer} testLayer - the layer to check
+  @returns {boolean} if the layer is in the collection
+  ###
+  containsLayer: (testLayer) ->
+    for theLayer in @layers
+      return true if theLayer.sameLayerAs testLayer
+    return false
+
+  ###*
   Returns true if the layers in the collection are all in the same comp
   @memberof NFLayerCollection
   @returns {boolean} if the layers in this collection are all in the same containing comp
@@ -168,7 +179,8 @@ class NFLayerCollection extends Array
     throw "Cannot nullify without a given layer" if @isEmpty()
     newNull = @containingComp().addNull()
     @setParents(newNull)
-    newNull.moveBefore @getTopmostLayer().layer
+    topLayer = @getTopmostLayer()
+    newNull.moveBefore topLayer.layer
     return newNull
 
 

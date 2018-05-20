@@ -68,8 +68,8 @@ presentUI = ->
 
 		highlightCheckboxes = {}
 		for highlight in allHighlights.layers
-			displayName = highlight.name + " - pg" + highlight.getPageItem().getPageNumber()
-			highlightAlreadyConnectedToThisLayer = highlight.containingPageLayer.sameLayerAs(highlight.getConnectedPageLayer())
+			displayName = highlight.getName() + " - pg" + highlight.getpageComp().getPageNumber()
+			highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer highlight.getConnectedPageLayer()
 
 			if highlight.isBubbled()
 				if highlight.isBroken()
@@ -81,10 +81,10 @@ presentUI = ->
 			else if highlight.isBroken()
 				displayName += " (BROKEN)"
 
-			highlightCheckboxes[highlight.name] = highlightPanel.add "checkbox {text: '#{displayName}'}"
-			highlightCheckboxes[highlight.name].value = not highlight.isBubbled()
+			highlightCheckboxes[highlight.getName()] = highlightPanel.add "checkbox {text: '#{displayName}'}"
+			highlightCheckboxes[highlight.getName()].value = not highlight.isBubbled()
 			# Disable the checkbox if it's already bubbled up to the given layer
-			highlightCheckboxes[highlight.name].enabled = not highlightAlreadyConnectedToThisLayer
+			highlightCheckboxes[highlight.getName()].enabled = not highlightAlreadyConnectedToThisLayer
 
 		buttonGroup = initTab.add 'group', undefined
 		okButton = buttonGroup.add('button', undefined, 'Continue')
@@ -94,14 +94,13 @@ presentUI = ->
 		okButton.onClick = ->
 			highlightChoices = new NFHighlightLayerCollection()
 			for highlight in allHighlights.layers
-				checkbox = highlightCheckboxes[highlight.name]
+				checkbox = highlightCheckboxes[highlight.getName()]
 				highlightChoices.addLayer highlight if checkbox.value is true
 
 			if onlyBubbleUpCheckbox.value is no
 				_.selectedPages.initLayerTransforms() if initLayerTransformsCheckbox.value is yes
 				_.selectedPages.initLayers()
 
-				# FIXME: This creates a new paper parent layer even if there's already an existing one we should hook up to
 				newParent = _.selectedPages.assignPaperParentLayer(yes)
 				newParent.setZoomer()
 
@@ -119,7 +118,7 @@ presentUI = ->
 						layer.layer.startTime = topLayer.markers().keyTime("NF In") unless layer.sameLayerAs topLayer
 
 			highlightChoices.disconnectHighlights()
-			highlightChoices.bubbleUpHighlights()
+			_.selectedPages.bubbleUpHighlights(highlightChoices)
 
 			w.hide()
 
@@ -143,8 +142,8 @@ presentUI = ->
 		highlightDisconnectCheckboxes = {}
 		for highlight in allHighlights.layers
 			if highlight.isBubbled()
-				highlightDisconnectCheckboxes[highlight.name] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.name}'}"
-				highlightDisconnectCheckboxes[highlight.name].value = off
+				highlightDisconnectCheckboxes[highlight.getName()] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.name}'}"
+				highlightDisconnectCheckboxes[highlight.getName()].value = off
 
 		disButtonGroup = disconnectTab.add 'group', undefined
 		disOkButton = disButtonGroup.add('button', undefined, 'Continue')
@@ -153,7 +152,7 @@ presentUI = ->
 
 		disOkButton.onClick = ->
 			for highlight in allHighlights.layers
-				disconnectCheckbox = highlightDisconnectCheckboxes[highlight.name]
+				disconnectCheckbox = highlightDisconnectCheckboxes[highlight.getName()]
 				if disconnectCheckbox?
 					if disconnectCheckbox.value is true
 						if removeCheckbox.value is yes

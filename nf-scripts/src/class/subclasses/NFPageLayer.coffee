@@ -11,7 +11,7 @@ class NFPageLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
     throw "Cannot create an NFPageLayer from a layer without a source" unless layer.source?
-    @pageItem = new NFPageItem layer.source
+    @pageComp = new NFPageComp layer.source
     @
   # MARK: Instance Methods
   getInfo: ->
@@ -27,6 +27,23 @@ class NFPageLayer extends NFLayer
       return new NFPaperParentLayer(@layer.parent)
     else
       return null
+
+  ###*
+  Gets the comp this layer is in
+  @memberof NFPageLayer
+  @override
+  @returns {NFComp} The containing Comp
+  ###
+  containingComp: ->
+    return new NFComp @layer.containingComp
+
+  ###*
+  Returns the pageComp for this layer
+  @memberof NFPageLayer
+  @returns {NFPageComp} The page item
+  ###
+  getpageComp: ->
+    return @pageComp
 
   ###*
   Returns the paperParentLayer for this layer, if it exists, REGARDLESS OF WHETHER ITS CONNECTED. Not to be confused with {@link NFPageLayer#getPaperParentLayer}
@@ -45,7 +62,7 @@ class NFPageLayer extends NFLayer
   @returns {NFHighlightLayerCollection} The collection of highlights
   ###
   highlights: ->
-    return @pageItem.highlights()
+    return @pageComp.highlights()
 
   ###*
   Returns NFHighlightLayerCollection of all highlights bubbled onto this page layer
@@ -57,6 +74,48 @@ class NFPageLayer extends NFLayer
     for highlight in @highlights().layers
       bubbledHighlights.push highlight if highlight.isBubbled() and highlight.getConnectedPageLayer()?.sameLayerAs(@)
     return new NFHighlightLayerCollection(bubbledHighlights)
+
+  ###*
+  Bubbles up given highlights or highlight to this layer.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {NFHighlightLayer | NFHighlightLayerCollection}
+  @throws Throw error if any highlight choices are connected and not broken,
+  so you should have disconnected them first
+  @throws Throw error if the given highlight is not in this page
+  @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
+  ###
+  bubbleUp: (highlightsToBubble) ->
+    # If given a single highlight, wrap it.
+    if highlightsToBubble instanceof NFHighlightLayer
+      highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble])
+
+    unless highlightsToBubble.isEmpty()
+      for highlight in highlightsToBubble.layers
+
+        unless highlight.canBubbleUp()
+          throw "Cannot bubble highlight if already connected and not broken. Disconnect first"
+
+        # Make sure the highlight is in this page
+        unless @getpageComp().is highlight.getpageComp()
+          throw "Cannot bubble highlight because it is not in this page!"
+
+        targetPageLayerEffects = @effects()
+        sourceEffect = highlight.highlighterEffect()
+
+        targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter')
+        targetHighlighterEffect.name = highlight.layer.name
+
+        targetComp = @containingComp()
+
+        # Iterate through the properties and connect each one
+        for highlighterProperty in NF.Util.highlighterProperties
+          sourceValue = sourceEffect.property(highlighterProperty).value
+          targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue)
+          sourceExpression = "var offsetTime = comp(\"#{targetComp.comp.name}\").layer(\"#{@layer.name}\").startTime;
+                              comp(\"#{targetComp.comp.name}\").layer(\"#{@layer.name}\").effect(\"#{highlight.getName()}\")(\"#{highlighterProperty}\").valueAtTime(time+offsetTime)"
+          sourceEffect.property(highlighterProperty).expression = sourceExpression
+    @
 
   ###*
   Returns whether or not the page has been initted with the below methods
@@ -146,7 +205,7 @@ class NFPageLayer extends NFLayer
   @returns {string} the PDF number of the page
   ###
   getPDFNumber: ->
-    @pageItem.getPDFNumber()
+    @pageComp.getPDFNumber()
 
   ###*
   Returns the page number as a String
@@ -154,7 +213,7 @@ class NFPageLayer extends NFLayer
   @returns {string} the page number of the page
   ###
   getPageNumber: ->
-    @pageItem.getPageNumber()
+    @pageComp.getPageNumber()
 
 # Class Methods
 NFPageLayer = Object.assign NFPageLayer,
