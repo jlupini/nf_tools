@@ -47,6 +47,18 @@ NF.Util.findItem = function(itemName) {
   return null;
 };
 
+NF.Util.findItemIn = function(itemName, sourceFolderItem) {
+  var i;
+  i = 1;
+  while (i <= sourceFolderItem.numItems) {
+    if (sourceFolderItem.item(i).name === itemName) {
+      return sourceFolderItem.item(i);
+    }
+    i++;
+  }
+  return null;
+};
+
 NF.Util.getArgumentOfPropertyFromExpression = function(property, expression) {
   var endIdx, propertyIndex, result, startIdx;
   propertyIndex = expression.indexOf(property + "(");
@@ -92,18 +104,6 @@ NF.Util.hasDuplicates = function(array) {
 NF.Util.isHighlightLayer = function(theLayer) {
   var ref1;
   return theLayer instanceof ShapeLayer && ((ref1 = theLayer.Effects.property(1)) != null ? ref1.matchName : void 0) === "AV_Highlighter";
-};
-
-NF.Util.findItemIn = function(itemName, sourceFolderItem) {
-  var i;
-  i = 1;
-  while (i <= sourceFolderItem.numItems) {
-    if (sourceFolderItem.item(i).name === itemName) {
-      return sourceFolderItem.item(i);
-    }
-    i++;
-  }
-  return null;
 };
 
 NF.Util.readFile = function(filename) {

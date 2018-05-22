@@ -59,6 +59,15 @@ NF.Util.findItem = (itemName) ->
     i++
   null
 
+# Given a string with the name of an item to find and it's parent folder, findItemIn returns the folderItem, or null of none is found.
+NF.Util.findItemIn = (itemName, sourceFolderItem) ->
+  i = 1
+  while i <= sourceFolderItem.numItems
+    if sourceFolderItem.item(i).name == itemName
+      return sourceFolderItem.item(i)
+    i++
+  null
+
 # Given an expression string and property to search for, returns the argument passed to that property
 # So for example, with the property "layer" and the expression "comp('composition').layer('myLayer')", this function returns "'myLayer'"
 # Use getCleanedArgumentOfPropertyFromExpression() to strip the quotes from the result
@@ -100,15 +109,6 @@ NF.Util.hasDuplicates = (array) ->
 # DEPRECATED: Use NF.Models.NFHighlightLayer.isHighlightLayer() instead
 NF.Util.isHighlightLayer = (theLayer) ->
   return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
-
-# Given a string with the name of an item to find and it's parent folder, findItemIn returns the folderItem, or null of none is found.
-NF.Util.findItemIn = (itemName, sourceFolderItem) ->
-  i = 1
-  while i <= sourceFolderItem.numItems
-    if sourceFolderItem.item(i).name == itemName
-      return sourceFolderItem.item(i)
-    i++
-  null
 
 # Reads a file and returns the contents as a string
 NF.Util.readFile = (filename) ->

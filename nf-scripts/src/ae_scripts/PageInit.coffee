@@ -68,7 +68,7 @@ presentUI = ->
 
 		highlightCheckboxes = {}
 		for highlight in allHighlights.layers
-			displayName = highlight.getName() + " - pg" + highlight.getpageComp().getPageNumber()
+			displayName = highlight.getName() + " - pg" + highlight.getPageComp().getPageNumber()
 			highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer highlight.getConnectedPageLayer()
 
 			if highlight.isBubbled()

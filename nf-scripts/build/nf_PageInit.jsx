@@ -71,7 +71,7 @@ presentUI = function() {
     ref1 = allHighlights.layers;
     for (j = 0, len1 = ref1.length; j < len1; j++) {
       highlight = ref1[j];
-      displayName = highlight.getName() + " - pg" + highlight.getpageComp().getPageNumber();
+      displayName = highlight.getName() + " - pg" + highlight.getPageComp().getPageNumber();
       highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer(highlight.getConnectedPageLayer());
       if (highlight.isBubbled()) {
         if (highlight.isBroken()) {

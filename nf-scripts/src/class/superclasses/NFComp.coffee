@@ -35,7 +35,15 @@ class NFComp
   @returns {NFLayerCollection} collection of the selected layers in the comp
   ###
   selectedLayers: ->
-    return NFLayerCollection.collectionFromAVLayerArray @comp.selectedLayers
+    return new NFLayerCollection @comp.selectedLayers
+
+  ###*
+  Gets all the layers in this comp
+  @memberof NFComp
+  @returns {NFLayerCollection} collection of the layers in the comp
+  ###
+  allLayers: ->
+    return new NFLayerCollection @comp.layers
 
   ###*
   Gets the selected pages in this comp
@@ -47,6 +55,25 @@ class NFComp
     for layer in @selectedLayers().layers
       selectedPageLayers.addLayer(layer) if layer instanceof NFPageLayer
     return selectedPageLayers
+
+  ###*
+  Gets the active NFLayers at a time (or current time by default).
+  @memberof NFComp
+  @param {float} [time] - the time to check at, or the current time by default
+  @returns {NFLayerCollection} The active layers or null if none active
+  ###
+  activeLayers: (time) ->
+    # Set the current time to the test time, but we'll need to set it back later.
+    if time?
+      originalTime = @getTime()
+      @setTime(time)
+
+    activeLayers = new NFLayerCollection
+    for layer in @allLayers().layers
+      activeLayers.addLayer layer if layer.isActive()
+
+    @setTime originalTime if originalTime?
+    return activeLayers
 
   ###*
   # Returns the NFLayer in this comp with the layer name given or null if none found
@@ -69,6 +96,24 @@ class NFComp
   getZoomer: ->
     zoomer = @layerWithName 'Zoomer'
     return zoomer
+
+  ###*
+  Sets the comp time
+  @memberof NFComp
+  @param {float} newTime - the new time
+  @returns {NFComp} self
+  ###
+  setTime: (newTime) ->
+    @comp.time = newTime
+    @
+
+  ###*
+  Gets the comp time
+  @memberof NFComp
+  @returns {float} the time
+  ###
+  getTime: (newTime) ->
+    return @comp.time
 
   ###*
   # Creates and returns a new null layer in this comp

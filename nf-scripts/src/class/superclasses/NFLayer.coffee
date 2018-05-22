@@ -54,6 +54,14 @@ class NFLayer
     return @layer.nullLayer
 
   ###*
+  Checks if this layer is active
+  @memberof NFLayer
+  @returns {boolean} if this is an active layer
+  ###
+  isActive: ->
+    return @layer.active
+
+  ###*
   Checks if this layer is a valid highlight layer
   @memberof NFLayer
   @returns {boolean} if this is a valid highlight layer
@@ -120,6 +128,16 @@ class NFLayer
   ###
   getEffectWithName: (effectName) ->
     return @layer.Effects.property(effectName)
+
+  ###*
+  Returns the root property on the layer with the given name. Saves you a `.layer`
+  when accessing in other classes
+  @memberof NFLayer
+  @param {string} propName - the name of the property to return
+  @returns {Property | null} the property or null if not found
+  ###
+  property: (propName) ->
+    return @layer.property(propName)
 
   ###*
   Checks to see if a given NFLayer's layer is the same as this one's

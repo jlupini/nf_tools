@@ -2,15 +2,19 @@
 Creates a new NFLayerCollection from an array of [NFLayers]{@link NFLayer}
 @class NFLayerCollection
 @classdesc NF Wrapper object for a Array that contains NFLayers
-@param {Array} layerArr - the array with [NFLayers]{@link NFLayer} to initialize the collection with
+@param {Array | LayerCollection | NFLayerCollection} layerArr - the array with [NFLayers]{@link NFLayer}
+or an Adobe LayerCollection or an NFLayerCollection to initialize the collection with
 @property {Array} layers - the array of [NFLayers]{@link NFLayer} in the collection
 @throws Will throw an error if array contains non-{@link NFLayer} objects
 ###
 class NFLayerCollection extends Array
   constructor: (layerArr) ->
-    # TODO: accept an array of AVLayers here as well
     @layers = layerArr ? []
     if layerArr?
+      # Convert to an array if this is a LayerCollection or NFLayerCollection
+      @layers = @layers.toArr if layerArr instanceof LayerCollection
+      @layers = layerArr.layers if layerArr instanceof NFLayerCollection
+
       expectingAVLayers = no
       expectingNFLayers = no
       for theLayer in layerArr
@@ -22,6 +26,12 @@ class NFLayerCollection extends Array
           expectingNFLayers = yes
         else
           throw "You can only add NFLayers or AVLayers to an NFLayerCollection"
+
+      if expectingAVLayers
+        newArray = for layer in arr
+          newLayer = new NFLayer(layer)
+          newLayer.getSpecializedLayer()
+        @layers = newArray
     @
   # MARK: Instance Methods
   getInfo: ->
@@ -182,19 +192,3 @@ class NFLayerCollection extends Array
     topLayer = @getTopmostLayer()
     newNull.moveBefore topLayer.layer
     return newNull
-
-
-NFLayerCollection = Object.assign NFLayerCollection,
-
-  ###*
-  Class Method which returns a new NFLayerCollection from an array of AVLayers
-  @memberof NFLayerCollection
-  @returns {NFLayerCollection} the new layer collection
-  @throws Throw error if the given array doesn't contain only AVLayers
-  ###
-  collectionFromAVLayerArray: (arr) ->
-    newArray = for layer in arr
-      throw "Cannot run collectionFromAVLayerArray() because not all layers provided are AVLayers" unless layer.isAVLayer()
-      newLayer = new NFLayer(layer)
-      newLayer.getSpecializedLayer()
-    return new NFLayerCollection newArray

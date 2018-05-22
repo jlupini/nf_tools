@@ -23,7 +23,6 @@ class NFPageComp extends NFComp
   @returns {string} the PDF number
   ###
   getPDFNumber: ->
-    # Assuming every page number is two digits long
     endIdx = @name.indexOf("_")
     return @name.substr(0, endIdx) if endIdx > 0
     throw "Could not get the PDF Number from this NFPageComp"

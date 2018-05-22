@@ -42,7 +42,7 @@ class NFPageLayer extends NFLayer
   @memberof NFPageLayer
   @returns {NFPageComp} The page item
   ###
-  getpageComp: ->
+  getPageComp: ->
     return @pageComp
 
   ###*
@@ -97,7 +97,7 @@ class NFPageLayer extends NFLayer
           throw "Cannot bubble highlight if already connected and not broken. Disconnect first"
 
         # Make sure the highlight is in this page
-        unless @getpageComp().is highlight.getpageComp()
+        unless @getPageComp().is highlight.getPageComp()
           throw "Cannot bubble highlight because it is not in this page!"
 
         targetPageLayerEffects = @effects()
@@ -215,6 +215,36 @@ class NFPageLayer extends NFLayer
   getPageNumber: ->
     @pageComp.getPageNumber()
 
+  ###*
+  Returns the NFPDF object for this layer
+  @memberof NFPageLayer
+  @returns {NFPDF} the PDF object for the page
+  ###
+  getPDF: ->
+    NFPDF.fromPageLayer @
+
+  ###*
+  Returns the page turn status at the current time
+  @memberof NFPageLayer
+  @returns {ENUM} the page turn status (found in NFPageLayer)
+  ###
+  pageTurnStatus: () ->
+    pageTurnEffect = @getEffectWithName "CC Page Turn"
+    foldPositionProperty = pageTurnEffect?.property("Fold Position")
+    foldPosition = foldPositionProperty?.value
+    threshold = 3840
+    if not pageTurnEffect?
+      return NFPageLayer.PAGETURN_NONE
+    else if foldPosition[0] >= threshold
+      return NFPageLayer.PAGETURN_FLIPPED_DOWN
+    else if foldPosition[0] <= threshold * -1
+      return NFPageLayer.PAGETURN_FLIPPED_UP
+    else if foldPositionProperty.numKeys isnt 0
+      # FIXME: There may be more things that could mean this is broken
+      return NFPageLayer.PAGETURN_TURNING
+    else
+      return NFPageLayer.PAGETURN_BROKEN
+
 # Class Methods
 NFPageLayer = Object.assign NFPageLayer,
 
@@ -226,3 +256,9 @@ NFPageLayer = Object.assign NFPageLayer,
   ###
   isPageLayer: (theLayer) ->
     return NFLayer.isCompLayer(theLayer) and theLayer.source.name.indexOf("NFPage") >= 0
+
+  PAGETURN_FLIPPED_UP: 100
+  PAGETURN_FLIPPED_DOWN: 200
+  PAGETURN_TURNING: 300
+  PAGETURN_NONE: 400
+  PAGETURN_BROKEN: 500

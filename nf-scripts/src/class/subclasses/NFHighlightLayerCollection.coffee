@@ -10,9 +10,8 @@ Creates a new NFHighlightLayerCollection from a given array of NFHighlightLayers
 class NFHighlightLayerCollection extends NFLayerCollection
   constructor: (layerArr) ->
     NFLayerCollection.call(@, layerArr)
-    if layerArr?
-      for theLayer in layerArr
-        throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NFHighlightLayer
+    for theLayer in @layers
+      throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NFHighlightLayer
 
     @
   getInfo: ->
@@ -78,7 +77,7 @@ class NFHighlightLayerCollection extends NFLayerCollection
     throw "Can't getHighlightsInPage() when not given an NFPageComp" unless page instanceof NFPageComp
     highlightsInPage = new NFHighlightLayerCollection()
     for highlight in @layers
-      highlightsInPage.addLayer highlight if highlight.getpageComp().is page
+      highlightsInPage.addLayer highlight if highlight.getPageComp().is page
     return highlightsInPage
 
   ###*
@@ -101,18 +100,3 @@ class NFHighlightLayerCollection extends NFLayerCollection
   ###
   fixExpressionsAfterInit: ->
     highlight.fixExpressionAfterInit() for highlight in @layers
-
-# Class Methods
-NFHighlightLayerCollection = Object.assign NFHighlightLayerCollection,
-
-  ###*
-  Returns a new instance from an array of AVLayers/ShapeLayers
-  @memberof NFHighlightLayerCollection
-  @param {ShapeLayer[]} arr - the array of ShapeLayers
-  @returns {NFHighlightLayerCollection} the new instance
-  ###
-  collectionFromAVLayerArray: (arr) ->
-    # FIXME: Should throw error if each layer isnt an AVLayer
-    newArray = for layer in arr
-      newLayer = new NFHighlightLayer(layer)
-    return new NFHighlightLayerCollection newArray

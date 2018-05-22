@@ -53,7 +53,7 @@ class NFHighlightLayer extends NFLayer
   @memberof NFHighlightLayer
   @returns {NFPageComp} the containing page item for the highlight
   ###
-  getpageComp: ->
+  getPageComp: ->
     return new NFPageComp(@layer.containingComp)
 
   ###*

@@ -10,9 +10,8 @@ Creates a new NFPageLayerCollection from a given array of NFPageLayers
 class NFPageLayerCollection extends NFLayerCollection
   constructor: (layerArr) ->
     NFLayerCollection.call(@, layerArr)
-    if @layers?
-      for theLayer in @layers
-        throw "You can only add NFPageLayers to an NFPageLayerCollection" unless theLayer instanceof NFPageLayer
+    for theLayer in @layers
+      throw "You can only add NFPageLayers to an NFPageLayerCollection" unless theLayer instanceof NFPageLayer
 
     @
   # MARK: Instance Methods
@@ -66,7 +65,7 @@ class NFPageLayerCollection extends NFLayerCollection
   ###
   bubbleUpHighlights: (highlightCollection) ->
     for layer in @layers
-      pageHighlights = highlightCollection.getHighlightsInPage layer.getpageComp()
+      pageHighlights = highlightCollection.getHighlightsInPage layer.getPageComp()
       layer.bubbleUp pageHighlights
     @
 
@@ -143,18 +142,3 @@ class NFPageLayerCollection extends NFLayerCollection
       paperParentLayer = @newPaperParentLayer()
 
     return paperParentLayer
-
-# Class Methods
-NFPageLayerCollection = Object.assign NFPageLayerCollection,
-
-  ###*
-  Returns a new instance from an array of AVLayers
-  @memberof NFPageLayerCollection
-  @returns {NFPageLayerCollection} the new collection
-  ###
-  collectionFromAVLayerArray: (arr) ->
-    # FIXME: Should throw error if each layer isnt an AVLayer
-    newArray = for layer in arr
-      newLayer = new NFLayer(layer)
-      newLayer.getSpecializedLayer()
-    return new NFPageLayerCollection newArray
