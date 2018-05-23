@@ -13,7 +13,7 @@ class NFHighlightLayer extends NFLayer
     unless NFHighlightLayer.isHighlightLayer(@layer)
       throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
     @
-  getInfo: ->
+  toString: ->
     return "NFHighlightLayer: '#{@name}'"
 
   ###*

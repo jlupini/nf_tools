@@ -21,7 +21,7 @@ NFComp = (function() {
     this;
   }
 
-  NFComp.prototype.getInfo = function() {
+  NFComp.prototype.toString = function() {
     return "NFComp: '" + this.name + "'";
   };
 
@@ -205,7 +205,7 @@ NFLayer = (function() {
     this;
   }
 
-  NFLayer.prototype.getInfo = function() {
+  NFLayer.prototype.toString = function() {
     return "NFLayer: '" + this.layer.name + "'";
   };
 
@@ -706,22 +706,18 @@ or an Adobe LayerCollection or an NFLayerCollection to initialize the collection
 @property {Array} layers - the array of [NFLayers]{@link NFLayer} in the collection
 @throws Will throw an error if array contains non-{@link NFLayer} objects
  */
-var NFLayerCollection,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
+var NFLayerCollection;
 
-NFLayerCollection = (function(superClass) {
-  extend(NFLayerCollection, superClass);
-
+NFLayerCollection = (function() {
   function NFLayerCollection(layerArr) {
     var expectingAVLayers, expectingNFLayers, j, layer, len, newArray, newLayer, theLayer;
     this.layers = layerArr != null ? layerArr : [];
     if (layerArr != null) {
       if (layerArr instanceof LayerCollection) {
-        this.layers = this.layers.toArr;
+        layerArr = layerArr.toArr();
       }
       if (layerArr instanceof NFLayerCollection) {
-        this.layers = layerArr.layers;
+        layerArr = layerArr.layers;
       }
       expectingAVLayers = false;
       expectingNFLayers = false;
@@ -741,30 +737,32 @@ NFLayerCollection = (function(superClass) {
           throw "You can only add NFLayers or AVLayers to an NFLayerCollection";
         }
       }
-      if (expectingAVLayers) {
-        newArray = (function() {
-          var k, len1, results;
-          results = [];
-          for (k = 0, len1 = arr.length; k < len1; k++) {
-            layer = arr[k];
+      newArray = (function() {
+        var k, len1, results;
+        results = [];
+        for (k = 0, len1 = layerArr.length; k < len1; k++) {
+          layer = layerArr[k];
+          if (expectingAVLayers) {
             newLayer = new NFLayer(layer);
-            results.push(newLayer.getSpecializedLayer());
+          } else {
+            newLayer = layer;
           }
-          return results;
-        })();
-        this.layers = newArray;
-      }
+          results.push(newLayer.getSpecializedLayer());
+        }
+        return results;
+      })();
+      this.layers = newArray;
     }
     this;
   }
 
-  NFLayerCollection.prototype.getInfo = function() {
+  NFLayerCollection.prototype.toString = function() {
     var infoString, j, len, ref, theLayer;
     infoString = "NFLayerCollection: [";
     ref = this.layers;
     for (j = 0, len = ref.length; j < len; j++) {
       theLayer = ref[j];
-      infoString += theLayer.getInfo() + ", ";
+      infoString += theLayer.toString() + ", ";
     }
     return infoString += "]";
   };
@@ -1017,7 +1015,7 @@ NFLayerCollection = (function(superClass) {
 
   return NFLayerCollection;
 
-})(Array);
+})();
 
 
 /**
@@ -1032,25 +1030,25 @@ var NFPDF;
 
 NFPDF = (function() {
   function NFPDF(pageArr) {
-    var page;
-    this.pages = pageArr != null ? pageArr : [];
-    if (this.pages.length > 0) {
-      if (!(function() {
-        var i, len, ref, results;
-        ref = this.pages;
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-          page = ref[i];
-          results.push(page instanceof NFPageComp);
+    var i, len, newArr, page;
+    pageArr = pageArr != null ? pageArr : [];
+    if (pageArr.length > 0) {
+      newArr = [];
+      for (i = 0, len = pageArr.length; i < len; i++) {
+        page = pageArr[i];
+        if (page instanceof CompItem) {
+          newArr.push(new NFPageComp(page));
+        } else if (page instanceof NFPageComp) {
+          newArr.push(page);
+        } else {
+          throw "You can only add NFPageComps to an NFPDF";
         }
-        return results;
-      }).call(this)) {
-        throw "You can only add NFPageComps to an NFPDF";
       }
     }
+    this.pages = newArr;
   }
 
-  NFPDF.prototype.getInfo = function() {
+  NFPDF.prototype.toString = function() {
     return "NFPDF: 'FIXME'";
   };
 
@@ -1065,11 +1063,28 @@ NFPDF = (function() {
 
   NFPDF.prototype.addNFPageComp = function(newPage) {
     if (newPage instanceof NFPageComp) {
-      this.layers.push(newPage);
+      this.pages.push(newPage);
+    } else if (newPage instanceof CompItem) {
+      this.pages.push(new NFPageComp(newPage));
     } else {
       throw "You can only add NFPageComps to an NFPDF";
     }
     return this;
+  };
+
+
+  /**
+  Returns the PDF Number as a string
+  @memberof NFPDF
+  @returns {string} the PDF Number
+  @throws Throws error if no PDF number (if this object is empty)
+   */
+
+  NFPDF.prototype.getPDFNumber = function() {
+    if (this.pages.length === 0) {
+      throw "NO PDF number";
+    }
+    return this.pages[0].getPDFNumber();
   };
 
   return NFPDF;
@@ -1090,9 +1105,10 @@ NFPDF = Object.assign(NFPDF, {
     if (!(pageLayer instanceof NFPageLayer)) {
       throw "Can't make an NFPDF using fromPageLayer() without a NFPageLayer...";
     }
-    searchNumber = pageLayer.getPageNumber();
+    searchNumber = pageLayer.getPDFNumber();
     folder = NFProject.findItem("PDF Precomps");
-    return items = NFProject.searchItems("");
+    items = NFProject.searchItems(searchNumber + "_", folder);
+    return new NFPDF(items);
   }
 });
 
@@ -1115,7 +1131,7 @@ NFPaperLayerGroup = (function() {
     }
   }
 
-  NFPaperLayerGroup.prototype.getInfo = function() {
+  NFPaperLayerGroup.prototype.toString = function() {
     return "NFPaperLayerGroup: " + paperParent.layer.name;
   };
 
@@ -1222,7 +1238,7 @@ NFCitationLayer = (function(superClass) {
     this;
   }
 
-  NFCitationLayer.prototype.getInfo = function() {
+  NFCitationLayer.prototype.toString = function() {
     return "NFCitationLayer: '" + this.layer.name + "'";
   };
 
@@ -1251,7 +1267,7 @@ NFEmphasisLayer = (function(superClass) {
     this;
   }
 
-  NFEmphasisLayer.prototype.getInfo = function() {
+  NFEmphasisLayer.prototype.toString = function() {
     return "NFEmphasisLayer: '" + this.layer.name + "'";
   };
 
@@ -1280,7 +1296,7 @@ NFGaussyLayer = (function(superClass) {
     this;
   }
 
-  NFGaussyLayer.prototype.getInfo = function() {
+  NFGaussyLayer.prototype.toString = function() {
     return "NFGaussyLayer: '" + this.layer.name + "'";
   };
 
@@ -1313,7 +1329,7 @@ NFHighlightLayer = (function(superClass) {
     this;
   }
 
-  NFHighlightLayer.prototype.getInfo = function() {
+  NFHighlightLayer.prototype.toString = function() {
     return "NFHighlightLayer: '" + this.name + "'";
   };
 
@@ -1525,13 +1541,13 @@ NFHighlightLayerCollection = (function(superClass) {
     this;
   }
 
-  NFHighlightLayerCollection.prototype.getInfo = function() {
+  NFHighlightLayerCollection.prototype.toString = function() {
     var i, infoString, len, ref, theLayer;
     infoString = "NFHighlightLayerCollection: [";
     ref = this.layers;
     for (i = 0, len = ref.length; i < len; i++) {
       theLayer = ref[i];
-      infoString += theLayer.getInfo() + ", ";
+      infoString += theLayer.toString() + ", ";
     }
     return infoString += "]";
   };
@@ -1693,7 +1709,7 @@ NFImageLayer = (function(superClass) {
     this;
   }
 
-  NFImageLayer.prototype.getInfo = function() {
+  NFImageLayer.prototype.toString = function() {
     return "NFImageLayer: '" + this.layer.name + "'";
   };
 
@@ -1724,7 +1740,7 @@ NFPageComp = (function(superClass) {
     this;
   }
 
-  NFPageComp.prototype.getInfo = function() {
+  NFPageComp.prototype.toString = function() {
     return "NFPageComp: '" + this.name + "'";
   };
 
@@ -1812,7 +1828,7 @@ NFPageLayer = (function(superClass) {
     this;
   }
 
-  NFPageLayer.prototype.getInfo = function() {
+  NFPageLayer.prototype.toString = function() {
     return "NFPageLayer: '" + this.layer.name + "'";
   };
 
@@ -2168,13 +2184,13 @@ NFPageLayerCollection = (function(superClass) {
     this;
   }
 
-  NFPageLayerCollection.prototype.getInfo = function() {
+  NFPageLayerCollection.prototype.toString = function() {
     var i, infoString, len, ref, theLayer;
     infoString = "NFPageLayerCollection: [";
     ref = this.layers;
     for (i = 0, len = ref.length; i < len; i++) {
       theLayer = ref[i];
-      infoString += theLayer.getInfo() + ", ";
+      infoString += theLayer.toString() + ", ";
     }
     return infoString += "]";
   };
@@ -2402,7 +2418,7 @@ NFPaperParentLayer = (function(superClass) {
     this;
   }
 
-  NFPaperParentLayer.prototype.getInfo = function() {
+  NFPaperParentLayer.prototype.toString = function() {
     return "NFPaperParentLayer: '" + this.layer.name + "'";
   };
 
@@ -2479,7 +2495,7 @@ NFPartComp = (function(superClass) {
     this;
   }
 
-  NFPartComp.prototype.getInfo = function() {
+  NFPartComp.prototype.toString = function() {
     return "NFPartComp: '" + this.name + "'";
   };
 
@@ -2511,9 +2527,6 @@ NFPartComp = (function(superClass) {
 
   NFPartComp.prototype.activePDF = function(time) {
     var activePage;
-    if (time == null) {
-      time = this.getTime();
-    }
     activePage = this.activePage(time);
     return activePage != null ? activePage.getPDF() : void 0;
   };

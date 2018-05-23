@@ -16,7 +16,7 @@ class NFPartComp extends NFComp
     @name = @comp.name
     @
 
-  getInfo: ->
+  toString: ->
     return "NFPartComp: '#{@name}'"
 
   ###*
@@ -38,7 +38,6 @@ class NFPartComp extends NFComp
   @returns {NFPDF | null} The active PDF or null if none active
   ###
   activePDF: (time) ->
-    time = @getTime() unless time?
     activePage = @activePage(time)
     return activePage?.getPDF()
 

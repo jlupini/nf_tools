@@ -17,9 +17,7 @@ NFProject = {
    */
   searchItems: function(searchString, sourceFolder) {
     var allItems, i, searchBase, thisItem;
-    searchBase = sourceFolder != null ? sourceFolder : {
-      sourceFolder: app.project
-    };
+    searchBase = sourceFolder != null ? sourceFolder : app.project;
     allItems = [];
     i = 1;
     while (i <= searchBase.items.length) {

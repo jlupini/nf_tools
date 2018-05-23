@@ -10,5 +10,5 @@ class NFCitationLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
     @
-  getInfo: ->
+  toString: ->
     return "NFCitationLayer: '#{@layer.name}'"

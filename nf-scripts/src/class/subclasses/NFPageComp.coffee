@@ -13,7 +13,7 @@ class NFPageComp extends NFComp
     @comp = comp
     @name = @comp.name
     @
-  getInfo: ->
+  toString: ->
     return "NFPageComp: '#{@name}'"
 
   ###*

@@ -13,7 +13,7 @@ NFProject =
   @returns {Item[]} array of matches or an empty array
   ###
   searchItems: (searchString, sourceFolder) ->
-    searchBase = sourceFolder ? sourceFolder : app.project
+    searchBase = sourceFolder ? app.project
     allItems = []
     i = 1
     while i <= searchBase.items.length

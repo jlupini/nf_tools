@@ -50,7 +50,7 @@ dict = {
 };
 
 main = function() {
-  var activePDF, comp, input, targetPDF, time;
+  var activePDF, activePDFNumber, comp, input, targetPDFNumber, time;
   $.write("AutoLayout...");
   comp = _.mainComp;
   time = comp.getTime();
@@ -60,7 +60,11 @@ main = function() {
       break;
     }
     activePDF = comp.activePDF();
-    targetPDF = input.replace(/(^\d+)(.+$)/i, '$1');
+    activePDFNumber = activePDF != null ? activePDF.getPDFNumber() : void 0;
+    targetPDFNumber = input.replace(/(^\d+)(.+$)/i, '$1');
+    if (activePDFNumber === targetPDFNumber) {
+      alert('Same number!');
+    }
     alert('Moving on');
     time += 5;
     comp.setTime(time);

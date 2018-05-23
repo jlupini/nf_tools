@@ -17,3 +17,5 @@ if ((base = app.NF).Util == null) {
 #include "objectModel.jsx";
 
 #include "extensions.jsx";
+
+#include "NFProject.jsx";

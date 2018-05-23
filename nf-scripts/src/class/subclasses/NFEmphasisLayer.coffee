@@ -10,5 +10,5 @@ class NFEmphasisLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
     @
-  getInfo: ->
+  toString: ->
     return "NFEmphasisLayer: '#{@layer.name}'"

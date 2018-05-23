@@ -7,13 +7,13 @@ or an Adobe LayerCollection or an NFLayerCollection to initialize the collection
 @property {Array} layers - the array of [NFLayers]{@link NFLayer} in the collection
 @throws Will throw an error if array contains non-{@link NFLayer} objects
 ###
-class NFLayerCollection extends Array
+class NFLayerCollection
   constructor: (layerArr) ->
     @layers = layerArr ? []
     if layerArr?
       # Convert to an array if this is a LayerCollection or NFLayerCollection
-      @layers = @layers.toArr if layerArr instanceof LayerCollection
-      @layers = layerArr.layers if layerArr instanceof NFLayerCollection
+      layerArr = layerArr.toArr() if layerArr instanceof LayerCollection
+      layerArr = layerArr.layers if layerArr instanceof NFLayerCollection
 
       expectingAVLayers = no
       expectingNFLayers = no
@@ -27,17 +27,20 @@ class NFLayerCollection extends Array
         else
           throw "You can only add NFLayers or AVLayers to an NFLayerCollection"
 
-      if expectingAVLayers
-        newArray = for layer in arr
+
+      newArray = for layer in layerArr
+        if expectingAVLayers
           newLayer = new NFLayer(layer)
-          newLayer.getSpecializedLayer()
-        @layers = newArray
+        else
+          newLayer = layer
+        newLayer.getSpecializedLayer()
+      @layers = newArray
     @
   # MARK: Instance Methods
-  getInfo: ->
+  toString: ->
     infoString = "NFLayerCollection: ["
     for theLayer in @layers
-      infoString += theLayer.getInfo() + ", "
+      infoString += theLayer.toString() + ", "
     infoString += "]"
 
   ###*

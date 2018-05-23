@@ -10,7 +10,7 @@ class NFPaperLayerGroup
   constructor: (paperParent) ->
     @paperParent = paperParent
     throw "Not a valid paper parent" unless @paperParent instanceof NFPaperParentLayer
-  getInfo: ->
+  toString: ->
     # FIXME: Write this function
     return "NFPaperLayerGroup: #{paperParent.layer.name}"
 

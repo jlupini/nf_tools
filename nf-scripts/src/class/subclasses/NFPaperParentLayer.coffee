@@ -13,7 +13,7 @@ class NFPaperParentLayer extends NFLayer
     throw "Can only create a NFPaperParentLayer from a null layer" unless @layer.nullLayer
     @
   # MARK: Instance Methods
-  getInfo: ->
+  toString: ->
     return "NFPaperParentLayer: '#{@layer.name}'"
 
   ###*

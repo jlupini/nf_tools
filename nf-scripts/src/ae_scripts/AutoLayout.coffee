@@ -50,9 +50,10 @@ main = ->
 
 		# First, check if we need to go to a new PDF
 		activePDF = comp.activePDF()
-		targetPDF = input.replace /(^\d+)(.+$)/i,'$1'
+		activePDFNumber = activePDF?.getPDFNumber()
+		targetPDFNumber = input.replace /(^\d+)(.+$)/i,'$1'
+		alert('Same number!') if activePDFNumber is targetPDFNumber
 
-		
 
 		alert('Moving on')
 		time += 5

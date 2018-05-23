@@ -10,5 +10,5 @@ class NFGaussyLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
     @
-  getInfo: ->
+  toString: ->
     return "NFGaussyLayer: '#{@layer.name}'"

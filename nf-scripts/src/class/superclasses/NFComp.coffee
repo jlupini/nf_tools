@@ -15,7 +15,7 @@ class NFComp
     @name = @comp?.name
     @id = @comp?.id
     @
-  getInfo: ->
+  toString: ->
     return "NFComp: '#{@name}'"
 
   ###*

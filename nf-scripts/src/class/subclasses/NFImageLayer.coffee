@@ -11,5 +11,5 @@ class NFImageLayer extends NFLayer
     NFLayer.call(this, layer)
     @
   # MARK: Instance Methods
-  getInfo: ->
+  toString: ->
     return "NFImageLayer: '#{@layer.name}'"

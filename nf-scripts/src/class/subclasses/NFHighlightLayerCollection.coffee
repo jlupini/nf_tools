@@ -14,10 +14,10 @@ class NFHighlightLayerCollection extends NFLayerCollection
       throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NFHighlightLayer
 
     @
-  getInfo: ->
+  toString: ->
     infoString = "NFHighlightLayerCollection: ["
     for theLayer in @layers
-      infoString += theLayer.getInfo() + ", "
+      infoString += theLayer.toString() + ", "
     infoString += "]"
 
   ###*

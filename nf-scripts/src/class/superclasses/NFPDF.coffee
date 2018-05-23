@@ -9,10 +9,18 @@ Creates a new NFPDF from a given array of pages
 class NFPDF
   constructor: (pageArr) ->
     # FIXME: Should throw error if not all pages are from same PDF
-    @pages = pageArr ? []
-    if @pages.length > 0
-      throw "You can only add NFPageComps to an NFPDF" unless page instanceof NFPageComp for page in @pages
-  getInfo: ->
+    pageArr = pageArr ? []
+    if pageArr.length > 0
+      newArr = []
+      for page in pageArr
+        if page instanceof CompItem
+          newArr.push(new NFPageComp(page))
+        else if page instanceof NFPageComp
+          newArr.push(page)
+        else
+          throw "You can only add NFPageComps to an NFPDF"
+    @pages = newArr
+  toString: ->
     # FIXME: Write this function
     return "NFPDF: 'FIXME'"
 
@@ -25,10 +33,22 @@ class NFPDF
   ###
   addNFPageComp: (newPage) ->
     if newPage instanceof NFPageComp
-      @layers.push newPage
+      @pages.push newPage
+    else if newPage instanceof CompItem
+      @pages.push new NFPageComp(newPage)
     else
       throw "You can only add NFPageComps to an NFPDF"
     @
+
+  ###*
+  Returns the PDF Number as a string
+  @memberof NFPDF
+  @returns {string} the PDF Number
+  @throws Throws error if no PDF number (if this object is empty)
+  ###
+  getPDFNumber: ->
+    throw "NO PDF number" if @pages.length is 0
+    return @pages[0].getPDFNumber()
 
 # Class Methods
 NFPDF = Object.assign NFPDF,
@@ -43,12 +63,8 @@ NFPDF = Object.assign NFPDF,
   fromPageLayer: (pageLayer) ->
     throw "Can't make an NFPDF using fromPageLayer() without a NFPageLayer..." unless pageLayer instanceof NFPageLayer
 
-    searchNumber = pageLayer.getPageNumber()
+    searchNumber = pageLayer.getPDFNumber()
     folder = NFProject.findItem "PDF Precomps"
-    items = NFProject.searchItems ""
+    items = NFProject.searchItems(searchNumber + "_", folder)
 
-    # Search the page comps folder for items with that PDF number
-
-    # Create the new NFPDF
-
-    # FIXME: Pickup here - This is for NFPageLayer's getPDF() which is for NFPartComp's activePDF()  which is for AutoLayout
+    return new NFPDF(items)

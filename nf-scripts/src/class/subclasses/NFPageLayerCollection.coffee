@@ -15,10 +15,10 @@ class NFPageLayerCollection extends NFLayerCollection
 
     @
   # MARK: Instance Methods
-  getInfo: ->
+  toString: ->
     infoString = "NFPageLayerCollection: ["
     for theLayer in @layers
-      infoString += theLayer.getInfo() + ", "
+      infoString += theLayer.toString() + ", "
     infoString += "]"
 
   ###*

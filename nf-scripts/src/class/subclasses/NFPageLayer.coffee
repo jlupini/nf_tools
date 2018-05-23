@@ -14,7 +14,7 @@ class NFPageLayer extends NFLayer
     @pageComp = new NFPageComp layer.source
     @
   # MARK: Instance Methods
-  getInfo: ->
+  toString: ->
     return "NFPageLayer: '#{@layer.name}'"
 
   ###*

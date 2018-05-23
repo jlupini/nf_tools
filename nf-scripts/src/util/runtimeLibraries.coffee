@@ -6,3 +6,4 @@ app.NF.Util ?= {}
 `#include "utilFunctions.jsx"`
 `#include "objectModel.jsx"`
 `#include "extensions.jsx"`
+`#include "NFProject.jsx"`

@@ -18,7 +18,7 @@ class NFLayer
     @
 
   # MARK: Instance Methods
-  getInfo: ->
+  toString: ->
     return "NFLayer: '#{@layer.name}'"
 
   ###*
