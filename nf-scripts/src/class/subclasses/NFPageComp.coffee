@@ -9,9 +9,7 @@ Creates a new NFPageComp from a given CompItem
 class NFPageComp extends NFComp
   constructor: (comp) ->
     NFComp.call(this, comp)
-    # FIXME: Check to make sure we've been given a valid item and throw error if not
-    @comp = comp
-    @name = @comp.name
+    throw "Can't create an NFPageComp from a non-page comp" unless @name.indexOf("NFPage") >= 0
     @
   toString: ->
     return "NFPageComp: '#{@name}'"

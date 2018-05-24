@@ -10,10 +10,7 @@ Creates a new NFPartComp and sets its comp property.
 class NFPartComp extends NFComp
   constructor: (comp) ->
     NFComp.call(this, comp)
-    # FIXME: Check to make sure we've been given a valid part comp and throw error if not
-    throw "Can't create an NFPartComp without a given comp" unless comp?
-    @comp = comp
-    @name = @comp.name
+    throw "Can't create an NFPartComp from a non-part comp" unless @name.indexOf("Part") >= 0
     @
 
   toString: ->

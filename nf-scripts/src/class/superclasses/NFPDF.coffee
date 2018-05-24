@@ -62,9 +62,19 @@ NFPDF = Object.assign NFPDF,
   ###
   fromPageLayer: (pageLayer) ->
     throw "Can't make an NFPDF using fromPageLayer() without a NFPageLayer..." unless pageLayer instanceof NFPageLayer
+    return NFPDF.fromPDFNumber pageLayer.getPDFNumber()
 
-    searchNumber = pageLayer.getPDFNumber()
+  ###*
+  Gets a new PDF object from a given PDF Number string
+  @memberof NFPDF
+  @param {string} theNumber - the PDF Number
+  @returns {NFPDF} the new NFPDF
+  @throws throws error if cannot find the pages for the given number
+  ###
+  fromPDFNumber: (theNumber) ->
     folder = NFProject.findItem "PDF Precomps"
-    items = NFProject.searchItems(searchNumber + "_", folder)
+    items = NFProject.searchItems(theNumber + "_", folder)
+
+    throw "Cannot find PDF pages for the given number: '#{theNumber}'" if items.length is 0
 
     return new NFPDF(items)

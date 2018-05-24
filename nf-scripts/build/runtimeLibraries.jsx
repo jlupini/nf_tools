@@ -18,4 +18,6 @@ if ((base = app.NF).Util == null) {
 
 #include "extensions.jsx";
 
+#include "layoutDictionary.jsx";
+
 #include "NFProject.jsx";

@@ -3,14 +3,18 @@ Creates a new NFComp and sets its comp property.
 @class NFComp
 @classdesc NF Wrapper object for a CompItem that allows for access to and maniplation of its layers.
 @property {CompItem} comp - the CompItem for this NFComp
-@param {CompItem} comp - the CompItem for this NFComp
+@param {CompItem | NFComp} comp - the CompItem for this NFComp
 @throws Will throw an error if not given a valid CompItem at initialization
 ###
 class NFComp
   constructor: (comp) ->
-    throw "Cannot create an NFComp without a valid CompItem" unless comp instanceof CompItem
-    # FIXME: Check to make sure we've been given a valid comp and throw error if not
-    @comp = comp
+    if comp instanceof CompItem
+      item = comp
+    else if comp instanceof NFComp
+      item = comp.comp
+    else
+      throw "Cannot create an NFComp without a valid CompItem or NFComp"
+    @comp = item
     # FIXME: These should NOT be properties since they should never be changed here
     @name = @comp?.name
     @id = @comp?.id
@@ -122,3 +126,20 @@ class NFComp
   ###
   addNull: ->
     return @comp.layers.addNull()
+
+# Class Methods
+NFComp = Object.assign NFComp,
+
+  ###*
+  # Returns a new NFComp, or a NFPartComp or NFPageComp if suitable
+  # @memberof NFComp
+  # @param {NFComp | CompItem}
+  # @returns {NFComp | NFPageComp | NFPartComp} The new comp
+  ###
+  specializedComp: (comp) ->
+    try
+      return new NFPageComp comp
+    try
+      return new NFPartComp comp
+
+    return new NFComp

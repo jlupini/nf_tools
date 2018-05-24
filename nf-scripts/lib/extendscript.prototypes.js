@@ -20,6 +20,16 @@
 // SOFTWARE.
 
 
+if (!String.prototype.trim) {
+    (function() {
+        // Make sure we trim BOM and NBSP
+        var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+        String.prototype.trim = function() {
+            return this.replace(rtrim, '');
+        };
+    })();
+}
+
 /**
  * This is Prototypes.jsx
  */
@@ -317,7 +327,7 @@ if (!Array.prototype.reduce) {
 			value = arguments[1];
 		} else {
 			while (k < len && !(k in t)) {
-				k++; 
+				k++;
 			}
 			if (k >= len) {
 				throw new TypeError('Reduce of empty array with no initial value');

@@ -67,5 +67,86 @@ NFProject = {
       i++;
     }
     return null;
+  },
+
+  /**
+  Returns the currently active NFComp
+  @memberof NFProject
+  @returns {NFComp | NFPartComp | NFPageComp} the found item or null
+   */
+  activeComp: function() {
+    return NFComp.specializedComp(app.project.activeItem);
+  },
+
+  /**
+  Follow an instruction string (ie. "41g")
+  @memberof NFProject
+  @param {string} itemName - the string to search for
+  @returns {Item | null} the found item or null
+   */
+  followInstruction: function(input) {
+    var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, instruction, instructionString, j, k, key, len, len1, mainComp, option, ref, ref1, targetPDF, targetPDFNumber;
+    mainComp = this.activeComp();
+    if (!(mainComp instanceof NFPartComp)) {
+      throw "Can only run instruction on a part comp";
+    }
+    targetPDFNumber = input.replace(/(^\d+)(.+$)/i, '$1');
+    if (targetPDFNumber != null) {
+      instructionString = input.slice(targetPDFNumber.length);
+    } else {
+      instructionString = input;
+    }
+    activePDF = mainComp.activePDF();
+    activePDFNumber = activePDF != null ? activePDF.getPDFNumber() : void 0;
+    alreadyOnTargetPaper = activePDFNumber === targetPDFNumber;
+    targetPDF = alreadyOnTargetPaper ? activePDF : NFPDF.fromPDFNumber(targetPDFNumber);
+    flags = {};
+    for (key in NFLayoutFlagDict) {
+      flagOption = NFLayoutFlagDict[key];
+      ref = flagOption.code;
+      for (j = 0, len = ref.length; j < len; j++) {
+        code = ref[j];
+        if (instructionString.indexOf(code) >= 0) {
+          flags[key] = flagOption;
+          instructionString = instructionString.replace(code, "").trim();
+        }
+      }
+    }
+    instruction = null;
+    if (instructionString === "") {
+      throw "No instruction string!";
+    } else {
+      for (key in NFLayoutInstructionDict) {
+        option = NFLayoutInstructionDict[key];
+        ref1 = option.code;
+        for (k = 0, len1 = ref1.length; k < len1; k++) {
+          code = ref1[k];
+          if (instructionString.indexOf(code) >= 0) {
+            if (instruction != null) {
+              if ((option.priority != null) && (instruction.priority != null) && option.priority < instruction.priority) {
+                instruction = option;
+              } else if (((option.priority != null) && (instruction.priority != null)) || ((option.priority == null) && (instruction.priority == null))) {
+                throw "instruction matched two instruction options (" + instruction.display + " and " + option.display + ") with the same priority. Check layoutDictionary.";
+              } else if (option.priority != null) {
+                instruction = option;
+              }
+            } else {
+              instruction = option;
+            }
+          }
+        }
+      }
+    }
+    if (instruction == null) {
+      throw "No instruction matches instruction string";
+    }
+    if (!alreadyOnTargetPaper && (flags.skipTitle == null)) {
+      mainComp.animateInNewPageItem;
+    }
+    if (instruction.type = NFLayoutType.HIGHLIGHT) {
+      return mainComp.animateToHighlight(instruction);
+    } else {
+      return this;
+    }
   }
 };

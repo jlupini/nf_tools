@@ -4,18 +4,22 @@ Creates a new NFComp and sets its comp property.
 @class NFComp
 @classdesc NF Wrapper object for a CompItem that allows for access to and maniplation of its layers.
 @property {CompItem} comp - the CompItem for this NFComp
-@param {CompItem} comp - the CompItem for this NFComp
+@param {CompItem | NFComp} comp - the CompItem for this NFComp
 @throws Will throw an error if not given a valid CompItem at initialization
  */
 var NFComp;
 
 NFComp = (function() {
   function NFComp(comp) {
-    var ref, ref1;
-    if (!(comp instanceof CompItem)) {
-      throw "Cannot create an NFComp without a valid CompItem";
+    var item, ref, ref1;
+    if (comp instanceof CompItem) {
+      item = comp;
+    } else if (comp instanceof NFComp) {
+      item = comp.comp;
+    } else {
+      throw "Cannot create an NFComp without a valid CompItem or NFComp";
     }
-    this.comp = comp;
+    this.comp = item;
     this.name = (ref = this.comp) != null ? ref.name : void 0;
     this.id = (ref1 = this.comp) != null ? ref1.id : void 0;
     this;
@@ -180,6 +184,25 @@ NFComp = (function() {
   return NFComp;
 
 })();
+
+NFComp = Object.assign(NFComp, {
+
+  /**
+   * Returns a new NFComp, or a NFPartComp or NFPageComp if suitable
+   * @memberof NFComp
+   * @param {NFComp | CompItem}
+   * @returns {NFComp | NFPageComp | NFPartComp} The new comp
+   */
+  specializedComp: function(comp) {
+    try {
+      return new NFPageComp(comp);
+    } catch (undefined) {}
+    try {
+      return new NFPartComp(comp);
+    } catch (undefined) {}
+    return new NFComp;
+  }
+});
 
 
 /**
@@ -1101,13 +1124,26 @@ NFPDF = Object.assign(NFPDF, {
   @throws throws error if not given an NFPageLayer
    */
   fromPageLayer: function(pageLayer) {
-    var folder, items, searchNumber;
     if (!(pageLayer instanceof NFPageLayer)) {
       throw "Can't make an NFPDF using fromPageLayer() without a NFPageLayer...";
     }
-    searchNumber = pageLayer.getPDFNumber();
+    return NFPDF.fromPDFNumber(pageLayer.getPDFNumber());
+  },
+
+  /**
+  Gets a new PDF object from a given PDF Number string
+  @memberof NFPDF
+  @param {string} theNumber - the PDF Number
+  @returns {NFPDF} the new NFPDF
+  @throws throws error if cannot find the pages for the given number
+   */
+  fromPDFNumber: function(theNumber) {
+    var folder, items;
     folder = NFProject.findItem("PDF Precomps");
-    items = NFProject.searchItems(searchNumber + "_", folder);
+    items = NFProject.searchItems(theNumber + "_", folder);
+    if (items.length === 0) {
+      throw "Cannot find PDF pages for the given number: '" + theNumber + "'";
+    }
     return new NFPDF(items);
   }
 });
@@ -1735,8 +1771,9 @@ NFPageComp = (function(superClass) {
 
   function NFPageComp(comp) {
     NFComp.call(this, comp);
-    this.comp = comp;
-    this.name = this.comp.name;
+    if (!(this.name.indexOf("NFPage") >= 0)) {
+      throw "Can't create an NFPageComp from a non-page comp";
+    }
     this;
   }
 
@@ -2487,11 +2524,9 @@ NFPartComp = (function(superClass) {
 
   function NFPartComp(comp) {
     NFComp.call(this, comp);
-    if (comp == null) {
-      throw "Can't create an NFPartComp without a given comp";
+    if (!(this.name.indexOf("Part") >= 0)) {
+      throw "Can't create an NFPartComp from a non-part comp";
     }
-    this.comp = comp;
-    this.name = this.comp.name;
     this;
   }
 
