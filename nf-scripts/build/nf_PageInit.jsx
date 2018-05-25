@@ -125,7 +125,7 @@ presentUI = function() {
           ref3 = _.selectedPages.layers;
           for (l = 0, len3 = ref3.length; l < len3; l++) {
             layer = ref3[l];
-            if (!layer.sameLayerAs(topLayer)) {
+            if (!layer.is(topLayer)) {
               layer.layer.startTime = topLayer.markers().keyTime("NF In");
             }
           }

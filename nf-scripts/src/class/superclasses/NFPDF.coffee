@@ -41,6 +41,14 @@ class NFPDF
     @
 
   ###*
+  Returns a general use name for the PDF
+  @memberof NFPDF
+  @returns {string} the PDF name
+  ###
+  getName: ->
+    return 'PDF ' + @getPDFNumber()
+
+  ###*
   Returns the PDF Number as a string
   @memberof NFPDF
   @returns {string} the PDF Number
@@ -49,6 +57,31 @@ class NFPDF
   getPDFNumber: ->
     throw "NO PDF number" if @pages.length is 0
     return @pages[0].getPDFNumber()
+
+  ###*
+  Looks for a highlight layer in the PDF
+  @memberof NFPDF
+  @param {string} name - the name of the highlight layer
+  @returns {NFHighlightLayer | null} the found highlight or null
+  ###
+  findHighlight: (name) ->
+    for page in @pages
+      highlight = page.highlightWithName name
+    return highlight
+
+  ###*
+  Returns an arrayof part comps this PDF can be found in
+  @memberof NFPDF
+  @returns {NFPartComp[]} An array of part comps this PDF is in
+  ###
+  containingPartComps: ->
+    folder = NFProject.findItem "Parts"
+    items = NFProject.searchItems("Part", folder)
+    containingParts = []
+    for item in items
+      part = new NFPartComp item
+      containingParts.push(part) if part.layerWithName(@getName())?
+    return containingParts
 
 # Class Methods
 NFPDF = Object.assign NFPDF,

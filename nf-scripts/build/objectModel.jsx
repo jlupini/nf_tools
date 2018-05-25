@@ -398,7 +398,7 @@ NFLayer = (function() {
   @returns {boolean} Whether both layers are the same layer
    */
 
-  NFLayer.prototype.sameLayerAs = function(testLayer) {
+  NFLayer.prototype.is = function(testLayer) {
     if (testLayer == null) {
       return false;
     }
@@ -687,6 +687,48 @@ NFLayer = (function() {
     return slider;
   };
 
+
+  /**
+  Uses a null hack to get the source Rect of a layer relative to its
+  containing comp.
+  @memberof NFLayer
+  @param {NFLayer | AVLayer} targetLayer - the layer to get the rect for
+  @param {float} [targetTime] - the optional time of the containing comp to
+  check at. Default is the current time of the containingComp.
+  @returns {Object} the rect object with .left, .width, .hight, .top and
+  .padding values
+   */
+
+  NFLayer.prototype.sourceRectForLayer = function(targetLayer, targetTime) {
+    var bottomRightPoint, compTime, expressionBase, layer, rect, tempNull, topLeftPoint;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    if (targetLayer instanceof NFLayer) {
+      layer = targetLayer.layer;
+    } else if (targetLayer.isAVLayer()) {
+      layer = targetLayer;
+    } else {
+      throw "Can only get source rect relative to comp of NFLayer or AVLayer objects";
+    }
+    compTime = this.containingComp().getTime();
+    targetTime = targetTime != null ? targetTime : compTime;
+    tempNull = layer.containingComp.layers.addNull();
+    this.containingComp().setTime(compTime);
+    expressionBase = "rect = thisComp.layer(" + layer.index + ").sourceRectAtTime(time);";
+    tempNull.transform.position.expression = expressionBase + ("thisComp.layer(" + layer.index + ").toComp([rect.left, rect.top])");
+    topLeftPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+    tempNull.transform.position.expression = expressionBase + ("thisComp.layer(" + layer.index + ").toComp([rect.left + rect.width, rect.top + rect.height])");
+    bottomRightPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+    tempNull.remove();
+    return rect = {
+      left: topLeftPoint[0],
+      top: topLeftPoint[1],
+      width: bottomRightPoint[0] - topLeftPoint[0],
+      height: bottomRightPoint[1] - topLeftPoint[1]
+    };
+  };
+
   return NFLayer;
 
 })();
@@ -841,7 +883,7 @@ NFLayerCollection = (function() {
     ref = this.layers;
     for (j = 0, len = ref.length; j < len; j++) {
       theLayer = ref[j];
-      if (theLayer.sameLayerAs(testLayer)) {
+      if (theLayer.is(testLayer)) {
         return true;
       }
     }
@@ -932,7 +974,7 @@ NFLayerCollection = (function() {
     var i, j, layer, ref;
     for (i = j = 0, ref = this.count() - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
       layer = this.layers[i];
-      if (layer.sameLayerAs(layerToRemove)) {
+      if (layer.is(layerToRemove)) {
         this.layers.splice(i, 1);
         return this;
       }
@@ -1097,6 +1139,17 @@ NFPDF = (function() {
 
 
   /**
+  Returns a general use name for the PDF
+  @memberof NFPDF
+  @returns {string} the PDF name
+   */
+
+  NFPDF.prototype.getName = function() {
+    return 'PDF ' + this.getPDFNumber();
+  };
+
+
+  /**
   Returns the PDF Number as a string
   @memberof NFPDF
   @returns {string} the PDF Number
@@ -1108,6 +1161,46 @@ NFPDF = (function() {
       throw "NO PDF number";
     }
     return this.pages[0].getPDFNumber();
+  };
+
+
+  /**
+  Looks for a highlight layer in the PDF
+  @memberof NFPDF
+  @param {string} name - the name of the highlight layer
+  @returns {NFHighlightLayer | null} the found highlight or null
+   */
+
+  NFPDF.prototype.findHighlight = function(name) {
+    var highlight, i, len, page, ref;
+    ref = this.pages;
+    for (i = 0, len = ref.length; i < len; i++) {
+      page = ref[i];
+      highlight = page.highlightWithName(name);
+    }
+    return highlight;
+  };
+
+
+  /**
+  Returns an arrayof part comps this PDF can be found in
+  @memberof NFPDF
+  @returns {NFPartComp[]} An array of part comps this PDF is in
+   */
+
+  NFPDF.prototype.containingPartComps = function() {
+    var containingParts, folder, i, item, items, len, part;
+    folder = NFProject.findItem("Parts");
+    items = NFProject.searchItems("Part", folder);
+    containingParts = [];
+    for (i = 0, len = items.length; i < len; i++) {
+      item = items[i];
+      part = new NFPartComp(item);
+      if (part.layerWithName(this.getName()) != null) {
+        containingParts.push(part);
+      }
+    }
+    return containingParts;
   };
 
   return NFPDF;
@@ -1366,7 +1459,7 @@ NFHighlightLayer = (function(superClass) {
   }
 
   NFHighlightLayer.prototype.toString = function() {
-    return "NFHighlightLayer: '" + this.name + "'";
+    return "NFHighlightLayer: '" + this.layer.name + "'";
   };
 
 
@@ -1424,6 +1517,17 @@ NFHighlightLayer = (function(superClass) {
 
   NFHighlightLayer.prototype.getPageComp = function() {
     return new NFPageComp(this.layer.containingComp);
+  };
+
+
+  /**
+  Returns the NFPDF this highlight lives in
+  @memberof NFHighlightLayer
+  @returns {NFPDF} the PDF
+   */
+
+  NFHighlightLayer.prototype.getPDF = function() {
+    return NFPDF.fromPDFNumber(this.containingComp().getPDFNumber());
   };
 
 
@@ -1835,6 +1939,26 @@ NFPageComp = (function(superClass) {
     return highlightLayers;
   };
 
+
+  /**
+  Returns the NFHighlight with a given name in this comp, or null if none found
+  @memberof NFPageComp
+  @param {string} name - the name to search for
+  @returns {NFHighlightLayer | null} The found highlight or null
+   */
+
+  NFPageComp.prototype.highlightWithName = function(name) {
+    var highlight, i, len, ref;
+    ref = this.highlights().layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      highlight = ref[i];
+      if (highlight.getName() === name) {
+        return highlight;
+      }
+    }
+    return null;
+  };
+
   return NFPageComp;
 
 })(NFComp);
@@ -1947,7 +2071,7 @@ NFPageLayer = (function(superClass) {
     ref = this.highlights().layers;
     for (i = 0, len = ref.length; i < len; i++) {
       highlight = ref[i];
-      if (highlight.isBubbled() && ((ref1 = highlight.getConnectedPageLayer()) != null ? ref1.sameLayerAs(this) : void 0)) {
+      if (highlight.isBubbled() && ((ref1 = highlight.getConnectedPageLayer()) != null ? ref1.is(this) : void 0)) {
         bubbledHighlights.push(highlight);
       }
     }
@@ -2141,6 +2265,63 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.getPDF = function() {
     return NFPDF.fromPageLayer(this);
+  };
+
+
+  /**
+  Returns the source rect of this layer's 'full top' frame.
+  @memberof NFPageLayer
+  @returns {Object} the rect object with .left, .width, .hight, .top and
+  .padding values
+   */
+
+  NFPageLayer.prototype.sourceRectForFullTop = function() {
+    var rect;
+    return rect = {
+      left: 0,
+      top: 0,
+      width: this.layer.source.width,
+      height: this.containingComp().comp.height,
+      padding: 0
+    };
+  };
+
+
+  /**
+  Returns the source rect of a given highlight relative to this layer's
+  parent comp.
+  @memberof NFPageLayer
+  @param {NFHighlightLayer} highlight - the highlight
+  @returns {Object} the rect object with .left, .width, .hight, .top and
+  .padding values
+  @throws Throw error if highlight is not in page
+   */
+
+  NFPageLayer.prototype.sourceRectForHighlight = function(highlight) {
+    if (!this.containsHighlight(highlight)) {
+      throw "Can't get source rect for this highlight since it's not in the layer";
+    }
+    return this.sourceRectForLayer(highlight);
+  };
+
+
+  /**
+  Returns whether a given highlight is in this layer
+  @memberof NFPageLayer
+  @param {NFHighlightLayer} highlight - the highlight
+  @returns {boolean} the result
+   */
+
+  NFPageLayer.prototype.containsHighlight = function(highlight) {
+    var i, len, ref, testHighlight;
+    ref = this.highlights().layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      testHighlight = ref[i];
+      if (testHighlight.is(highlight)) {
+        return true;
+      }
+    }
+    return false;
   };
 
 
@@ -2532,6 +2713,46 @@ NFPartComp = (function(superClass) {
 
   NFPartComp.prototype.toString = function() {
     return "NFPartComp: '" + this.name + "'";
+  };
+
+
+  /**
+  Animates to a given highlight, with options.
+  @memberof NFPartComp
+  @param {Object} model - the model object
+  @param {NFHighlightLayer} model.highlight - the highlight to animate to
+  @param {float} [model.animationDuration=3] - the length of the move and scale
+  @param {float} [model.pageTurnDuration=2] - the length of the pageturn
+  @param {float} [model.maxPageScale=115] - the maximum a page will scale
+  @param {boolean} [model.skipTitle=false] - whether we should skip going to the
+  title page if this PDF is new in the project
+  @returns {NFPartComp} self
+   */
+
+  NFPartComp.prototype.animateToHighlight = function(model) {
+    var containingPartComps, ref, ref1, ref2, ref3, targetPDF;
+    if (!(model.highlight instanceof NFHighlightLayer)) {
+      throw "Can't animate to a highlight because I don't have one...";
+    }
+    model = {
+      highlight: model.highlight,
+      duration: (ref = model.animationDuration) != null ? ref : 3,
+      pageTurnDuration: (ref1 = model.pageTurnDuration) != null ? ref1 : 2,
+      maxPageScale: (ref2 = model.maxPageScale) != null ? ref2 : 115,
+      skipTitle: (ref3 = model.skipTitle) != null ? ref3 : false
+    };
+    targetPDF = highlight.getPDF();
+    containingPartComps = targetPDF.containingPartComps();
+    if (containingPartComps.length === 0) {
+      if (skipTitle === false) {
+        this;
+      } else {
+        this;
+      }
+    } else {
+      this;
+    }
+    return this;
   };
 
 

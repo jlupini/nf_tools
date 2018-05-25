@@ -76,7 +76,7 @@ class NFLayerCollection
   ###
   containsLayer: (testLayer) ->
     for theLayer in @layers
-      return true if theLayer.sameLayerAs testLayer
+      return true if theLayer.is testLayer
     return false
 
   ###*
@@ -137,7 +137,7 @@ class NFLayerCollection
     # Get the index of the layer to remove
     for i in [0..@count()-1]
       layer = @layers[i]
-      if layer.sameLayerAs layerToRemove
+      if layer.is layerToRemove
         @layers.splice(i, 1)
         return @
     throw "Couldn't find layer to remove"

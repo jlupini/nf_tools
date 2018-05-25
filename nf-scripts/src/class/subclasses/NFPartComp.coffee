@@ -17,6 +17,72 @@ class NFPartComp extends NFComp
     return "NFPartComp: '#{@name}'"
 
   ###*
+  Animates to a given highlight, with options.
+  @memberof NFPartComp
+  @param {Object} model - the model object
+  @param {NFHighlightLayer} model.highlight - the highlight to animate to
+  @param {float} [model.animationDuration=3] - the length of the move and scale
+  @param {float} [model.pageTurnDuration=2] - the length of the pageturn
+  @param {float} [model.maxPageScale=115] - the maximum a page will scale
+  @param {boolean} [model.skipTitle=false] - whether we should skip going to the
+  title page if this PDF is new in the project
+  @returns {NFPartComp} self
+  ###
+  animateToHighlight: (model) ->
+    throw "Can't animate to a highlight because I don't have one..." unless model.highlight instanceof NFHighlightLayer
+    model =
+      highlight: model.highlight
+      duration: model.animationDuration ? 3
+      pageTurnDuration: model.pageTurnDuration ? 2
+      maxPageScale: model.maxPageScale ? 115
+      skipTitle: model.skipTitle ? no
+
+    # $.bp()
+
+    targetPDF = highlight.getPDF()
+    containingPartComps = targetPDF.containingPartComps()
+    # FIXME: Pickup here and build out all this shit below
+
+    # If we've NEVER SEEN THIS PDF before
+    if containingPartComps.length is 0
+      #  If we don't have the 'no q' flag
+      if skipTitle is no
+        @
+        # Bring in the motherfucking title page, initialize it
+        # If the highlight we want is on a DIFFERENT page
+          # bring that motherfucker in below the title page layer
+          # RUN AS NORMAL
+        # Else (it's on the same page)
+          # RUN AS NORMAL
+
+
+      #  else (we've been passed the 'no q' flag)
+      else
+        @
+        # Animate in the page ALREADY focused on the highlight
+
+    # else (this pdf is in a part comp somewhere)
+    else
+        @
+    #   If it's the active PDF now
+    #     if the target page is the visible page
+    #       RUN AS NORMAL
+    #     else (the highlight is on a different page)
+    #       If the target page was used in this part
+    #         if it was above the current layer
+    #           Add the page layer above this current one, but peeled up
+    #           RUN AS NORMAL
+    #         else (it was below)
+    #           Add the page layer below this current one
+    #           RUN AS NORMAL
+    #       else (we haven't seen it in a while)
+    #         Add the page layer below this current one
+    #         RUN AS NORMAL
+    #   else (not the active PDF)
+    #     Animate in the page ALREADY focused on the highlight
+    @
+
+  ###*
   Gets the zoomer layer
   @memberof NFPartComp
   @override

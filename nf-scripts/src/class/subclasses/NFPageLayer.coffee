@@ -72,7 +72,7 @@ class NFPageLayer extends NFLayer
   bubbledHighlights: ->
     bubbledHighlights = []
     for highlight in @highlights().layers
-      bubbledHighlights.push highlight if highlight.isBubbled() and highlight.getConnectedPageLayer()?.sameLayerAs(@)
+      bubbledHighlights.push highlight if highlight.isBubbled() and highlight.getConnectedPageLayer()?.is(@)
     return new NFHighlightLayerCollection(bubbledHighlights)
 
   ###*
@@ -222,6 +222,44 @@ class NFPageLayer extends NFLayer
   ###
   getPDF: ->
     NFPDF.fromPageLayer @
+
+  ###*
+  Returns the source rect of this layer's 'full top' frame.
+  @memberof NFPageLayer
+  @returns {Object} the rect object with .left, .width, .hight, .top and
+  .padding values
+  ###
+  sourceRectForFullTop: ->
+    rect =
+      left: 0
+      top: 0
+      width: @layer.source.width
+      height: @containingComp().comp.height
+      padding: 0
+
+  ###*
+  Returns the source rect of a given highlight relative to this layer's
+  parent comp.
+  @memberof NFPageLayer
+  @param {NFHighlightLayer} highlight - the highlight
+  @returns {Object} the rect object with .left, .width, .hight, .top and
+  .padding values
+  @throws Throw error if highlight is not in page
+  ###
+  sourceRectForHighlight: (highlight) ->
+    throw "Can't get source rect for this highlight since it's not in the layer" unless @containsHighlight highlight
+    @sourceRectForLayer highlight
+
+  ###*
+  Returns whether a given highlight is in this layer
+  @memberof NFPageLayer
+  @param {NFHighlightLayer} highlight - the highlight
+  @returns {boolean} the result
+  ###
+  containsHighlight: (highlight) ->
+    for testHighlight in @highlights().layers
+      return true if testHighlight.is highlight
+    return false
 
   ###*
   Returns the page turn status at the current time

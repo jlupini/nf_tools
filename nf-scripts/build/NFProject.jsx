@@ -85,7 +85,7 @@ NFProject = {
   @returns {Item | null} the found item or null
    */
   followInstruction: function(input) {
-    var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, instruction, instructionString, j, k, key, len, len1, mainComp, option, ref, ref1, targetPDF, targetPDFNumber;
+    var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, highlight, instruction, instructionString, j, k, key, len, len1, mainComp, option, ref, ref1, targetPDF, targetPDFNumber;
     mainComp = this.activeComp();
     if (!(mainComp instanceof NFPartComp)) {
       throw "Can only run instruction on a part comp";
@@ -140,11 +140,15 @@ NFProject = {
     if (instruction == null) {
       throw "No instruction matches instruction string";
     }
-    if (!alreadyOnTargetPaper && (flags.skipTitle == null)) {
-      mainComp.animateInNewPageItem;
-    }
     if (instruction.type = NFLayoutType.HIGHLIGHT) {
-      return mainComp.animateToHighlight(instruction);
+      highlight = targetPDF.findHighlight(instruction.look);
+      if (highlight == null) {
+        throw "Can't find highlight with name '" + instruction.look + "' in PDF '" + targetPDF + "'";
+      }
+      return mainComp.animateToHighlight({
+        highlight: highlight,
+        skipTitle: flags.skipTitle
+      });
     } else {
       return this;
     }

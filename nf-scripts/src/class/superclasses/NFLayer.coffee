@@ -145,7 +145,7 @@ class NFLayer
   @memberof NFLayer
   @returns {boolean} Whether both layers are the same layer
   ###
-  sameLayerAs: (testLayer) ->
+  is: (testLayer) ->
     return no unless testLayer?
     return @layer.index == testLayer.layer.index and @layer.containingComp.id == testLayer.layer.containingComp.id
 
@@ -359,6 +359,42 @@ class NFLayer
     slider.slider.setValue(value)
     slider.name = name
     return slider
+
+  ###*
+  Uses a null hack to get the source Rect of a layer relative to its
+  containing comp.
+  @memberof NFLayer
+  @param {NFLayer | AVLayer} targetLayer - the layer to get the rect for
+  @param {float} [targetTime] - the optional time of the containing comp to
+  check at. Default is the current time of the containingComp.
+  @returns {Object} the rect object with .left, .width, .hight, .top and
+  .padding values
+  ###
+  sourceRectForLayer: (targetLayer, targetTime = null) ->
+    if targetLayer instanceof NFLayer
+      layer = targetLayer.layer
+    else if targetLayer.isAVLayer()
+      layer = targetLayer
+    else
+      throw "Can only get source rect relative to comp of NFLayer or AVLayer objects"
+
+    compTime = @containingComp().getTime()
+    targetTime = targetTime ? compTime
+    tempNull = layer.containingComp.layers.addNull()
+    # This line stops the mainComp time from jumping forward.
+    @containingComp().setTime compTime
+
+    expressionBase = "rect = thisComp.layer(#{layer.index}).sourceRectAtTime(time);"
+    tempNull.transform.position.expression = expressionBase + "thisComp.layer(#{layer.index}).toComp([rect.left, rect.top])"
+    topLeftPoint = tempNull.transform.position.valueAtTime targetTime, false
+    tempNull.transform.position.expression = expressionBase + "thisComp.layer(#{layer.index}).toComp([rect.left + rect.width, rect.top + rect.height])"
+    bottomRightPoint = tempNull.transform.position.valueAtTime targetTime, false
+    tempNull.remove()
+    rect =
+      left: topLeftPoint[0]
+      top: topLeftPoint[1]
+      width: bottomRightPoint[0] - topLeftPoint[0]
+      height: bottomRightPoint[1] - topLeftPoint[1]
 
 # Class Methods
 NFLayer = Object.assign NFLayer,

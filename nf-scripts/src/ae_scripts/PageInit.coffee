@@ -115,7 +115,7 @@ presentUI = ->
 						startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
 					topLayer.addInOutMarkersForProperty markerOptions
 					for layer in _.selectedPages.layers
-						layer.layer.startTime = topLayer.markers().keyTime("NF In") unless layer.sameLayerAs topLayer
+						layer.layer.startTime = topLayer.markers().keyTime("NF In") unless layer.is topLayer
 
 			highlightChoices.disconnectHighlights()
 			_.selectedPages.bubbleUpHighlights(highlightChoices)

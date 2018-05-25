@@ -118,14 +118,16 @@ NFProject =
 
     # OK, now we have four key pieces of information: the instruction, flags, the current PDF and the active PDF
 
-    # If this is a new pdf and there isn't a 'no q' flag, we've gotta bring in the first page before we can do anything
-    if not alreadyOnTargetPaper and not flags.skipTitle?
-      mainComp.animateInNewPageItem
-
     # if the instruction is a highlight, let's call animateToHighlight
     if instruction.type = NFLayoutType.HIGHLIGHT
+      highlight = targetPDF.findHighlight instruction.look
+      throw "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF}'" unless highlight?
+
       # FIXME: build animateToHighlight()
-      mainComp.animateToHighlight instruction
+      mainComp.animateToHighlight
+        highlight: highlight
+        skipTitle: flags.skipTitle
+
     else
       # FIXME: Build this
       @

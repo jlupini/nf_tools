@@ -12,9 +12,24 @@ _ =
 		animatePage: yes
 		duration: 3
 		reduceMotion: yes
-		pageTurnDuration: 2 
+		pageTurnDuration: 2
 		endAfterTurn: yes
 		maxPageScale: 115
+
+newGoTo = (highlight, options) ->
+	_.w.hide()
+	tree = _.pageTree
+
+	activeComp = NFProject.activeComp()
+	selectedLayers = activeComp.selectedPageLayers()
+
+	# For now, let's grab the first highlight on the selectedLayers
+	testLayer = selectedLayers.layers[0]
+	testHighlight = testLayer.highlights().layers[0]
+
+	activeComp.animateToHighlight
+		highlight: testHighlight
+		animationDuration: 4
 
 goToHighlight = (highlight, options) ->
 	options =
@@ -29,7 +44,7 @@ goToHighlight = (highlight, options) ->
 	highlightPageLayer = _.state.highlightLayer
 	activeLayer = _.state.activeLayer
 	relevantPages = _.state.relevantPages
-	layerToMove = if options.animatePage then NF.Util.pageParent(selectedLayer) else highlightPageLayer 
+	layerToMove = if options.animatePage then NF.Util.pageParent(selectedLayer) else highlightPageLayer
 
 	return alert "No Layer Parent Found!" if not layerToMove?
 
@@ -89,8 +104,8 @@ goToHighlight = (highlight, options) ->
 				# There are many reasons we could be here - figure out what's going on
 				# FIXME: I haven't done this yet
 				alert "Uh Oh, I can see that I need to go to a layer above the currently visible one, but it's not flipped out of the way so I don't know what to do yet..."
-			
-		
+
+
 	# All clear, proceed as normal after re-evaluating the active layer
 	_.activeLayer = activeLayer = relevantPages[NF.Util.activePageIndexInArray(relevantPages)]
 
@@ -257,7 +272,7 @@ askForChoice = ->
 			pageName = thePage.name + " (Active Page)"
 		else if thePage.index is selectedLayer.index
 			pageName = thePage.name + " (Selected Page)"
-		else 
+		else
 			pageName = thePage.name
 
 		thePage.node = _.pageTree.node.add 'node', pageName
@@ -313,7 +328,9 @@ askForChoice = ->
 			activeLayer: _.pageTree.activePage
 			relevantPages: _.pageTree.pages
 
-		goToHighlight highlightChoice, options
+		_.w = w
+
+		newGoTo highlightChoice, options
 
 		w.hide()
 

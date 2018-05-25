@@ -14,7 +14,7 @@ class NFHighlightLayer extends NFLayer
       throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
     @
   toString: ->
-    return "NFHighlightLayer: '#{@name}'"
+    return "NFHighlightLayer: '#{@layer.name}'"
 
   ###*
   Returns whether this highlight is bubbled up or not
@@ -55,6 +55,14 @@ class NFHighlightLayer extends NFLayer
   ###
   getPageComp: ->
     return new NFPageComp(@layer.containingComp)
+
+  ###*
+  Returns the NFPDF this highlight lives in
+  @memberof NFHighlightLayer
+  @returns {NFPDF} the PDF
+  ###
+  getPDF: ->
+    return NFPDF.fromPDFNumber @containingComp().getPDFNumber()
 
   ###*
   Returns the AV Highlighter effect

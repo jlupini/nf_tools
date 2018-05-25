@@ -50,3 +50,14 @@ class NFPageComp extends NFComp
       if NFHighlightLayer.isHighlightLayer(theLayer)
         highlightLayers.addLayer(theLayer)
     return highlightLayers
+
+  ###*
+  Returns the NFHighlight with a given name in this comp, or null if none found
+  @memberof NFPageComp
+  @param {string} name - the name to search for
+  @returns {NFHighlightLayer | null} The found highlight or null
+  ###
+  highlightWithName: (name) ->
+    for highlight in @highlights().layers
+      return highlight if highlight.getName() is name
+    return null
