@@ -155,7 +155,18 @@ class NFLayer
   @returns {NFComp} the containing comp
   ###
   containingComp: ->
-    return new NFComp @layer.containingComp
+    return  NFComp.specializedComp @layer.containingComp
+
+  ###*
+  Creates a new null parent to this layer, positioned above it. Will override previous parenting.
+  @memberof NFLayer
+  @returns {NFLayer} the new null NFLayer
+  ###
+  nullify: ->
+    newNull = @containingComp().addNull()
+    @setParent newNull
+    newNull.moveBefore @layer
+    return newNull
 
   ###*
   Returns an NFLayerCollection of child layers of this layer as specialized layers

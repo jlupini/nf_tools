@@ -283,6 +283,24 @@ class NFPageLayer extends NFLayer
     else
       return NFPageLayer.PAGETURN_BROKEN
 
+  ###*
+  Checks for an existing valid paper parent layer for this page. Sets it as
+  the parent if it exists, otherwise creates a new one.
+  @memberof NFPageLayer
+  @returns {NFPaperParentLayer} the paper parent layer
+  @param {boolean} [shouldMove=false] - whether or not the layer should move below its parent
+  ###
+  assignPaperParentLayer: (shouldMove = no) ->
+    paperParentLayer = @findPaperParentLayer()
+    if paperParentLayer?
+      if shouldMove
+        paperLayerGroup = new NFPaperLayerGroup(paperParentLayer)
+        paperLayerGroup.gatherLayers @
+    else
+      paperParentLayer = new NFPaperParentLayer(@nullify()).setName()
+
+    return paperParentLayer
+
 # Class Methods
 NFPageLayer = Object.assign NFPageLayer,
 

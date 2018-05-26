@@ -127,6 +127,55 @@ class NFComp
   addNull: ->
     return @comp.layers.addNull()
 
+  ###*
+  Inserts a layer into the comp at a given index at the current time. Returns
+  the new layer
+  @memberof NFComp
+  @returns {NFLayer} the new layer
+  @param {Object} model - the parameters
+  @param {NFComp} model.comp - the comp to insert
+  @param {NFLayer} [model.above] - the layer to insert the page above. Can use
+  only one of .above, .below or .at
+  @param {NFLayer} [model.below] - the layer to insert the page below. Can use
+  only one of .above, .below or .at
+  @param {int} [model.at=0] - the index to insert the page at. Can use only
+  one of .above, .below or .at
+  @throws Throw error if given values for more than one of .above, .below,
+  and .at
+  ###
+  insertComp: (model) ->
+    throw "No comp to insert" unless model.comp? and model.comp instanceof NFComp
+    index = 0
+    tooManyIndices = no
+    if model.above? and model.above instanceof NFLayer
+      tooManyIndices = yes if model.below? or model.at?
+      if model.above.containingComp().is @
+        index = model.above.index()
+      else
+        throw "Cannot insert layer above a layer not in this comp"
+    else if model.below? and model.below instanceof NFLayer
+      tooManyIndices = yes if model.above? or model.at?
+      if model.below.containingComp().is @
+        index = model.below.index()
+      else
+        throw "Cannot insert layer below a layer not in this comp"
+    else if model.at?
+      tooManyIndices = yes if model.above? or model.below?
+      index = model.at
+
+    throw "Can only provide one of .above, .below, or .at when inserting page" if tooManyIndices
+
+    # Gonna do some work with AV Layers
+    newAVLayer = @comp.layers.add(model.comp.comp)
+    newAVLayer.startTime = @getTime()
+    # Note: we're doing moveBefore with index + 2 to account for both
+    #       the new layer that's been added AND the obnoxious 1-indexing
+    #       of adobe's LayerCollections
+    newAVLayer.moveBefore @comp.layers[index+2] unless index is 0
+
+    # Convert back to an NFLayer for the return
+    return NFLayer.getSpecializedLayerFromAVLayer newAVLayer
+
 # Class Methods
 NFComp = Object.assign NFComp,
 

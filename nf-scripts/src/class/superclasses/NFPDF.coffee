@@ -66,8 +66,9 @@ class NFPDF
   ###
   findHighlight: (name) ->
     for page in @pages
-      highlight = page.highlightWithName name
-    return highlight
+      highlight = page.highlightWithName(name)
+      return highlight if highlight?
+    null
 
   ###*
   Returns an arrayof part comps this PDF can be found in
@@ -82,6 +83,26 @@ class NFPDF
       part = new NFPartComp item
       containingParts.push(part) if part.layerWithName(@getName())?
     return containingParts
+
+  ###*
+  Returns the title page of the PDF
+  @memberof NFPDF
+  @returns {NFPageComp} The page in the PDF with the lowest page number
+  ###
+  getTitlePage: ->
+    count = @pages.length
+    if count is 0
+      throw "Can't get the title page because there are no pages"
+    else if count is 1
+      return @pages[0]
+    else
+      lowestPage = null
+      lowestNum = parseInt @pages[0].getPageNumber()
+      for page in @pages
+        thisNum = parseInt page.getPageNumber()
+        lowestPage = page if thisNum <= lowestNum
+      return lowestPage
+
 
 # Class Methods
 NFPDF = Object.assign NFPDF,

@@ -37,18 +37,23 @@ class NFPartComp extends NFComp
       maxPageScale: model.maxPageScale ? 115
       skipTitle: model.skipTitle ? no
 
-    # $.bp()
-
-    targetPDF = highlight.getPDF()
+    targetPDF = model.highlight.getPDF()
     containingPartComps = targetPDF.containingPartComps()
-    # FIXME: Pickup here and build out all this shit below
+    # FIXME: Pickup here and build out all this shit below, starting by
+    #        adding an 'animation' param to the model of insertPage.
+    #        Perhaps that model can include some default animation options...
 
     # If we've NEVER SEEN THIS PDF before
     if containingPartComps.length is 0
       #  If we don't have the 'no q' flag
-      if skipTitle is no
-        @
+      if model.skipTitle is no
         # Bring in the motherfucking title page, initialize it
+        titlePage = targetPDF.getTitlePage()
+        @insertPage
+          page: titlePage
+        # @slideInPage
+        #   page: titlePage
+
         # If the highlight we want is on a DIFFERENT page
           # bring that motherfucker in below the title page layer
           # RUN AS NORMAL
@@ -81,6 +86,37 @@ class NFPartComp extends NFComp
     #   else (not the active PDF)
     #     Animate in the page ALREADY focused on the highlight
     @
+
+  ###*
+  Inserts a page at the current time
+  @memberof NFPartComp
+  @returns {NFPageLayer} the new page layer
+  @param {Object} model - the parameters
+  @param {NFPageComp} model.page - the page to insert
+  @param {boolean} [model.init=yes] - if the page should be initialized
+  @param {NFLayer} [model.above] - the layer to insert the page above. Can use
+  only one of .above, .below or .at
+  @param {NFLayer} [model.below] - the layer to insert the page below. Can use
+  only one of .above, .below or .at
+  @param {int} [model.at=1] - the index to insert the page at. Can use only
+  one of .above, .below or .at
+  @throws Throw error if given values for more than one of .above, .below,
+  and .at
+  ###
+  insertPage: (model) ->
+    throw "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
+    model.at = 1 unless model.above? or model.below? or model.at?
+    pageLayer = @insertComp
+      comp: model.page
+      above: model.above
+      below: model.below
+      at: model.at
+
+    unless model.init is no
+      pageLayer.initTransforms().init()
+      pageLayer.assignPaperParentLayer()
+
+    return pageLayer
 
   ###*
   Gets the zoomer layer

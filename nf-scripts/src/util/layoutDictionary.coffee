@@ -1,3 +1,8 @@
+NFLayoutType =
+	HIGHLIGHT: 100
+	INSTRUCTION: 200
+	FLAG: 300
+	
 NFLayoutFlagDict =
 	skipTitle:
 		code: ['no q', 'noq', 'no q just citation', 'no q just citation bar']
@@ -39,8 +44,3 @@ NFLayoutInstructionDict =
 		code: ['icons', 'icon sequence']
 		display: "Icon Sequence Placeholder"
 		type: NFLayoutType.INSTRUCTION
-
-NFLayoutType =
-	HIGHLIGHT: 100
-	INSTRUCTION: 200
-	FLAG: 300

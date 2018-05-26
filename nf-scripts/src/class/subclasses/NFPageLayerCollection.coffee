@@ -109,7 +109,9 @@ class NFPageLayerCollection extends NFLayerCollection
     page.initTransforms() for page in @layers
 
   ###*
-  Creates a new {@link NFPaperParentLayer} from this collection
+  Creates a new {@link NFPaperParentLayer} from this collection. probably
+  best not to call this directly (use assignPaperParentLayer() instead) unless
+  you really know what you're doing...
   @memberof NFPageLayerCollection
   @returns {NFPaperParentLayer} the new Paper Parent layer
   @throws Throw error if this collection is empty

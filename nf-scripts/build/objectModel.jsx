@@ -181,6 +181,66 @@ NFComp = (function() {
     return this.comp.layers.addNull();
   };
 
+
+  /**
+  Inserts a layer into the comp at a given index at the current time. Returns
+  the new layer
+  @memberof NFComp
+  @returns {NFLayer} the new layer
+  @param {Object} model - the parameters
+  @param {NFComp} model.comp - the comp to insert
+  @param {NFLayer} [model.above] - the layer to insert the page above. Can use
+  only one of .above, .below or .at
+  @param {NFLayer} [model.below] - the layer to insert the page below. Can use
+  only one of .above, .below or .at
+  @param {int} [model.at=0] - the index to insert the page at. Can use only
+  one of .above, .below or .at
+  @throws Throw error if given values for more than one of .above, .below,
+  and .at
+   */
+
+  NFComp.prototype.insertComp = function(model) {
+    var index, newAVLayer, tooManyIndices;
+    if (!((model.comp != null) && model.comp instanceof NFComp)) {
+      throw "No comp to insert";
+    }
+    index = 0;
+    tooManyIndices = false;
+    if ((model.above != null) && model.above instanceof NFLayer) {
+      if ((model.below != null) || (model.at != null)) {
+        tooManyIndices = true;
+      }
+      if (model.above.containingComp().is(this)) {
+        index = model.above.index();
+      } else {
+        throw "Cannot insert layer above a layer not in this comp";
+      }
+    } else if ((model.below != null) && model.below instanceof NFLayer) {
+      if ((model.above != null) || (model.at != null)) {
+        tooManyIndices = true;
+      }
+      if (model.below.containingComp().is(this)) {
+        index = model.below.index();
+      } else {
+        throw "Cannot insert layer below a layer not in this comp";
+      }
+    } else if (model.at != null) {
+      if ((model.above != null) || (model.below != null)) {
+        tooManyIndices = true;
+      }
+      index = model.at;
+    }
+    if (tooManyIndices) {
+      throw "Can only provide one of .above, .below, or .at when inserting page";
+    }
+    newAVLayer = this.comp.layers.add(model.comp.comp);
+    newAVLayer.startTime = this.getTime();
+    if (index !== 0) {
+      newAVLayer.moveBefore(this.comp.layers[index + 2]);
+    }
+    return NFLayer.getSpecializedLayerFromAVLayer(newAVLayer);
+  };
+
   return NFComp;
 
 })();
@@ -413,7 +473,22 @@ NFLayer = (function() {
    */
 
   NFLayer.prototype.containingComp = function() {
-    return new NFComp(this.layer.containingComp);
+    return NFComp.specializedComp(this.layer.containingComp);
+  };
+
+
+  /**
+  Creates a new null parent to this layer, positioned above it. Will override previous parenting.
+  @memberof NFLayer
+  @returns {NFLayer} the new null NFLayer
+   */
+
+  NFLayer.prototype.nullify = function() {
+    var newNull;
+    newNull = this.containingComp().addNull();
+    this.setParent(newNull);
+    newNull.moveBefore(this.layer);
+    return newNull;
   };
 
 
@@ -1177,8 +1252,11 @@ NFPDF = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       page = ref[i];
       highlight = page.highlightWithName(name);
+      if (highlight != null) {
+        return highlight;
+      }
     }
-    return highlight;
+    return null;
   };
 
 
@@ -1201,6 +1279,35 @@ NFPDF = (function() {
       }
     }
     return containingParts;
+  };
+
+
+  /**
+  Returns the title page of the PDF
+  @memberof NFPDF
+  @returns {NFPageComp} The page in the PDF with the lowest page number
+   */
+
+  NFPDF.prototype.getTitlePage = function() {
+    var count, i, len, lowestNum, lowestPage, page, ref, thisNum;
+    count = this.pages.length;
+    if (count === 0) {
+      throw "Can't get the title page because there are no pages";
+    } else if (count === 1) {
+      return this.pages[0];
+    } else {
+      lowestPage = null;
+      lowestNum = parseInt(this.pages[0].getPageNumber());
+      ref = this.pages;
+      for (i = 0, len = ref.length; i < len; i++) {
+        page = ref[i];
+        thisNum = parseInt(page.getPageNumber());
+        if (thisNum <= lowestNum) {
+          lowestPage = page;
+        }
+      }
+      return lowestPage;
+    }
   };
 
   return NFPDF;
@@ -2350,6 +2457,32 @@ NFPageLayer = (function(superClass) {
     }
   };
 
+
+  /**
+  Checks for an existing valid paper parent layer for this page. Sets it as
+  the parent if it exists, otherwise creates a new one.
+  @memberof NFPageLayer
+  @returns {NFPaperParentLayer} the paper parent layer
+  @param {boolean} [shouldMove=false] - whether or not the layer should move below its parent
+   */
+
+  NFPageLayer.prototype.assignPaperParentLayer = function(shouldMove) {
+    var paperLayerGroup, paperParentLayer;
+    if (shouldMove == null) {
+      shouldMove = false;
+    }
+    paperParentLayer = this.findPaperParentLayer();
+    if (paperParentLayer != null) {
+      if (shouldMove) {
+        paperLayerGroup = new NFPaperLayerGroup(paperParentLayer);
+        paperLayerGroup.gatherLayers(this);
+      }
+    } else {
+      paperParentLayer = new NFPaperParentLayer(this.nullify()).setName();
+    }
+    return paperParentLayer;
+  };
+
   return NFPageLayer;
 
 })(NFLayer);
@@ -2554,7 +2687,9 @@ NFPageLayerCollection = (function(superClass) {
 
 
   /**
-  Creates a new {@link NFPaperParentLayer} from this collection
+  Creates a new {@link NFPaperParentLayer} from this collection. probably
+  best not to call this directly (use assignPaperParentLayer() instead) unless
+  you really know what you're doing...
   @memberof NFPageLayerCollection
   @returns {NFPaperParentLayer} the new Paper Parent layer
   @throws Throw error if this collection is empty
@@ -2730,7 +2865,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateToHighlight = function(model) {
-    var containingPartComps, ref, ref1, ref2, ref3, targetPDF;
+    var containingPartComps, ref, ref1, ref2, ref3, targetPDF, titlePage;
     if (!(model.highlight instanceof NFHighlightLayer)) {
       throw "Can't animate to a highlight because I don't have one...";
     }
@@ -2741,11 +2876,14 @@ NFPartComp = (function(superClass) {
       maxPageScale: (ref2 = model.maxPageScale) != null ? ref2 : 115,
       skipTitle: (ref3 = model.skipTitle) != null ? ref3 : false
     };
-    targetPDF = highlight.getPDF();
+    targetPDF = model.highlight.getPDF();
     containingPartComps = targetPDF.containingPartComps();
     if (containingPartComps.length === 0) {
-      if (skipTitle === false) {
-        this;
+      if (model.skipTitle === false) {
+        titlePage = targetPDF.getTitlePage();
+        this.insertPage({
+          page: titlePage
+        });
       } else {
         this;
       }
@@ -2753,6 +2891,45 @@ NFPartComp = (function(superClass) {
       this;
     }
     return this;
+  };
+
+
+  /**
+  Inserts a page at the current time
+  @memberof NFPartComp
+  @returns {NFPageLayer} the new page layer
+  @param {Object} model - the parameters
+  @param {NFPageComp} model.page - the page to insert
+  @param {boolean} [model.init=yes] - if the page should be initialized
+  @param {NFLayer} [model.above] - the layer to insert the page above. Can use
+  only one of .above, .below or .at
+  @param {NFLayer} [model.below] - the layer to insert the page below. Can use
+  only one of .above, .below or .at
+  @param {int} [model.at=1] - the index to insert the page at. Can use only
+  one of .above, .below or .at
+  @throws Throw error if given values for more than one of .above, .below,
+  and .at
+   */
+
+  NFPartComp.prototype.insertPage = function(model) {
+    var pageLayer;
+    if (!((model.page != null) && model.page instanceof NFPageComp)) {
+      throw "No page given to insert...";
+    }
+    if (!((model.above != null) || (model.below != null) || (model.at != null))) {
+      model.at = 1;
+    }
+    pageLayer = this.insertComp({
+      comp: model.page,
+      above: model.above,
+      below: model.below,
+      at: model.at
+    });
+    if (model.init !== false) {
+      pageLayer.initTransforms().init();
+      pageLayer.assignPaperParentLayer();
+    }
+    return pageLayer;
   };
 
 
