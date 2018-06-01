@@ -145,6 +145,8 @@ class NFComp
   ###
   insertComp: (model) ->
     throw "No comp to insert" unless model.comp? and model.comp instanceof NFComp
+    throw "model.above must be an NFLayer" if model.above? and not model.above instanceof NFLayer
+    throw "model.below must be an NFLayer" if model.below? and not model.below instanceof NFLayer
     index = 0
     tooManyIndices = no
     if model.above? and model.above instanceof NFLayer
@@ -192,3 +194,8 @@ NFComp = Object.assign NFComp,
       return new NFPartComp comp
 
     return new NFComp
+
+  TOP: 100
+  LEFT: 200
+  BOTTOM: 300
+  RIGHT: 400

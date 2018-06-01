@@ -248,7 +248,7 @@ class NFLayer
     return @
 
   ###*
-  Moves this layer's index to immediately after the provided target layer
+  Returns the marker Property
   @memberof NFLayer
   @returns {Property} Marker property
   ###
@@ -256,20 +256,32 @@ class NFLayer
     return @layer.property("Marker")
 
   ###*
-  Sets the given property's expression and adds In and Out markers (if not already on the layer) for in and out transitions. Overrides previous expressions
+  Sets the given property's expression and adds In and Out markers (if not
+  already on the layer) for in and out transitions. Does NOT override existing
+  expressions and marker-driven in/outs
   @memberof NFLayer
   @returns {NFLayer} self
-  @param {Object} options - an object with the chosen equations and in/out values. Equations found in easingEquations.coffee
-  @param {Property} options.property - the property to use for the in/outs. required
+  @param {Object} options - an object with the chosen equations and in/out
+  values. Equations found in easingEquations.coffee
+  @param {Property} options.property - the property to use for the in/outs.
+  required
   @param {float} options.length - the length of the transition. Default 2.0
-  @param {string} options.startEquation - the equation to use for the in transition of the property.
-  @param {string} options.endEquation - the equation to use for the out transition of the property.
-  @param {any | Array} options.startValue - the value for this property at its inPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.
-  @param {any | Array} options.endValue - the value for this property at its outPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.
+  @param {string} options.startEquation - the equation to use for the in
+  transition of the property.
+  @param {string} options.endEquation - the equation to use for the out
+  transition of the property.
+  @param {any | Array} options.startValue - the value for this property
+  at its inPoint. If the property is multidimensional, this should be an
+  array of that many dimensions. Can also pass a slider property.
+  @param {any | Array} options.endValue - the value for this property at
+  its outPoint. If the property is multidimensional, this should be an
+  array of that many dimensions. Can also pass a slider property.
   @throws Throws error if not given at least a start or end equation and value
-  @throws Throws error if the start or end values given are the wrong number of dimensions for this property
+  @throws Throws error if the start or end values given are the wrong
+  number of dimensions for this property
   ###
   addInOutMarkersForProperty: (options) ->
+    # FIXME: Add a removeInOutMarkers() function to clear existing ones.
     throw "Invalid property" unless options.property? and options.property instanceof Property
     unless (options.startEquation? and options.startValue?) or (options.endEquation? and options.endValue?)
       throw "Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value"
@@ -357,6 +369,28 @@ class NFLayer
     options.property.expression = expression
 
     @
+
+  ###*
+  Returns the time in the layer's containing comp of the in marker on the layer,
+  or null if there's no in marker
+  @memberof NFLayer
+  @returns {float | null} the in time
+  ###
+  getInMarkerTime: ->
+    try
+      return @markers().keyTime("NF In")
+    return null
+
+  ###*
+  Returns the time in the layer's containing comp of the out marker on the
+  layer, or null if there's no out marker
+  @memberof NFLayer
+  @returns {float | null} the in time
+  ###
+  getOutMarkerTime: ->
+    try
+      return @markers().keyTime("NF Out")
+    return null
 
   ###*
   Creates and returns a slider effect on the layer

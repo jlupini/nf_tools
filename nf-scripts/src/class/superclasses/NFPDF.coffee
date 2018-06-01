@@ -21,8 +21,7 @@ class NFPDF
           throw "You can only add NFPageComps to an NFPDF"
     @pages = newArr
   toString: ->
-    # FIXME: Write this function
-    return "NFPDF: 'FIXME'"
+    return "NFPDF: #{@getPDFNumber}"
 
   ###*
   Adds an NFPageComp to the PDF

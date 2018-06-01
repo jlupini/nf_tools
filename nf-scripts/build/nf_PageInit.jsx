@@ -95,7 +95,7 @@ presentUI = function() {
     });
     cancelButton.onClick = getCancelFunction(w);
     okButton.onClick = function() {
-      var checkbox, highlightChoices, k, l, layer, len2, len3, markerOptions, newParent, positionProperty, ref2, ref3, slider, topLayer;
+      var checkbox, curTime, highlightChoices, k, l, layer, len2, len3, newParent, ref2, ref3, topLayer;
       highlightChoices = new NFHighlightLayerCollection();
       ref2 = allHighlights.layers;
       for (k = 0, len2 = ref2.length; k < len2; k++) {
@@ -106,27 +106,23 @@ presentUI = function() {
         }
       }
       if (onlyBubbleUpCheckbox.value === false) {
+        curTime = _.mainComp.getTime();
+        topLayer = _.selectedPages.getTopmostLayer();
+        _.mainComp.setTime(topLayer.layer.startTime);
         if (initLayerTransformsCheckbox.value === true) {
           _.selectedPages.initLayerTransforms();
         }
         _.selectedPages.initLayers();
         newParent = _.selectedPages.assignPaperParentLayer(true);
         newParent.setZoomer();
+        _.mainComp.setTime(curTime);
         if (animatePageCheckbox.value) {
-          topLayer = _.selectedPages.getTopmostLayer();
-          positionProperty = topLayer.layer.property("Transform").property("Position");
-          slider = topLayer.addSlider("Start Offset", 3000);
-          markerOptions = {
-            property: positionProperty,
-            startEquation: NF.Util.easingEquations.out_quint,
-            startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
-          };
-          topLayer.addInOutMarkersForProperty(markerOptions);
+          topLayer.slideIn();
           ref3 = _.selectedPages.layers;
           for (l = 0, len3 = ref3.length; l < len3; l++) {
             layer = ref3[l];
             if (!layer.is(topLayer)) {
-              layer.layer.startTime = topLayer.markers().keyTime("NF In");
+              layer.layer.startTime = topLayer.getInMarkerTime();
             }
           }
         }

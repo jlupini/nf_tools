@@ -204,6 +204,12 @@ NFComp = (function() {
     if (!((model.comp != null) && model.comp instanceof NFComp)) {
       throw "No comp to insert";
     }
+    if ((model.above != null) && !model.above instanceof NFLayer) {
+      throw "model.above must be an NFLayer";
+    }
+    if ((model.below != null) && !model.below instanceof NFLayer) {
+      throw "model.below must be an NFLayer";
+    }
     index = 0;
     tooManyIndices = false;
     if ((model.above != null) && model.above instanceof NFLayer) {
@@ -261,7 +267,11 @@ NFComp = Object.assign(NFComp, {
       return new NFPartComp(comp);
     } catch (undefined) {}
     return new NFComp;
-  }
+  },
+  TOP: 100,
+  LEFT: 200,
+  BOTTOM: 300,
+  RIGHT: 400
 });
 
 
@@ -602,7 +612,7 @@ NFLayer = (function() {
 
 
   /**
-  Moves this layer's index to immediately after the provided target layer
+  Returns the marker Property
   @memberof NFLayer
   @returns {Property} Marker property
    */
@@ -613,18 +623,29 @@ NFLayer = (function() {
 
 
   /**
-  Sets the given property's expression and adds In and Out markers (if not already on the layer) for in and out transitions. Overrides previous expressions
+  Sets the given property's expression and adds In and Out markers (if not
+  already on the layer) for in and out transitions. Does NOT override existing
+  expressions and marker-driven in/outs
   @memberof NFLayer
   @returns {NFLayer} self
-  @param {Object} options - an object with the chosen equations and in/out values. Equations found in easingEquations.coffee
-  @param {Property} options.property - the property to use for the in/outs. required
+  @param {Object} options - an object with the chosen equations and in/out
+  values. Equations found in easingEquations.coffee
+  @param {Property} options.property - the property to use for the in/outs.
+  required
   @param {float} options.length - the length of the transition. Default 2.0
-  @param {string} options.startEquation - the equation to use for the in transition of the property.
-  @param {string} options.endEquation - the equation to use for the out transition of the property.
-  @param {any | Array} options.startValue - the value for this property at its inPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.
-  @param {any | Array} options.endValue - the value for this property at its outPoint. If the property is multidimensional, this should be an array of that many dimensions. Can also pass a slider property.
+  @param {string} options.startEquation - the equation to use for the in
+  transition of the property.
+  @param {string} options.endEquation - the equation to use for the out
+  transition of the property.
+  @param {any | Array} options.startValue - the value for this property
+  at its inPoint. If the property is multidimensional, this should be an
+  array of that many dimensions. Can also pass a slider property.
+  @param {any | Array} options.endValue - the value for this property at
+  its outPoint. If the property is multidimensional, this should be an
+  array of that many dimensions. Can also pass a slider property.
   @throws Throws error if not given at least a start or end equation and value
-  @throws Throws error if the start or end values given are the wrong number of dimensions for this property
+  @throws Throws error if the start or end values given are the wrong
+  number of dimensions for this property
    */
 
   NFLayer.prototype.addInOutMarkersForProperty = function(options) {
@@ -743,6 +764,36 @@ NFLayer = (function() {
     }
     options.property.expression = expression;
     return this;
+  };
+
+
+  /**
+  Returns the time in the layer's containing comp of the in marker on the layer,
+  or null if there's no in marker
+  @memberof NFLayer
+  @returns {float | null} the in time
+   */
+
+  NFLayer.prototype.getInMarkerTime = function() {
+    try {
+      return this.markers().keyTime("NF In");
+    } catch (undefined) {}
+    return null;
+  };
+
+
+  /**
+  Returns the time in the layer's containing comp of the out marker on the
+  layer, or null if there's no out marker
+  @memberof NFLayer
+  @returns {float | null} the in time
+   */
+
+  NFLayer.prototype.getOutMarkerTime = function() {
+    try {
+      return this.markers().keyTime("NF Out");
+    } catch (undefined) {}
+    return null;
   };
 
 
@@ -1189,7 +1240,7 @@ NFPDF = (function() {
   }
 
   NFPDF.prototype.toString = function() {
-    return "NFPDF: 'FIXME'";
+    return "NFPDF: " + this.getPDFNumber;
   };
 
 
@@ -2473,6 +2524,7 @@ NFPageLayer = (function(superClass) {
     }
     paperParentLayer = this.findPaperParentLayer();
     if (paperParentLayer != null) {
+      this.setParent(paperParentLayer);
       if (shouldMove) {
         paperLayerGroup = new NFPaperLayerGroup(paperParentLayer);
         paperLayerGroup.gatherLayers(this);
@@ -2481,6 +2533,34 @@ NFPageLayer = (function(superClass) {
       paperParentLayer = new NFPaperParentLayer(this.nullify()).setName();
     }
     return paperParentLayer;
+  };
+
+
+  /**
+  Slides in the pageLayer using markers. Overrides existing markers!!!
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model] - The options
+  @param {enum} [model.fromEdge=NFComp.RIGHT] - The direction to slide in from.
+  Default is the right.
+   */
+
+  NFPageLayer.prototype.slideIn = function(model) {
+    var positionProperty, slider;
+    if (model == null) {
+      model = [];
+    }
+    if (model.fromEdge == null) {
+      model.fromEdge = NFComp.RIGHT;
+    }
+    positionProperty = this.layer.property("Transform").property("Position");
+    slider = this.addSlider("Start Offset", 3000);
+    this.addInOutMarkersForProperty({
+      property: positionProperty,
+      startEquation: NF.Util.easingEquations.out_quint,
+      startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
+    });
+    return this;
   };
 
   return NFPageLayer;
@@ -2865,7 +2945,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateToHighlight = function(model) {
-    var containingPartComps, ref, ref1, ref2, ref3, targetPDF, titlePage;
+    var containingPartComps, ref, ref1, ref2, ref3, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     if (!(model.highlight instanceof NFHighlightLayer)) {
       throw "Can't animate to a highlight because I don't have one...";
     }
@@ -2881,9 +2961,22 @@ NFPartComp = (function(superClass) {
     if (containingPartComps.length === 0) {
       if (model.skipTitle === false) {
         titlePage = targetPDF.getTitlePage();
-        this.insertPage({
-          page: titlePage
+        titlePageLayer = this.insertPage({
+          page: titlePage,
+          animate: true
         });
+        targetPage = model.highlight.getPageComp();
+        if (targetPage.is(titlePage)) {
+          titlePageLayer.bubbleUp(model.highlight);
+          this.setTime(titlePageLayer.getInMarkerTime());
+        } else {
+          this.setTime(titlePageLayer.getInMarkerTime() - 0.4);
+          targetPageLayer = this.insertPage({
+            page: targetPage,
+            below: titlePageLayer
+          });
+          targetPageLayer.bubbleUp(model.highlight);
+        }
       } else {
         this;
       }
@@ -2907,6 +3000,7 @@ NFPartComp = (function(superClass) {
   only one of .above, .below or .at
   @param {int} [model.at=1] - the index to insert the page at. Can use only
   one of .above, .below or .at
+  @param {boolean} [model.animate=no] whether to animate the page in
   @throws Throw error if given values for more than one of .above, .below,
   and .at
    */
@@ -2928,6 +3022,9 @@ NFPartComp = (function(superClass) {
     if (model.init !== false) {
       pageLayer.initTransforms().init();
       pageLayer.assignPaperParentLayer();
+    }
+    if (model.animate === true) {
+      pageLayer.slideIn();
     }
     return pageLayer;
   };

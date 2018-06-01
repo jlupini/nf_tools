@@ -15,16 +15,10 @@ main = function() {
   $.write("AutoLayout...");
   comp = _.mainComp;
   time = comp.getTime();
-  while (true) {
-    input = prompt('Enter the instruction (without brackets):');
-    if (input === "" || (input == null)) {
-      break;
-    }
-    NFProject.followInstruction(input);
-    alert('Moving on');
-    time += 5;
-    comp.setTime(time);
-  }
+  input = prompt('Enter the instruction (without brackets):');
+  NFProject.followInstruction(input);
+  time += 5;
+  comp.setTime(time);
   return true;
 };
 

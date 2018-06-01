@@ -293,6 +293,7 @@ class NFPageLayer extends NFLayer
   assignPaperParentLayer: (shouldMove = no) ->
     paperParentLayer = @findPaperParentLayer()
     if paperParentLayer?
+      @setParent paperParentLayer
       if shouldMove
         paperLayerGroup = new NFPaperLayerGroup(paperParentLayer)
         paperLayerGroup.gatherLayers @
@@ -300,6 +301,27 @@ class NFPageLayer extends NFLayer
       paperParentLayer = new NFPaperParentLayer(@nullify()).setName()
 
     return paperParentLayer
+
+  ###*
+  Slides in the pageLayer using markers. Overrides existing markers!!!
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model] - The options
+  @param {enum} [model.fromEdge=NFComp.RIGHT] - The direction to slide in from.
+  Default is the right.
+  ###
+  slideIn: (model) ->
+    model ?= []
+    model.fromEdge ?= NFComp.RIGHT
+
+    positionProperty = @layer.property("Transform").property("Position")
+    # Make a slider for controlling the start position
+    slider = @addSlider("Start Offset", 3000)
+    @addInOutMarkersForProperty
+      property: positionProperty
+      startEquation: NF.Util.easingEquations.out_quint
+      startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
+    @
 
 # Class Methods
 NFPageLayer = Object.assign NFPageLayer,

@@ -39,9 +39,6 @@ class NFPartComp extends NFComp
 
     targetPDF = model.highlight.getPDF()
     containingPartComps = targetPDF.containingPartComps()
-    # FIXME: Pickup here and build out all this shit below, starting by
-    #        adding an 'animation' param to the model of insertPage.
-    #        Perhaps that model can include some default animation options...
 
     # If we've NEVER SEEN THIS PDF before
     if containingPartComps.length is 0
@@ -49,16 +46,28 @@ class NFPartComp extends NFComp
       if model.skipTitle is no
         # Bring in the motherfucking title page, initialize it
         titlePage = targetPDF.getTitlePage()
-        @insertPage
+        titlePageLayer = @insertPage
           page: titlePage
-        # @slideInPage
-        #   page: titlePage
+          animate: yes
 
-        # If the highlight we want is on a DIFFERENT page
+        targetPage = model.highlight.getPageComp()
+        # If the highlight we want is on the title page
+        if targetPage.is titlePage
+          # Move the time to the in marker and run goToHighlight
+          titlePageLayer.bubbleUp model.highlight
+          @setTime titlePageLayer.getInMarkerTime()
+
+          # Gotta actually do the goToHighlight here...
+          # FIXME: Pick up here and get going!
+        # Else (it's on a different page)
+        else
+          @setTime(titlePageLayer.getInMarkerTime() - 0.4)
+          targetPageLayer = @insertPage
+            page: targetPage
+            below: titlePageLayer
+          targetPageLayer.bubbleUp model.highlight
           # bring that motherfucker in below the title page layer
-          # RUN AS NORMAL
-        # Else (it's on the same page)
-          # RUN AS NORMAL
+          # RUN goToHighlight
 
 
       #  else (we've been passed the 'no q' flag)
@@ -100,6 +109,7 @@ class NFPartComp extends NFComp
   only one of .above, .below or .at
   @param {int} [model.at=1] - the index to insert the page at. Can use only
   one of .above, .below or .at
+  @param {boolean} [model.animate=no] whether to animate the page in
   @throws Throw error if given values for more than one of .above, .below,
   and .at
   ###
@@ -115,6 +125,9 @@ class NFPartComp extends NFComp
     unless model.init is no
       pageLayer.initTransforms().init()
       pageLayer.assignPaperParentLayer()
+
+    if model.animate is yes
+      pageLayer.slideIn()
 
     return pageLayer
 

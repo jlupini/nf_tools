@@ -11,15 +11,15 @@ main = ->
 	$.write "AutoLayout..."
 	comp = _.mainComp
 	time = comp.getTime()
-	while true
-		input = prompt('Enter the instruction (without brackets):')
-		break if input is "" or not input?
+	# while true
+	input = prompt('Enter the instruction (without brackets):')
+	# break if input is "" or not input?
 
-		NFProject.followInstruction input
+	NFProject.followInstruction input
 
-		alert('Moving on')
-		time += 5
-		comp.setTime time
+	# alert('Moving on')
+	time += 5
+	comp.setTime time
 
 	true
 

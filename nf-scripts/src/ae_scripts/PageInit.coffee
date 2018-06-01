@@ -86,7 +86,7 @@ presentUI = ->
 			# Disable the checkbox if it's already bubbled up to the given layer
 			highlightCheckboxes[highlight.getName()].enabled = not highlightAlreadyConnectedToThisLayer
 
-		buttonGroup = initTab.add 'group', undefined
+		buttonGroup = initTab.add('group', undefined)
 		okButton = buttonGroup.add('button', undefined, 'Continue')
 		cancelButton = buttonGroup.add('button', undefined, 'Cancel', name: 'cancel')
 		cancelButton.onClick = getCancelFunction w
@@ -98,24 +98,22 @@ presentUI = ->
 				highlightChoices.addLayer highlight if checkbox.value is true
 
 			if onlyBubbleUpCheckbox.value is no
+				curTime = _.mainComp.getTime()
+				topLayer = _.selectedPages.getTopmostLayer()
+				_.mainComp.setTime topLayer.layer.startTime
+
 				_.selectedPages.initLayerTransforms() if initLayerTransformsCheckbox.value is yes
 				_.selectedPages.initLayers()
 
 				newParent = _.selectedPages.assignPaperParentLayer(yes)
 				newParent.setZoomer()
 
+				_.mainComp.setTime curTime
+
 				if animatePageCheckbox.value
-					topLayer = _.selectedPages.getTopmostLayer()
-					positionProperty = topLayer.layer.property("Transform").property("Position")
-					# Make a slider for controlling the start position
-					slider = topLayer.addSlider("Start Offset", 3000)
-					markerOptions =
-						property: positionProperty
-						startEquation: NF.Util.easingEquations.out_quint
-						startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
-					topLayer.addInOutMarkersForProperty markerOptions
+					topLayer.slideIn()
 					for layer in _.selectedPages.layers
-						layer.layer.startTime = topLayer.markers().keyTime("NF In") unless layer.is topLayer
+						layer.layer.startTime = topLayer.getInMarkerTime() unless layer.is topLayer
 
 			highlightChoices.disconnectHighlights()
 			_.selectedPages.bubbleUpHighlights(highlightChoices)
