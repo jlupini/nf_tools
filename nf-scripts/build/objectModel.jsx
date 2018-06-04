@@ -443,7 +443,7 @@ NFLayer = (function() {
   @returns {Property | null} the property or null if not found
    */
 
-  NFLayer.prototype.getEffectWithName = function(effectName) {
+  NFLayer.prototype.effect = function(effectName) {
     return this.layer.Effects.property(effectName);
   };
 
@@ -1712,7 +1712,7 @@ NFHighlightLayer = (function(superClass) {
     if (connectedPageLayer != null) {
       expression = this.highlighterEffect().property("Spacing").expression;
       effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression);
-      effect = connectedPageLayer.getEffectWithName(effectName);
+      effect = connectedPageLayer.effect(effectName);
       return effect;
     }
     return null;
@@ -2486,14 +2486,18 @@ NFPageLayer = (function(superClass) {
   /**
   Returns the page turn status at the current time
   @memberof NFPageLayer
+  @param {float} [time=Current Time] - the time to check the status at
   @returns {ENUM} the page turn status (found in NFPageLayer)
    */
 
-  NFPageLayer.prototype.pageTurnStatus = function() {
+  NFPageLayer.prototype.pageTurnStatus = function(time) {
     var foldPosition, foldPositionProperty, pageTurnEffect, threshold;
-    pageTurnEffect = this.getEffectWithName("CC Page Turn");
+    if (time == null) {
+      time = this.containingComp().getTime();
+    }
+    pageTurnEffect = this.effect("CC Page Turn");
     foldPositionProperty = pageTurnEffect != null ? pageTurnEffect.property("Fold Position") : void 0;
-    foldPosition = foldPositionProperty != null ? foldPositionProperty.value : void 0;
+    foldPosition = foldPositionProperty != null ? foldPositionProperty.valueAtTime(time) : void 0;
     threshold = 3840;
     if (pageTurnEffect == null) {
       return NFPageLayer.PAGETURN_NONE;
@@ -2511,7 +2515,8 @@ NFPageLayer = (function(superClass) {
 
   /**
   Checks for an existing valid paper parent layer for this page. Sets it as
-  the parent if it exists, otherwise creates a new one.
+  the parent if it exists, otherwise creates a new one and parents it to
+  the zoomer.
   @memberof NFPageLayer
   @returns {NFPaperParentLayer} the paper parent layer
   @param {boolean} [shouldMove=false] - whether or not the layer should move below its parent
@@ -2531,6 +2536,7 @@ NFPageLayer = (function(superClass) {
       }
     } else {
       paperParentLayer = new NFPaperParentLayer(this.nullify()).setName();
+      paperParentLayer.setZoomer();
     }
     return paperParentLayer;
   };
@@ -2560,6 +2566,94 @@ NFPageLayer = (function(superClass) {
       startEquation: NF.Util.easingEquations.out_quint,
       startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
     });
+    return this;
+  };
+
+
+  /**
+  Animates a page turn, essentially toggling the current page turn status.
+  Throws an error if the page is not all the way up or down at the start time.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model] - The options
+  @param {float} [model.time=The current time] - The time to start the turn at
+  @param {float} [model.duration=1.5] - The duration of the pageturn
+  @param {boolean} [model.trim] - Trim the layer after the turn is complete.
+  Defaults to YES if we're folding up, and NO if we're folding down.
+   */
+
+  NFPageLayer.prototype.animatePageTurn = function(model) {
+    var downPosition, dropShadowEffect, dropShadowMatchName, endStatus, endTime, foldPosition, forceMotionBlurEffect, forceMotionBlurMatchName, pageSize, pageTurnEffect, pageTurnMatchName, positions, startStatus, startTime, targetStatus, times, upPosition;
+    if (model == null) {
+      model = [];
+    }
+    if (model.time == null) {
+      model.time = this.containingComp().getTime();
+    }
+    if (model.duration == null) {
+      model.duration = 1.5;
+    }
+    startTime = model.time;
+    endTime = startTime + model.duration;
+    startStatus = this.pageTurnStatus(startTime);
+    endStatus = this.pageTurnStatus(endTime);
+    if (startStatus === NFPageLayer.PAGETURN_NONE) {
+      forceMotionBlurMatchName = "CC Force Motion Blur";
+      dropShadowMatchName = "ADBE Drop Shadow";
+      pageTurnMatchName = "CC Page Turn";
+      pageTurnEffect = this.effect(pageTurnMatchName);
+      if (pageTurnEffect == null) {
+        pageTurnEffect = this.effects().addProperty(pageTurnMatchName);
+        pageTurnEffect.property("Fold Radius").setValue(500);
+      }
+      forceMotionBlurEffect = this.effect(forceMotionBlurMatchName);
+      if (forceMotionBlurEffect == null) {
+        forceMotionBlurEffect = this.effects().addProperty(forceMotionBlurMatchName);
+        forceMotionBlurEffect.property("Override Shutter Angle").setValue(0);
+      }
+      dropShadowEffect = this.effect(dropShadowMatchName);
+      if (dropShadowEffect != null) {
+        dropShadowEffect.remove();
+      }
+      dropShadowEffect = this.effects().addProperty(dropShadowMatchName);
+      dropShadowEffect.property("Opacity").setValue(0.75 * 255);
+      dropShadowEffect.property("Direction").setValue(125);
+      dropShadowEffect.property("Distance").setValue(20);
+      dropShadowEffect.property("Softness").setValue(300);
+    }
+    if (startStatus === NFPageLayer.PAGETURN_BROKEN) {
+      throw "Page turn keyframes seem broken...";
+    }
+    if (startStatus === NFPageLayer.PAGETURN_TURNING || endStatus === NFPageLayer.PAGETURN_TURNING) {
+      throw "Page is already turning at start or end time of new turn";
+    }
+    pageSize = {
+      width: this.getPageComp().comp.width,
+      height: this.getPageComp().comp.height
+    };
+    downPosition = [pageSize.width, pageSize.height];
+    upPosition = [-pageSize.width, -pageSize.height];
+    positions = [downPosition, upPosition];
+    if (startStatus === NFPageLayer.PAGETURN_FLIPPED_UP) {
+      targetStatus = NFPageLayer.PAGETURN_FLIPPED_DOWN;
+    } else if (startStatus === NFPageLayer.PAGETURN_FLIPPED_DOWN) {
+      targetStatus = NFPageLayer.PAGETURN_FLIPPED_UP;
+    }
+    if (targetStatus === NFPageLayer.PAGETURN_FLIPPED_DOWN) {
+      positions.reverse();
+      if (model.trim == null) {
+        model.trim = false;
+      }
+    }
+    times = [startTime, endTime];
+    foldPosition = this.effect("CC Page Turn").property("Fold Position");
+    foldPosition.setValuesAtTimes(times, positions);
+    foldPosition.easyEaseKeyTimes({
+      keyTimes: times
+    });
+    if (model.trim !== false) {
+      this.layer.outPoint = endTime;
+    }
     return this;
   };
 
@@ -2976,6 +3070,7 @@ NFPartComp = (function(superClass) {
             below: titlePageLayer
           });
           targetPageLayer.bubbleUp(model.highlight);
+          titlePageLayer.animatePageTurn();
         }
       } else {
         this;

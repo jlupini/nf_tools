@@ -82,7 +82,7 @@ class NFHighlightLayer extends NFLayer
     if connectedPageLayer?
       expression = @highlighterEffect().property("Spacing").expression
       effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression)
-      effect = connectedPageLayer.getEffectWithName(effectName)
+      effect = connectedPageLayer.effect(effectName)
       return effect
     return null
 

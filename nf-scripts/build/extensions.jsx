@@ -48,6 +48,106 @@ Property.prototype.expressionStringForValue = function() {
 
 
 /**
+Eases an array of key times.
+@memberof Property
+@function easyEaseKeyTimes
+@param {Object} model - The options
+@param {float[]} keyTimes - the key times
+@param {KeyframeInterpolationType | KeyframeInterpolationType[]}
+[easeType=KeyframeInterpolationType.BEZIER] - the Keyframe Interpolation
+Type to use, or an array of types the same length as the number of dimensions
+of the property
+@param {float | float[]} [easeWeight=33] - the weight of the ease, or an array
+of weights the same length as the number of dimensions of the property.
+@returns {Property} self
+ */
+
+Property.prototype.easyEaseKeyTimes = function(model) {
+  var j, keyIndicies, keyTime, len, ref;
+  keyIndicies = [];
+  ref = model.keyTimes;
+  for (j = 0, len = ref.length; j < len; j++) {
+    keyTime = ref[j];
+    keyIndicies.push(this.nearestKeyIndex(keyTime));
+  }
+  model.keys = keyIndicies;
+  return this.easyEaseKeys(model);
+};
+
+
+/**
+Easy Eases an array of key indicies.
+@memberof Property
+@function easyEaseKeys
+@param {Object} model - The options
+@param {int[]} keys - the key indices
+@param {KeyframeInterpolationType | KeyframeInterpolationType[]}
+[easeType=KeyframeInterpolationType.BEZIER] - the Keyframe Interpolation
+Type to use, or an array with two objects: the in type and out type.
+@param {float | float[]} [easeWeight=33] - the weight of the ease, or an array
+of weights with two objects: the in weight and out weight.
+@returns {Property} self
+ */
+
+Property.prototype.easyEaseKeys = function(model) {
+  var easeIn, easeInType, easeInWeight, easeOut, easeOutType, easeOutWeight, i, j, key, ref, results, spatialEaseArray, temporalEaseInArray, temporalEaseOutArray;
+  if (model.easeType == null) {
+    model.easeType = KeyframeInterpolationType.BEZIER;
+  }
+  if (model.easeWeight == null) {
+    model.easeWeight = 33;
+  }
+  if (model.easeType instanceof Array) {
+    if (model.easeType.length !== 2) {
+      throw "Wrong number of type in easeType Array";
+    }
+    easeInType = model.easeType[0];
+    easeOutType = model.easeType[1];
+  } else {
+    easeInType = easeOutType = model.easeType;
+  }
+  if (model.easeWeight instanceof Array) {
+    if (model.easeWeight.length !== 2) {
+      throw "Array of weights must be the same length as the number of dimensions of the property";
+    }
+    easeInWeight = model.easeWeight[0];
+    easeOutWeight = model.easeWeight[1];
+  } else {
+    easeInWeight = easeOutWeight = model.easeWeight;
+  }
+  easeIn = new KeyframeEase(0, easeInWeight);
+  easeOut = new KeyframeEase(0, easeOutWeight);
+  temporalEaseInArray = [easeIn];
+  temporalEaseOutArray = [easeOut];
+  if (this.propertyValueType === PropertyValueType.TwoD) {
+    temporalEaseInArray = [easeIn, easeIn];
+    temporalEaseOutArray = [easeOut, easeOut];
+  } else if (this.propertyValueType === PropertyValueType.ThreeD) {
+    temporalEaseInArray = [easeIn, easeIn, easeIn];
+    temporalEaseOutArray = [easeOut, easeOut, easeOut];
+  }
+  spatialEaseArray = null;
+  if (this.propertyValueType === PropertyValueType.TwoD_SPATIAL) {
+    spatialEaseArray = [0, 0];
+  } else if (this.propertyValueType === PropertyValueType.ThreeD_SPATIAL) {
+    spatialEaseArray = [0, 0, 0];
+  }
+  results = [];
+  for (i = j = 0, ref = model.keys.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+    key = model.keys[i];
+    this.setInterpolationTypeAtKey(key, easeInType, easeOutType);
+    this.setTemporalEaseAtKey(key, temporalEaseInArray, temporalEaseOutArray);
+    if (spatialEaseArray != null) {
+      results.push(this.setSpatialTangentsAtKey(key, spatialEaseArray));
+    } else {
+      results.push(void 0);
+    }
+  }
+  return results;
+};
+
+
+/**
 The After Effects Layer Class
 @namespace Layer
  */

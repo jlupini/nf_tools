@@ -114,7 +114,6 @@ presentUI = function() {
         }
         _.selectedPages.initLayers();
         newParent = _.selectedPages.assignPaperParentLayer(true);
-        newParent.setZoomer();
         _.mainComp.setTime(curTime);
         if (animatePageCheckbox.value) {
           topLayer.slideIn();

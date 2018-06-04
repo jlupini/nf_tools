@@ -126,7 +126,7 @@ class NFLayer
   @param {string} effectName - the name of the effect to look for
   @returns {Property | null} the property or null if not found
   ###
-  getEffectWithName: (effectName) ->
+  effect: (effectName) ->
     return @layer.Effects.property(effectName)
 
   ###*

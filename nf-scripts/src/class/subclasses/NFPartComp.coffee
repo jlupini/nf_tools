@@ -62,11 +62,13 @@ class NFPartComp extends NFComp
         # Else (it's on a different page)
         else
           @setTime(titlePageLayer.getInMarkerTime() - 0.4)
+          # Bring that page in below the title page layer
           targetPageLayer = @insertPage
             page: targetPage
             below: titlePageLayer
           targetPageLayer.bubbleUp model.highlight
-          # bring that motherfucker in below the title page layer
+
+          titlePageLayer.animatePageTurn()
           # RUN goToHighlight
 
 

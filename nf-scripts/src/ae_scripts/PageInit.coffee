@@ -106,7 +106,6 @@ presentUI = ->
 				_.selectedPages.initLayers()
 
 				newParent = _.selectedPages.assignPaperParentLayer(yes)
-				newParent.setZoomer()
 
 				_.mainComp.setTime curTime
 

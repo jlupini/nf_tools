@@ -264,12 +264,15 @@ class NFPageLayer extends NFLayer
   ###*
   Returns the page turn status at the current time
   @memberof NFPageLayer
+  @param {float} [time=Current Time] - the time to check the status at
   @returns {ENUM} the page turn status (found in NFPageLayer)
   ###
-  pageTurnStatus: () ->
-    pageTurnEffect = @getEffectWithName "CC Page Turn"
+  pageTurnStatus: (time) ->
+    time ?= @containingComp().getTime()
+
+    pageTurnEffect = @effect "CC Page Turn"
     foldPositionProperty = pageTurnEffect?.property("Fold Position")
-    foldPosition = foldPositionProperty?.value
+    foldPosition = foldPositionProperty?.valueAtTime time
     threshold = 3840
     if not pageTurnEffect?
       return NFPageLayer.PAGETURN_NONE
@@ -285,7 +288,8 @@ class NFPageLayer extends NFLayer
 
   ###*
   Checks for an existing valid paper parent layer for this page. Sets it as
-  the parent if it exists, otherwise creates a new one.
+  the parent if it exists, otherwise creates a new one and parents it to
+  the zoomer.
   @memberof NFPageLayer
   @returns {NFPaperParentLayer} the paper parent layer
   @param {boolean} [shouldMove=false] - whether or not the layer should move below its parent
@@ -299,6 +303,7 @@ class NFPageLayer extends NFLayer
         paperLayerGroup.gatherLayers @
     else
       paperParentLayer = new NFPaperParentLayer(@nullify()).setName()
+      paperParentLayer.setZoomer()
 
     return paperParentLayer
 
@@ -321,6 +326,87 @@ class NFPageLayer extends NFLayer
       property: positionProperty
       startEquation: NF.Util.easingEquations.out_quint
       startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
+    @
+
+  ###*
+  Animates a page turn, essentially toggling the current page turn status.
+  Throws an error if the page is not all the way up or down at the start time.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model] - The options
+  @param {float} [model.time=The current time] - The time to start the turn at
+  @param {float} [model.duration=1.5] - The duration of the pageturn
+  @param {boolean} [model.trim] - Trim the layer after the turn is complete.
+  Defaults to YES if we're folding up, and NO if we're folding down.
+  ###
+  animatePageTurn: (model) ->
+    model ?= []
+    model.time ?= @containingComp().getTime()
+    model.duration ?= 1.5
+
+    startTime = model.time
+    endTime = startTime + model.duration
+    startStatus = @pageTurnStatus startTime
+    endStatus = @pageTurnStatus endTime
+
+    # Add the effect if it's not there already
+    if startStatus is NFPageLayer.PAGETURN_NONE
+      forceMotionBlurMatchName = "CC Force Motion Blur"
+      dropShadowMatchName = "ADBE Drop Shadow"
+      pageTurnMatchName = "CC Page Turn"
+
+      pageTurnEffect = @effect pageTurnMatchName
+      if not pageTurnEffect?
+        pageTurnEffect = @effects().addProperty pageTurnMatchName
+        pageTurnEffect.property("Fold Radius").setValue 500
+
+      forceMotionBlurEffect = @effect forceMotionBlurMatchName
+      if not forceMotionBlurEffect?
+        forceMotionBlurEffect = @effects().addProperty forceMotionBlurMatchName
+        forceMotionBlurEffect.property("Override Shutter Angle").setValue 0
+
+      dropShadowEffect = @effect dropShadowMatchName
+      dropShadowEffect.remove() if dropShadowEffect?
+      dropShadowEffect = @effects().addProperty dropShadowMatchName
+      dropShadowEffect.property("Opacity").setValue 0.75 * 255
+      dropShadowEffect.property("Direction").setValue 125
+      dropShadowEffect.property("Distance").setValue 20
+      dropShadowEffect.property("Softness").setValue 300
+
+    if startStatus is NFPageLayer.PAGETURN_BROKEN
+      throw "Page turn keyframes seem broken..."
+    if startStatus is NFPageLayer.PAGETURN_TURNING or endStatus is NFPageLayer.PAGETURN_TURNING
+      throw "Page is already turning at start or end time of new turn"
+
+    # Set the Properties
+    pageSize =
+      width: @getPageComp().comp.width
+      height: @getPageComp().comp.height
+    downPosition = [pageSize.width, pageSize.height]
+    upPosition = [-pageSize.width, -pageSize.height]
+
+    positions = [downPosition, upPosition]
+
+    if startStatus is NFPageLayer.PAGETURN_FLIPPED_UP
+      targetStatus = NFPageLayer.PAGETURN_FLIPPED_DOWN
+    else if startStatus is NFPageLayer.PAGETURN_FLIPPED_DOWN
+      targetStatus = NFPageLayer.PAGETURN_FLIPPED_UP
+
+    if targetStatus is NFPageLayer.PAGETURN_FLIPPED_DOWN
+      positions.reverse()
+      model.trim = no unless model.trim?
+
+    times = [startTime, endTime]
+
+    foldPosition = @effect("CC Page Turn").property("Fold Position")
+    foldPosition.setValuesAtTimes times, positions
+    foldPosition.easyEaseKeyTimes
+      keyTimes: times
+
+    # Trim if necessary
+    unless model.trim is no
+      @layer.outPoint = endTime
+
     @
 
 # Class Methods
