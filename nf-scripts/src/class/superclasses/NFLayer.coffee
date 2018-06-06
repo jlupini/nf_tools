@@ -437,25 +437,25 @@ class NFLayer
     return null
 
   ###*
-  Uses a null hack to get the source Rect of the layer in it's containing comp
+  Uses a null hack to get the source Rect of the layer in it's containing comp.
+  Optional time parameter
   @memberof NFLayer
-  @param {Object} [model] - The options
-  @param {float} [model.targetTime] - the optional time of the containing comp to
+  @param {float} [time=Current time] - the optional time of the containing comp to
   check at. Default is the current time of the containingComp.
   @returns {Object} the rect object with .left, .width, .hight, .top
   ###
-  sourceRect: (model) ->
+  sourceRect: (time) ->
     compTime = @containingComp().getTime()
-    targetTime = model?.targetTime ? compTime
+    time = time ? compTime
     tempNull = @containingComp().addNull()
     # This line stops the mainComp time from jumping forward.
     @containingComp().setTime compTime
 
     expressionBase = "rect = thisComp.layer(#{@index()}).sourceRectAtTime(time);"
     tempNull.transform().position.expression = expressionBase + "thisComp.layer(#{@index()}).toComp([rect.left, rect.top])"
-    topLeftPoint = tempNull.transform().position.valueAtTime targetTime, false
+    topLeftPoint = tempNull.transform().position.valueAtTime time, false
     tempNull.transform().position.expression = expressionBase + "thisComp.layer(#{@index()}).toComp([rect.left + rect.width, rect.top + rect.height])"
-    bottomRightPoint = tempNull.transform().position.valueAtTime targetTime, false
+    bottomRightPoint = tempNull.transform().position.valueAtTime time, false
     tempNull.remove()
     rect =
       left: topLeftPoint[0]

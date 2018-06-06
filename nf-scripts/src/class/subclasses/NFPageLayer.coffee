@@ -250,8 +250,7 @@ class NFPageLayer extends NFLayer
   ###
   sourceRectForHighlight: (highlight, targetTime = null) ->
     throw "Can't get source rect for this highlight since it's not in the layer" unless @containsHighlight highlight
-    highlightRect = highlight.sourceRect
-      targetTime: targetTime
+    highlightRect = highlight.sourceRect targetTime
     @relativeRect highlightRect, targetTime
 
   ###*
@@ -526,7 +525,8 @@ class NFPageLayer extends NFLayer
     delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]]
 
     # Adjust to prevent falling off the page
-    rectAfterReposition = @sourceRect {time: model.time}
+    rectAfterReposition = @sourceRect model.time
+
     rectAfterReposition.left += delta[0]
     rectAfterReposition.top += delta[1]
 

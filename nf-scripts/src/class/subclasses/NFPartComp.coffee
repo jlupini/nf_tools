@@ -24,6 +24,8 @@ class NFPartComp extends NFComp
   @param {float} [model.animationDuration=3] - the length of the move and scale
   @param {float} [model.pageTurnDuration=2] - the length of the pageturn
   @param {float} [model.maxPageScale=115] - the maximum a page will scale
+  @param {float} [model.fillPercentage=85] - the percentage of the comp width
+  for the final highlight to take up
   @param {boolean} [model.skipTitle=false] - whether we should skip going to the
   title page if this PDF is new in the project
   @returns {NFPartComp} self
@@ -36,6 +38,7 @@ class NFPartComp extends NFComp
       pageTurnDuration: model.pageTurnDuration ? 2
       maxPageScale: model.maxPageScale ? 115
       skipTitle: model.skipTitle ? no
+      fillPercentage: model.fillPercentage ? 85
 
     targetPDF = model.highlight.getPDF()
     containingPartComps = targetPDF.containingPartComps()
@@ -62,8 +65,9 @@ class NFPartComp extends NFComp
 
           group.moveToHighlight
             highlight: model.highlight
-            duration: model.duration
+            duration: model.animationDuration
             maxScale: model.maxPageScale
+            fillPercentage: model.fillPercentage
 
         # Else (it's on a different page)
         else
@@ -78,6 +82,12 @@ class NFPartComp extends NFComp
 
           targetPageLayer.frameUpHighlight
             highlight: model.highlight
+            fillPercentage: model.fillPercentage * 0.8
+          group.moveToHighlight
+            highlight: model.highlight
+            duration: model.animationDuration
+            fillPercentage: model.fillPercentage
+            maxScale: model.maxPageScale
 
       #  else (we've been passed the 'no q' flag)
       else

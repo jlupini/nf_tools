@@ -44,7 +44,7 @@ class NFPaperLayerGroup
     for pageLayer in @getPages().layers
       for testHighlight in pageLayer.highlights().layers
         return true if testHighlight.is highlight
-      return false
+    return false
 
   ###*
   Returns the containing NFComp
@@ -68,14 +68,17 @@ class NFPaperLayerGroup
   @param {float} [model.time=The current time] - The time to start the
   movement at
   @param {float} [model.duration=3.0] - The duration of the move
+  @param {float} [model.duration=3.0] - The duration of the move
   @throws Throws error if not given a NFHighlightLayer as model.highlight
   ###
   moveToHighlight: (model) ->
-    throw "Invalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+    throw "\nInvalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
     model =
       highlight: model.highlight
       time: model.time ? @containingComp().getTime()
       duration: model.duration ? 3.0
+      maxScale: model.maxScale ? 115
+      fillPercentage: model.fillPercentage ? 85
 
     positionProp = @paperParent.transform().position
     scaleProp = @paperParent.transform().scale
@@ -87,15 +90,17 @@ class NFPaperLayerGroup
     originalParent = @paperParent.getParent()
     @paperParent.setParent null
 
-    # Frame up the Highlight
-    hasPositionKeyframes = positionProp.numKeys != 0
-    hasScaleKeyframes = scaleProp.numKeys != 0
-
+    # Move to the Highlight
     pageLayer = @getPages().layerWithHighlight model.highlight
 
     keyframeTimes = [model.time, model.time + model.duration]
 
-    scaleFactor = pageLayer.getScaleFactorToFrameUpHighlight model
+    scaleFactor = pageLayer.getScaleFactorToFrameUpHighlight
+      highlight: model.highlight
+      time: keyframeTimes[1]
+      maxScale: model.maxScale
+      fillPercentage: model.fillPercentage
+
     initialScale = scaleProp.valueAtTime model.time, false
     targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor]
     keyframeScales = [scaleProp.valueAtTime(model.time, false), targetScale]

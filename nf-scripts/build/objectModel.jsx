@@ -854,25 +854,25 @@ NFLayer = (function() {
 
 
   /**
-  Uses a null hack to get the source Rect of the layer in it's containing comp
+  Uses a null hack to get the source Rect of the layer in it's containing comp.
+  Optional time parameter
   @memberof NFLayer
-  @param {Object} [model] - The options
-  @param {float} [model.targetTime] - the optional time of the containing comp to
+  @param {float} [time=Current time] - the optional time of the containing comp to
   check at. Default is the current time of the containingComp.
   @returns {Object} the rect object with .left, .width, .hight, .top
    */
 
-  NFLayer.prototype.sourceRect = function(model) {
-    var bottomRightPoint, compTime, expressionBase, rect, ref, targetTime, tempNull, topLeftPoint;
+  NFLayer.prototype.sourceRect = function(time) {
+    var bottomRightPoint, compTime, expressionBase, rect, tempNull, topLeftPoint;
     compTime = this.containingComp().getTime();
-    targetTime = (ref = model != null ? model.targetTime : void 0) != null ? ref : compTime;
+    time = time != null ? time : compTime;
     tempNull = this.containingComp().addNull();
     this.containingComp().setTime(compTime);
     expressionBase = "rect = thisComp.layer(" + (this.index()) + ").sourceRectAtTime(time);";
     tempNull.transform().position.expression = expressionBase + ("thisComp.layer(" + (this.index()) + ").toComp([rect.left, rect.top])");
-    topLeftPoint = tempNull.transform().position.valueAtTime(targetTime, false);
+    topLeftPoint = tempNull.transform().position.valueAtTime(time, false);
     tempNull.transform().position.expression = expressionBase + ("thisComp.layer(" + (this.index()) + ").toComp([rect.left + rect.width, rect.top + rect.height])");
-    bottomRightPoint = tempNull.transform().position.valueAtTime(targetTime, false);
+    bottomRightPoint = tempNull.transform().position.valueAtTime(time, false);
     tempNull.remove();
     return rect = {
       left: topLeftPoint[0],
@@ -1554,8 +1554,8 @@ NFPaperLayerGroup = (function() {
           return true;
         }
       }
-      return false;
     }
+    return false;
   };
 
 
@@ -1584,18 +1584,21 @@ NFPaperLayerGroup = (function() {
   @param {float} [model.time=The current time] - The time to start the
   movement at
   @param {float} [model.duration=3.0] - The duration of the move
+  @param {float} [model.duration=3.0] - The duration of the move
   @throws Throws error if not given a NFHighlightLayer as model.highlight
    */
 
   NFPaperLayerGroup.prototype.moveToHighlight = function(model) {
-    var hasPositionKeyframes, hasScaleKeyframes, initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, originalParent, originalTime, pageLayer, positionDelta, positionProp, ref, ref1, scaleFactor, scaleProp, targetPosition, targetScale;
+    var initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, originalParent, originalTime, pageLayer, positionDelta, positionProp, ref, ref1, ref2, ref3, scaleFactor, scaleProp, targetPosition, targetScale;
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
-      throw "Invalid highlight";
+      throw "\nInvalid highlight";
     }
     model = {
       highlight: model.highlight,
       time: (ref = model.time) != null ? ref : this.containingComp().getTime(),
-      duration: (ref1 = model.duration) != null ? ref1 : 3.0
+      duration: (ref1 = model.duration) != null ? ref1 : 3.0,
+      maxScale: (ref2 = model.maxScale) != null ? ref2 : 115,
+      fillPercentage: (ref3 = model.fillPercentage) != null ? ref3 : 85
     };
     positionProp = this.paperParent.transform().position;
     scaleProp = this.paperParent.transform().scale;
@@ -1603,11 +1606,14 @@ NFPaperLayerGroup = (function() {
     this.containingComp().setTime(model.time);
     originalParent = this.paperParent.getParent();
     this.paperParent.setParent(null);
-    hasPositionKeyframes = positionProp.numKeys !== 0;
-    hasScaleKeyframes = scaleProp.numKeys !== 0;
     pageLayer = this.getPages().layerWithHighlight(model.highlight);
     keyframeTimes = [model.time, model.time + model.duration];
-    scaleFactor = pageLayer.getScaleFactorToFrameUpHighlight(model);
+    scaleFactor = pageLayer.getScaleFactorToFrameUpHighlight({
+      highlight: model.highlight,
+      time: keyframeTimes[1],
+      maxScale: model.maxScale,
+      fillPercentage: model.fillPercentage
+    });
     initialScale = scaleProp.valueAtTime(model.time, false);
     targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor];
     keyframeScales = [scaleProp.valueAtTime(model.time, false), targetScale];
@@ -2642,9 +2648,7 @@ NFPageLayer = (function(superClass) {
     if (!this.containsHighlight(highlight)) {
       throw "Can't get source rect for this highlight since it's not in the layer";
     }
-    highlightRect = highlight.sourceRect({
-      targetTime: targetTime
-    });
+    highlightRect = highlight.sourceRect(targetTime);
     return this.relativeRect(highlightRect, targetTime);
   };
 
@@ -2970,9 +2974,7 @@ NFPageLayer = (function(superClass) {
     highlightCenterPoint = [highlightRect.left + highlightRect.width / 2, highlightRect.top + highlightRect.height / 2];
     compCenterPoint = [this.containingComp().comp.width / 2, this.containingComp().comp.height / 2];
     delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]];
-    rectAfterReposition = this.sourceRect({
-      time: model.time
-    });
+    rectAfterReposition = this.sourceRect(model.time);
     rectAfterReposition.left += delta[0];
     rectAfterReposition.top += delta[1];
     if (rectAfterReposition.left > 0) {
@@ -3391,13 +3393,15 @@ NFPartComp = (function(superClass) {
   @param {float} [model.animationDuration=3] - the length of the move and scale
   @param {float} [model.pageTurnDuration=2] - the length of the pageturn
   @param {float} [model.maxPageScale=115] - the maximum a page will scale
+  @param {float} [model.fillPercentage=85] - the percentage of the comp width
+  for the final highlight to take up
   @param {boolean} [model.skipTitle=false] - whether we should skip going to the
   title page if this PDF is new in the project
   @returns {NFPartComp} self
    */
 
   NFPartComp.prototype.animateToHighlight = function(model) {
-    var containingPartComps, group, ref, ref1, ref2, ref3, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var containingPartComps, group, ref, ref1, ref2, ref3, ref4, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     if (!(model.highlight instanceof NFHighlightLayer)) {
       throw "Can't animate to a highlight because I don't have one...";
     }
@@ -3406,7 +3410,8 @@ NFPartComp = (function(superClass) {
       duration: (ref = model.animationDuration) != null ? ref : 3,
       pageTurnDuration: (ref1 = model.pageTurnDuration) != null ? ref1 : 2,
       maxPageScale: (ref2 = model.maxPageScale) != null ? ref2 : 115,
-      skipTitle: (ref3 = model.skipTitle) != null ? ref3 : false
+      skipTitle: (ref3 = model.skipTitle) != null ? ref3 : false,
+      fillPercentage: (ref4 = model.fillPercentage) != null ? ref4 : 85
     };
     targetPDF = model.highlight.getPDF();
     containingPartComps = targetPDF.containingPartComps();
@@ -3424,8 +3429,9 @@ NFPartComp = (function(superClass) {
           this.setTime(titlePageLayer.getInMarkerTime());
           group.moveToHighlight({
             highlight: model.highlight,
-            duration: model.duration,
-            maxScale: model.maxPageScale
+            duration: model.animationDuration,
+            maxScale: model.maxPageScale,
+            fillPercentage: model.fillPercentage
           });
         } else {
           this.setTime(titlePageLayer.getInMarkerTime() - 0.4);
@@ -3436,7 +3442,14 @@ NFPartComp = (function(superClass) {
           targetPageLayer.bubbleUp(model.highlight);
           titlePageLayer.animatePageTurn();
           targetPageLayer.frameUpHighlight({
-            highlight: model.highlight
+            highlight: model.highlight,
+            fillPercentage: model.fillPercentage * 0.8
+          });
+          group.moveToHighlight({
+            highlight: model.highlight,
+            duration: model.animationDuration,
+            fillPercentage: model.fillPercentage,
+            maxScale: model.maxPageScale
           });
         }
       } else {
