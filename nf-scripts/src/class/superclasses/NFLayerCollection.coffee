@@ -193,5 +193,5 @@ class NFLayerCollection
     newNull = @containingComp().addNull()
     @setParents(newNull)
     topLayer = @getTopmostLayer()
-    newNull.moveBefore topLayer.layer
+    newNull.moveBefore topLayer
     return newNull

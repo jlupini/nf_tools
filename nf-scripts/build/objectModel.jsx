@@ -178,7 +178,7 @@ NFComp = (function() {
    */
 
   NFComp.prototype.addNull = function() {
-    return this.comp.layers.addNull();
+    return new NFLayer(this.comp.layers.addNull());
   };
 
 
@@ -294,7 +294,6 @@ NFLayer = (function() {
     } else {
       throw "Can only create a new NFLayer with a valid AVLayer or NFLayer object";
     }
-    this.layer = layer;
     this;
   }
 
@@ -436,6 +435,17 @@ NFLayer = (function() {
 
 
   /**
+  Returns the transform Property for the layer
+  @memberof NFLayer
+  @returns {Property} the transform property
+   */
+
+  NFLayer.prototype.transform = function() {
+    return this.layer.transform;
+  };
+
+
+  /**
   Returns the effect property with a given name, only one level under Effects.
   Uses `Effects.property(effectName)``
   @memberof NFLayer
@@ -497,7 +507,7 @@ NFLayer = (function() {
     var newNull;
     newNull = this.containingComp().addNull();
     this.setParent(newNull);
-    newNull.moveBefore(this.layer);
+    newNull.moveBefore(this);
     return newNull;
   };
 
@@ -547,14 +557,14 @@ NFLayer = (function() {
    */
 
   NFLayer.prototype.setParent = function(newParent) {
-    if (newParent.isAVLayer()) {
+    if (newParent == null) {
+      this.layer.parent = null;
+    } else if (newParent.isAVLayer()) {
       this.layer.parent = newParent;
     } else if (newParent instanceof NFLayer) {
       this.layer.parent = newParent != null ? newParent.layer : void 0;
     } else {
-      if (!(newParent instanceof NFLayer)) {
-        throw "Can only set an NFLayer's parent to another NFLayer or AVLayer";
-      }
+      throw "Can only set an NFLayer's parent to another NFLayer or AVLayer";
     }
     return this;
   };
@@ -619,6 +629,23 @@ NFLayer = (function() {
 
   NFLayer.prototype.markers = function() {
     return this.layer.property("Marker");
+  };
+
+
+  /**
+  Returns the layer's absolute scale, which is the scale of the layer if it had
+  no parent.
+  @memberof NFLayer
+  @returns {float} The absolute scale
+   */
+
+  NFLayer.prototype.getAbsoluteScale = function() {
+    var absoluteScale, layerParent;
+    layerParent = this.layer.parent;
+    this.layer.parent = null;
+    absoluteScale = this.transform().scale.value;
+    this.layer.parent = layerParent;
+    return absoluteScale;
   };
 
 
@@ -815,37 +842,37 @@ NFLayer = (function() {
 
 
   /**
-  Uses a null hack to get the source Rect of a layer relative to its
-  containing comp.
+  Removes the layer from its parent comp
   @memberof NFLayer
-  @param {NFLayer | AVLayer} targetLayer - the layer to get the rect for
-  @param {float} [targetTime] - the optional time of the containing comp to
-  check at. Default is the current time of the containingComp.
-  @returns {Object} the rect object with .left, .width, .hight, .top and
-  .padding values
+  @returns {null} null
    */
 
-  NFLayer.prototype.sourceRectForLayer = function(targetLayer, targetTime) {
-    var bottomRightPoint, compTime, expressionBase, layer, rect, tempNull, topLeftPoint;
-    if (targetTime == null) {
-      targetTime = null;
-    }
-    if (targetLayer instanceof NFLayer) {
-      layer = targetLayer.layer;
-    } else if (targetLayer.isAVLayer()) {
-      layer = targetLayer;
-    } else {
-      throw "Can only get source rect relative to comp of NFLayer or AVLayer objects";
-    }
+  NFLayer.prototype.remove = function() {
+    this.layer.remove();
+    return null;
+  };
+
+
+  /**
+  Uses a null hack to get the source Rect of the layer in it's containing comp
+  @memberof NFLayer
+  @param {Object} [model] - The options
+  @param {float} [model.targetTime] - the optional time of the containing comp to
+  check at. Default is the current time of the containingComp.
+  @returns {Object} the rect object with .left, .width, .hight, .top
+   */
+
+  NFLayer.prototype.sourceRect = function(model) {
+    var bottomRightPoint, compTime, expressionBase, rect, ref, targetTime, tempNull, topLeftPoint;
     compTime = this.containingComp().getTime();
-    targetTime = targetTime != null ? targetTime : compTime;
-    tempNull = layer.containingComp.layers.addNull();
+    targetTime = (ref = model != null ? model.targetTime : void 0) != null ? ref : compTime;
+    tempNull = this.containingComp().addNull();
     this.containingComp().setTime(compTime);
-    expressionBase = "rect = thisComp.layer(" + layer.index + ").sourceRectAtTime(time);";
-    tempNull.transform.position.expression = expressionBase + ("thisComp.layer(" + layer.index + ").toComp([rect.left, rect.top])");
-    topLeftPoint = tempNull.transform.position.valueAtTime(targetTime, false);
-    tempNull.transform.position.expression = expressionBase + ("thisComp.layer(" + layer.index + ").toComp([rect.left + rect.width, rect.top + rect.height])");
-    bottomRightPoint = tempNull.transform.position.valueAtTime(targetTime, false);
+    expressionBase = "rect = thisComp.layer(" + (this.index()) + ").sourceRectAtTime(time);";
+    tempNull.transform().position.expression = expressionBase + ("thisComp.layer(" + (this.index()) + ").toComp([rect.left, rect.top])");
+    topLeftPoint = tempNull.transform().position.valueAtTime(targetTime, false);
+    tempNull.transform().position.expression = expressionBase + ("thisComp.layer(" + (this.index()) + ").toComp([rect.left + rect.width, rect.top + rect.height])");
+    bottomRightPoint = tempNull.transform().position.valueAtTime(targetTime, false);
     tempNull.remove();
     return rect = {
       left: topLeftPoint[0],
@@ -853,6 +880,59 @@ NFLayer = (function() {
       width: bottomRightPoint[0] - topLeftPoint[0],
       height: bottomRightPoint[1] - topLeftPoint[1]
     };
+  };
+
+
+  /**
+  Returns a rect object in this layer's containing comp that matches
+  a given rect in this layer
+  @memberof NFLayer
+  @param {Rect} rect - the rect with .left, .top, .width, and .height values
+  @param {float} [targetTime=Current Time] - the optional time of the
+  containing comp to check at. Default is the current time of the containingComp.
+  @returns {Object} the rect object with .left, .width, .height and .top values
+   */
+
+  NFLayer.prototype.relativeRect = function(rect, targetTime) {
+    var bottomRightPoint, newRect, topLeftPoint;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    if (!((rect.left != null) && (rect.top != null) && (rect.width != null) && (rect.height != null))) {
+      throw "Missing values on the rect";
+    }
+    topLeftPoint = this.relativePoint([rect.left, rect.top], targetTime);
+    bottomRightPoint = this.relativePoint([rect.left + rect.width, rect.top + rect.height], targetTime);
+    return newRect = {
+      left: topLeftPoint[0],
+      top: topLeftPoint[1],
+      width: bottomRightPoint[0] - topLeftPoint[0],
+      height: bottomRightPoint[1] - topLeftPoint[1]
+    };
+  };
+
+
+  /**
+  Uses a null hack to get a point in this layer's containing comp that matches
+  a given point on this layer
+  @memberof NFLayer
+  @param {Point} sourcePoint - the point to use
+  @param {float} [targetTime=Current Time] - the optional time of the
+  containing comp to check at. Default is the current time of the containingComp.
+  @returns {Point} the resulting Point
+   */
+
+  NFLayer.prototype.relativePoint = function(sourcePoint, targetTime) {
+    var newPoint, tempNull;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    targetTime = targetTime != null ? targetTime : this.containingComp().getTime();
+    tempNull = this.containingComp().addNull();
+    tempNull.transform().position.expression = "a = thisComp.layer(" + this.layer.index + ").toComp([" + sourcePoint[0] + ", " + sourcePoint[1] + "]);\na";
+    newPoint = tempNull.transform().position.valueAtTime(targetTime, false);
+    tempNull.remove();
+    return newPoint;
   };
 
   return NFLayer;
@@ -1200,7 +1280,7 @@ NFLayerCollection = (function() {
     newNull = this.containingComp().addNull();
     this.setParents(newNull);
     topLayer = this.getTopmostLayer();
-    newNull.moveBefore(topLayer.layer);
+    newNull.moveBefore(topLayer);
     return newNull;
   };
 
@@ -1419,7 +1499,7 @@ NFPaperLayerGroup = (function() {
   }
 
   NFPaperLayerGroup.prototype.toString = function() {
-    return "NFPaperLayerGroup: " + paperParent.layer.name;
+    return "NFPaperLayerGroup: " + this.paperParent.layer.name;
   };
 
 
@@ -1452,6 +1532,103 @@ NFPaperLayerGroup = (function() {
       }
     }
     return pageChildren;
+  };
+
+
+  /**
+  Returns whether a given highlight is in one of the group's layers
+  @memberof NFPaperLayerGroup
+  @param {NFHighlightLayer} highlight - the highlight
+  @returns {boolean} the result
+   */
+
+  NFPaperLayerGroup.prototype.containsHighlight = function(highlight) {
+    var i, j, len, len1, pageLayer, ref, ref1, testHighlight;
+    ref = this.getPages().layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      pageLayer = ref[i];
+      ref1 = pageLayer.highlights().layers;
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        testHighlight = ref1[j];
+        if (testHighlight.is(highlight)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+
+
+  /**
+  Returns the containing NFComp
+  @memberof NFPaperLayerGroup
+  @returns {NFComp} the containing comp
+   */
+
+  NFPaperLayerGroup.prototype.containingComp = function() {
+    return this.paperParent.containingComp();
+  };
+
+
+  /**
+  Animates the parent layer starting at the given time such that a given
+  highlight is visible and centered in frame, via the page parent layer.
+  Always adds keyframes. Will NOT add page layers and will throw an
+  error if the given highlight is not in this group already. use NFPartComp's
+  animateToHighlight() instead to perform all the page addition,
+  pageturns, etc.
+  @memberof NFPaperLayerGroup
+  @returns {NFPaperLayerGroup} self
+  @param {Object} model - The options
+  @param {NFHighlightLayer} model.highlight - The highlight to move to
+  @param {float} [model.time=The current time] - The time to start the
+  movement at
+  @param {float} [model.duration=3.0] - The duration of the move
+  @throws Throws error if not given a NFHighlightLayer as model.highlight
+   */
+
+  NFPaperLayerGroup.prototype.moveToHighlight = function(model) {
+    var hasPositionKeyframes, hasScaleKeyframes, initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, originalParent, originalTime, pageLayer, positionDelta, positionProp, ref, ref1, scaleFactor, scaleProp, targetPosition, targetScale;
+    if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
+      throw "Invalid highlight";
+    }
+    model = {
+      highlight: model.highlight,
+      time: (ref = model.time) != null ? ref : this.containingComp().getTime(),
+      duration: (ref1 = model.duration) != null ? ref1 : 3.0
+    };
+    positionProp = this.paperParent.transform().position;
+    scaleProp = this.paperParent.transform().scale;
+    originalTime = this.containingComp().getTime();
+    this.containingComp().setTime(model.time);
+    originalParent = this.paperParent.getParent();
+    this.paperParent.setParent(null);
+    hasPositionKeyframes = positionProp.numKeys !== 0;
+    hasScaleKeyframes = scaleProp.numKeys !== 0;
+    pageLayer = this.getPages().layerWithHighlight(model.highlight);
+    keyframeTimes = [model.time, model.time + model.duration];
+    scaleFactor = pageLayer.getScaleFactorToFrameUpHighlight(model);
+    initialScale = scaleProp.valueAtTime(model.time, false);
+    targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor];
+    keyframeScales = [scaleProp.valueAtTime(model.time, false), targetScale];
+    scaleProp.setValuesAtTimes(keyframeTimes, keyframeScales);
+    positionDelta = pageLayer.getPositionDeltaToFrameUpHighlight({
+      highlight: model.highlight,
+      time: keyframeTimes[1]
+    });
+    initialPosition = positionProp.valueAtTime(model.time, false);
+    targetPosition = [initialPosition[0] + positionDelta[0], initialPosition[1] + positionDelta[1]];
+    keyframePositions = [positionProp.valueAtTime(model.time, false), targetPosition];
+    positionProp.setValuesAtTimes(keyframeTimes, keyframePositions);
+    scaleProp.easyEaseKeyTimes({
+      keyTimes: keyframeTimes
+    });
+    positionProp.easyEaseKeyTimes({
+      keyTimes: keyframeTimes
+    });
+    this.paperParent.setParent(originalParent);
+    this.containingComp().setTime(originalTime);
+    return this;
   };
 
 
@@ -2450,16 +2627,25 @@ NFPageLayer = (function(superClass) {
   parent comp.
   @memberof NFPageLayer
   @param {NFHighlightLayer} highlight - the highlight
+  @param {float} [targetTime=Current Time] - the optional time of the containing comp to
+  check at. Default is the current time of the containingComp.
   @returns {Object} the rect object with .left, .width, .hight, .top and
   .padding values
   @throws Throw error if highlight is not in page
    */
 
-  NFPageLayer.prototype.sourceRectForHighlight = function(highlight) {
+  NFPageLayer.prototype.sourceRectForHighlight = function(highlight, targetTime) {
+    var highlightRect;
+    if (targetTime == null) {
+      targetTime = null;
+    }
     if (!this.containsHighlight(highlight)) {
       throw "Can't get source rect for this highlight since it's not in the layer";
     }
-    return this.sourceRectForLayer(highlight);
+    highlightRect = highlight.sourceRect({
+      targetTime: targetTime
+    });
+    return this.relativeRect(highlightRect, targetTime);
   };
 
 
@@ -2578,7 +2764,7 @@ NFPageLayer = (function(superClass) {
   @param {Object} [model] - The options
   @param {float} [model.time=The current time] - The time to start the turn at
   @param {float} [model.duration=1.5] - The duration of the pageturn
-  @param {boolean} [model.trim] - Trim the layer after the turn is complete.
+  @param {boolean} [model.trim=no] - Trim the layer after the turn is complete.
   Defaults to YES if we're folding up, and NO if we're folding down.
    */
 
@@ -2655,6 +2841,153 @@ NFPageLayer = (function(superClass) {
       this.layer.outPoint = endTime;
     }
     return this;
+  };
+
+
+  /**
+  Moves the layer so that a given highlight is visible and centered in frame,
+  at the given time. Adds keyframes only if keyframes already exist on the
+  layer's position or scale properties.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} model - The options
+  @param {NFHighlightLayer} model.highlight - The highlight to move to
+  @param {float} [model.time=The current time] - The time to frame up at
+  @param {float} [model.fillPercentage=85] - Percentage of the comp width the
+  highlight should take up
+  @param {float} [model.maxScale=115] - The maximum that a page layer will scale
+  @throws Throws error if not given a NFHighlightLayer as model.highlight or
+  given highlight is not on this page.
+   */
+
+  NFPageLayer.prototype.frameUpHighlight = function(model) {
+    var hasPositionKeyframes, hasScaleKeyframes, initialPosition, initialScale, originalParent, originalTime, positionDelta, positionProp, ref, scaleFactor, scaleProp, targetPosition, targetScale;
+    if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
+      throw "Invalid highlight";
+    }
+    positionProp = this.transform().position;
+    scaleProp = this.transform().scale;
+    originalTime = this.containingComp().getTime();
+    model.time = (ref = model.time) != null ? ref : originalTime;
+    this.containingComp().setTime(model.time);
+    originalParent = this.getParent();
+    this.setParent(null);
+    hasPositionKeyframes = positionProp.numKeys !== 0;
+    hasScaleKeyframes = scaleProp.numKeys !== 0;
+    scaleFactor = this.getScaleFactorToFrameUpHighlight(model);
+    initialScale = scaleProp.valueAtTime(model.time, false);
+    targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor];
+    if (hasScaleKeyframes) {
+      scaleProp.setValueAtTime(model.time, targetScale);
+    } else {
+      scaleProp.setValue(targetScale);
+    }
+    positionDelta = this.getPositionDeltaToFrameUpHighlight(model);
+    initialPosition = positionProp.valueAtTime(model.time, false);
+    targetPosition = [initialPosition[0] + positionDelta[0], initialPosition[1] + positionDelta[1]];
+    if (hasPositionKeyframes) {
+      positionProp.setValueAtTime(model.time, targetPosition);
+    } else {
+      positionProp.setValue(targetPosition);
+    }
+    this.setParent(originalParent);
+    this.containingComp().setTime(originalTime);
+    return this;
+  };
+
+
+  /**
+  Returns the multiplier, or scale factor required to frame up the given
+  highlight in this layer's Containing comp. Basically, multiplying the scale
+  of this layer by the result of this number will make the highlight fit in
+  frame perfectly.
+  @memberof NFPageLayer
+  @returns {float} the scale factor
+  @param {Object} model - the options
+  @param {NFHighlightLayer} model.highlight - The highlight to get the scale
+  factor for.
+  @param {float} [model.time=The current time] - The time to calculate at
+  @param {float} [model.fillPercentage=85] - Percentage of the comp width the
+  highlight should take up
+  @param {float} [model.maxScale=115] - The maximum that a page layer will scale
+  @throws Throws error if not given a NFHighlightLayer or
+  given highlight is not on this page.
+   */
+
+  NFPageLayer.prototype.getScaleFactorToFrameUpHighlight = function(model) {
+    var absoluteScale, adjustedScaleFactor, calculatedScale, compWidth, highlightRect, ref, ref1, ref2, ref3, scaleFactor, targetHighlightWidth;
+    model = {
+      highlight: (function() {
+        if ((ref = model.highlight) != null) {
+          return ref;
+        } else {
+          throw "No highlight!";
+        }
+      })(),
+      time: (ref1 = model.time) != null ? ref1 : this.containingComp().getTime(),
+      fillPercentage: (ref2 = model.fillPercentage) != null ? ref2 : 85,
+      maxScale: (ref3 = model.maxScale) != null ? ref3 : 115
+    };
+    if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
+      throw "Invalid highlight";
+    }
+    highlightRect = this.sourceRectForHighlight(model.highlight, model.time);
+    compWidth = this.containingComp().comp.width;
+    targetHighlightWidth = model.fillPercentage / 100 * compWidth;
+    scaleFactor = targetHighlightWidth / highlightRect.width;
+    absoluteScale = this.getAbsoluteScale();
+    calculatedScale = scaleFactor * absoluteScale[0];
+    if (calculatedScale > model.maxScale) {
+      adjustedScaleFactor = model.maxScale / absoluteScale[0];
+    } else if (calculatedScale < 50) {
+      adjustedScaleFactor = 50 / absoluteScale[0];
+    } else {
+      adjustedScaleFactor = scaleFactor;
+    }
+    return adjustedScaleFactor;
+  };
+
+
+  /**
+  Returns a length-2 array with x and y 'nudge' values to make the given
+  highlight be centered in frame *at the current scale of the layer*.
+  @memberof NFPageLayer
+  @returns {float[]} the x and y nudge values
+  @param {Object} model - The options
+  @param {NFHighlightLayer} model.highlight - The highlight to get the scale
+  factor for.
+  @param {float} [model.time=The current time] - The time to calculate at
+  @throws Throws error if not given a NFHighlightLayer or
+  given highlight is not on this page.
+   */
+
+  NFPageLayer.prototype.getPositionDeltaToFrameUpHighlight = function(model) {
+    var compCenterPoint, delta, highlightCenterPoint, highlightRect, rectAfterReposition;
+    if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
+      throw "Invalid highlight";
+    }
+    highlightRect = this.sourceRectForHighlight(model.highlight, model.time);
+    highlightCenterPoint = [highlightRect.left + highlightRect.width / 2, highlightRect.top + highlightRect.height / 2];
+    compCenterPoint = [this.containingComp().comp.width / 2, this.containingComp().comp.height / 2];
+    delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]];
+    rectAfterReposition = this.sourceRect({
+      time: model.time
+    });
+    rectAfterReposition.left += delta[0];
+    rectAfterReposition.top += delta[1];
+    if (rectAfterReposition.left > 0) {
+      delta[0] -= rectAfterReposition.left;
+    }
+    if (rectAfterReposition.top > 0) {
+      delta[1] -= rectAfterReposition.top;
+    }
+    if (rectAfterReposition.left + rectAfterReposition.width < _.mainComp.width) {
+      delta[0] += this.containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width);
+    }
+    if (rectAfterReposition.top + rectAfterReposition.height < this.containingComp().comp.height) {
+      delta[1] += this.containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height);
+    }
+    return delta;
   };
 
   return NFPageLayer;
@@ -2746,7 +3079,6 @@ NFPageLayerCollection = (function(superClass) {
   Returns NFHighlightLayerCollection of all highlights in all pages in the collection
   @memberof NFPageLayerCollection
   @returns {NFHighlightLayerCollection} all highlights in all pages in this collection
-  @param {AVLayer} newLayer - the layer to add
    */
 
   NFPageLayerCollection.prototype.highlights = function() {
@@ -2767,6 +3099,32 @@ NFPageLayerCollection = (function(superClass) {
     }
     highlights = new NFHighlightLayerCollection(highlightArray);
     return highlights;
+  };
+
+
+  /**
+  Returns the NFPageLayer in the collection with the given highlight in it, or null
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayer | null} the layer with the highlight or null
+  @param {NFHighlightLayer} highlight - the highlight to look for
+   */
+
+  NFPageLayerCollection.prototype.layerWithHighlight = function(highlight) {
+    var i, j, len, len1, ref, ref1, testHighlight, theLayer;
+    ref = this.layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      theLayer = ref[i];
+      if (theLayer instanceof NFPageLayer) {
+        ref1 = theLayer.highlights().layers;
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          testHighlight = ref1[j];
+          if (highlight.is(testHighlight)) {
+            return theLayer;
+          }
+        }
+      }
+    }
+    return null;
   };
 
 
@@ -3039,7 +3397,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateToHighlight = function(model) {
-    var containingPartComps, ref, ref1, ref2, ref3, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var containingPartComps, group, ref, ref1, ref2, ref3, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     if (!(model.highlight instanceof NFHighlightLayer)) {
       throw "Can't animate to a highlight because I don't have one...";
     }
@@ -3059,10 +3417,16 @@ NFPartComp = (function(superClass) {
           page: titlePage,
           animate: true
         });
+        group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
         targetPage = model.highlight.getPageComp();
         if (targetPage.is(titlePage)) {
           titlePageLayer.bubbleUp(model.highlight);
           this.setTime(titlePageLayer.getInMarkerTime());
+          group.moveToHighlight({
+            highlight: model.highlight,
+            duration: model.duration,
+            maxScale: model.maxPageScale
+          });
         } else {
           this.setTime(titlePageLayer.getInMarkerTime() - 0.4);
           targetPageLayer = this.insertPage({
@@ -3071,6 +3435,9 @@ NFPartComp = (function(superClass) {
           });
           targetPageLayer.bubbleUp(model.highlight);
           titlePageLayer.animatePageTurn();
+          targetPageLayer.frameUpHighlight({
+            highlight: model.highlight
+          });
         }
       } else {
         this;

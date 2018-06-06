@@ -50,6 +50,9 @@ class NFPartComp extends NFComp
           page: titlePage
           animate: yes
 
+        group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
+        # FIXME: I kinda think now that we have a page in here, we need to be doing stuff on a NFPaperLayerGroup. Not 100% on this though
+
         targetPage = model.highlight.getPageComp()
         # If the highlight we want is on the title page
         if targetPage.is titlePage
@@ -57,8 +60,11 @@ class NFPartComp extends NFComp
           titlePageLayer.bubbleUp model.highlight
           @setTime titlePageLayer.getInMarkerTime()
 
-          # Gotta actually do the goToHighlight here...
-          # FIXME: Pick up here and get going!
+          group.moveToHighlight
+            highlight: model.highlight
+            duration: model.duration
+            maxScale: model.maxPageScale
+
         # Else (it's on a different page)
         else
           @setTime(titlePageLayer.getInMarkerTime() - 0.4)
@@ -69,8 +75,9 @@ class NFPartComp extends NFComp
           targetPageLayer.bubbleUp model.highlight
 
           titlePageLayer.animatePageTurn()
-          # RUN goToHighlight
 
+          targetPageLayer.frameUpHighlight
+            highlight: model.highlight
 
       #  else (we've been passed the 'no q' flag)
       else

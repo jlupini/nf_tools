@@ -125,7 +125,7 @@ class NFComp
   # @returns {NFLayer} The newly created null layer
   ###
   addNull: ->
-    return @comp.layers.addNull()
+    return new NFLayer @comp.layers.addNull()
 
   ###*
   Inserts a layer into the comp at a given index at the current time. Returns

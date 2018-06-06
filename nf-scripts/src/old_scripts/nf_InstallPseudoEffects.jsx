@@ -64,14 +64,14 @@ function installPresetEffect() {
 
 	// Grab the latest version of the pseudo effects
 	var latestPseudoEffects = getLatestPseudoEffects();
-	
+
 	// Try to access the PresetEffects.xml file
 	var os = $.os;
 	var presetEffectFilePath;
 	var regexWin = "win";
 	var regexMac = "mac";
 	if (searchText("win", os) != null) {
-        var appFolder = new Folder(Folder.appPackage.parent.absoluteURI).toString();        
+        var appFolder = new Folder(Folder.appPackage.parent.absoluteURI).toString();
 		presetEffectFilePath = (appFolder + "\\Support Files\\PresetEffects.xml");
     } else if (searchText("mac", os) != null) {
         var appFolder = new Folder(Folder.appPackage.absoluteURI).toString();
@@ -136,7 +136,7 @@ function installPresetEffect() {
 		var injectionPointIndex = presetEffectFileText.indexOf("</Effects>");
 		newPresetEffectText = injectString(presetEffectFileText, latestPseudoEffects[1] + "\n", injectionPointIndex);
 	}
-	
+
 	// Try writing the new PresetEffect Text to the file
 	var writeCheck = presetEffectFile.write(newPresetEffectText);
 	if (!writeCheck) {return 0;}
@@ -158,7 +158,7 @@ function getLatestPseudoEffects() {
 
 	// Get the Pseudo-Effects.xml folder from the same directory as this script file.
     var parentFolder = (new File($.fileName)).parent;
-	var pseudoEffectSourceFilePath = (parentFolder.toString() + "/lib/Pseudo-Effects.xml");
+	var pseudoEffectSourceFilePath = (parentFolder.toString() + "/../lib/Pseudo-Effects.xml");
 	var pseudoEffectSourceFile = new File(pseudoEffectSourceFilePath);
 
 	// Can we open it? Open with read permissions

@@ -12,7 +12,7 @@ class NFPaperLayerGroup
     throw "Not a valid paper parent" unless @paperParent instanceof NFPaperParentLayer
   toString: ->
     # FIXME: Write this function
-    return "NFPaperLayerGroup: #{paperParent.layer.name}"
+    return "NFPaperLayerGroup: #{@paperParent.layer.name}"
 
   ###*
   Gets all the NFLayers in the group
@@ -33,6 +33,93 @@ class NFPaperLayerGroup
     for layer in allChildren.layers
       pageChildren.addLayer layer if layer instanceof NFPageLayer
     return pageChildren
+
+  ###*
+  Returns whether a given highlight is in one of the group's layers
+  @memberof NFPaperLayerGroup
+  @param {NFHighlightLayer} highlight - the highlight
+  @returns {boolean} the result
+  ###
+  containsHighlight: (highlight) ->
+    for pageLayer in @getPages().layers
+      for testHighlight in pageLayer.highlights().layers
+        return true if testHighlight.is highlight
+      return false
+
+  ###*
+  Returns the containing NFComp
+  @memberof NFPaperLayerGroup
+  @returns {NFComp} the containing comp
+  ###
+  containingComp: ->
+    return @paperParent.containingComp()
+
+  ###*
+  Animates the parent layer starting at the given time such that a given
+  highlight is visible and centered in frame, via the page parent layer.
+  Always adds keyframes. Will NOT add page layers and will throw an
+  error if the given highlight is not in this group already. use NFPartComp's
+  animateToHighlight() instead to perform all the page addition,
+  pageturns, etc.
+  @memberof NFPaperLayerGroup
+  @returns {NFPaperLayerGroup} self
+  @param {Object} model - The options
+  @param {NFHighlightLayer} model.highlight - The highlight to move to
+  @param {float} [model.time=The current time] - The time to start the
+  movement at
+  @param {float} [model.duration=3.0] - The duration of the move
+  @throws Throws error if not given a NFHighlightLayer as model.highlight
+  ###
+  moveToHighlight: (model) ->
+    throw "Invalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+    model =
+      highlight: model.highlight
+      time: model.time ? @containingComp().getTime()
+      duration: model.duration ? 3.0
+
+    positionProp = @paperParent.transform().position
+    scaleProp = @paperParent.transform().scale
+
+    # Move the time to the target time and unparent
+    originalTime = @containingComp().getTime()
+    @containingComp().setTime model.time
+
+    originalParent = @paperParent.getParent()
+    @paperParent.setParent null
+
+    # Frame up the Highlight
+    hasPositionKeyframes = positionProp.numKeys != 0
+    hasScaleKeyframes = scaleProp.numKeys != 0
+
+    pageLayer = @getPages().layerWithHighlight model.highlight
+
+    keyframeTimes = [model.time, model.time + model.duration]
+
+    scaleFactor = pageLayer.getScaleFactorToFrameUpHighlight model
+    initialScale = scaleProp.valueAtTime model.time, false
+    targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor]
+    keyframeScales = [scaleProp.valueAtTime(model.time, false), targetScale]
+    scaleProp.setValuesAtTimes keyframeTimes, keyframeScales
+
+    positionDelta = pageLayer.getPositionDeltaToFrameUpHighlight
+      highlight: model.highlight
+      time: keyframeTimes[1]
+    initialPosition = positionProp.valueAtTime model.time, false
+    targetPosition = [initialPosition[0] + positionDelta[0], initialPosition[1] + positionDelta[1]]
+    keyframePositions = [positionProp.valueAtTime(model.time, false), targetPosition]
+    positionProp.setValuesAtTimes keyframeTimes, keyframePositions
+
+    scaleProp.easyEaseKeyTimes
+      keyTimes: keyframeTimes
+    positionProp.easyEaseKeyTimes
+      keyTimes: keyframeTimes
+
+    # Restore the original parent and comp time
+    @paperParent.setParent originalParent
+    @containingComp().setTime(originalTime)
+
+    @
+
 
   ###*
   Moves the given layers into the group and parents if indicated. Layers below

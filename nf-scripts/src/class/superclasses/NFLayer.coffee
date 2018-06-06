@@ -14,7 +14,6 @@ class NFLayer
       @layer  = layer.layer
     else
       throw "Can only create a new NFLayer with a valid AVLayer or NFLayer object"
-    @layer = layer
     @
 
   # MARK: Instance Methods
@@ -120,6 +119,14 @@ class NFLayer
     return @layer.Effects
 
   ###*
+  Returns the transform Property for the layer
+  @memberof NFLayer
+  @returns {Property} the transform property
+  ###
+  transform: ->
+    return @layer.transform
+
+  ###*
   Returns the effect property with a given name, only one level under Effects.
   Uses `Effects.property(effectName)``
   @memberof NFLayer
@@ -165,7 +172,7 @@ class NFLayer
   nullify: ->
     newNull = @containingComp().addNull()
     @setParent newNull
-    newNull.moveBefore @layer
+    newNull.moveBefore @
     return newNull
 
   ###*
@@ -204,12 +211,14 @@ class NFLayer
   @throws Will throw an error if not given an NFLayer or null
   ###
   setParent: (newParent) ->
-    if newParent.isAVLayer()
+    if not newParent?
+      @layer.parent = null
+    else if newParent.isAVLayer()
       @layer.parent = newParent
     else if newParent instanceof NFLayer
       @layer.parent = newParent?.layer
     else
-      throw "Can only set an NFLayer's parent to another NFLayer or AVLayer" unless newParent instanceof NFLayer
+      throw "Can only set an NFLayer's parent to another NFLayer or AVLayer"
     return @
 
   ###*
@@ -254,6 +263,19 @@ class NFLayer
   ###
   markers: ->
     return @layer.property("Marker")
+
+  ###*
+  Returns the layer's absolute scale, which is the scale of the layer if it had
+  no parent.
+  @memberof NFLayer
+  @returns {float} The absolute scale
+  ###
+  getAbsoluteScale: ->
+  	layerParent = @layer.parent
+  	@layer.parent = null
+  	absoluteScale = @transform().scale.value
+  	@layer.parent = layerParent
+  	absoluteScale
 
   ###*
   Sets the given property's expression and adds In and Out markers (if not
@@ -406,40 +428,79 @@ class NFLayer
     return slider
 
   ###*
-  Uses a null hack to get the source Rect of a layer relative to its
-  containing comp.
+  Removes the layer from its parent comp
   @memberof NFLayer
-  @param {NFLayer | AVLayer} targetLayer - the layer to get the rect for
-  @param {float} [targetTime] - the optional time of the containing comp to
-  check at. Default is the current time of the containingComp.
-  @returns {Object} the rect object with .left, .width, .hight, .top and
-  .padding values
+  @returns {null} null
   ###
-  sourceRectForLayer: (targetLayer, targetTime = null) ->
-    if targetLayer instanceof NFLayer
-      layer = targetLayer.layer
-    else if targetLayer.isAVLayer()
-      layer = targetLayer
-    else
-      throw "Can only get source rect relative to comp of NFLayer or AVLayer objects"
+  remove: ->
+    @layer.remove()
+    return null
 
+  ###*
+  Uses a null hack to get the source Rect of the layer in it's containing comp
+  @memberof NFLayer
+  @param {Object} [model] - The options
+  @param {float} [model.targetTime] - the optional time of the containing comp to
+  check at. Default is the current time of the containingComp.
+  @returns {Object} the rect object with .left, .width, .hight, .top
+  ###
+  sourceRect: (model) ->
     compTime = @containingComp().getTime()
-    targetTime = targetTime ? compTime
-    tempNull = layer.containingComp.layers.addNull()
+    targetTime = model?.targetTime ? compTime
+    tempNull = @containingComp().addNull()
     # This line stops the mainComp time from jumping forward.
     @containingComp().setTime compTime
 
-    expressionBase = "rect = thisComp.layer(#{layer.index}).sourceRectAtTime(time);"
-    tempNull.transform.position.expression = expressionBase + "thisComp.layer(#{layer.index}).toComp([rect.left, rect.top])"
-    topLeftPoint = tempNull.transform.position.valueAtTime targetTime, false
-    tempNull.transform.position.expression = expressionBase + "thisComp.layer(#{layer.index}).toComp([rect.left + rect.width, rect.top + rect.height])"
-    bottomRightPoint = tempNull.transform.position.valueAtTime targetTime, false
+    expressionBase = "rect = thisComp.layer(#{@index()}).sourceRectAtTime(time);"
+    tempNull.transform().position.expression = expressionBase + "thisComp.layer(#{@index()}).toComp([rect.left, rect.top])"
+    topLeftPoint = tempNull.transform().position.valueAtTime targetTime, false
+    tempNull.transform().position.expression = expressionBase + "thisComp.layer(#{@index()}).toComp([rect.left + rect.width, rect.top + rect.height])"
+    bottomRightPoint = tempNull.transform().position.valueAtTime targetTime, false
     tempNull.remove()
     rect =
       left: topLeftPoint[0]
       top: topLeftPoint[1]
       width: bottomRightPoint[0] - topLeftPoint[0]
       height: bottomRightPoint[1] - topLeftPoint[1]
+
+  ###*
+  Returns a rect object in this layer's containing comp that matches
+  a given rect in this layer
+  @memberof NFLayer
+  @param {Rect} rect - the rect with .left, .top, .width, and .height values
+  @param {float} [targetTime=Current Time] - the optional time of the
+  containing comp to check at. Default is the current time of the containingComp.
+  @returns {Object} the rect object with .left, .width, .height and .top values
+  ###
+  relativeRect: (rect, targetTime = null) ->
+    throw "Missing values on the rect" unless rect.left? and rect.top? and rect.width? and rect.height?
+    topLeftPoint = @relativePoint [rect.left, rect.top], targetTime
+    bottomRightPoint = @relativePoint [rect.left + rect.width, rect.top + rect.height], targetTime
+    newRect =
+      left: topLeftPoint[0]
+      top: topLeftPoint[1]
+      width: bottomRightPoint[0] - topLeftPoint[0]
+      height: bottomRightPoint[1] - topLeftPoint[1]
+
+  ###*
+  Uses a null hack to get a point in this layer's containing comp that matches
+  a given point on this layer
+  @memberof NFLayer
+  @param {Point} sourcePoint - the point to use
+  @param {float} [targetTime=Current Time] - the optional time of the
+  containing comp to check at. Default is the current time of the containingComp.
+  @returns {Point} the resulting Point
+  ###
+  relativePoint: (sourcePoint, targetTime = null) ->
+    targetTime = targetTime ? @containingComp().getTime()
+
+    tempNull = @containingComp().addNull()
+    tempNull.transform().position.expression = "a = thisComp.layer(#{@layer.index}).toComp([#{sourcePoint[0]}, #{sourcePoint[1]}]);\na"
+
+    newPoint = tempNull.transform().position.valueAtTime targetTime, false
+
+    tempNull.remove()
+    newPoint
 
 # Class Methods
 NFLayer = Object.assign NFLayer,

@@ -42,7 +42,6 @@ class NFPageLayerCollection extends NFLayerCollection
   Returns NFHighlightLayerCollection of all highlights in all pages in the collection
   @memberof NFPageLayerCollection
   @returns {NFHighlightLayerCollection} all highlights in all pages in this collection
-  @param {AVLayer} newLayer - the layer to add
   ###
   highlights: ->
     highlightArray = []
@@ -55,6 +54,20 @@ class NFPageLayerCollection extends NFLayerCollection
           containingLayerArray.push theLayer
     highlights = new NFHighlightLayerCollection(highlightArray)
     return highlights
+
+  ###*
+  Returns the NFPageLayer in the collection with the given highlight in it, or null
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayer | null} the layer with the highlight or null
+  @param {NFHighlightLayer} highlight - the highlight to look for
+  ###
+  layerWithHighlight: (highlight) ->
+    for theLayer in @layers
+      if theLayer instanceof NFPageLayer
+        # Get the layer's NFPageComp
+        for testHighlight in theLayer.highlights().layers
+          return theLayer if highlight.is testHighlight
+    return null
 
   ###*
   Bubbles up the highlights in the given NFHighlightLayerCollection onto the

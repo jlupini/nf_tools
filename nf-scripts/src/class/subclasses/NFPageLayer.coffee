@@ -242,13 +242,17 @@ class NFPageLayer extends NFLayer
   parent comp.
   @memberof NFPageLayer
   @param {NFHighlightLayer} highlight - the highlight
+  @param {float} [targetTime=Current Time] - the optional time of the containing comp to
+  check at. Default is the current time of the containingComp.
   @returns {Object} the rect object with .left, .width, .hight, .top and
   .padding values
   @throws Throw error if highlight is not in page
   ###
-  sourceRectForHighlight: (highlight) ->
+  sourceRectForHighlight: (highlight, targetTime = null) ->
     throw "Can't get source rect for this highlight since it's not in the layer" unless @containsHighlight highlight
-    @sourceRectForLayer highlight
+    highlightRect = highlight.sourceRect
+      targetTime: targetTime
+    @relativeRect highlightRect, targetTime
 
   ###*
   Returns whether a given highlight is in this layer
@@ -336,7 +340,7 @@ class NFPageLayer extends NFLayer
   @param {Object} [model] - The options
   @param {float} [model.time=The current time] - The time to start the turn at
   @param {float} [model.duration=1.5] - The duration of the pageturn
-  @param {boolean} [model.trim] - Trim the layer after the turn is complete.
+  @param {boolean} [model.trim=no] - Trim the layer after the turn is complete.
   Defaults to YES if we're folding up, and NO if we're folding down.
   ###
   animatePageTurn: (model) ->
@@ -408,6 +412,134 @@ class NFPageLayer extends NFLayer
       @layer.outPoint = endTime
 
     @
+
+  ###*
+  Moves the layer so that a given highlight is visible and centered in frame,
+  at the given time. Adds keyframes only if keyframes already exist on the
+  layer's position or scale properties.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} model - The options
+  @param {NFHighlightLayer} model.highlight - The highlight to move to
+  @param {float} [model.time=The current time] - The time to frame up at
+  @param {float} [model.fillPercentage=85] - Percentage of the comp width the
+  highlight should take up
+  @param {float} [model.maxScale=115] - The maximum that a page layer will scale
+  @throws Throws error if not given a NFHighlightLayer as model.highlight or
+  given highlight is not on this page.
+  ###
+  frameUpHighlight: (model) ->
+    throw "Invalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+
+    positionProp = @transform().position
+    scaleProp = @transform().scale
+
+    # Move the time to the target time and unparent
+    originalTime = @containingComp().getTime()
+    model.time = model.time ? originalTime
+    @containingComp().setTime model.time
+
+    originalParent = @getParent()
+    @setParent null
+
+    # Frame up the Highlight
+    hasPositionKeyframes = positionProp.numKeys != 0
+    hasScaleKeyframes = scaleProp.numKeys != 0
+
+    scaleFactor = @getScaleFactorToFrameUpHighlight model
+    initialScale = scaleProp.valueAtTime model.time, false
+    targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor]
+    if hasScaleKeyframes then scaleProp.setValueAtTime(model.time, targetScale) else scaleProp.setValue(targetScale)
+
+    positionDelta = @getPositionDeltaToFrameUpHighlight model
+    initialPosition = positionProp.valueAtTime model.time, false
+    targetPosition = [initialPosition[0] + positionDelta[0], initialPosition[1] + positionDelta[1]]
+    if hasPositionKeyframes then positionProp.setValueAtTime(model.time, targetPosition) else positionProp.setValue(targetPosition)
+
+    # Restore the original parent and comp time
+    @setParent originalParent
+    @containingComp().setTime(originalTime)
+
+    @
+
+  ###*
+  Returns the multiplier, or scale factor required to frame up the given
+  highlight in this layer's Containing comp. Basically, multiplying the scale
+  of this layer by the result of this number will make the highlight fit in
+  frame perfectly.
+  @memberof NFPageLayer
+  @returns {float} the scale factor
+  @param {Object} model - the options
+  @param {NFHighlightLayer} model.highlight - The highlight to get the scale
+  factor for.
+  @param {float} [model.time=The current time] - The time to calculate at
+  @param {float} [model.fillPercentage=85] - Percentage of the comp width the
+  highlight should take up
+  @param {float} [model.maxScale=115] - The maximum that a page layer will scale
+  @throws Throws error if not given a NFHighlightLayer or
+  given highlight is not on this page.
+  ###
+  getScaleFactorToFrameUpHighlight: (model) ->
+    model =
+      highlight: model.highlight ? throw "No highlight!"
+      time: model.time ? @containingComp().getTime()
+      fillPercentage: model.fillPercentage ? 85
+      maxScale: model.maxScale ? 115
+    throw "Invalid highlight" unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+
+    highlightRect = @sourceRectForHighlight model.highlight, model.time
+    compWidth = @containingComp().comp.width
+    targetHighlightWidth = model.fillPercentage / 100 * compWidth
+    scaleFactor = targetHighlightWidth / highlightRect.width
+
+    # Adjust for max page scale
+    absoluteScale = @getAbsoluteScale()
+    calculatedScale = scaleFactor * absoluteScale[0]
+    if calculatedScale > model.maxScale
+      adjustedScaleFactor = model.maxScale / absoluteScale[0]
+    else if calculatedScale < 50
+      adjustedScaleFactor = 50 / absoluteScale[0]
+    else
+      adjustedScaleFactor = scaleFactor
+
+    adjustedScaleFactor
+
+  ###*
+  Returns a length-2 array with x and y 'nudge' values to make the given
+  highlight be centered in frame *at the current scale of the layer*.
+  @memberof NFPageLayer
+  @returns {float[]} the x and y nudge values
+  @param {Object} model - The options
+  @param {NFHighlightLayer} model.highlight - The highlight to get the scale
+  factor for.
+  @param {float} [model.time=The current time] - The time to calculate at
+  @throws Throws error if not given a NFHighlightLayer or
+  given highlight is not on this page.
+  ###
+  getPositionDeltaToFrameUpHighlight: (model) ->
+    throw "Invalid highlight" unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+
+    highlightRect = @sourceRectForHighlight model.highlight, model.time
+
+    highlightCenterPoint = [highlightRect.left + highlightRect.width / 2, highlightRect.top + highlightRect.height / 2]
+    compCenterPoint = [@containingComp().comp.width / 2, @containingComp().comp.height / 2]
+    delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]]
+
+    # Adjust to prevent falling off the page
+    rectAfterReposition = @sourceRect {time: model.time}
+    rectAfterReposition.left += delta[0]
+    rectAfterReposition.top += delta[1]
+
+    if rectAfterReposition.left > 0
+      delta[0] -= rectAfterReposition.left
+    if rectAfterReposition.top > 0
+      delta[1] -= rectAfterReposition.top
+    if rectAfterReposition.left + rectAfterReposition.width < _.mainComp.width
+      delta[0] += @containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width)
+    if rectAfterReposition.top + rectAfterReposition.height < @containingComp().comp.height
+      delta[1] += @containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height)
+
+    delta
 
 # Class Methods
 NFPageLayer = Object.assign NFPageLayer,
