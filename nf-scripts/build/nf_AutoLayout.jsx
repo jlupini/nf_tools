@@ -17,8 +17,6 @@ main = function() {
   time = comp.getTime();
   input = prompt('Enter the instruction (without brackets):');
   NFProject.followInstruction(input);
-  time += 5;
-  comp.setTime(time);
   return true;
 };
 

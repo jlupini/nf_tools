@@ -195,12 +195,13 @@ NFComp = (function() {
   only one of .above, .below or .at
   @param {int} [model.at=0] - the index to insert the page at. Can use only
   one of .above, .below or .at
+  @param {float} [model.time=Current Time] - the time to insert the comp at
   @throws Throw error if given values for more than one of .above, .below,
   and .at
    */
 
   NFComp.prototype.insertComp = function(model) {
-    var index, newAVLayer, tooManyIndices;
+    var index, newAVLayer, ref, tooManyIndices;
     if (!((model.comp != null) && model.comp instanceof NFComp)) {
       throw "No comp to insert";
     }
@@ -217,7 +218,7 @@ NFComp = (function() {
         tooManyIndices = true;
       }
       if (model.above.containingComp().is(this)) {
-        index = model.above.index();
+        index = model.above.index() - 1;
       } else {
         throw "Cannot insert layer above a layer not in this comp";
       }
@@ -240,7 +241,7 @@ NFComp = (function() {
       throw "Can only provide one of .above, .below, or .at when inserting page";
     }
     newAVLayer = this.comp.layers.add(model.comp.comp);
-    newAVLayer.startTime = this.getTime();
+    newAVLayer.startTime = (ref = model.time) != null ? ref : this.getTime();
     if (index !== 0) {
       newAVLayer.moveBefore(this.comp.layers[index + 2]);
     }
@@ -354,6 +355,23 @@ NFLayer = (function() {
 
   NFLayer.prototype.isActive = function() {
     return this.layer.active;
+  };
+
+
+  /**
+  Checks if this layer is active
+  @memberof NFLayer
+  @param {float} time - the time to check at
+  @returns {boolean} if this is an active layer
+   */
+
+  NFLayer.prototype.isActiveAtTime = function(time) {
+    var currentTime, isActive;
+    currentTime = this.containingComp().getTime();
+    this.containingComp().setTime(time);
+    isActive = this.isActive();
+    this.containingComp().setTime(currentTime);
+    return isActive;
   };
 
 
@@ -1320,7 +1338,7 @@ NFPDF = (function() {
   }
 
   NFPDF.prototype.toString = function() {
-    return "NFPDF: " + this.getPDFNumber;
+    return "NFPDF: " + (this.getPDFNumber());
   };
 
 
@@ -1352,6 +1370,21 @@ NFPDF = (function() {
 
   NFPDF.prototype.getName = function() {
     return 'PDF ' + this.getPDFNumber();
+  };
+
+
+  /**
+  Checks to see if two NFPDFs are the PDF
+  @memberof NFPDF
+  @returns {boolean} whether they're equal
+  @param {NFPDF} testPDF - the PDF to test
+   */
+
+  NFPDF.prototype.is = function(testPDF) {
+    if (!(testPDF instanceof NFPDF)) {
+      throw "testPDF must be an NFPDF";
+    }
+    return this.getPDFNumber() === testPDF.getPDFNumber();
   };
 
 
@@ -1584,12 +1617,14 @@ NFPaperLayerGroup = (function() {
   @param {float} [model.time=The current time] - The time to start the
   movement at
   @param {float} [model.duration=3.0] - The duration of the move
-  @param {float} [model.duration=3.0] - The duration of the move
+  @param {float} [model.maxScale=115] - The maximum a page will scale in this move
+  @param {float} [model.fillPercentage=85] - the percentage of the width of the
+  comp the highlight should fill
   @throws Throws error if not given a NFHighlightLayer as model.highlight
    */
 
   NFPaperLayerGroup.prototype.moveToHighlight = function(model) {
-    var initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, originalParent, originalTime, pageLayer, positionDelta, positionProp, ref, ref1, ref2, ref3, scaleFactor, scaleProp, targetPosition, targetScale;
+    var activePageLayer, i, initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, len, originalParent, originalTime, positionDelta, positionProp, possibleLayers, ref, ref1, ref2, ref3, ref4, scaleFactor, scaleProp, targetPosition, targetScale, theLayer;
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
       throw "\nInvalid highlight";
     }
@@ -1606,9 +1641,17 @@ NFPaperLayerGroup = (function() {
     this.containingComp().setTime(model.time);
     originalParent = this.paperParent.getParent();
     this.paperParent.setParent(null);
-    pageLayer = this.getPages().layerWithHighlight(model.highlight);
+    possibleLayers = this.getPages().layersWithHighlight(model.highlight);
+    activePageLayer = null;
+    ref4 = possibleLayers.layers;
+    for (i = 0, len = ref4.length; i < len; i++) {
+      theLayer = ref4[i];
+      if (theLayer.isActiveAtTime(model.time)) {
+        activePageLayer = theLayer;
+      }
+    }
     keyframeTimes = [model.time, model.time + model.duration];
-    scaleFactor = pageLayer.getScaleFactorToFrameUpHighlight({
+    scaleFactor = activePageLayer.getScaleFactorToFrameUpHighlight({
       highlight: model.highlight,
       time: keyframeTimes[1],
       maxScale: model.maxScale,
@@ -1618,7 +1661,7 @@ NFPaperLayerGroup = (function() {
     targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor];
     keyframeScales = [scaleProp.valueAtTime(model.time, false), targetScale];
     scaleProp.setValuesAtTimes(keyframeTimes, keyframeScales);
-    positionDelta = pageLayer.getPositionDeltaToFrameUpHighlight({
+    positionDelta = activePageLayer.getPositionDeltaToFrameUpHighlight({
       highlight: model.highlight,
       time: keyframeTimes[1]
     });
@@ -1928,6 +1971,28 @@ NFHighlightLayer = (function(superClass) {
         property = ref[j];
         expression = this.highlighterEffect().property(property).expression;
         this.highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]");
+      }
+    }
+    return this;
+  };
+
+
+  /**
+  Fixes the expression after initting if the page layer name changed and there was already an existing expression
+  @memberof NFHighlightLayer
+  @param {String} diffLetter - the letter to add
+  @returns {NFHighlightLayer} self
+   */
+
+  NFHighlightLayer.prototype.fixExpressionWithDiffLetter = function(diffLetter) {
+    var expression, j, len, property, ref, replString;
+    if (this.isBubbled()) {
+      ref = NF.Util.highlighterProperties;
+      for (j = 0, len = ref.length; j < len; j++) {
+        property = ref[j];
+        expression = this.highlighterEffect().property(property).expression;
+        replString = " [+] (" + diffLetter + ")\"";
+        this.highlighterEffect().property(property).expression = expression.replace(" [+]\"", replString).replace(" [+]\"", replString);
       }
     }
     return this;
@@ -2687,7 +2752,7 @@ NFPageLayer = (function(superClass) {
     }
     pageTurnEffect = this.effect("CC Page Turn");
     foldPositionProperty = pageTurnEffect != null ? pageTurnEffect.property("Fold Position") : void 0;
-    foldPosition = foldPositionProperty != null ? foldPositionProperty.valueAtTime(time) : void 0;
+    foldPosition = foldPositionProperty != null ? foldPositionProperty.valueAtTime(time, false) : void 0;
     threshold = 3840;
     if (pageTurnEffect == null) {
       return NFPageLayer.PAGETURN_NONE;
@@ -2761,6 +2826,90 @@ NFPageLayer = (function(superClass) {
 
 
   /**
+  Adds the pageturn effect, motion blur effect and drop shadow to the layer in
+  a given pageturn status. Overwrites existing drop shadow effects, but leaves
+  existing force motion blur and page turns
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Enum} [pageTurnStatus=NFPageLayer.PAGETURN_FLIPPED_DOWN] - The status
+  to set the turn up with
+   */
+
+  NFPageLayer.prototype.setupPageTurnEffect = function(pageTurnStatus) {
+    var dropShadowEffect, dropShadowMatchName, foldPosition, forceMotionBlurEffect, forceMotionBlurMatchName, pageTurnEffect, pageTurnMatchName;
+    forceMotionBlurMatchName = "CC Force Motion Blur";
+    dropShadowMatchName = "ADBE Drop Shadow";
+    pageTurnMatchName = "CC Page Turn";
+    pageTurnEffect = this.effect(pageTurnMatchName);
+    if (pageTurnEffect == null) {
+      pageTurnEffect = this.effects().addProperty(pageTurnMatchName);
+      pageTurnEffect.property("Fold Radius").setValue(500);
+      foldPosition = pageTurnEffect.property("Fold Position");
+      if (pageTurnStatus === NFPageLayer.PAGETURN_FLIPPED_UP) {
+        foldPosition.setValue(this.pageTurnUpPosition());
+      } else if (pageTurnStatus === NFPageLayer.PAGETURN_FLIPPED_DOWN || (pageTurnStatus == null)) {
+        foldPosition.setValue(this.pageTurnDownPosition());
+      } else {
+        throw "Invalid page turn type for initial position";
+      }
+    }
+    forceMotionBlurEffect = this.effect(forceMotionBlurMatchName);
+    if (forceMotionBlurEffect == null) {
+      forceMotionBlurEffect = this.effects().addProperty(forceMotionBlurMatchName);
+      forceMotionBlurEffect.property("Override Shutter Angle").setValue(0);
+    }
+    dropShadowEffect = this.effect(dropShadowMatchName);
+    if (dropShadowEffect != null) {
+      dropShadowEffect.remove();
+    }
+    dropShadowEffect = this.effects().addProperty(dropShadowMatchName);
+    dropShadowEffect.property("Opacity").setValue(0.75 * 255);
+    dropShadowEffect.property("Direction").setValue(125);
+    dropShadowEffect.property("Distance").setValue(20);
+    dropShadowEffect.property("Softness").setValue(300);
+    return this;
+  };
+
+
+  /**
+  Simply calculates and returns the property values for CC page turn's position
+  for which the page is flipped down.
+  @memberof NFPageLayer
+  @returns {float[]} the position property of the pageturn effect when this page
+  is flipped down
+   */
+
+  NFPageLayer.prototype.pageTurnDownPosition = function() {
+    var comp, downPosition, pageSize;
+    comp = this.getPageComp();
+    pageSize = {
+      width: comp.comp.width,
+      height: comp.comp.height
+    };
+    return downPosition = [pageSize.width, pageSize.height];
+  };
+
+
+  /**
+  Simply calculates and returns the property values for CC page turn's position
+  for which the page is flipped up.
+  @memberof NFPageLayer
+  @returns {float[]} the position property of the pageturn effect when this page
+  is flipped up
+   */
+
+  NFPageLayer.prototype.pageTurnUpPosition = function() {
+    var comp, pageSize, upPosition;
+    comp = this.getPageComp();
+    pageSize = {
+      width: comp.comp.width,
+      height: comp.comp.height
+    };
+    return upPosition = [-pageSize.width, -pageSize.height];
+  };
+
+
+  /**
   Animates a page turn, essentially toggling the current page turn status.
   Throws an error if the page is not all the way up or down at the start time.
   @memberof NFPageLayer
@@ -2773,7 +2922,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.animatePageTurn = function(model) {
-    var downPosition, dropShadowEffect, dropShadowMatchName, endStatus, endTime, foldPosition, forceMotionBlurEffect, forceMotionBlurMatchName, pageSize, pageTurnEffect, pageTurnMatchName, positions, startStatus, startTime, targetStatus, times, upPosition;
+    var endStatus, endTime, foldPosition, positions, startStatus, startTime, targetStatus, times;
     if (model == null) {
       model = [];
     }
@@ -2788,28 +2937,7 @@ NFPageLayer = (function(superClass) {
     startStatus = this.pageTurnStatus(startTime);
     endStatus = this.pageTurnStatus(endTime);
     if (startStatus === NFPageLayer.PAGETURN_NONE) {
-      forceMotionBlurMatchName = "CC Force Motion Blur";
-      dropShadowMatchName = "ADBE Drop Shadow";
-      pageTurnMatchName = "CC Page Turn";
-      pageTurnEffect = this.effect(pageTurnMatchName);
-      if (pageTurnEffect == null) {
-        pageTurnEffect = this.effects().addProperty(pageTurnMatchName);
-        pageTurnEffect.property("Fold Radius").setValue(500);
-      }
-      forceMotionBlurEffect = this.effect(forceMotionBlurMatchName);
-      if (forceMotionBlurEffect == null) {
-        forceMotionBlurEffect = this.effects().addProperty(forceMotionBlurMatchName);
-        forceMotionBlurEffect.property("Override Shutter Angle").setValue(0);
-      }
-      dropShadowEffect = this.effect(dropShadowMatchName);
-      if (dropShadowEffect != null) {
-        dropShadowEffect.remove();
-      }
-      dropShadowEffect = this.effects().addProperty(dropShadowMatchName);
-      dropShadowEffect.property("Opacity").setValue(0.75 * 255);
-      dropShadowEffect.property("Direction").setValue(125);
-      dropShadowEffect.property("Distance").setValue(20);
-      dropShadowEffect.property("Softness").setValue(300);
+      this.setupPageTurnEffect();
     }
     if (startStatus === NFPageLayer.PAGETURN_BROKEN) {
       throw "Page turn keyframes seem broken...";
@@ -2817,13 +2945,7 @@ NFPageLayer = (function(superClass) {
     if (startStatus === NFPageLayer.PAGETURN_TURNING || endStatus === NFPageLayer.PAGETURN_TURNING) {
       throw "Page is already turning at start or end time of new turn";
     }
-    pageSize = {
-      width: this.getPageComp().comp.width,
-      height: this.getPageComp().comp.height
-    };
-    downPosition = [pageSize.width, pageSize.height];
-    upPosition = [-pageSize.width, -pageSize.height];
-    positions = [downPosition, upPosition];
+    positions = [this.pageTurnDownPosition(), this.pageTurnUpPosition()];
     if (startStatus === NFPageLayer.PAGETURN_FLIPPED_UP) {
       targetStatus = NFPageLayer.PAGETURN_FLIPPED_DOWN;
     } else if (startStatus === NFPageLayer.PAGETURN_FLIPPED_DOWN) {
@@ -3032,11 +3154,11 @@ NFPageLayerCollection = (function(superClass) {
   extend(NFPageLayerCollection, superClass);
 
   function NFPageLayerCollection(layerArr) {
-    var i, len, ref, theLayer;
+    var j, len, ref, theLayer;
     NFLayerCollection.call(this, layerArr);
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      theLayer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
       if (!(theLayer instanceof NFPageLayer)) {
         throw "You can only add NFPageLayers to an NFPageLayerCollection";
       }
@@ -3045,11 +3167,11 @@ NFPageLayerCollection = (function(superClass) {
   }
 
   NFPageLayerCollection.prototype.toString = function() {
-    var i, infoString, len, ref, theLayer;
+    var infoString, j, len, ref, theLayer;
     infoString = "NFPageLayerCollection: [";
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      theLayer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
       infoString += theLayer.toString() + ", ";
     }
     return infoString += "]";
@@ -3084,16 +3206,16 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.highlights = function() {
-    var containingLayerArray, highlight, highlightArray, highlights, i, j, len, len1, ref, ref1, theLayer;
+    var containingLayerArray, highlight, highlightArray, highlights, j, k, len, len1, ref, ref1, theLayer;
     highlightArray = [];
     containingLayerArray = [];
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      theLayer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
       if (theLayer instanceof NFPageLayer) {
         ref1 = theLayer.highlights().layers;
-        for (j = 0, len1 = ref1.length; j < len1; j++) {
-          highlight = ref1[j];
+        for (k = 0, len1 = ref1.length; k < len1; k++) {
+          highlight = ref1[k];
           highlightArray.push(highlight);
           containingLayerArray.push(theLayer);
         }
@@ -3105,28 +3227,30 @@ NFPageLayerCollection = (function(superClass) {
 
 
   /**
-  Returns the NFPageLayer in the collection with the given highlight in it, or null
+  Returns the NFPageLayerCollection of the pagelayers in the collection with
+  the given highlight in them
   @memberof NFPageLayerCollection
-  @returns {NFPageLayer | null} the layer with the highlight or null
+  @returns {NFPageLayerCollection} the layers with the highlight
   @param {NFHighlightLayer} highlight - the highlight to look for
    */
 
-  NFPageLayerCollection.prototype.layerWithHighlight = function(highlight) {
-    var i, j, len, len1, ref, ref1, testHighlight, theLayer;
+  NFPageLayerCollection.prototype.layersWithHighlight = function(highlight) {
+    var foundHighlights, j, k, len, len1, ref, ref1, testHighlight, theLayer;
+    foundHighlights = new NFPageLayerCollection;
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      theLayer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
       if (theLayer instanceof NFPageLayer) {
         ref1 = theLayer.highlights().layers;
-        for (j = 0, len1 = ref1.length; j < len1; j++) {
-          testHighlight = ref1[j];
+        for (k = 0, len1 = ref1.length; k < len1; k++) {
+          testHighlight = ref1[k];
           if (highlight.is(testHighlight)) {
-            return theLayer;
+            foundHighlights.addLayer(theLayer);
           }
         }
       }
     }
-    return null;
+    return foundHighlights;
   };
 
 
@@ -3139,10 +3263,10 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.bubbleUpHighlights = function(highlightCollection) {
-    var i, layer, len, pageHighlights, ref;
+    var j, layer, len, pageHighlights, ref;
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
       pageHighlights = highlightCollection.getHighlightsInPage(layer.getPageComp());
       layer.bubbleUp(pageHighlights);
     }
@@ -3157,14 +3281,14 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.fromSamePDF = function() {
-    var i, layer, len, ref, testNumber;
+    var j, layer, len, ref, testNumber;
     if (this.count() === 0) {
       return true;
     }
     testNumber = this.layers[0].getPDFNumber();
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
       if (layer.getPDFNumber() !== testNumber) {
         return false;
       }
@@ -3192,10 +3316,10 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.initLayers = function() {
-    var i, len, page, ref;
+    var j, len, page, ref;
     ref = this.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      page = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      page = ref[j];
       page.init();
     }
     return this;
@@ -3209,14 +3333,111 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.initLayerTransforms = function() {
-    var i, len, page, ref, results;
+    var j, len, page, ref;
     ref = this.layers;
-    results = [];
-    for (i = 0, len = ref.length; i < len; i++) {
-      page = ref[i];
-      results.push(page.initTransforms());
+    for (j = 0, len = ref.length; j < len; j++) {
+      page = ref[j];
+      page.initTransforms();
     }
-    return results;
+    return this;
+  };
+
+
+  /**
+  Gives unique names to each layer and updates bubbled highlights
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+   */
+
+  NFPageLayerCollection.prototype.differentiate = function() {
+    var alphabet, bubbledToFix, highlight, i, j, k, l, lastUsedLetter, lastUsedLetterIndex, len, len1, len2, len3, letterIndex, letteredNames, m, n, noLetterNames, o, ref, ref1, ref2, ref3, ref4, ref5, theLayer;
+    if (this.isEmpty()) {
+      return this;
+    }
+    noLetterNames = new NFPageLayerCollection;
+    letteredNames = new NFPageLayerCollection;
+    ref = this.layers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
+      if (theLayer.getName().indexOf("(") >= 0 && theLayer.getName().indexOf(")") >= 0) {
+        letteredNames.addLayer(theLayer);
+      } else {
+        noLetterNames.addLayer(theLayer);
+      }
+    }
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    if (letteredNames.isEmpty()) {
+      for (i = k = 0, ref1 = noLetterNames.count() - 1; 0 <= ref1 ? k <= ref1 : k >= ref1; i = 0 <= ref1 ? ++k : --k) {
+        theLayer = noLetterNames.layers[i];
+        bubbledToFix = theLayer.bubbledHighlights();
+        if (!bubbledToFix.isEmpty()) {
+          ref2 = bubbledToFix.layers;
+          for (l = 0, len1 = ref2.length; l < len1; l++) {
+            highlight = ref2[l];
+            highlight.fixExpressionWithDiffLetter(alphabet[i]);
+          }
+        }
+        theLayer.layer.name += " (" + alphabet[i] + ")";
+      }
+    } else {
+      lastUsedLetterIndex = null;
+      ref3 = letteredNames.layers;
+      for (m = 0, len2 = ref3.length; m < len2; m++) {
+        theLayer = ref3[m];
+        lastUsedLetter = theLayer.getName().charAt(theLayer.getName().indexOf("(") + 1);
+        letterIndex = alphabet.indexOf(lastUsedLetter);
+        if (lastUsedLetterIndex != null) {
+          if (letterIndex > lastUsedLetterIndex) {
+            lastUsedLetterIndex = letterIndex;
+          }
+        } else {
+          lastUsedLetterIndex = letterIndex;
+        }
+      }
+      if (lastUsedLetterIndex == null) {
+        throw "Something is wrong with the layer naming...";
+      }
+      for (i = n = 0, ref4 = noLetterNames.count() - 1; 0 <= ref4 ? n <= ref4 : n >= ref4; i = 0 <= ref4 ? ++n : --n) {
+        theLayer = noLetterNames.layers[i];
+        bubbledToFix = theLayer.bubbledHighlights();
+        if (!bubbledToFix.isEmpty()) {
+          ref5 = bubbledToFix.layers;
+          for (o = 0, len3 = ref5.length; o < len3; o++) {
+            highlight = ref5[o];
+            highlight.fixExpressionWithDiffLetter(alphabet[lastUsedLetterIndex + 1]);
+          }
+        }
+        theLayer.layer.name += " (" + alphabet[lastUsedLetterIndex + 1] + ")";
+      }
+    }
+    return this;
+  };
+
+
+  /**
+  Gets the earliest appearing NPageLayer in this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayer | null} the topmost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+   */
+
+  NFPageLayerCollection.prototype.getEarliestLayer = function() {
+    var earliestLayer, j, layer, len, ref;
+    if (this.isEmpty()) {
+      return null;
+    }
+    if (!this.inSameComp()) {
+      throw "Can't get earliest layer of layers in different comps";
+    }
+    earliestLayer = this.layers[0];
+    ref = this.layers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
+      if (layer.layer.inPoint < earliestLayer.layer.inPoint) {
+        earliestLayer = layer;
+      }
+    }
+    return earliestLayer;
   };
 
 
@@ -3401,7 +3622,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateToHighlight = function(model) {
-    var containingPartComps, group, ref, ref1, ref2, ref3, ref4, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePageLayer, containingPartComps, group, layersForPage, ref, ref1, ref2, ref3, ref4, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     if (!(model.highlight instanceof NFHighlightLayer)) {
       throw "Can't animate to a highlight because I don't have one...";
     }
@@ -3415,6 +3636,7 @@ NFPartComp = (function(superClass) {
     };
     targetPDF = model.highlight.getPDF();
     containingPartComps = targetPDF.containingPartComps();
+    targetPage = model.highlight.getPageComp();
     if (containingPartComps.length === 0) {
       if (model.skipTitle === false) {
         titlePage = targetPDF.getTitlePage();
@@ -3423,7 +3645,6 @@ NFPartComp = (function(superClass) {
           animate: true
         });
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
-        targetPage = model.highlight.getPageComp();
         if (targetPage.is(titlePage)) {
           titlePageLayer.bubbleUp(model.highlight);
           this.setTime(titlePageLayer.getInMarkerTime());
@@ -3453,10 +3674,69 @@ NFPartComp = (function(superClass) {
           });
         }
       } else {
-        this;
+        alert("No q - I don't know how to deal yet");
       }
     } else {
-      this;
+      if (this.activePDF().is(targetPDF)) {
+        activePageLayer = this.activePage();
+        group = new NFPaperLayerGroup(activePageLayer.getPaperParentLayer());
+        if (targetPage.is(activePageLayer.getPageComp())) {
+          group.moveToHighlight({
+            highlight: model.highlight,
+            duration: model.animationDuration,
+            fillPercentage: model.fillPercentage,
+            maxScale: model.maxPageScale
+          });
+          activePageLayer.bubbleUp(model.highlight);
+        } else {
+          layersForPage = this.layersForPage(targetPage);
+          if (layersForPage.count() > 0 && layersForPage.layers[0].index() < activePageLayer.index()) {
+            targetPageLayer = this.insertPage({
+              page: targetPage,
+              above: activePageLayer,
+              time: this.getTime() - 0.5,
+              pageTurn: NFPageLayer.PAGETURN_FLIPPED_UP,
+              frameUp: {
+                highlight: model.highlight,
+                fillPercentage: model.fillPercentage * 2
+              }
+            });
+            targetPageLayer.bubbleUp(model.highlight);
+            targetPageLayer.animatePageTurn({
+              time: this.getTime() - 0.5,
+              duration: 2.0
+            });
+            group.moveToHighlight({
+              highlight: model.highlight,
+              duration: model.animationDuration,
+              fillPercentage: model.fillPercentage
+            });
+            activePageLayer.layer.outPoint = this.getTime() - 0.5 + 2.0;
+          } else {
+            targetPageLayer = this.insertPage({
+              page: targetPage,
+              below: activePageLayer,
+              time: this.getTime() - 0.5,
+              frameUp: {
+                highlight: model.highlight,
+                fillPercentage: model.fillPercentage * 0.8
+              }
+            });
+            targetPageLayer.bubbleUp(model.highlight);
+            activePageLayer.animatePageTurn({
+              time: this.getTime() - 0.5,
+              duration: 2.0
+            });
+            group.moveToHighlight({
+              highlight: model.highlight,
+              duration: model.animationDuration,
+              fillPercentage: model.fillPercentage
+            });
+          }
+        }
+      } else {
+        alert("Bring in page already focused on the highlight");
+      }
     }
     return this;
   };
@@ -3476,23 +3756,32 @@ NFPartComp = (function(superClass) {
   @param {int} [model.at=1] - the index to insert the page at. Can use only
   one of .above, .below or .at
   @param {boolean} [model.animate=no] whether to animate the page in
+  @param {float} [model.time=Current Time] The time to insert at
+  @param {Enum} [model.pageTurn=PAGETURN_NONE] the pageTurn of the page
   @throws Throw error if given values for more than one of .above, .below,
   and .at
    */
 
   NFPartComp.prototype.insertPage = function(model) {
-    var pageLayer;
+    var layersForPage, pageLayer, ref, ref1;
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
       throw "No page given to insert...";
+    }
+    layersForPage = this.layersForPage(model.page);
+    if (!layersForPage.isEmpty()) {
+      layersForPage.differentiate();
     }
     if (!((model.above != null) || (model.below != null) || (model.at != null))) {
       model.at = 1;
     }
+    model.time = (ref = model.time) != null ? ref : this.getTime();
+    model.pageTurn = (ref1 = model.pageTurn) != null ? ref1 : NFPageLayer.PAGETURN_NONE;
     pageLayer = this.insertComp({
       comp: model.page,
       above: model.above,
       below: model.below,
-      at: model.at
+      at: model.at,
+      time: model.time
     });
     if (model.init !== false) {
       pageLayer.initTransforms().init();
@@ -3500,6 +3789,17 @@ NFPartComp = (function(superClass) {
     }
     if (model.animate === true) {
       pageLayer.slideIn();
+    }
+    if (model.frameUp != null) {
+      pageLayer.frameUpHighlight(model.frameUp);
+    }
+    if (model.pageTurn === NFPageLayer.PAGETURN_FLIPPED_UP || model.pageTurn === NFPageLayer.PAGETURN_FLIPPED_DOWN) {
+      pageLayer.setupPageTurnEffect(model.pageTurn);
+    } else if (model.pageTurn !== NFPageLayer.PAGETURN_NONE) {
+      throw "Invalid pageturn type to insert page with";
+    }
+    if (!layersForPage.isEmpty()) {
+      layersForPage = this.layersForPage(model.page).differentiate();
     }
     return pageLayer;
   };
@@ -3568,6 +3868,31 @@ NFPartComp = (function(superClass) {
       this.setTime(originalTime);
     }
     return activePage;
+  };
+
+
+  /**
+  Returns an NFPageLayerCollection of NFPageLayers in this comp that
+  contain the given NFPageComp
+  @memberof NFPartComp
+  @param {NFPageComp} page - the page to look for
+  @returns {NFPageLayerCollection} The found page layers
+   */
+
+  NFPartComp.prototype.layersForPage = function(page) {
+    var i, len, matchedPages, ref, theLayer;
+    if (!(page instanceof NFPageComp)) {
+      throw "given page is not an NFPageComp";
+    }
+    matchedPages = new NFPageLayerCollection;
+    ref = this.allLayers().layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      theLayer = ref[i];
+      if (theLayer instanceof NFPageLayer && theLayer.getPageComp().is(page)) {
+        matchedPages.addLayer(theLayer);
+      }
+    }
+    return matchedPages;
   };
 
   return NFPartComp;

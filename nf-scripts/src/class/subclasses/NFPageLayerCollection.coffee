@@ -56,18 +56,20 @@ class NFPageLayerCollection extends NFLayerCollection
     return highlights
 
   ###*
-  Returns the NFPageLayer in the collection with the given highlight in it, or null
+  Returns the NFPageLayerCollection of the pagelayers in the collection with
+  the given highlight in them
   @memberof NFPageLayerCollection
-  @returns {NFPageLayer | null} the layer with the highlight or null
+  @returns {NFPageLayerCollection} the layers with the highlight
   @param {NFHighlightLayer} highlight - the highlight to look for
   ###
-  layerWithHighlight: (highlight) ->
+  layersWithHighlight: (highlight) ->
+    foundHighlights = new NFPageLayerCollection
     for theLayer in @layers
       if theLayer instanceof NFPageLayer
         # Get the layer's NFPageComp
         for testHighlight in theLayer.highlights().layers
-          return theLayer if highlight.is testHighlight
-    return null
+          foundHighlights.addLayer theLayer if highlight.is testHighlight
+    return foundHighlights
 
   ###*
   Bubbles up the highlights in the given NFHighlightLayerCollection onto the
@@ -120,6 +122,74 @@ class NFPageLayerCollection extends NFLayerCollection
   ###
   initLayerTransforms: ->
     page.initTransforms() for page in @layers
+    @
+
+  ###*
+  Gives unique names to each layer and updates bubbled highlights
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} self
+  ###
+  differentiate: ->
+    return @ if @isEmpty()
+    noLetterNames = new NFPageLayerCollection
+    letteredNames = new NFPageLayerCollection
+    for theLayer in @layers
+      if theLayer.getName().indexOf("(") >= 0 and theLayer.getName().indexOf(")") >= 0
+        letteredNames.addLayer theLayer
+      else
+        noLetterNames.addLayer theLayer
+
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
+
+    if letteredNames.isEmpty()
+      for i in [0..noLetterNames.count()-1]
+        theLayer = noLetterNames.layers[i]
+
+        bubbledToFix = theLayer.bubbledHighlights()
+        # FIXME: Pickup here ^ because bubbledHighlights doesn't work properly
+        # because it's looking at the wrong layer since they have the same fucking name...
+        # probably gotta do this logic before adding the layer...
+        unless bubbledToFix.isEmpty()
+          for highlight in bubbledToFix.layers
+            highlight.fixExpressionWithDiffLetter alphabet[i]
+
+        theLayer.layer.name += " (#{alphabet[i]})"
+    else
+      lastUsedLetterIndex = null
+      for theLayer in letteredNames.layers
+        lastUsedLetter = theLayer.getName().charAt(theLayer.getName().indexOf("(")+1)
+        letterIndex = alphabet.indexOf lastUsedLetter
+        if lastUsedLetterIndex?
+          lastUsedLetterIndex = letterIndex if letterIndex > lastUsedLetterIndex
+        else
+          lastUsedLetterIndex = letterIndex
+      throw "Something is wrong with the layer naming..." unless lastUsedLetterIndex?
+
+      for i in [0..noLetterNames.count()-1]
+        theLayer = noLetterNames.layers[i]
+
+        bubbledToFix = theLayer.bubbledHighlights()
+        unless bubbledToFix.isEmpty()
+          for highlight in bubbledToFix.layers
+            highlight.fixExpressionWithDiffLetter alphabet[lastUsedLetterIndex+1]
+
+        theLayer.layer.name += " (#{alphabet[lastUsedLetterIndex+1]})"
+
+    @
+
+  ###*
+  Gets the earliest appearing NPageLayer in this collection
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayer | null} the topmost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+  ###
+  getEarliestLayer: ->
+    return null if @isEmpty()
+    throw "Can't get earliest layer of layers in different comps" unless @inSameComp()
+    earliestLayer = @layers[0]
+    for layer in @layers
+      earliestLayer = layer if layer.layer.inPoint < earliestLayer.layer.inPoint
+    return earliestLayer
 
   ###*
   Creates a new {@link NFPaperParentLayer} from this collection. probably

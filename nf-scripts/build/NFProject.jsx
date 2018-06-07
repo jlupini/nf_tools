@@ -90,7 +90,10 @@ NFProject = {
     if (!(mainComp instanceof NFPartComp)) {
       throw "Can only run instruction on a part comp";
     }
-    targetPDFNumber = input.replace(/(^\d+)(.+$)/i, '$1');
+    targetPDFNumber = /(^\d+)(.+$)/i.exec(input);
+    if (targetPDFNumber != null) {
+      targetPDFNumber = targetPDFNumber[1];
+    }
     if (targetPDFNumber != null) {
       instructionString = input.slice(targetPDFNumber.length);
     } else {
@@ -98,7 +101,7 @@ NFProject = {
     }
     activePDF = mainComp.activePDF();
     activePDFNumber = activePDF != null ? activePDF.getPDFNumber() : void 0;
-    alreadyOnTargetPaper = activePDFNumber === targetPDFNumber;
+    alreadyOnTargetPaper = targetPDFNumber != null ? activePDFNumber === targetPDFNumber : true;
     targetPDF = alreadyOnTargetPaper ? activePDF : NFPDF.fromPDFNumber(targetPDFNumber);
     flags = {};
     for (key in NFLayoutFlagDict) {
@@ -143,7 +146,7 @@ NFProject = {
     if (instruction.type = NFLayoutType.HIGHLIGHT) {
       highlight = targetPDF.findHighlight(instruction.look);
       if (highlight == null) {
-        throw "Can't find highlight with name '" + instruction.look + "' in PDF '" + targetPDF + "'";
+        throw "Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'";
       }
       return mainComp.animateToHighlight({
         highlight: highlight,

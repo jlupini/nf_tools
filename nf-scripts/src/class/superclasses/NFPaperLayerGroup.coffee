@@ -68,7 +68,9 @@ class NFPaperLayerGroup
   @param {float} [model.time=The current time] - The time to start the
   movement at
   @param {float} [model.duration=3.0] - The duration of the move
-  @param {float} [model.duration=3.0] - The duration of the move
+  @param {float} [model.maxScale=115] - The maximum a page will scale in this move
+  @param {float} [model.fillPercentage=85] - the percentage of the width of the
+  comp the highlight should fill
   @throws Throws error if not given a NFHighlightLayer as model.highlight
   ###
   moveToHighlight: (model) ->
@@ -91,11 +93,14 @@ class NFPaperLayerGroup
     @paperParent.setParent null
 
     # Move to the Highlight
-    pageLayer = @getPages().layerWithHighlight model.highlight
+    possibleLayers = @getPages().layersWithHighlight model.highlight
+    activePageLayer = null
+    for theLayer in possibleLayers.layers
+      activePageLayer = theLayer if theLayer.isActiveAtTime model.time
 
     keyframeTimes = [model.time, model.time + model.duration]
 
-    scaleFactor = pageLayer.getScaleFactorToFrameUpHighlight
+    scaleFactor = activePageLayer.getScaleFactorToFrameUpHighlight
       highlight: model.highlight
       time: keyframeTimes[1]
       maxScale: model.maxScale
@@ -106,7 +111,7 @@ class NFPaperLayerGroup
     keyframeScales = [scaleProp.valueAtTime(model.time, false), targetScale]
     scaleProp.setValuesAtTimes keyframeTimes, keyframeScales
 
-    positionDelta = pageLayer.getPositionDeltaToFrameUpHighlight
+    positionDelta = activePageLayer.getPositionDeltaToFrameUpHighlight
       highlight: model.highlight
       time: keyframeTimes[1]
     initialPosition = positionProp.valueAtTime model.time, false

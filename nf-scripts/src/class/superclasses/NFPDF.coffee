@@ -21,7 +21,7 @@ class NFPDF
           throw "You can only add NFPageComps to an NFPDF"
     @pages = newArr
   toString: ->
-    return "NFPDF: #{@getPDFNumber}"
+    return "NFPDF: #{@getPDFNumber()}"
 
   ###*
   Adds an NFPageComp to the PDF
@@ -46,6 +46,16 @@ class NFPDF
   ###
   getName: ->
     return 'PDF ' + @getPDFNumber()
+
+  ###*
+  Checks to see if two NFPDFs are the PDF
+  @memberof NFPDF
+  @returns {boolean} whether they're equal
+  @param {NFPDF} testPDF - the PDF to test
+  ###
+  is: (testPDF) ->
+    throw "testPDF must be an NFPDF" unless testPDF instanceof NFPDF
+    return @getPDFNumber() is testPDF.getPDFNumber()
 
   ###*
   Returns the PDF Number as a string

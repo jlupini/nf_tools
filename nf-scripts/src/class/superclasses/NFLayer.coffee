@@ -61,6 +61,19 @@ class NFLayer
     return @layer.active
 
   ###*
+  Checks if this layer is active
+  @memberof NFLayer
+  @param {float} time - the time to check at
+  @returns {boolean} if this is an active layer
+  ###
+  isActiveAtTime: (time) ->
+    currentTime = @containingComp().getTime()
+    @containingComp().setTime time
+    isActive = @isActive()
+    @containingComp().setTime currentTime
+    return isActive
+
+  ###*
   Checks if this layer is a valid highlight layer
   @memberof NFLayer
   @returns {boolean} if this is a valid highlight layer

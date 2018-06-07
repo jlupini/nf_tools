@@ -140,6 +140,7 @@ class NFComp
   only one of .above, .below or .at
   @param {int} [model.at=0] - the index to insert the page at. Can use only
   one of .above, .below or .at
+  @param {float} [model.time=Current Time] - the time to insert the comp at
   @throws Throw error if given values for more than one of .above, .below,
   and .at
   ###
@@ -152,7 +153,7 @@ class NFComp
     if model.above? and model.above instanceof NFLayer
       tooManyIndices = yes if model.below? or model.at?
       if model.above.containingComp().is @
-        index = model.above.index()
+        index = model.above.index() - 1
       else
         throw "Cannot insert layer above a layer not in this comp"
     else if model.below? and model.below instanceof NFLayer
@@ -169,7 +170,7 @@ class NFComp
 
     # Gonna do some work with AV Layers
     newAVLayer = @comp.layers.add(model.comp.comp)
-    newAVLayer.startTime = @getTime()
+    newAVLayer.startTime = model.time ? @getTime()
     # Note: we're doing moveBefore with index + 2 to account for both
     #       the new layer that's been added AND the obnoxious 1-indexing
     #       of adobe's LayerCollections

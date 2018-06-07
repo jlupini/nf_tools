@@ -18,8 +18,8 @@ main = ->
 	NFProject.followInstruction input
 
 	# alert('Moving on')
-	time += 5
-	comp.setTime time
+	# time += 5
+	# comp.setTime time
 
 	true
 

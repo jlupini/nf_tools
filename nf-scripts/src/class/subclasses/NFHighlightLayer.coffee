@@ -38,6 +38,7 @@ class NFHighlightLayer extends NFLayer
   @returns {NFPageLayer | null} the connectedPageLayer or null
   ###
   getConnectedPageLayer: ->
+    # FIXME: This fucks up if there are two layers with the same name in the comp
     if @isBubbled()
       expression = @highlighterEffect().property("Spacing").expression
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
@@ -105,6 +106,20 @@ class NFHighlightLayer extends NFLayer
       for property in NF.Util.highlighterProperties
         expression = @highlighterEffect().property(property).expression
         @highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]")
+    @
+
+  ###*
+  Fixes the expression after initting if the page layer name changed and there was already an existing expression
+  @memberof NFHighlightLayer
+  @param {String} diffLetter - the letter to add
+  @returns {NFHighlightLayer} self
+  ###
+  fixExpressionWithDiffLetter: (diffLetter) ->
+    if @isBubbled()
+      for property in NF.Util.highlighterProperties
+        expression = @highlighterEffect().property(property).expression
+        replString = " [+] (#{diffLetter})\""
+        @highlighterEffect().property(property).expression = expression.replace(" [+]\"", replString).replace(" [+]\"", replString)
     @
 
   ###*

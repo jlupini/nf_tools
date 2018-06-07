@@ -42,6 +42,7 @@ class NFPartComp extends NFComp
 
     targetPDF = model.highlight.getPDF()
     containingPartComps = targetPDF.containingPartComps()
+    targetPage = model.highlight.getPageComp()
 
     # If we've NEVER SEEN THIS PDF before
     if containingPartComps.length is 0
@@ -54,9 +55,6 @@ class NFPartComp extends NFComp
           animate: yes
 
         group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
-        # FIXME: I kinda think now that we have a page in here, we need to be doing stuff on a NFPaperLayerGroup. Not 100% on this though
-
-        targetPage = model.highlight.getPageComp()
         # If the highlight we want is on the title page
         if targetPage.is titlePage
           # Move the time to the in marker and run goToHighlight
@@ -91,28 +89,88 @@ class NFPartComp extends NFComp
 
       #  else (we've been passed the 'no q' flag)
       else
-        @
-        # Animate in the page ALREADY focused on the highlight
+        alert "No q - I don't know how to deal yet"
+        # TODO: Animate in the page ALREADY focused on the highlight
 
     # else (this pdf is in a part comp somewhere)
     else
-        @
-    #   If it's the active PDF now
-    #     if the target page is the visible page
-    #       RUN AS NORMAL
-    #     else (the highlight is on a different page)
-    #       If the target page was used in this part
-    #         if it was above the current layer
-    #           Add the page layer above this current one, but peeled up
-    #           RUN AS NORMAL
-    #         else (it was below)
-    #           Add the page layer below this current one
-    #           RUN AS NORMAL
-    #       else (we haven't seen it in a while)
-    #         Add the page layer below this current one
-    #         RUN AS NORMAL
-    #   else (not the active PDF)
-    #     Animate in the page ALREADY focused on the highlight
+
+    # If it's the active PDF now
+      if @activePDF().is targetPDF
+        activePageLayer = @activePage()
+        group = new NFPaperLayerGroup activePageLayer.getPaperParentLayer()
+        # if the target page is the visible page
+        if targetPage.is activePageLayer.getPageComp()
+          # RUN AS NORMAL
+          group.moveToHighlight
+            highlight: model.highlight
+            duration: model.animationDuration
+            fillPercentage: model.fillPercentage
+            maxScale: model.maxPageScale
+
+          activePageLayer.bubbleUp model.highlight
+
+        # else (the highlight is on a different page)
+        else
+          # If the target page was used in this part and it was above the currently active layer
+          layersForPage = @layersForPage targetPage
+          if layersForPage.count() > 0 and layersForPage.layers[0].index() < activePageLayer.index()
+              # Add the page layer above this current one, but peeled up.
+              # Also frame it up
+              targetPageLayer = @insertPage
+                page: targetPage
+                above: activePageLayer
+                time: @getTime() - 0.5
+                pageTurn: NFPageLayer.PAGETURN_FLIPPED_UP
+                frameUp:
+                  highlight: model.highlight
+                  fillPercentage: model.fillPercentage * 2
+
+              targetPageLayer.bubbleUp model.highlight
+
+              # Run a page turn flip down starting half a second back from now
+              targetPageLayer.animatePageTurn
+                time: @getTime() - 0.5
+                duration: 2.0
+
+              # Move the whole shabang to frame up the target highlight
+              group.moveToHighlight
+                highlight: model.highlight
+                duration: model.animationDuration
+                fillPercentage: model.fillPercentage
+
+              # Trim the old layer to the end of the page turn
+              activePageLayer.layer.outPoint = @getTime() - 0.5 + 2.0
+
+          # else (we haven't seen it in a while or it was below)
+          else
+            # Add the page layer below this current one.
+            # Also frame it up
+            targetPageLayer = @insertPage
+              page: targetPage
+              below: activePageLayer
+              time: @getTime() - 0.5
+              frameUp:
+                highlight: model.highlight
+                fillPercentage: model.fillPercentage * 0.8
+
+            targetPageLayer.bubbleUp model.highlight
+
+            # Run a page turn flip down starting half a second back from now
+            activePageLayer.animatePageTurn
+              time: @getTime() - 0.5
+              duration: 2.0
+
+            # Move the whole shabang to frame up the target highlight
+            group.moveToHighlight
+              highlight: model.highlight
+              duration: model.animationDuration
+              fillPercentage: model.fillPercentage
+
+      # else (not the active PDF)
+      else
+        # Animate in the page ALREADY focused on the highlight
+        alert "Bring in page already focused on the highlight"
     @
 
   ###*
@@ -129,17 +187,28 @@ class NFPartComp extends NFComp
   @param {int} [model.at=1] - the index to insert the page at. Can use only
   one of .above, .below or .at
   @param {boolean} [model.animate=no] whether to animate the page in
+  @param {float} [model.time=Current Time] The time to insert at
+  @param {Enum} [model.pageTurn=PAGETURN_NONE] the pageTurn of the page
   @throws Throw error if given values for more than one of .above, .below,
   and .at
   ###
   insertPage: (model) ->
     throw "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
+
+    # Check if this page has been used in this comp already...
+    layersForPage = @layersForPage model.page
+    unless layersForPage.isEmpty()
+      layersForPage.differentiate()
+
     model.at = 1 unless model.above? or model.below? or model.at?
+    model.time = model.time ? @getTime()
+    model.pageTurn = model.pageTurn ? NFPageLayer.PAGETURN_NONE
     pageLayer = @insertComp
       comp: model.page
       above: model.above
       below: model.below
       at: model.at
+      time: model.time
 
     unless model.init is no
       pageLayer.initTransforms().init()
@@ -147,6 +216,17 @@ class NFPartComp extends NFComp
 
     if model.animate is yes
       pageLayer.slideIn()
+
+    if model.frameUp?
+      pageLayer.frameUpHighlight model.frameUp
+
+    if model.pageTurn is NFPageLayer.PAGETURN_FLIPPED_UP or model.pageTurn is NFPageLayer.PAGETURN_FLIPPED_DOWN
+      pageLayer.setupPageTurnEffect model.pageTurn
+    else if model.pageTurn isnt NFPageLayer.PAGETURN_NONE
+      throw "Invalid pageturn type to insert page with"
+
+    unless layersForPage.isEmpty()
+      layersForPage = @layersForPage(model.page).differentiate()
 
     return pageLayer
 
@@ -199,3 +279,19 @@ class NFPartComp extends NFComp
 
     @setTime originalTime if originalTime?
     return activePage
+
+
+  ###*
+  Returns an NFPageLayerCollection of NFPageLayers in this comp that
+  contain the given NFPageComp
+  @memberof NFPartComp
+  @param {NFPageComp} page - the page to look for
+  @returns {NFPageLayerCollection} The found page layers
+  ###
+  layersForPage: (page) ->
+    throw "given page is not an NFPageComp" unless page instanceof NFPageComp
+    matchedPages = new NFPageLayerCollection
+    for theLayer in @allLayers().layers
+      if theLayer instanceof NFPageLayer and theLayer.getPageComp().is page
+        matchedPages.addLayer theLayer
+    return matchedPages

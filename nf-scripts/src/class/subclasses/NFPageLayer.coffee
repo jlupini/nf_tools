@@ -275,7 +275,7 @@ class NFPageLayer extends NFLayer
 
     pageTurnEffect = @effect "CC Page Turn"
     foldPositionProperty = pageTurnEffect?.property("Fold Position")
-    foldPosition = foldPositionProperty?.valueAtTime time
+    foldPosition = foldPositionProperty?.valueAtTime time, false
     threshold = 3840
     if not pageTurnEffect?
       return NFPageLayer.PAGETURN_NONE
@@ -332,6 +332,75 @@ class NFPageLayer extends NFLayer
     @
 
   ###*
+  Adds the pageturn effect, motion blur effect and drop shadow to the layer in
+  a given pageturn status. Overwrites existing drop shadow effects, but leaves
+  existing force motion blur and page turns
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Enum} [pageTurnStatus=NFPageLayer.PAGETURN_FLIPPED_DOWN] - The status
+  to set the turn up with
+  ###
+  setupPageTurnEffect: (pageTurnStatus) ->
+    forceMotionBlurMatchName = "CC Force Motion Blur"
+    dropShadowMatchName = "ADBE Drop Shadow"
+    pageTurnMatchName = "CC Page Turn"
+
+    pageTurnEffect = @effect pageTurnMatchName
+    if not pageTurnEffect?
+      pageTurnEffect = @effects().addProperty pageTurnMatchName
+      pageTurnEffect.property("Fold Radius").setValue 500
+      foldPosition = pageTurnEffect.property("Fold Position")
+      if pageTurnStatus is NFPageLayer.PAGETURN_FLIPPED_UP
+        foldPosition.setValue @pageTurnUpPosition()
+      else if pageTurnStatus is NFPageLayer.PAGETURN_FLIPPED_DOWN or not pageTurnStatus?
+        foldPosition.setValue @pageTurnDownPosition()
+      else
+        throw "Invalid page turn type for initial position"
+
+    forceMotionBlurEffect = @effect forceMotionBlurMatchName
+    if not forceMotionBlurEffect?
+      forceMotionBlurEffect = @effects().addProperty forceMotionBlurMatchName
+      forceMotionBlurEffect.property("Override Shutter Angle").setValue 0
+
+    dropShadowEffect = @effect dropShadowMatchName
+    dropShadowEffect.remove() if dropShadowEffect?
+    dropShadowEffect = @effects().addProperty dropShadowMatchName
+    dropShadowEffect.property("Opacity").setValue 0.75 * 255
+    dropShadowEffect.property("Direction").setValue 125
+    dropShadowEffect.property("Distance").setValue 20
+    dropShadowEffect.property("Softness").setValue 300
+
+    @
+
+  ###*
+  Simply calculates and returns the property values for CC page turn's position
+  for which the page is flipped down.
+  @memberof NFPageLayer
+  @returns {float[]} the position property of the pageturn effect when this page
+  is flipped down
+  ###
+  pageTurnDownPosition: ->
+    comp = @getPageComp()
+    pageSize =
+      width: comp.comp.width
+      height: comp.comp.height
+    downPosition = [pageSize.width, pageSize.height]
+
+  ###*
+  Simply calculates and returns the property values for CC page turn's position
+  for which the page is flipped up.
+  @memberof NFPageLayer
+  @returns {float[]} the position property of the pageturn effect when this page
+  is flipped up
+  ###
+  pageTurnUpPosition: ->
+    comp = @getPageComp()
+    pageSize =
+      width: comp.comp.width
+      height: comp.comp.height
+    upPosition = [-pageSize.width, -pageSize.height]
+
+  ###*
   Animates a page turn, essentially toggling the current page turn status.
   Throws an error if the page is not all the way up or down at the start time.
   @memberof NFPageLayer
@@ -354,41 +423,13 @@ class NFPageLayer extends NFLayer
 
     # Add the effect if it's not there already
     if startStatus is NFPageLayer.PAGETURN_NONE
-      forceMotionBlurMatchName = "CC Force Motion Blur"
-      dropShadowMatchName = "ADBE Drop Shadow"
-      pageTurnMatchName = "CC Page Turn"
-
-      pageTurnEffect = @effect pageTurnMatchName
-      if not pageTurnEffect?
-        pageTurnEffect = @effects().addProperty pageTurnMatchName
-        pageTurnEffect.property("Fold Radius").setValue 500
-
-      forceMotionBlurEffect = @effect forceMotionBlurMatchName
-      if not forceMotionBlurEffect?
-        forceMotionBlurEffect = @effects().addProperty forceMotionBlurMatchName
-        forceMotionBlurEffect.property("Override Shutter Angle").setValue 0
-
-      dropShadowEffect = @effect dropShadowMatchName
-      dropShadowEffect.remove() if dropShadowEffect?
-      dropShadowEffect = @effects().addProperty dropShadowMatchName
-      dropShadowEffect.property("Opacity").setValue 0.75 * 255
-      dropShadowEffect.property("Direction").setValue 125
-      dropShadowEffect.property("Distance").setValue 20
-      dropShadowEffect.property("Softness").setValue 300
-
+      @setupPageTurnEffect()
     if startStatus is NFPageLayer.PAGETURN_BROKEN
       throw "Page turn keyframes seem broken..."
     if startStatus is NFPageLayer.PAGETURN_TURNING or endStatus is NFPageLayer.PAGETURN_TURNING
       throw "Page is already turning at start or end time of new turn"
 
-    # Set the Properties
-    pageSize =
-      width: @getPageComp().comp.width
-      height: @getPageComp().comp.height
-    downPosition = [pageSize.width, pageSize.height]
-    upPosition = [-pageSize.width, -pageSize.height]
-
-    positions = [downPosition, upPosition]
+    positions = [@pageTurnDownPosition(), @pageTurnUpPosition()]
 
     if startStatus is NFPageLayer.PAGETURN_FLIPPED_UP
       targetStatus = NFPageLayer.PAGETURN_FLIPPED_DOWN

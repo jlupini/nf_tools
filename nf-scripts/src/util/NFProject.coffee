@@ -73,7 +73,8 @@ NFProject =
     # Get a PDF Number from the input, if any
     mainComp = @activeComp()
     throw "Can only run instruction on a part comp" unless mainComp instanceof NFPartComp
-    targetPDFNumber = input.replace /(^\d+)(.+$)/i,'$1'
+    targetPDFNumber = /(^\d+)(.+$)/i.exec(input)
+    targetPDFNumber = targetPDFNumber[1] if targetPDFNumber?
     if targetPDFNumber?
       instructionString = input.slice(targetPDFNumber.length)
     else
@@ -82,7 +83,7 @@ NFProject =
     # Get some information about which PDF we're on and which one we need
     activePDF = mainComp.activePDF()
     activePDFNumber = activePDF?.getPDFNumber()
-    alreadyOnTargetPaper = activePDFNumber is targetPDFNumber
+    alreadyOnTargetPaper = if targetPDFNumber? then activePDFNumber is targetPDFNumber else true
     targetPDF = if alreadyOnTargetPaper then activePDF else NFPDF.fromPDFNumber(targetPDFNumber)
 
     flags = {}
@@ -121,7 +122,7 @@ NFProject =
     # if the instruction is a highlight, let's call animateToHighlight
     if instruction.type = NFLayoutType.HIGHLIGHT
       highlight = targetPDF.findHighlight instruction.look
-      throw "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF}'" unless highlight?
+      throw "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
       # FIXME: build animateToHighlight()
       mainComp.animateToHighlight
