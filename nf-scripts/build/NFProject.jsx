@@ -85,12 +85,12 @@ NFProject = {
   @returns {Item | null} the found item or null
    */
   followInstruction: function(input) {
-    var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, highlight, instruction, instructionString, j, k, key, len, len1, mainComp, option, ref, ref1, targetPDF, targetPDFNumber;
+    var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, group, highlight, instruction, instructionString, j, k, key, l, len, len1, len2, mainComp, option, outPoint, ref, ref1, ref2, results, targetPDF, targetPDFNumber, theLayer, titlePage, titlePageLayer;
     mainComp = this.activeComp();
     if (!(mainComp instanceof NFPartComp)) {
       throw "Can only run instruction on a part comp";
     }
-    targetPDFNumber = /(^\d+)(.+$)/i.exec(input);
+    targetPDFNumber = /(^\d+)/i.exec(input);
     if (targetPDFNumber != null) {
       targetPDFNumber = targetPDFNumber[1];
     }
@@ -116,9 +116,7 @@ NFProject = {
       }
     }
     instruction = null;
-    if (instructionString === "") {
-      throw "No instruction string!";
-    } else {
+    if (instructionString !== "") {
       for (key in NFLayoutInstructionDict) {
         option = NFLayoutInstructionDict[key];
         ref1 = option.code;
@@ -139,11 +137,28 @@ NFProject = {
           }
         }
       }
+      if (instruction == null) {
+        throw "No instruction matches instruction string";
+      }
     }
-    if (instruction == null) {
-      throw "No instruction matches instruction string";
-    }
-    if (instruction.type = NFLayoutType.HIGHLIGHT) {
+    if ((targetPDF != null) && (instruction == null)) {
+      titlePage = targetPDF.getTitlePage();
+      titlePageLayer = mainComp.insertPage({
+        page: titlePage,
+        animate: true
+      });
+      if (activePDF != null) {
+        outPoint = titlePageLayer.markers().keyTime("NF In");
+        group = mainComp.groupFromPDF(activePDF);
+        ref2 = group.getChildren(true).layers;
+        results = [];
+        for (l = 0, len2 = ref2.length; l < len2; l++) {
+          theLayer = ref2[l];
+          results.push(theLayer.layer.outPoint = outPoint);
+        }
+        return results;
+      }
+    } else if (instruction.type = NFLayoutType.HIGHLIGHT) {
       highlight = targetPDF.findHighlight(instruction.look);
       if (highlight == null) {
         throw "Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'";

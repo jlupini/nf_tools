@@ -172,7 +172,17 @@ class NFPartComp extends NFComp
       # else (not the active PDF)
       else
         # Animate in the page ALREADY focused on the highlight
-        alert "Bring in page already focused on the highlight"
+        # FIXME: Pickup here - bring it in below it's soon-to-be-parent layer, then
+        # adjust behaviour accordingly based on whether it's now below or above
+        # the currently active page...
+        targetPageLayer = @insertPage
+          page: targetPage
+          above: activePageLayer
+          animate: yes
+          continuous: yes
+          frameUp:
+            highlight: model.highlight
+            fillPercentage: model.fillPercentage * 0.7
     @
 
   ###*
@@ -281,6 +291,23 @@ class NFPartComp extends NFComp
 
     @setTime originalTime if originalTime?
     return activePage
+
+
+  ###*
+  Returns an NFPaperLayerGroup for a given PDF in the part comp
+  @memberof NFPartComp
+  @param {NFPDF} pdf - the PDF to look for
+  @returns {NFPaperLayerGroup | null} The found group
+  ###
+  groupFromPDF: (pdf) ->
+    throw "given pdf is not an NFPDF" unless pdf instanceof NFPDF
+    matchedLayers = new NFLayerCollection
+    parentLayer = @layerWithName pdf.getName()
+
+    if parentLayer?
+      return new NFPaperLayerGroup parentLayer
+    else
+      return null
 
 
   ###*

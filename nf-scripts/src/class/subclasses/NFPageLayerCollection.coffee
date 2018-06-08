@@ -175,20 +175,7 @@ class NFPageLayerCollection extends NFLayerCollection
         bubbledToFix.resetExpressionErrors()
 
     @
-
-  ###*
-  Gets the earliest appearing NPageLayer in this collection
-  @memberof NFPageLayerCollection
-  @returns {NFPageLayer | null} the topmost layer or null if empty
-  @throws Throws an error if the layers are in different comps
-  ###
-  getEarliestLayer: ->
-    return null if @isEmpty()
-    throw "Can't get earliest layer of layers in different comps" unless @inSameComp()
-    earliestLayer = @layers[0]
-    for layer in @layers
-      earliestLayer = layer if layer.layer.inPoint < earliestLayer.layer.inPoint
-    return earliestLayer
+    
 
   ###*
   Creates a new {@link NFPaperParentLayer} from this collection. probably

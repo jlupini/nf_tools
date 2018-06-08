@@ -195,3 +195,32 @@ class NFLayerCollection
     topLayer = @getTopmostLayer()
     newNull.moveBefore topLayer
     return newNull
+
+  ###*
+  Gets the earliest appearing NFLayer in this collection
+  @memberof NFLayerCollection
+  @returns {NFLayer | null} the topmost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+  ###
+  getEarliestLayer: ->
+    return null if @isEmpty()
+    throw "Can't get earliest layer of layers in different comps" unless @inSameComp()
+    earliestLayer = @layers[0]
+    for layer in @layers
+      earliestLayer = layer if layer.layer.inPoint < earliestLayer.layer.inPoint
+    return earliestLayer
+
+  ###*
+  Gets the latest appearing NFLayer in this collection. Only returns one layer
+  even if two layers have the same outPoint
+  @memberof NFLayerCollection
+  @returns {NFLayer | null} the topmost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+  ###
+  getLatestLayer: ->
+    return null if @isEmpty()
+    throw "Can't get latest layer of layers in different comps" unless @inSameComp()
+    latestLayer = @layers[0]
+    for layer in @layers
+      latestLayer = layer if layer.layer.outPoint > latestLayer.layer.outPoint
+    return earliestLayer

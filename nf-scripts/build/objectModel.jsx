@@ -557,10 +557,15 @@ NFLayer = (function() {
   Returns an NFLayerCollection of child layers of this layer as specialized layers
   @memberof NFLayer
   @returns {NFLayerCollection} the collection of child layers
+  @param {boolean} [recursive=no] - whether to look recursively (to include)
+  children of children.
    */
 
-  NFLayer.prototype.getChildren = function() {
-    var allLayers, childLayers, i, len, testLayer, theLayer;
+  NFLayer.prototype.getChildren = function(recursive) {
+    var allLayers, childLayers, i, j, len, len1, recLayer, ref, testLayer, theLayer;
+    if (recursive == null) {
+      recursive = false;
+    }
     allLayers = this.containingComp().comp.layers.toArr();
     childLayers = [];
     for (i = 0, len = allLayers.length; i < len; i++) {
@@ -569,6 +574,13 @@ NFLayer = (function() {
       if (testLayer.layer.parent === this.layer) {
         testLayer = testLayer.getSpecializedLayer();
         childLayers.push(testLayer);
+        if (recursive) {
+          ref = testLayer.getChildren(true).layers;
+          for (j = 0, len1 = ref.length; j < len1; j++) {
+            recLayer = ref[j];
+            childLayers.push(recLayer);
+          }
+        }
       }
     }
     return new NFLayerCollection(childLayers);
@@ -1358,6 +1370,61 @@ NFLayerCollection = (function() {
     topLayer = this.getTopmostLayer();
     newNull.moveBefore(topLayer);
     return newNull;
+  };
+
+
+  /**
+  Gets the earliest appearing NFLayer in this collection
+  @memberof NFLayerCollection
+  @returns {NFLayer | null} the topmost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+   */
+
+  NFLayerCollection.prototype.getEarliestLayer = function() {
+    var earliestLayer, j, layer, len, ref;
+    if (this.isEmpty()) {
+      return null;
+    }
+    if (!this.inSameComp()) {
+      throw "Can't get earliest layer of layers in different comps";
+    }
+    earliestLayer = this.layers[0];
+    ref = this.layers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
+      if (layer.layer.inPoint < earliestLayer.layer.inPoint) {
+        earliestLayer = layer;
+      }
+    }
+    return earliestLayer;
+  };
+
+
+  /**
+  Gets the latest appearing NFLayer in this collection. Only returns one layer
+  even if two layers have the same outPoint
+  @memberof NFLayerCollection
+  @returns {NFLayer | null} the topmost layer or null if empty
+  @throws Throws an error if the layers are in different comps
+   */
+
+  NFLayerCollection.prototype.getLatestLayer = function() {
+    var j, latestLayer, layer, len, ref;
+    if (this.isEmpty()) {
+      return null;
+    }
+    if (!this.inSameComp()) {
+      throw "Can't get latest layer of layers in different comps";
+    }
+    latestLayer = this.layers[0];
+    ref = this.layers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
+      if (layer.layer.outPoint > latestLayer.layer.outPoint) {
+        latestLayer = layer;
+      }
+    }
+    return earliestLayer;
   };
 
   return NFLayerCollection;
@@ -3527,33 +3594,6 @@ NFPageLayerCollection = (function(superClass) {
 
 
   /**
-  Gets the earliest appearing NPageLayer in this collection
-  @memberof NFPageLayerCollection
-  @returns {NFPageLayer | null} the topmost layer or null if empty
-  @throws Throws an error if the layers are in different comps
-   */
-
-  NFPageLayerCollection.prototype.getEarliestLayer = function() {
-    var earliestLayer, j, layer, len, ref;
-    if (this.isEmpty()) {
-      return null;
-    }
-    if (!this.inSameComp()) {
-      throw "Can't get earliest layer of layers in different comps";
-    }
-    earliestLayer = this.layers[0];
-    ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      layer = ref[j];
-      if (layer.layer.inPoint < earliestLayer.layer.inPoint) {
-        earliestLayer = layer;
-      }
-    }
-    return earliestLayer;
-  };
-
-
-  /**
   Creates a new {@link NFPaperParentLayer} from this collection. probably
   best not to call this directly (use assignPaperParentLayer() instead) unless
   you really know what you're doing...
@@ -3849,7 +3889,16 @@ NFPartComp = (function(superClass) {
           }
         }
       } else {
-        alert("Bring in page already focused on the highlight");
+        targetPageLayer = this.insertPage({
+          page: targetPage,
+          above: activePageLayer,
+          animate: true,
+          continuous: true,
+          frameUp: {
+            highlight: model.highlight,
+            fillPercentage: model.fillPercentage * 0.7
+          }
+        });
       }
     }
     return this;
@@ -3985,6 +4034,28 @@ NFPartComp = (function(superClass) {
       this.setTime(originalTime);
     }
     return activePage;
+  };
+
+
+  /**
+  Returns an NFPaperLayerGroup for a given PDF in the part comp
+  @memberof NFPartComp
+  @param {NFPDF} pdf - the PDF to look for
+  @returns {NFPaperLayerGroup | null} The found group
+   */
+
+  NFPartComp.prototype.groupFromPDF = function(pdf) {
+    var matchedLayers, parentLayer;
+    if (!(pdf instanceof NFPDF)) {
+      throw "given pdf is not an NFPDF";
+    }
+    matchedLayers = new NFLayerCollection;
+    parentLayer = this.layerWithName(pdf.getName());
+    if (parentLayer != null) {
+      return new NFPaperLayerGroup(parentLayer);
+    } else {
+      return null;
+    }
   };
 
 

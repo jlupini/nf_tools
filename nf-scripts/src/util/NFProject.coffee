@@ -73,7 +73,7 @@ NFProject =
     # Get a PDF Number from the input, if any
     mainComp = @activeComp()
     throw "Can only run instruction on a part comp" unless mainComp instanceof NFPartComp
-    targetPDFNumber = /(^\d+)(.+$)/i.exec(input)
+    targetPDFNumber = /(^\d+)/i.exec(input)
     targetPDFNumber = targetPDFNumber[1] if targetPDFNumber?
     if targetPDFNumber?
       instructionString = input.slice(targetPDFNumber.length)
@@ -97,9 +97,7 @@ NFProject =
 
     instruction = null
     # Look for an instruction
-    if instructionString is ""
-      throw "No instruction string!"
-    else
+    if instructionString isnt ""
       for key of NFLayoutInstructionDict
         option = NFLayoutInstructionDict[key]
         for code in option.code
@@ -114,17 +112,29 @@ NFProject =
                 instruction = option
             else
               instruction = option
-
-    throw "No instruction matches instruction string" unless instruction?
+      throw "No instruction matches instruction string" unless instruction?
 
     # OK, now we have four key pieces of information: the instruction, flags, the current PDF and the active PDF
 
+    # If we have a PDF to go to but no instruction, assume we should bring in
+    # the title page
+    if targetPDF? and not instruction?
+      titlePage = targetPDF.getTitlePage()
+      titlePageLayer = mainComp.insertPage
+        page: titlePage
+        animate: yes
+
+      # Clean up the previous PDF
+      if activePDF?
+        outPoint = titlePageLayer.markers().keyTime("NF In")
+        group = mainComp.groupFromPDF activePDF
+        for theLayer in group.getChildren(yes).layers
+          theLayer.layer.outPoint = outPoint
     # if the instruction is a highlight, let's call animateToHighlight
-    if instruction.type = NFLayoutType.HIGHLIGHT
+    else if instruction.type = NFLayoutType.HIGHLIGHT
       highlight = targetPDF.findHighlight instruction.look
       throw "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
-      # FIXME: build animateToHighlight()
       mainComp.animateToHighlight
         highlight: highlight
         skipTitle: flags.skipTitle

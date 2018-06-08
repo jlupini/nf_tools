@@ -192,10 +192,13 @@ class NFLayer
   Returns an NFLayerCollection of child layers of this layer as specialized layers
   @memberof NFLayer
   @returns {NFLayerCollection} the collection of child layers
+  @param {boolean} [recursive=no] - whether to look recursively (to include)
+  children of children.
   ###
-  getChildren: ->
+  getChildren: (recursive) ->
     # Look for all layers in the comp this layer is in whose parents are this layer
     # NOTE: We're working with AVLayers
+    recursive = no unless recursive?
     allLayers = @containingComp().comp.layers.toArr()
     childLayers = []
 
@@ -204,6 +207,9 @@ class NFLayer
       if testLayer.layer.parent is @layer
         testLayer = testLayer.getSpecializedLayer()
         childLayers.push testLayer
+        if recursive
+          for recLayer in testLayer.getChildren(yes).layers
+            childLayers.push recLayer
 
     return new NFLayerCollection childLayers
 
