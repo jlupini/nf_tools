@@ -80,7 +80,8 @@ class NFComp
     return activeLayers
 
   ###*
-  # Returns the NFLayer in this comp with the layer name given or null if none found
+  # Returns the first NFLayer in this comp with the layer name given or null
+  # if none found
   # @memberof NFComp
   # @param {string} name - The search layer's name
   # @returns {NFLayer|null} The found layer or null
@@ -91,6 +92,19 @@ class NFComp
       foundLayer = new NFLayer(theLayer)
       return foundLayer.getSpecializedLayer()
     return null
+
+  ###*
+  # Returns an NFLayerCollection with the NFLayers in this comp with the layer
+  # name given or null if none found
+  # @memberof NFComp
+  # @param {string} name - The search layer's name
+  # @returns {NFLayerCollection} The found layers
+  ###
+  layersWithName: (name) ->
+    foundLayers = new NFLayerCollection
+    for theLayer in @allLayers().layers
+      foundLayers.addLayer theLayer if theLayer.getName() is name
+    return foundLayers
 
   ###*
   Gets the Zoomer layer

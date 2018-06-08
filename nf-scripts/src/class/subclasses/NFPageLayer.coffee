@@ -250,7 +250,7 @@ class NFPageLayer extends NFLayer
   ###
   sourceRectForHighlight: (highlight, targetTime = null) ->
     throw "Can't get source rect for this highlight since it's not in the layer" unless @containsHighlight highlight
-    highlightRect = highlight.sourceRect targetTime
+    highlightRect = highlight.sourceRect()
     @relativeRect highlightRect, targetTime
 
   ###*
@@ -263,6 +263,35 @@ class NFPageLayer extends NFLayer
     for testHighlight in @highlights().layers
       return true if testHighlight.is highlight
     return false
+
+  ###*
+  Sets the start point of the layer to be the first frame of the page comp that
+  we haven't seen before.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  ###
+  makeContinuous: ->
+    thisPage = @getPageComp()
+
+    # Get every instance of this page layer in every part comp
+    thePDF = NFPDF.fromPageLayer @
+    partComps = thePDF.containingPartComps()
+    layerInstances = new NFPageLayerCollection
+    for partComp in partComps
+      layersInComp = partComp.layersForPage thisPage
+      unless layersInComp.isEmpty()
+        layerInstances.addLayer theLayer for theLayer in layersInComp.layers
+
+    # Get the last time we saw
+    unless layerInstances.isEmpty()
+      latestInternalEndTime = 0
+      for theInstance in layerInstances.layers
+        unless theInstance.is @
+          internalEndTime = theInstance.internalEndTime()
+          latestInternalEndTime = internalEndTime if internalEndTime > latestInternalEndTime
+
+    @beginAt latestInternalEndTime + @containingComp().comp.frameDuration
+    @
 
   ###*
   Returns the page turn status at the current time

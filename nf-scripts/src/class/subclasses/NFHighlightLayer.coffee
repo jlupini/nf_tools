@@ -43,11 +43,21 @@ class NFHighlightLayer extends NFLayer
       expression = @highlighterEffect().property("Spacing").expression
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression)
-      comp = NF.Util.findItem compName
+      effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression)
+      comp = new NFComp NF.Util.findItem(compName)
+
+
+      # This is to deal with the possibility that there are two layers with the
+      # same name in the comp...
       if comp?
-        layer = comp.layer layerName
-        return connectedPageLayer = new NFPageLayer(layer) if layer?
-    return connectedPageLayer
+        possibleLayers = comp.layersWithName layerName
+        if possibleLayers.isEmpty()
+          return null
+        else if possibleLayers.count() is 1
+          return possibleLayers.layers[0]
+        else
+          for theLayer in possibleLayers.layers
+            return theLayer if theLayer.effect(effectName)?
 
   ###*
   Returns the NFPageComp this highlight lives in

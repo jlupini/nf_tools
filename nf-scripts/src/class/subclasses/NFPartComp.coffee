@@ -74,13 +74,13 @@ class NFPartComp extends NFComp
           targetPageLayer = @insertPage
             page: targetPage
             below: titlePageLayer
+            frameUp:
+              highlight: model.highlight
+              fillPercentage: model.fillPercentage * 0.7
           targetPageLayer.bubbleUp model.highlight
 
           titlePageLayer.animatePageTurn()
 
-          targetPageLayer.frameUpHighlight
-            highlight: model.highlight
-            fillPercentage: model.fillPercentage * 0.8
           group.moveToHighlight
             highlight: model.highlight
             duration: model.animationDuration
@@ -122,6 +122,7 @@ class NFPartComp extends NFComp
                 above: activePageLayer
                 time: @getTime() - 0.5
                 pageTurn: NFPageLayer.PAGETURN_FLIPPED_UP
+                continuous: yes
                 frameUp:
                   highlight: model.highlight
                   fillPercentage: model.fillPercentage * 2
@@ -150,9 +151,10 @@ class NFPartComp extends NFComp
               page: targetPage
               below: activePageLayer
               time: @getTime() - 0.5
+              continuous: yes
               frameUp:
                 highlight: model.highlight
-                fillPercentage: model.fillPercentage * 0.8
+                fillPercentage: model.fillPercentage * 0.7
 
             targetPageLayer.bubbleUp model.highlight
 
@@ -189,20 +191,18 @@ class NFPartComp extends NFComp
   @param {boolean} [model.animate=no] whether to animate the page in
   @param {float} [model.time=Current Time] The time to insert at
   @param {Enum} [model.pageTurn=PAGETURN_NONE] the pageTurn of the page
+  @param {boolean} [model.continuous=no] whether to start the page at the
+  first frame of it's composition that we haven't seen yet.
   @throws Throw error if given values for more than one of .above, .below,
   and .at
   ###
   insertPage: (model) ->
     throw "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
 
-    # Check if this page has been used in this comp already...
-    layersForPage = @layersForPage model.page
-    unless layersForPage.isEmpty()
-      layersForPage.differentiate()
-
     model.at = 1 unless model.above? or model.below? or model.at?
     model.time = model.time ? @getTime()
     model.pageTurn = model.pageTurn ? NFPageLayer.PAGETURN_NONE
+    model.continuous = model.continuous ? no
     pageLayer = @insertComp
       comp: model.page
       above: model.above
@@ -225,8 +225,10 @@ class NFPartComp extends NFComp
     else if model.pageTurn isnt NFPageLayer.PAGETURN_NONE
       throw "Invalid pageturn type to insert page with"
 
-    unless layersForPage.isEmpty()
-      layersForPage = @layersForPage(model.page).differentiate()
+    pageLayer.makeContinuous() if model.continuous
+
+    layersForPage = @layersForPage model.page
+    layersForPage.differentiate() unless layersForPage.count() < 2
 
     return pageLayer
 

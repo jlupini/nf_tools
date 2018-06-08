@@ -450,6 +450,33 @@ class NFLayer
     return null
 
   ###*
+  Moves startTime of a layer without moving the inPoint such that the inPoint
+  is the given time in the layer's composition
+  @memberof NFLayer
+  @returns {NFLayer} self
+  ###
+  beginAt: (time) ->
+    @layer.startTime = @layer.inPoint-time
+    @layer.inPoint = @layer.startTime + time
+    @
+
+  ###*
+  Returns the time in the layer's page comp that this layer ends.
+  @memberof NFLayer
+  @returns {float} the result
+  ###
+  internalEndTime: ->
+    @layer.outPoint - @layer.startTime
+
+  ###*
+  Returns the time in the layer's page comp that this layer starts.
+  @memberof NFLayer
+  @returns {float} the result
+  ###
+  internalStartTime: ->
+    @layer.inPoint - @layer.startTime
+
+  ###*
   Uses a null hack to get the source Rect of the layer in it's containing comp.
   Optional time parameter
   @memberof NFLayer
@@ -462,7 +489,7 @@ class NFLayer
     time = time ? compTime
     tempNull = @containingComp().addNull()
     # This line stops the mainComp time from jumping forward.
-    @containingComp().setTime compTime
+    # @containingComp().setTime compTime
 
     expressionBase = "rect = thisComp.layer(#{@index()}).sourceRectAtTime(time);"
     tempNull.transform().position.expression = expressionBase + "thisComp.layer(#{@index()}).toComp([rect.left, rect.top])"

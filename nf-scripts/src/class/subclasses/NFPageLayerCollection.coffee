@@ -146,14 +146,12 @@ class NFPageLayerCollection extends NFLayerCollection
         theLayer = noLetterNames.layers[i]
 
         bubbledToFix = theLayer.bubbledHighlights()
-        # FIXME: Pickup here ^ because bubbledHighlights doesn't work properly
-        # because it's looking at the wrong layer since they have the same fucking name...
-        # probably gotta do this logic before adding the layer...
         unless bubbledToFix.isEmpty()
           for highlight in bubbledToFix.layers
-            highlight.fixExpressionWithDiffLetter alphabet[i]
+            highlight.fixExpressionWithDiffLetter(alphabet[i])
 
         theLayer.layer.name += " (#{alphabet[i]})"
+        bubbledToFix.resetExpressionErrors()
     else
       lastUsedLetterIndex = null
       for theLayer in letteredNames.layers
@@ -171,9 +169,10 @@ class NFPageLayerCollection extends NFLayerCollection
         bubbledToFix = theLayer.bubbledHighlights()
         unless bubbledToFix.isEmpty()
           for highlight in bubbledToFix.layers
-            highlight.fixExpressionWithDiffLetter alphabet[lastUsedLetterIndex+1]
+            highlight.fixExpressionWithDiffLetter(alphabet[lastUsedLetterIndex+1]).resetExpressionErrors()
 
         theLayer.layer.name += " (#{alphabet[lastUsedLetterIndex+1]})"
+        bubbledToFix.resetExpressionErrors()
 
     @
 

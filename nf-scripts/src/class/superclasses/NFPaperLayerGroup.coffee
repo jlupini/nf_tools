@@ -125,8 +125,8 @@ class NFPaperLayerGroup
       keyTimes: keyframeTimes
 
     # Restore the original parent and comp time
-    @paperParent.setParent originalParent
     @containingComp().setTime(originalTime)
+    @paperParent.setParent originalParent
 
     @
 

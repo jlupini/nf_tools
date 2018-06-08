@@ -117,7 +117,8 @@ NFComp = (function() {
 
 
   /**
-   * Returns the NFLayer in this comp with the layer name given or null if none found
+   * Returns the first NFLayer in this comp with the layer name given or null
+   * if none found
    * @memberof NFComp
    * @param {string} name - The search layer's name
    * @returns {NFLayer|null} The found layer or null
@@ -131,6 +132,28 @@ NFComp = (function() {
       return foundLayer.getSpecializedLayer();
     }
     return null;
+  };
+
+
+  /**
+   * Returns an NFLayerCollection with the NFLayers in this comp with the layer
+   * name given or null if none found
+   * @memberof NFComp
+   * @param {string} name - The search layer's name
+   * @returns {NFLayerCollection} The found layers
+   */
+
+  NFComp.prototype.layersWithName = function(name) {
+    var foundLayers, i, len, ref, theLayer;
+    foundLayers = new NFLayerCollection;
+    ref = this.allLayers().layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      theLayer = ref[i];
+      if (theLayer.getName() === name) {
+        foundLayers.addLayer(theLayer);
+      }
+    }
+    return foundLayers;
   };
 
 
@@ -872,6 +895,42 @@ NFLayer = (function() {
 
 
   /**
+  Moves startTime of a layer without moving the inPoint such that the inPoint
+  is the given time in the layer's composition
+  @memberof NFLayer
+  @returns {NFLayer} self
+   */
+
+  NFLayer.prototype.beginAt = function(time) {
+    this.layer.startTime = this.layer.inPoint - time;
+    this.layer.inPoint = this.layer.startTime + time;
+    return this;
+  };
+
+
+  /**
+  Returns the time in the layer's page comp that this layer ends.
+  @memberof NFLayer
+  @returns {float} the result
+   */
+
+  NFLayer.prototype.internalEndTime = function() {
+    return this.layer.outPoint - this.layer.startTime;
+  };
+
+
+  /**
+  Returns the time in the layer's page comp that this layer starts.
+  @memberof NFLayer
+  @returns {float} the result
+   */
+
+  NFLayer.prototype.internalStartTime = function() {
+    return this.layer.inPoint - this.layer.startTime;
+  };
+
+
+  /**
   Uses a null hack to get the source Rect of the layer in it's containing comp.
   Optional time parameter
   @memberof NFLayer
@@ -885,7 +944,6 @@ NFLayer = (function() {
     compTime = this.containingComp().getTime();
     time = time != null ? time : compTime;
     tempNull = this.containingComp().addNull();
-    this.containingComp().setTime(compTime);
     expressionBase = "rect = thisComp.layer(" + (this.index()) + ").sourceRectAtTime(time);";
     tempNull.transform().position.expression = expressionBase + ("thisComp.layer(" + (this.index()) + ").toComp([rect.left, rect.top])");
     topLeftPoint = tempNull.transform().position.valueAtTime(time, false);
@@ -1675,8 +1733,8 @@ NFPaperLayerGroup = (function() {
     positionProp.easyEaseKeyTimes({
       keyTimes: keyframeTimes
     });
-    this.paperParent.setParent(originalParent);
     this.containingComp().setTime(originalTime);
+    this.paperParent.setParent(originalParent);
     return this;
   };
 
@@ -1876,20 +1934,30 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.getConnectedPageLayer = function() {
-    var comp, compName, connectedPageLayer, expression, layer, layerName;
+    var comp, compName, effectName, expression, j, layerName, len, possibleLayers, ref, theLayer;
     if (this.isBubbled()) {
       expression = this.highlighterEffect().property("Spacing").expression;
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression);
-      comp = NF.Util.findItem(compName);
+      effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression);
+      comp = new NFComp(NF.Util.findItem(compName));
       if (comp != null) {
-        layer = comp.layer(layerName);
-        if (layer != null) {
-          return connectedPageLayer = new NFPageLayer(layer);
+        possibleLayers = comp.layersWithName(layerName);
+        if (possibleLayers.isEmpty()) {
+          return null;
+        } else if (possibleLayers.count() === 1) {
+          return possibleLayers.layers[0];
+        } else {
+          ref = possibleLayers.layers;
+          for (j = 0, len = ref.length; j < len; j++) {
+            theLayer = ref[j];
+            if (theLayer.effect(effectName) != null) {
+              return theLayer;
+            }
+          }
         }
       }
     }
-    return connectedPageLayer;
   };
 
 
@@ -2713,7 +2781,7 @@ NFPageLayer = (function(superClass) {
     if (!this.containsHighlight(highlight)) {
       throw "Can't get source rect for this highlight since it's not in the layer";
     }
-    highlightRect = highlight.sourceRect(targetTime);
+    highlightRect = highlight.sourceRect();
     return this.relativeRect(highlightRect, targetTime);
   };
 
@@ -2735,6 +2803,48 @@ NFPageLayer = (function(superClass) {
       }
     }
     return false;
+  };
+
+
+  /**
+  Sets the start point of the layer to be the first frame of the page comp that
+  we haven't seen before.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+   */
+
+  NFPageLayer.prototype.makeContinuous = function() {
+    var i, internalEndTime, j, k, latestInternalEndTime, layerInstances, layersInComp, len, len1, len2, partComp, partComps, ref, ref1, theInstance, theLayer, thePDF, thisPage;
+    thisPage = this.getPageComp();
+    thePDF = NFPDF.fromPageLayer(this);
+    partComps = thePDF.containingPartComps();
+    layerInstances = new NFPageLayerCollection;
+    for (i = 0, len = partComps.length; i < len; i++) {
+      partComp = partComps[i];
+      layersInComp = partComp.layersForPage(thisPage);
+      if (!layersInComp.isEmpty()) {
+        ref = layersInComp.layers;
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          theLayer = ref[j];
+          layerInstances.addLayer(theLayer);
+        }
+      }
+    }
+    if (!layerInstances.isEmpty()) {
+      latestInternalEndTime = 0;
+      ref1 = layerInstances.layers;
+      for (k = 0, len2 = ref1.length; k < len2; k++) {
+        theInstance = ref1[k];
+        if (!theInstance.is(this)) {
+          internalEndTime = theInstance.internalEndTime();
+          if (internalEndTime > latestInternalEndTime) {
+            latestInternalEndTime = internalEndTime;
+          }
+        }
+      }
+    }
+    this.beginAt(latestInternalEndTime + this.containingComp().comp.frameDuration);
+    return this;
   };
 
 
@@ -3378,6 +3488,7 @@ NFPageLayerCollection = (function(superClass) {
           }
         }
         theLayer.layer.name += " (" + alphabet[i] + ")";
+        bubbledToFix.resetExpressionErrors();
       }
     } else {
       lastUsedLetterIndex = null;
@@ -3404,10 +3515,11 @@ NFPageLayerCollection = (function(superClass) {
           ref5 = bubbledToFix.layers;
           for (o = 0, len3 = ref5.length; o < len3; o++) {
             highlight = ref5[o];
-            highlight.fixExpressionWithDiffLetter(alphabet[lastUsedLetterIndex + 1]);
+            highlight.fixExpressionWithDiffLetter(alphabet[lastUsedLetterIndex + 1]).resetExpressionErrors();
           }
         }
         theLayer.layer.name += " (" + alphabet[lastUsedLetterIndex + 1] + ")";
+        bubbledToFix.resetExpressionErrors();
       }
     }
     return this;
@@ -3658,14 +3770,14 @@ NFPartComp = (function(superClass) {
           this.setTime(titlePageLayer.getInMarkerTime() - 0.4);
           targetPageLayer = this.insertPage({
             page: targetPage,
-            below: titlePageLayer
+            below: titlePageLayer,
+            frameUp: {
+              highlight: model.highlight,
+              fillPercentage: model.fillPercentage * 0.7
+            }
           });
           targetPageLayer.bubbleUp(model.highlight);
           titlePageLayer.animatePageTurn();
-          targetPageLayer.frameUpHighlight({
-            highlight: model.highlight,
-            fillPercentage: model.fillPercentage * 0.8
-          });
           group.moveToHighlight({
             highlight: model.highlight,
             duration: model.animationDuration,
@@ -3696,6 +3808,7 @@ NFPartComp = (function(superClass) {
               above: activePageLayer,
               time: this.getTime() - 0.5,
               pageTurn: NFPageLayer.PAGETURN_FLIPPED_UP,
+              continuous: true,
               frameUp: {
                 highlight: model.highlight,
                 fillPercentage: model.fillPercentage * 2
@@ -3717,9 +3830,10 @@ NFPartComp = (function(superClass) {
               page: targetPage,
               below: activePageLayer,
               time: this.getTime() - 0.5,
+              continuous: true,
               frameUp: {
                 highlight: model.highlight,
-                fillPercentage: model.fillPercentage * 0.8
+                fillPercentage: model.fillPercentage * 0.7
               }
             });
             targetPageLayer.bubbleUp(model.highlight);
@@ -3758,24 +3872,23 @@ NFPartComp = (function(superClass) {
   @param {boolean} [model.animate=no] whether to animate the page in
   @param {float} [model.time=Current Time] The time to insert at
   @param {Enum} [model.pageTurn=PAGETURN_NONE] the pageTurn of the page
+  @param {boolean} [model.continuous=no] whether to start the page at the
+  first frame of it's composition that we haven't seen yet.
   @throws Throw error if given values for more than one of .above, .below,
   and .at
    */
 
   NFPartComp.prototype.insertPage = function(model) {
-    var layersForPage, pageLayer, ref, ref1;
+    var layersForPage, pageLayer, ref, ref1, ref2;
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
       throw "No page given to insert...";
-    }
-    layersForPage = this.layersForPage(model.page);
-    if (!layersForPage.isEmpty()) {
-      layersForPage.differentiate();
     }
     if (!((model.above != null) || (model.below != null) || (model.at != null))) {
       model.at = 1;
     }
     model.time = (ref = model.time) != null ? ref : this.getTime();
     model.pageTurn = (ref1 = model.pageTurn) != null ? ref1 : NFPageLayer.PAGETURN_NONE;
+    model.continuous = (ref2 = model.continuous) != null ? ref2 : false;
     pageLayer = this.insertComp({
       comp: model.page,
       above: model.above,
@@ -3798,8 +3911,12 @@ NFPartComp = (function(superClass) {
     } else if (model.pageTurn !== NFPageLayer.PAGETURN_NONE) {
       throw "Invalid pageturn type to insert page with";
     }
-    if (!layersForPage.isEmpty()) {
-      layersForPage = this.layersForPage(model.page).differentiate();
+    if (model.continuous) {
+      pageLayer.makeContinuous();
+    }
+    layersForPage = this.layersForPage(model.page);
+    if (!(layersForPage.count() < 2)) {
+      layersForPage.differentiate();
     }
     return pageLayer;
   };
