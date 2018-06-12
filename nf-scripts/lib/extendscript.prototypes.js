@@ -128,7 +128,7 @@ if (typeof (Array.prototype.where) === 'undefined') {
 		// try to make it into a function
 			if ((fn = lambda(fn)) === null)
 			// if fail, throw exception
-				throw "Syntax error in lambda string: " + f;
+				throw new Error "Syntax error in lambda string: " + f;
 			// initialize result array
 		var res = [];
 		var l = this.length;

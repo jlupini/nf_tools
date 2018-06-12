@@ -11,7 +11,7 @@ class NFPageLayerCollection extends NFLayerCollection
   constructor: (layerArr) ->
     NFLayerCollection.call(@, layerArr)
     for theLayer in @layers
-      throw "You can only add NFPageLayers to an NFPageLayerCollection" unless theLayer instanceof NFPageLayer
+      throw new Error "You can only add NFPageLayers to an NFPageLayerCollection" unless theLayer instanceof NFPageLayer
 
     @
   # MARK: Instance Methods
@@ -35,7 +35,7 @@ class NFPageLayerCollection extends NFLayerCollection
     else if newLayer instanceof NFPageLayer
       @layers.push newLayer
     else
-      throw "addLayer() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection"
+      throw new Error "addLayer() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection"
     @
 
   ###*
@@ -161,7 +161,7 @@ class NFPageLayerCollection extends NFLayerCollection
           lastUsedLetterIndex = letterIndex if letterIndex > lastUsedLetterIndex
         else
           lastUsedLetterIndex = letterIndex
-      throw "Something is wrong with the layer naming..." unless lastUsedLetterIndex?
+      throw new Error "Something is wrong with the layer naming..." unless lastUsedLetterIndex?
 
       for i in [0..noLetterNames.count()-1]
         theLayer = noLetterNames.layers[i]
@@ -187,8 +187,8 @@ class NFPageLayerCollection extends NFLayerCollection
   @throws Throw error if this collection contains layers from different PDFs
   ###
   newPaperParentLayer: ->
-    throw "Can't create a paper parent layer with no target layers" if @isEmpty()
-    throw "Can't create a single paper parent layer for page layers from different PDFs" unless @fromSamePDF()
+    throw new Error "Can't create a paper parent layer with no target layers" if @isEmpty()
+    throw new Error "Can't create a single paper parent layer for page layers from different PDFs" unless @fromSamePDF()
     newPaperParent = new NFPaperParentLayer(@nullify()).setName()
     return newPaperParent
 
@@ -202,8 +202,8 @@ class NFPageLayerCollection extends NFLayerCollection
   @throws Throw error if this collection contains layers from different PDFs
   ###
   assignPaperParentLayer: (shouldMove = no) ->
-    throw "Can't create a paper parent layer with no target layers" if @isEmpty()
-    throw "Can't create a single paper parent layer for page layers from different PDFs" unless @fromSamePDF()
+    throw new Error "Can't create a paper parent layer with no target layers" if @isEmpty()
+    throw new Error "Can't create a single paper parent layer for page layers from different PDFs" unless @fromSamePDF()
     paperParentLayer = @layers[0].findPaperParentLayer()
     if paperParentLayer?
       if shouldMove

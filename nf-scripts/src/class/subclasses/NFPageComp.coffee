@@ -9,7 +9,7 @@ Creates a new NFPageComp from a given CompItem
 class NFPageComp extends NFComp
   constructor: (comp) ->
     NFComp.call(this, comp)
-    throw "Can't create an NFPageComp from a non-page comp" unless @name.indexOf("NFPage") >= 0
+    throw new Error "Can't create an NFPageComp from a non-page comp" unless @name.indexOf("NFPage") >= 0
     @
   toString: ->
     return "NFPageComp: '#{@name}'"
@@ -23,7 +23,7 @@ class NFPageComp extends NFComp
   getPDFNumber: ->
     endIdx = @name.indexOf("_")
     return @name.substr(0, endIdx) if endIdx > 0
-    throw "Could not get the PDF Number from this NFPageComp"
+    throw new Error "Could not get the PDF Number from this NFPageComp"
 
   ###*
   Returns the page number as a String
@@ -35,7 +35,7 @@ class NFPageComp extends NFComp
     # Assuming every page number is two digits long
     searchIndex = @name.indexOf("pg")
     return @name.substr(searchIndex + 2, 2) if searchIndex > 0
-    throw "Could not get the Page Number from this NFPageComp"
+    throw new Error "Could not get the Page Number from this NFPageComp"
 
   ###*
   Gets the Highlight layers in this item

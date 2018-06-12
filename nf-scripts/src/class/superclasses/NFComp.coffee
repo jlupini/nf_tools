@@ -13,7 +13,7 @@ class NFComp
     else if comp instanceof NFComp
       item = comp.comp
     else
-      throw "Cannot create an NFComp without a valid CompItem or NFComp"
+      throw new Error "Cannot create an NFComp without a valid CompItem or NFComp"
     @comp = item
     # FIXME: These should NOT be properties since they should never be changed here
     @name = @comp?.name
@@ -30,7 +30,7 @@ class NFComp
   @throws Throws error if testComp is not an NFComp or subclass
   ###
   is: (testComp) ->
-    throw "Can't compare an NFComp to a different type of object" unless testComp instanceof NFComp
+    throw new Error "Can't compare an NFComp to a different type of object" unless testComp instanceof NFComp
     return @id is testComp.id
 
   ###*
@@ -159,9 +159,9 @@ class NFComp
   and .at
   ###
   insertComp: (model) ->
-    throw "No comp to insert" unless model.comp? and model.comp instanceof NFComp
-    throw "model.above must be an NFLayer" if model.above? and not model.above instanceof NFLayer
-    throw "model.below must be an NFLayer" if model.below? and not model.below instanceof NFLayer
+    throw new Error "No comp to insert" unless model.comp? and model.comp instanceof NFComp
+    throw new Error "model.above must be an NFLayer" if model.above? and not model.above instanceof NFLayer
+    throw new Error "model.below must be an NFLayer" if model.below? and not model.below instanceof NFLayer
     index = 0
     tooManyIndices = no
     if model.above? and model.above instanceof NFLayer
@@ -169,18 +169,18 @@ class NFComp
       if model.above.containingComp().is @
         index = model.above.index() - 1
       else
-        throw "Cannot insert layer above a layer not in this comp"
+        throw new Error "Cannot insert layer above a layer not in this comp"
     else if model.below? and model.below instanceof NFLayer
       tooManyIndices = yes if model.above? or model.at?
       if model.below.containingComp().is @
         index = model.below.index()
       else
-        throw "Cannot insert layer below a layer not in this comp"
+        throw new Error "Cannot insert layer below a layer not in this comp"
     else if model.at?
       tooManyIndices = yes if model.above? or model.below?
       index = model.at
 
-    throw "Can only provide one of .above, .below, or .at when inserting page" if tooManyIndices
+    throw new Error "Can only provide one of .above, .below, or .at when inserting page" if tooManyIndices
 
     # Gonna do some work with AV Layers
     newAVLayer = @comp.layers.add(model.comp.comp)

@@ -17,7 +17,7 @@ NFComp = (function() {
     } else if (comp instanceof NFComp) {
       item = comp.comp;
     } else {
-      throw "Cannot create an NFComp without a valid CompItem or NFComp";
+      throw new Error("Cannot create an NFComp without a valid CompItem or NFComp");
     }
     this.comp = item;
     this.name = (ref = this.comp) != null ? ref.name : void 0;
@@ -40,7 +40,7 @@ NFComp = (function() {
 
   NFComp.prototype.is = function(testComp) {
     if (!(testComp instanceof NFComp)) {
-      throw "Can't compare an NFComp to a different type of object";
+      throw new Error("Can't compare an NFComp to a different type of object");
     }
     return this.id === testComp.id;
   };
@@ -226,13 +226,13 @@ NFComp = (function() {
   NFComp.prototype.insertComp = function(model) {
     var index, newAVLayer, ref, tooManyIndices;
     if (!((model.comp != null) && model.comp instanceof NFComp)) {
-      throw "No comp to insert";
+      throw new Error("No comp to insert");
     }
     if ((model.above != null) && !model.above instanceof NFLayer) {
-      throw "model.above must be an NFLayer";
+      throw new Error("model.above must be an NFLayer");
     }
     if ((model.below != null) && !model.below instanceof NFLayer) {
-      throw "model.below must be an NFLayer";
+      throw new Error("model.below must be an NFLayer");
     }
     index = 0;
     tooManyIndices = false;
@@ -243,7 +243,7 @@ NFComp = (function() {
       if (model.above.containingComp().is(this)) {
         index = model.above.index() - 1;
       } else {
-        throw "Cannot insert layer above a layer not in this comp";
+        throw new Error("Cannot insert layer above a layer not in this comp");
       }
     } else if ((model.below != null) && model.below instanceof NFLayer) {
       if ((model.above != null) || (model.at != null)) {
@@ -252,7 +252,7 @@ NFComp = (function() {
       if (model.below.containingComp().is(this)) {
         index = model.below.index();
       } else {
-        throw "Cannot insert layer below a layer not in this comp";
+        throw new Error("Cannot insert layer below a layer not in this comp");
       }
     } else if (model.at != null) {
       if ((model.above != null) || (model.below != null)) {
@@ -261,7 +261,7 @@ NFComp = (function() {
       index = model.at;
     }
     if (tooManyIndices) {
-      throw "Can only provide one of .above, .below, or .at when inserting page";
+      throw new Error("Can only provide one of .above, .below, or .at when inserting page");
     }
     newAVLayer = this.comp.layers.add(model.comp.comp);
     newAVLayer.startTime = (ref = model.time) != null ? ref : this.getTime();
@@ -316,7 +316,7 @@ NFLayer = (function() {
     } else if (layer instanceof NFLayer) {
       this.layer = layer.layer;
     } else {
-      throw "Can only create a new NFLayer with a valid AVLayer or NFLayer object";
+      throw new Error("Can only create a new NFLayer with a valid AVLayer or NFLayer object");
     }
     this;
   }
@@ -617,7 +617,7 @@ NFLayer = (function() {
     } else if (newParent instanceof NFLayer) {
       this.layer.parent = newParent != null ? newParent.layer : void 0;
     } else {
-      throw "Can only set an NFLayer's parent to another NFLayer or AVLayer";
+      throw new Error("Can only set an NFLayer's parent to another NFLayer or AVLayer");
     }
     return this;
   };
@@ -650,7 +650,7 @@ NFLayer = (function() {
 
   NFLayer.prototype.moveBefore = function(targetLayer) {
     if (!(targetLayer instanceof NFLayer)) {
-      throw "Can't run moveBefore on a non-NFLayer";
+      throw new Error("Can't run moveBefore on a non-NFLayer");
     }
     this.layer.moveBefore(targetLayer.layer);
     return this;
@@ -667,7 +667,7 @@ NFLayer = (function() {
 
   NFLayer.prototype.moveAfter = function(targetLayer) {
     if (!(targetLayer instanceof NFLayer)) {
-      throw "Can't run moveAfter on a non-NFLayer";
+      throw new Error("Can't run moveAfter on a non-NFLayer");
     }
     this.layer.moveAfter(targetLayer.layer);
     return this;
@@ -731,10 +731,10 @@ NFLayer = (function() {
   NFLayer.prototype.addInOutMarkersForProperty = function(options) {
     var e, element, error, error1, expression, fileText, i, idx, inComm, inMarker, inValueString, j, markers, outComm, outMarker, outValueString, ref, ref1, shouldFail;
     if (!((options.property != null) && options.property instanceof Property)) {
-      throw "Invalid property";
+      throw new Error("Invalid property");
     }
     if (!(((options.startEquation != null) && (options.startValue != null)) || ((options.endEquation != null) && (options.endValue != null)))) {
-      throw "Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value";
+      throw new Error("Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value");
     }
     shouldFail = false;
     if (options.property.value instanceof Array) {
@@ -757,7 +757,7 @@ NFLayer = (function() {
       }
     }
     if (shouldFail) {
-      throw "Given start or end value type doesn't match property value";
+      throw new Error("Given start or end value type doesn't match property value");
     }
     if (options.length == null) {
       options.length = 2.0;
@@ -840,7 +840,7 @@ NFLayer = (function() {
       expression = ("var outValue = " + outValueString + ";\n") + expression;
     }
     if (!options.property.canSetExpression) {
-      throw "Can't set expression on this property";
+      throw new Error("Can't set expression on this property");
     }
     options.property.expression = expression;
     return this;
@@ -987,7 +987,7 @@ NFLayer = (function() {
       targetTime = null;
     }
     if (!((rect.left != null) && (rect.top != null) && (rect.width != null) && (rect.height != null))) {
-      throw "Missing values on the rect";
+      throw new Error("Missing values on the rect");
     }
     topLeftPoint = this.relativePoint([rect.left, rect.top], targetTime);
     bottomRightPoint = this.relativePoint([rect.left + rect.width, rect.top + rect.height], targetTime);
@@ -1038,7 +1038,7 @@ NFLayer = Object.assign(NFLayer, {
   getSpecializedLayerFromAVLayer: function(theLayer) {
     var tmpLayer;
     if (!theLayer.isAVLayer()) {
-      throw "Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer";
+      throw new Error("Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer");
     }
     tmpLayer = new NFLayer(theLayer);
     return tmpLayer.getSpecializedLayer();
@@ -1084,16 +1084,16 @@ NFLayerCollection = (function() {
         theLayer = layerArr[j];
         if (theLayer.isAVLayer()) {
           if (expectingNFLayers) {
-            throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers";
+            throw new Error("You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers");
           }
           expectingAVLayers = true;
         } else if (theLayer instanceof NFLayer) {
           if (expectingAVLayers) {
-            throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers";
+            throw new Error("You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers");
           }
           expectingNFLayers = true;
         } else {
-          throw "You can only add NFLayers or AVLayers to an NFLayerCollection";
+          throw new Error("You can only add NFLayers or AVLayers to an NFLayerCollection");
         }
       }
       newArray = (function() {
@@ -1140,7 +1140,7 @@ NFLayerCollection = (function() {
     } else if (newLayer.isAVLayer()) {
       this.layers.push(NFLayer.getSpecializedLayerFromAVLayer(newLayer));
     } else {
-      throw "You can only add NFLayers or AVLayers to an NFLayerCollection";
+      throw new Error("You can only add NFLayers or AVLayers to an NFLayerCollection");
     }
     return this;
   };
@@ -1273,7 +1273,7 @@ NFLayerCollection = (function() {
         return this;
       }
     }
-    throw "Couldn't find layer to remove";
+    throw new Error("Couldn't find layer to remove");
   };
 
 
@@ -1290,7 +1290,7 @@ NFLayerCollection = (function() {
       return null;
     }
     if (!this.inSameComp()) {
-      throw "Can't get topmost layer of layers in different comps";
+      throw new Error("Can't get topmost layer of layers in different comps");
     }
     topmostLayer = this.layers[0];
     ref = this.layers;
@@ -1317,7 +1317,7 @@ NFLayerCollection = (function() {
       return null;
     }
     if (!this.inSameComp()) {
-      throw "Can't get bottommost layer of layers in different comps";
+      throw new Error("Can't get bottommost layer of layers in different comps");
     }
     bottommostLayer = this.layers[0];
     ref = this.layers;
@@ -1360,10 +1360,10 @@ NFLayerCollection = (function() {
   NFLayerCollection.prototype.nullify = function() {
     var newNull, topLayer;
     if (!this.inSameComp()) {
-      throw "Cannot nullify layers in different compositions at the same time";
+      throw new Error("Cannot nullify layers in different compositions at the same time");
     }
     if (this.isEmpty()) {
-      throw "Cannot nullify without a given layer";
+      throw new Error("Cannot nullify without a given layer");
     }
     newNull = this.containingComp().addNull();
     this.setParents(newNull);
@@ -1386,7 +1386,7 @@ NFLayerCollection = (function() {
       return null;
     }
     if (!this.inSameComp()) {
-      throw "Can't get earliest layer of layers in different comps";
+      throw new Error("Can't get earliest layer of layers in different comps");
     }
     earliestLayer = this.layers[0];
     ref = this.layers;
@@ -1414,7 +1414,7 @@ NFLayerCollection = (function() {
       return null;
     }
     if (!this.inSameComp()) {
-      throw "Can't get latest layer of layers in different comps";
+      throw new Error("Can't get latest layer of layers in different comps");
     }
     latestLayer = this.layers[0];
     ref = this.layers;
@@ -1455,7 +1455,7 @@ NFPDF = (function() {
         } else if (page instanceof NFPageComp) {
           newArr.push(page);
         } else {
-          throw "You can only add NFPageComps to an NFPDF";
+          throw new Error("You can only add NFPageComps to an NFPDF");
         }
       }
     }
@@ -1481,7 +1481,7 @@ NFPDF = (function() {
     } else if (newPage instanceof CompItem) {
       this.pages.push(new NFPageComp(newPage));
     } else {
-      throw "You can only add NFPageComps to an NFPDF";
+      throw new Error("You can only add NFPageComps to an NFPDF");
     }
     return this;
   };
@@ -1507,7 +1507,7 @@ NFPDF = (function() {
 
   NFPDF.prototype.is = function(testPDF) {
     if (!(testPDF instanceof NFPDF)) {
-      throw "testPDF must be an NFPDF";
+      throw new Error("testPDF must be an NFPDF");
     }
     return this.getPDFNumber() === testPDF.getPDFNumber();
   };
@@ -1522,7 +1522,7 @@ NFPDF = (function() {
 
   NFPDF.prototype.getPDFNumber = function() {
     if (this.pages.length === 0) {
-      throw "NO PDF number";
+      throw new Error("NO PDF number");
     }
     return this.pages[0].getPDFNumber();
   };
@@ -1581,7 +1581,7 @@ NFPDF = (function() {
     var count, i, len, lowestNum, lowestPage, page, ref, thisNum;
     count = this.pages.length;
     if (count === 0) {
-      throw "Can't get the title page because there are no pages";
+      throw new Error("Can't get the title page because there are no pages");
     } else if (count === 1) {
       return this.pages[0];
     } else {
@@ -1614,7 +1614,7 @@ NFPDF = Object.assign(NFPDF, {
    */
   fromPageLayer: function(pageLayer) {
     if (!(pageLayer instanceof NFPageLayer)) {
-      throw "Can't make an NFPDF using fromPageLayer() without a NFPageLayer...";
+      throw new Error("Can't make an NFPDF using fromPageLayer() without a NFPageLayer...");
     }
     return NFPDF.fromPDFNumber(pageLayer.getPDFNumber());
   },
@@ -1631,7 +1631,7 @@ NFPDF = Object.assign(NFPDF, {
     folder = NFProject.findItem("PDF Precomps");
     items = NFProject.searchItems(theNumber + "_", folder);
     if (items.length === 0) {
-      throw "Cannot find PDF pages for the given number: '" + theNumber + "'";
+      throw new Error("Cannot find PDF pages for the given number: '" + theNumber + "'");
     }
     return new NFPDF(items);
   }
@@ -1652,7 +1652,7 @@ NFPaperLayerGroup = (function() {
   function NFPaperLayerGroup(paperParent) {
     this.paperParent = paperParent;
     if (!(this.paperParent instanceof NFPaperParentLayer)) {
-      throw "Not a valid paper parent";
+      throw new Error("Not a valid paper parent");
     }
   }
 
@@ -1751,7 +1751,7 @@ NFPaperLayerGroup = (function() {
   NFPaperLayerGroup.prototype.moveToHighlight = function(model) {
     var activePageLayer, i, initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, len, originalParent, originalTime, positionDelta, positionProp, possibleLayers, ref, ref1, ref2, ref3, ref4, scaleFactor, scaleProp, targetPosition, targetScale, theLayer;
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
-      throw "\nInvalid highlight";
+      throw new Error("\nInvalid highlight");
     }
     model = {
       highlight: model.highlight,
@@ -1962,7 +1962,7 @@ NFHighlightLayer = (function(superClass) {
   function NFHighlightLayer(layer) {
     NFLayer.call(this, layer);
     if (!NFHighlightLayer.isHighlightLayer(this.layer)) {
-      throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect";
+      throw new Error("NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect");
     }
     this;
   }
@@ -2216,7 +2216,7 @@ NFHighlightLayerCollection = (function(superClass) {
     for (i = 0, len = ref.length; i < len; i++) {
       theLayer = ref[i];
       if (!(theLayer instanceof NFHighlightLayer)) {
-        throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection";
+        throw new Error("You can only add NFHighlightLayers to an NFHighlightLayerCollection");
       }
     }
     this;
@@ -2249,7 +2249,7 @@ NFHighlightLayerCollection = (function(superClass) {
     } else if (newLayer instanceof NFHighlightLayer) {
       this.layers.push(newLayer);
     } else {
-      throw "addLayer() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection";
+      throw new Error("addLayer() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection");
     }
     return this;
   };
@@ -2313,7 +2313,7 @@ NFHighlightLayerCollection = (function(superClass) {
   NFHighlightLayerCollection.prototype.getHighlightsInPage = function(page) {
     var highlight, highlightsInPage, i, len, ref;
     if (!(page instanceof NFPageComp)) {
-      throw "Can't getHighlightsInPage() when not given an NFPageComp";
+      throw new Error("Can't getHighlightsInPage() when not given an NFPageComp");
     }
     highlightsInPage = new NFHighlightLayerCollection();
     ref = this.layers;
@@ -2417,7 +2417,7 @@ NFPageComp = (function(superClass) {
   function NFPageComp(comp) {
     NFComp.call(this, comp);
     if (!(this.name.indexOf("NFPage") >= 0)) {
-      throw "Can't create an NFPageComp from a non-page comp";
+      throw new Error("Can't create an NFPageComp from a non-page comp");
     }
     this;
   }
@@ -2440,7 +2440,7 @@ NFPageComp = (function(superClass) {
     if (endIdx > 0) {
       return this.name.substr(0, endIdx);
     }
-    throw "Could not get the PDF Number from this NFPageComp";
+    throw new Error("Could not get the PDF Number from this NFPageComp");
   };
 
 
@@ -2457,7 +2457,7 @@ NFPageComp = (function(superClass) {
     if (searchIndex > 0) {
       return this.name.substr(searchIndex + 2, 2);
     }
-    throw "Could not get the Page Number from this NFPageComp";
+    throw new Error("Could not get the Page Number from this NFPageComp");
   };
 
 
@@ -2524,7 +2524,7 @@ NFPageLayer = (function(superClass) {
   function NFPageLayer(layer) {
     NFLayer.call(this, layer);
     if (layer.source == null) {
-      throw "Cannot create an NFPageLayer from a layer without a source";
+      throw new Error("Cannot create an NFPageLayer from a layer without a source");
     }
     this.pageComp = new NFPageComp(layer.source);
     this;
@@ -2641,10 +2641,10 @@ NFPageLayer = (function(superClass) {
       for (i = 0, len = ref.length; i < len; i++) {
         highlight = ref[i];
         if (!highlight.canBubbleUp()) {
-          throw "Cannot bubble highlight if already connected and not broken. Disconnect first";
+          throw new Error("Cannot bubble highlight if already connected and not broken. Disconnect first");
         }
         if (!this.getPageComp().is(highlight.getPageComp())) {
-          throw "Cannot bubble highlight because it is not in this page!";
+          throw new Error("Cannot bubble highlight because it is not in this page!");
         }
         targetPageLayerEffects = this.effects();
         sourceEffect = highlight.highlighterEffect();
@@ -2846,7 +2846,7 @@ NFPageLayer = (function(superClass) {
       targetTime = null;
     }
     if (!this.containsHighlight(highlight)) {
-      throw "Can't get source rect for this highlight since it's not in the layer";
+      throw new Error("Can't get source rect for this highlight since it's not in the layer");
     }
     highlightRect = highlight.sourceRect();
     return this.relativeRect(highlightRect, targetTime);
@@ -3027,7 +3027,7 @@ NFPageLayer = (function(superClass) {
       } else if (pageTurnStatus === NFPageLayer.PAGETURN_FLIPPED_DOWN || (pageTurnStatus == null)) {
         foldPosition.setValue(this.pageTurnDownPosition());
       } else {
-        throw "Invalid page turn type for initial position";
+        throw new Error("Invalid page turn type for initial position");
       }
     }
     forceMotionBlurEffect = this.effect(forceMotionBlurMatchName);
@@ -3117,10 +3117,10 @@ NFPageLayer = (function(superClass) {
       this.setupPageTurnEffect();
     }
     if (startStatus === NFPageLayer.PAGETURN_BROKEN) {
-      throw "Page turn keyframes seem broken...";
+      throw new Error("Page turn keyframes seem broken...");
     }
     if (startStatus === NFPageLayer.PAGETURN_TURNING || endStatus === NFPageLayer.PAGETURN_TURNING) {
-      throw "Page is already turning at start or end time of new turn";
+      throw new Error("Page is already turning at start or end time of new turn");
     }
     positions = [this.pageTurnDownPosition(), this.pageTurnUpPosition()];
     if (startStatus === NFPageLayer.PAGETURN_FLIPPED_UP) {
@@ -3166,7 +3166,7 @@ NFPageLayer = (function(superClass) {
   NFPageLayer.prototype.frameUpHighlight = function(model) {
     var hasPositionKeyframes, hasScaleKeyframes, initialPosition, initialScale, originalParent, originalTime, positionDelta, positionProp, ref, scaleFactor, scaleProp, targetPosition, targetScale;
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
-      throw "Invalid highlight";
+      throw new Error("Invalid highlight");
     }
     positionProp = this.transform().position;
     scaleProp = this.transform().scale;
@@ -3224,7 +3224,7 @@ NFPageLayer = (function(superClass) {
         if ((ref = model.highlight) != null) {
           return ref;
         } else {
-          throw "No highlight!";
+          throw new Error("No highlight!");
         }
       })(),
       time: (ref1 = model.time) != null ? ref1 : this.containingComp().getTime(),
@@ -3232,7 +3232,7 @@ NFPageLayer = (function(superClass) {
       maxScale: (ref3 = model.maxScale) != null ? ref3 : 115
     };
     if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
-      throw "Invalid highlight";
+      throw new Error("Invalid highlight");
     }
     highlightRect = this.sourceRectForHighlight(model.highlight, model.time);
     compWidth = this.containingComp().comp.width;
@@ -3267,7 +3267,7 @@ NFPageLayer = (function(superClass) {
   NFPageLayer.prototype.getPositionDeltaToFrameUpHighlight = function(model) {
     var compCenterPoint, delta, highlightCenterPoint, highlightRect, rectAfterReposition;
     if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
-      throw "Invalid highlight";
+      throw new Error("Invalid highlight");
     }
     highlightRect = this.sourceRectForHighlight(model.highlight, model.time);
     highlightCenterPoint = [highlightRect.left + highlightRect.width / 2, highlightRect.top + highlightRect.height / 2];
@@ -3337,7 +3337,7 @@ NFPageLayerCollection = (function(superClass) {
     for (j = 0, len = ref.length; j < len; j++) {
       theLayer = ref[j];
       if (!(theLayer instanceof NFPageLayer)) {
-        throw "You can only add NFPageLayers to an NFPageLayerCollection";
+        throw new Error("You can only add NFPageLayers to an NFPageLayerCollection");
       }
     }
     this;
@@ -3370,7 +3370,7 @@ NFPageLayerCollection = (function(superClass) {
     } else if (newLayer instanceof NFPageLayer) {
       this.layers.push(newLayer);
     } else {
-      throw "addLayer() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection";
+      throw new Error("addLayer() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection");
     }
     return this;
   };
@@ -3573,7 +3573,7 @@ NFPageLayerCollection = (function(superClass) {
         }
       }
       if (lastUsedLetterIndex == null) {
-        throw "Something is wrong with the layer naming...";
+        throw new Error("Something is wrong with the layer naming...");
       }
       for (i = n = 0, ref4 = noLetterNames.count() - 1; 0 <= ref4 ? n <= ref4 : n >= ref4; i = 0 <= ref4 ? ++n : --n) {
         theLayer = noLetterNames.layers[i];
@@ -3606,10 +3606,10 @@ NFPageLayerCollection = (function(superClass) {
   NFPageLayerCollection.prototype.newPaperParentLayer = function() {
     var newPaperParent;
     if (this.isEmpty()) {
-      throw "Can't create a paper parent layer with no target layers";
+      throw new Error("Can't create a paper parent layer with no target layers");
     }
     if (!this.fromSamePDF()) {
-      throw "Can't create a single paper parent layer for page layers from different PDFs";
+      throw new Error("Can't create a single paper parent layer for page layers from different PDFs");
     }
     newPaperParent = new NFPaperParentLayer(this.nullify()).setName();
     return newPaperParent;
@@ -3632,10 +3632,10 @@ NFPageLayerCollection = (function(superClass) {
       shouldMove = false;
     }
     if (this.isEmpty()) {
-      throw "Can't create a paper parent layer with no target layers";
+      throw new Error("Can't create a paper parent layer with no target layers");
     }
     if (!this.fromSamePDF()) {
-      throw "Can't create a single paper parent layer for page layers from different PDFs";
+      throw new Error("Can't create a single paper parent layer for page layers from different PDFs");
     }
     paperParentLayer = this.layers[0].findPaperParentLayer();
     if (paperParentLayer != null) {
@@ -3673,7 +3673,7 @@ NFPaperParentLayer = (function(superClass) {
   function NFPaperParentLayer(layer) {
     NFLayer.call(this, layer);
     if (!this.layer.nullLayer) {
-      throw "Can only create a NFPaperParentLayer from a null layer";
+      throw new Error("Can only create a NFPaperParentLayer from a null layer");
     }
     this;
   }
@@ -3694,7 +3694,7 @@ NFPaperParentLayer = (function(superClass) {
     var children, newName;
     children = this.getChildren();
     if (children.isEmpty()) {
-      throw "Cannot set paper parent layer name because it has no child layers";
+      throw new Error("Cannot set paper parent layer name because it has no child layers");
     }
     newName = 'PDF ' + children.layers[0].getPDFNumber();
     this.layer.name = newName;
@@ -3748,7 +3748,7 @@ NFPartComp = (function(superClass) {
   function NFPartComp(comp) {
     NFComp.call(this, comp);
     if (!(this.name.indexOf("Part") >= 0)) {
-      throw "Can't create an NFPartComp from a non-part comp";
+      throw new Error("Can't create an NFPartComp from a non-part comp");
     }
     this;
   }
@@ -3759,7 +3759,9 @@ NFPartComp = (function(superClass) {
 
 
   /**
-  Animates to a given highlight, with options.
+  Animates to a given highlight, with options. Will throw an error if there are
+  other animations that take place after the current time on the same PDF in
+  this comp.
   @memberof NFPartComp
   @param {Object} model - the model object
   @param {NFHighlightLayer} model.highlight - the highlight to animate to
@@ -3770,13 +3772,16 @@ NFPartComp = (function(superClass) {
   for the final highlight to take up
   @param {boolean} [model.skipTitle=false] - whether we should skip going to the
   title page if this PDF is new in the project
+  @throws Throw error if not given a highlight
+  @throws Throw error if there is movement on the target page parent layer
+  after the current comp time in this comp.
   @returns {NFPartComp} self
    */
 
   NFPartComp.prototype.animateToHighlight = function(model) {
-    var activePageLayer, containingPartComps, group, layersForPage, ref, ref1, ref2, ref3, ref4, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, j, layersForPage, posProp, ref, ref1, ref2, ref3, ref4, ref5, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     if (!(model.highlight instanceof NFHighlightLayer)) {
-      throw "Can't animate to a highlight because I don't have one...";
+      throw new Error("Can't animate to a highlight because I don't have one...");
     }
     model = {
       highlight: model.highlight,
@@ -3816,7 +3821,9 @@ NFPartComp = (function(superClass) {
               fillPercentage: model.fillPercentage * 0.7
             }
           });
-          targetPageLayer.bubbleUp(model.highlight);
+          if (!model.highlight.isBubbled()) {
+            targetPageLayer.bubbleUp(model.highlight);
+          }
           titlePageLayer.animatePageTurn();
           group.moveToHighlight({
             highlight: model.highlight,
@@ -3829,6 +3836,17 @@ NFPartComp = (function(superClass) {
         alert("No q - I don't know how to deal yet");
       }
     } else {
+      targetGroup = this.groupFromPDF(targetPDF);
+      if (targetGroup != null) {
+        posProp = targetGroup.paperParent.transform().position;
+        if (posProp.numKeys > 0) {
+          for (i = j = 1, ref5 = posProp.numKeys; 1 <= ref5 ? j <= ref5 : j >= ref5; i = 1 <= ref5 ? ++j : --j) {
+            if (posProp.keyTime(i) > this.getTime()) {
+              throw new Error("Can't animate to highlight because animations exist in the FUTURE on the target PDF");
+            }
+          }
+        }
+      }
       if (this.activePDF().is(targetPDF)) {
         activePageLayer = this.activePage();
         group = new NFPaperLayerGroup(activePageLayer.getPaperParentLayer());
@@ -3839,7 +3857,9 @@ NFPartComp = (function(superClass) {
             fillPercentage: model.fillPercentage,
             maxScale: model.maxPageScale
           });
-          activePageLayer.bubbleUp(model.highlight);
+          if (!model.highlight.isBubbled()) {
+            activePageLayer.bubbleUp(model.highlight);
+          }
         } else {
           layersForPage = this.layersForPage(targetPage);
           if (layersForPage.count() > 0 && layersForPage.layers[0].index() < activePageLayer.index()) {
@@ -3854,7 +3874,9 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage * 2
               }
             });
-            targetPageLayer.bubbleUp(model.highlight);
+            if (!model.highlight.isBubbled()) {
+              targetPageLayer.bubbleUp(model.highlight);
+            }
             targetPageLayer.animatePageTurn({
               time: this.getTime() - 0.5,
               duration: 2.0
@@ -3876,7 +3898,9 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage * 0.7
               }
             });
-            targetPageLayer.bubbleUp(model.highlight);
+            if (!model.highlight.isBubbled()) {
+              targetPageLayer.bubbleUp(model.highlight);
+            }
             activePageLayer.animatePageTurn({
               time: this.getTime() - 0.5,
               duration: 2.0
@@ -3889,16 +3913,31 @@ NFPartComp = (function(superClass) {
           }
         }
       } else {
+        activePageLayer = this.activePage();
+        targetGroup = this.groupFromPDF(targetPDF);
+        alreadyInThisPart = targetGroup != null;
         targetPageLayer = this.insertPage({
           page: targetPage,
-          above: activePageLayer,
-          animate: true,
           continuous: true,
           frameUp: {
             highlight: model.highlight,
-            fillPercentage: model.fillPercentage * 0.7
+            fillPercentage: model.fillPercentage
           }
         });
+        if (!model.highlight.isBubbled()) {
+          targetPageLayer.bubbleUp(model.highlight);
+        }
+        targetGroup = this.groupFromPDF(targetPDF);
+        if (alreadyInThisPart) {
+          targetGroup.gatherLayers(new NFLayerCollection([targetPageLayer]));
+          if (targetPageLayer.index() > activePageLayer.index()) {
+            targetPageLayer.slideIn();
+          } else {
+            alert("Slide out the above layer!");
+          }
+        } else {
+          targetPageLayer.slideIn();
+        }
       }
     }
     return this;
@@ -3930,7 +3969,7 @@ NFPartComp = (function(superClass) {
   NFPartComp.prototype.insertPage = function(model) {
     var layersForPage, pageLayer, ref, ref1, ref2;
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
-      throw "No page given to insert...";
+      throw new Error("No page given to insert...");
     }
     if (!((model.above != null) || (model.below != null) || (model.at != null))) {
       model.at = 1;
@@ -3958,7 +3997,7 @@ NFPartComp = (function(superClass) {
     if (model.pageTurn === NFPageLayer.PAGETURN_FLIPPED_UP || model.pageTurn === NFPageLayer.PAGETURN_FLIPPED_DOWN) {
       pageLayer.setupPageTurnEffect(model.pageTurn);
     } else if (model.pageTurn !== NFPageLayer.PAGETURN_NONE) {
-      throw "Invalid pageturn type to insert page with";
+      throw new Error("Invalid pageturn type to insert page with");
     }
     if (model.continuous) {
       pageLayer.makeContinuous();
@@ -3983,7 +4022,7 @@ NFPartComp = (function(superClass) {
     var zoomer;
     zoomer = this.layerWithName('Zoomer');
     if (zoomer == null) {
-      throw "This NFPartComp has no zoomer!";
+      throw new Error("This NFPartComp has no zoomer!");
     }
     return zoomer;
   };
@@ -4047,7 +4086,7 @@ NFPartComp = (function(superClass) {
   NFPartComp.prototype.groupFromPDF = function(pdf) {
     var matchedLayers, parentLayer;
     if (!(pdf instanceof NFPDF)) {
-      throw "given pdf is not an NFPDF";
+      throw new Error("given pdf is not an NFPDF");
     }
     matchedLayers = new NFLayerCollection;
     parentLayer = this.layerWithName(pdf.getName());
@@ -4068,14 +4107,14 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.layersForPage = function(page) {
-    var i, len, matchedPages, ref, theLayer;
+    var j, len, matchedPages, ref, theLayer;
     if (!(page instanceof NFPageComp)) {
-      throw "given page is not an NFPageComp";
+      throw new Error("given page is not an NFPageComp");
     }
     matchedPages = new NFPageLayerCollection;
     ref = this.allLayers().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      theLayer = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      theLayer = ref[j];
       if (theLayer instanceof NFPageLayer && theLayer.getPageComp().is(page)) {
         matchedPages.addLayer(theLayer);
       }

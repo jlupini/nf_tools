@@ -14,14 +14,14 @@ presentUI = function() {
   if (_.mainComp.selectedLayers().onlyContainsPageLayers()) {
     _.selectedPages = _.mainComp.selectedPageLayers();
   } else {
-    throw "Can't initialize non-page layers";
+    throw new Error("Can't initialize non-page layers");
   }
   if (!_.selectedPages.fromSamePDF()) {
-    throw "Can't initialize pages from different PDFs at the same time";
+    throw new Error("Can't initialize pages from different PDFs at the same time");
   }
   allHighlights = _.selectedPages.highlights();
   if (allHighlights.duplicateNames()) {
-    throw "Some highlights in the selected pages have the same name - Please ensure unique names";
+    throw new Error("Some highlights in the selected pages have the same name - Please ensure unique names");
   }
   w = new Window('dialog', 'Page Initialization');
   w.alignChildren = 'left';
@@ -37,7 +37,7 @@ presentUI = function() {
     }
   }
   if ((0 < orphans && orphans < _.selectedPages.count())) {
-    throw "Can't run this script on both initialized and uninitialized page layers at the same time";
+    throw new Error("Can't run this script on both initialized and uninitialized page layers at the same time");
   }
   if (orphans > 0) {
     initTab = tPanel.add("tab", void 0, "Init Page");

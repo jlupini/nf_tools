@@ -19,13 +19,13 @@ class NFLayerCollection
       expectingNFLayers = no
       for theLayer in layerArr
         if theLayer.isAVLayer()
-          throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers" if expectingNFLayers
+          throw new Error "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers" if expectingNFLayers
           expectingAVLayers = yes
         else if theLayer instanceof NFLayer
-          throw "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers" if expectingAVLayers
+          throw new Error "You can't initialize NFLayerCollection with a mix of AVLayers and NFLayers" if expectingAVLayers
           expectingNFLayers = yes
         else
-          throw "You can only add NFLayers or AVLayers to an NFLayerCollection"
+          throw new Error "You can only add NFLayers or AVLayers to an NFLayerCollection"
 
 
       newArray = for layer in layerArr
@@ -55,7 +55,7 @@ class NFLayerCollection
     else if newLayer.isAVLayer()
       @layers.push NFLayer.getSpecializedLayerFromAVLayer(newLayer)
     else
-      throw "You can only add NFLayers or AVLayers to an NFLayerCollection"
+      throw new Error "You can only add NFLayers or AVLayers to an NFLayerCollection"
     @
 
   ###*
@@ -140,7 +140,7 @@ class NFLayerCollection
       if layer.is layerToRemove
         @layers.splice(i, 1)
         return @
-    throw "Couldn't find layer to remove"
+    throw new Error "Couldn't find layer to remove"
 
   ###*
   Gets the topmost NFLayer in this collection
@@ -150,7 +150,7 @@ class NFLayerCollection
   ###
   getTopmostLayer: ->
     return null if @isEmpty()
-    throw "Can't get topmost layer of layers in different comps" unless @inSameComp()
+    throw new Error "Can't get topmost layer of layers in different comps" unless @inSameComp()
     topmostLayer = @layers[0]
     for layer in @layers
       topmostLayer = layer if layer.layer.index < topmostLayer.layer.index
@@ -164,7 +164,7 @@ class NFLayerCollection
   ###
   getBottommostLayer: ->
     return null if @isEmpty()
-    throw "Can't get bottommost layer of layers in different comps" unless @inSameComp()
+    throw new Error "Can't get bottommost layer of layers in different comps" unless @inSameComp()
     bottommostLayer = @layers[0]
     for layer in @layers
       bottommostLayer = layer if layer.layer.index > bottommostLayer.layer.index
@@ -188,8 +188,8 @@ class NFLayerCollection
   @returns {NFLayer} the new null NFLayer
   ###
   nullify: ->
-    throw "Cannot nullify layers in different compositions at the same time" unless @inSameComp()
-    throw "Cannot nullify without a given layer" if @isEmpty()
+    throw new Error "Cannot nullify layers in different compositions at the same time" unless @inSameComp()
+    throw new Error "Cannot nullify without a given layer" if @isEmpty()
     newNull = @containingComp().addNull()
     @setParents(newNull)
     topLayer = @getTopmostLayer()
@@ -204,7 +204,7 @@ class NFLayerCollection
   ###
   getEarliestLayer: ->
     return null if @isEmpty()
-    throw "Can't get earliest layer of layers in different comps" unless @inSameComp()
+    throw new Error "Can't get earliest layer of layers in different comps" unless @inSameComp()
     earliestLayer = @layers[0]
     for layer in @layers
       earliestLayer = layer if layer.layer.inPoint < earliestLayer.layer.inPoint
@@ -219,7 +219,7 @@ class NFLayerCollection
   ###
   getLatestLayer: ->
     return null if @isEmpty()
-    throw "Can't get latest layer of layers in different comps" unless @inSameComp()
+    throw new Error "Can't get latest layer of layers in different comps" unless @inSameComp()
     latestLayer = @layers[0]
     for layer in @layers
       latestLayer = layer if layer.layer.outPoint > latestLayer.layer.outPoint

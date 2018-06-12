@@ -13,7 +13,7 @@ class NFLayer
     else if layer instanceof NFLayer
       @layer  = layer.layer
     else
-      throw "Can only create a new NFLayer with a valid AVLayer or NFLayer object"
+      throw new Error "Can only create a new NFLayer with a valid AVLayer or NFLayer object"
     @
 
   # MARK: Instance Methods
@@ -237,7 +237,7 @@ class NFLayer
     else if newParent instanceof NFLayer
       @layer.parent = newParent?.layer
     else
-      throw "Can only set an NFLayer's parent to another NFLayer or AVLayer"
+      throw new Error "Can only set an NFLayer's parent to another NFLayer or AVLayer"
     return @
 
   ###*
@@ -259,7 +259,7 @@ class NFLayer
   @throws Will throw an error if not given an NFLayer
   ###
   moveBefore: (targetLayer) ->
-    throw "Can't run moveBefore on a non-NFLayer" unless targetLayer instanceof NFLayer
+    throw new Error "Can't run moveBefore on a non-NFLayer" unless targetLayer instanceof NFLayer
     @layer.moveBefore targetLayer.layer
     return @
 
@@ -271,7 +271,7 @@ class NFLayer
   @throws Will throw an error if not given an NFLayer
   ###
   moveAfter: (targetLayer) ->
-    throw "Can't run moveAfter on a non-NFLayer" unless targetLayer instanceof NFLayer
+    throw new Error "Can't run moveAfter on a non-NFLayer" unless targetLayer instanceof NFLayer
     @layer.moveAfter targetLayer.layer
     return @
 
@@ -323,9 +323,9 @@ class NFLayer
   ###
   addInOutMarkersForProperty: (options) ->
     # FIXME: Add a removeInOutMarkers() function to clear existing ones.
-    throw "Invalid property" unless options.property? and options.property instanceof Property
+    throw new Error "Invalid property" unless options.property? and options.property instanceof Property
     unless (options.startEquation? and options.startValue?) or (options.endEquation? and options.endValue?)
-      throw "Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value"
+      throw new Error "Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value"
 
     # Make sure the given vales are the right number of dimensions
     shouldFail = no
@@ -339,7 +339,7 @@ class NFLayer
     else
       shouldFail = yes if options.startValue? and options.startValue instanceof Array
       shouldFail = yes if options.endValue? and options.endValue instanceof Array
-    throw "Given start or end value type doesn't match property value" if shouldFail
+    throw new Error "Given start or end value type doesn't match property value" if shouldFail
 
     options.length ?= 2.0
     inComm = "NF In"
@@ -406,7 +406,7 @@ class NFLayer
         outValueString = options.endValue
       expression = "var outValue = #{outValueString};\n" + expression
 
-    throw "Can't set expression on this property" unless options.property.canSetExpression
+    throw new Error "Can't set expression on this property" unless options.property.canSetExpression
     options.property.expression = expression
 
     @
@@ -519,7 +519,7 @@ class NFLayer
   @returns {Object} the rect object with .left, .width, .height and .top values
   ###
   relativeRect: (rect, targetTime = null) ->
-    throw "Missing values on the rect" unless rect.left? and rect.top? and rect.width? and rect.height?
+    throw new Error "Missing values on the rect" unless rect.left? and rect.top? and rect.width? and rect.height?
     topLeftPoint = @relativePoint [rect.left, rect.top], targetTime
     bottomRightPoint = @relativePoint [rect.left + rect.width, rect.top + rect.height], targetTime
     newRect =
@@ -558,7 +558,7 @@ NFLayer = Object.assign NFLayer,
   @returns {NFLayer | NFHighlightLayer | NFPageLayer | NFEmphasisLayer | NFGaussyLayer | NFImageLayer} the specialized layer
   ###
   getSpecializedLayerFromAVLayer: (theLayer) ->
-    throw "Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer" unless theLayer.isAVLayer()
+    throw new Error "Can't run getSpecializedLayerFromAVLayer() on a non-AVLayer" unless theLayer.isAVLayer()
     tmpLayer = new NFLayer theLayer
     return tmpLayer.getSpecializedLayer()
 

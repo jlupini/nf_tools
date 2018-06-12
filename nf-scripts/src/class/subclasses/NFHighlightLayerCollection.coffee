@@ -11,7 +11,7 @@ class NFHighlightLayerCollection extends NFLayerCollection
   constructor: (layerArr) ->
     NFLayerCollection.call(@, layerArr)
     for theLayer in @layers
-      throw "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NFHighlightLayer
+      throw new Error "You can only add NFHighlightLayers to an NFHighlightLayerCollection" unless theLayer instanceof NFHighlightLayer
 
     @
   toString: ->
@@ -34,7 +34,7 @@ class NFHighlightLayerCollection extends NFLayerCollection
     else if newLayer instanceof NFHighlightLayer
       @layers.push newLayer
     else
-      throw "addLayer() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection"
+      throw new Error "addLayer() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection"
     @
 
   ###*
@@ -74,7 +74,7 @@ class NFHighlightLayerCollection extends NFLayerCollection
   ###
   getHighlightsInPage: (page) ->
     # FIXME: Pickup here this is what's broken and not working properly
-    throw "Can't getHighlightsInPage() when not given an NFPageComp" unless page instanceof NFPageComp
+    throw new Error "Can't getHighlightsInPage() when not given an NFPageComp" unless page instanceof NFPageComp
     highlightsInPage = new NFHighlightLayerCollection()
     for highlight in @layers
       highlightsInPage.addLayer highlight if highlight.getPageComp().is page

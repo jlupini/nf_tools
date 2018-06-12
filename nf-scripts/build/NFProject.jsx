@@ -88,7 +88,7 @@ NFProject = {
     var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, group, highlight, instruction, instructionString, j, k, key, l, len, len1, len2, mainComp, option, outPoint, ref, ref1, ref2, results, targetPDF, targetPDFNumber, theLayer, titlePage, titlePageLayer;
     mainComp = this.activeComp();
     if (!(mainComp instanceof NFPartComp)) {
-      throw "Can only run instruction on a part comp";
+      throw new Error("Can only run instruction on a part comp");
     }
     targetPDFNumber = /(^\d+)/i.exec(input);
     if (targetPDFNumber != null) {
@@ -127,7 +127,7 @@ NFProject = {
               if ((option.priority != null) && (instruction.priority != null) && option.priority < instruction.priority) {
                 instruction = option;
               } else if (((option.priority != null) && (instruction.priority != null)) || ((option.priority == null) && (instruction.priority == null))) {
-                throw "instruction matched two instruction options (" + instruction.display + " and " + option.display + ") with the same priority. Check layoutDictionary.";
+                throw new Error("instruction matched two instruction options (" + instruction.display + " and " + option.display + ") with the same priority. Check layoutDictionary.");
               } else if (option.priority != null) {
                 instruction = option;
               }
@@ -138,7 +138,7 @@ NFProject = {
         }
       }
       if (instruction == null) {
-        throw "No instruction matches instruction string";
+        throw new Error("No instruction matches instruction string");
       }
     }
     if ((targetPDF != null) && (instruction == null)) {
@@ -161,7 +161,7 @@ NFProject = {
     } else if (instruction.type = NFLayoutType.HIGHLIGHT) {
       highlight = targetPDF.findHighlight(instruction.look);
       if (highlight == null) {
-        throw "Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'";
+        throw new Error("Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'");
       }
       return mainComp.animateToHighlight({
         highlight: highlight,

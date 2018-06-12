@@ -9,7 +9,7 @@ Creates a new NFPaperLayerGroup from an NFPaperParentLayer
 class NFPaperLayerGroup
   constructor: (paperParent) ->
     @paperParent = paperParent
-    throw "Not a valid paper parent" unless @paperParent instanceof NFPaperParentLayer
+    throw new Error "Not a valid paper parent" unless @paperParent instanceof NFPaperParentLayer
   toString: ->
     # FIXME: Write this function
     return "NFPaperLayerGroup: #{@paperParent.layer.name}"
@@ -74,7 +74,7 @@ class NFPaperLayerGroup
   @throws Throws error if not given a NFHighlightLayer as model.highlight
   ###
   moveToHighlight: (model) ->
-    throw "\nInvalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+    throw new Error "\nInvalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
     model =
       highlight: model.highlight
       time: model.time ? @containingComp().getTime()

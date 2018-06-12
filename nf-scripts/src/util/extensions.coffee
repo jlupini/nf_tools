@@ -76,14 +76,14 @@ Property::easyEaseKeys = (model) ->
   model.easeWeight ?= 33
 
   if model.easeType instanceof Array
-    throw "Wrong number of type in easeType Array" unless model.easeType.length is 2
+    throw new Error "Wrong number of type in easeType Array" unless model.easeType.length is 2
     easeInType = model.easeType[0]
     easeOutType = model.easeType[1]
   else
     easeInType = easeOutType = model.easeType
 
   if model.easeWeight instanceof Array
-    throw "Array of weights must be the same length as the number of dimensions of the property" unless model.easeWeight.length is 2
+    throw new Error "Array of weights must be the same length as the number of dimensions of the property" unless model.easeWeight.length is 2
     easeInWeight = model.easeWeight[0]
     easeOutWeight = model.easeWeight[1]
   else

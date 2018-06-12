@@ -18,7 +18,7 @@ class NFPDF
         else if page instanceof NFPageComp
           newArr.push(page)
         else
-          throw "You can only add NFPageComps to an NFPDF"
+          throw new Error "You can only add NFPageComps to an NFPDF"
     @pages = newArr
   toString: ->
     return "NFPDF: #{@getPDFNumber()}"
@@ -36,7 +36,7 @@ class NFPDF
     else if newPage instanceof CompItem
       @pages.push new NFPageComp(newPage)
     else
-      throw "You can only add NFPageComps to an NFPDF"
+      throw new Error "You can only add NFPageComps to an NFPDF"
     @
 
   ###*
@@ -54,7 +54,7 @@ class NFPDF
   @param {NFPDF} testPDF - the PDF to test
   ###
   is: (testPDF) ->
-    throw "testPDF must be an NFPDF" unless testPDF instanceof NFPDF
+    throw new Error "testPDF must be an NFPDF" unless testPDF instanceof NFPDF
     return @getPDFNumber() is testPDF.getPDFNumber()
 
   ###*
@@ -64,7 +64,7 @@ class NFPDF
   @throws Throws error if no PDF number (if this object is empty)
   ###
   getPDFNumber: ->
-    throw "NO PDF number" if @pages.length is 0
+    throw new Error "NO PDF number" if @pages.length is 0
     return @pages[0].getPDFNumber()
 
   ###*
@@ -101,7 +101,7 @@ class NFPDF
   getTitlePage: ->
     count = @pages.length
     if count is 0
-      throw "Can't get the title page because there are no pages"
+      throw new Error "Can't get the title page because there are no pages"
     else if count is 1
       return @pages[0]
     else
@@ -124,7 +124,7 @@ NFPDF = Object.assign NFPDF,
   @throws throws error if not given an NFPageLayer
   ###
   fromPageLayer: (pageLayer) ->
-    throw "Can't make an NFPDF using fromPageLayer() without a NFPageLayer..." unless pageLayer instanceof NFPageLayer
+    throw new Error "Can't make an NFPDF using fromPageLayer() without a NFPageLayer..." unless pageLayer instanceof NFPageLayer
     return NFPDF.fromPDFNumber pageLayer.getPDFNumber()
 
   ###*
@@ -138,6 +138,6 @@ NFPDF = Object.assign NFPDF,
     folder = NFProject.findItem "PDF Precomps"
     items = NFProject.searchItems(theNumber + "_", folder)
 
-    throw "Cannot find PDF pages for the given number: '#{theNumber}'" if items.length is 0
+    throw new Error "Cannot find PDF pages for the given number: '#{theNumber}'" if items.length is 0
 
     return new NFPDF(items)

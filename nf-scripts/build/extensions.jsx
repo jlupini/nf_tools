@@ -99,7 +99,7 @@ Property.prototype.easyEaseKeys = function(model) {
   }
   if (model.easeType instanceof Array) {
     if (model.easeType.length !== 2) {
-      throw "Wrong number of type in easeType Array";
+      throw new Error("Wrong number of type in easeType Array");
     }
     easeInType = model.easeType[0];
     easeOutType = model.easeType[1];
@@ -108,7 +108,7 @@ Property.prototype.easyEaseKeys = function(model) {
   }
   if (model.easeWeight instanceof Array) {
     if (model.easeWeight.length !== 2) {
-      throw "Array of weights must be the same length as the number of dimensions of the property";
+      throw new Error("Array of weights must be the same length as the number of dimensions of the property");
     }
     easeInWeight = model.easeWeight[0];
     easeOutWeight = model.easeWeight[1];

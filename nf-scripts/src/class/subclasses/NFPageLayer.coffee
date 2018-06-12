@@ -10,7 +10,7 @@ Creates a new NFPageLayer from a given AVLayer
 class NFPageLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
-    throw "Cannot create an NFPageLayer from a layer without a source" unless layer.source?
+    throw new Error "Cannot create an NFPageLayer from a layer without a source" unless layer.source?
     @pageComp = new NFPageComp layer.source
     @
   # MARK: Instance Methods
@@ -94,11 +94,11 @@ class NFPageLayer extends NFLayer
       for highlight in highlightsToBubble.layers
 
         unless highlight.canBubbleUp()
-          throw "Cannot bubble highlight if already connected and not broken. Disconnect first"
+          throw new Error "Cannot bubble highlight if already connected and not broken. Disconnect first"
 
         # Make sure the highlight is in this page
         unless @getPageComp().is highlight.getPageComp()
-          throw "Cannot bubble highlight because it is not in this page!"
+          throw new Error "Cannot bubble highlight because it is not in this page!"
 
         targetPageLayerEffects = @effects()
         sourceEffect = highlight.highlighterEffect()
@@ -249,7 +249,7 @@ class NFPageLayer extends NFLayer
   @throws Throw error if highlight is not in page
   ###
   sourceRectForHighlight: (highlight, targetTime = null) ->
-    throw "Can't get source rect for this highlight since it's not in the layer" unless @containsHighlight highlight
+    throw new Error "Can't get source rect for this highlight since it's not in the layer" unless @containsHighlight highlight
     highlightRect = highlight.sourceRect()
     @relativeRect highlightRect, targetTime
 
@@ -384,7 +384,7 @@ class NFPageLayer extends NFLayer
       else if pageTurnStatus is NFPageLayer.PAGETURN_FLIPPED_DOWN or not pageTurnStatus?
         foldPosition.setValue @pageTurnDownPosition()
       else
-        throw "Invalid page turn type for initial position"
+        throw new Error "Invalid page turn type for initial position"
 
     forceMotionBlurEffect = @effect forceMotionBlurMatchName
     if not forceMotionBlurEffect?
@@ -454,9 +454,9 @@ class NFPageLayer extends NFLayer
     if startStatus is NFPageLayer.PAGETURN_NONE
       @setupPageTurnEffect()
     if startStatus is NFPageLayer.PAGETURN_BROKEN
-      throw "Page turn keyframes seem broken..."
+      throw new Error "Page turn keyframes seem broken..."
     if startStatus is NFPageLayer.PAGETURN_TURNING or endStatus is NFPageLayer.PAGETURN_TURNING
-      throw "Page is already turning at start or end time of new turn"
+      throw new Error "Page is already turning at start or end time of new turn"
 
     positions = [@pageTurnDownPosition(), @pageTurnUpPosition()]
 
@@ -498,7 +498,7 @@ class NFPageLayer extends NFLayer
   given highlight is not on this page.
   ###
   frameUpHighlight: (model) ->
-    throw "Invalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+    throw new Error "Invalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
 
     positionProp = @transform().position
     scaleProp = @transform().scale
@@ -550,11 +550,11 @@ class NFPageLayer extends NFLayer
   ###
   getScaleFactorToFrameUpHighlight: (model) ->
     model =
-      highlight: model.highlight ? throw "No highlight!"
+      highlight: model.highlight ? throw new Error "No highlight!"
       time: model.time ? @containingComp().getTime()
       fillPercentage: model.fillPercentage ? 85
       maxScale: model.maxScale ? 115
-    throw "Invalid highlight" unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+    throw new Error "Invalid highlight" unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
 
     highlightRect = @sourceRectForHighlight model.highlight, model.time
     compWidth = @containingComp().comp.width
@@ -586,7 +586,7 @@ class NFPageLayer extends NFLayer
   given highlight is not on this page.
   ###
   getPositionDeltaToFrameUpHighlight: (model) ->
-    throw "Invalid highlight" unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+    throw new Error "Invalid highlight" unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
 
     highlightRect = @sourceRectForHighlight model.highlight, model.time
 

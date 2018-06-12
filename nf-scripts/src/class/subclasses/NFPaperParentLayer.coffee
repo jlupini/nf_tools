@@ -10,7 +10,7 @@ Creates a new NFPaperParentLayer from a given null AVLayer
 class NFPaperParentLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
-    throw "Can only create a NFPaperParentLayer from a null layer" unless @layer.nullLayer
+    throw new Error "Can only create a NFPaperParentLayer from a null layer" unless @layer.nullLayer
     @
   # MARK: Instance Methods
   toString: ->
@@ -24,7 +24,7 @@ class NFPaperParentLayer extends NFLayer
   ###
   setName: ->
     children = @getChildren()
-    throw "Cannot set paper parent layer name because it has no child layers" if children.isEmpty()
+    throw new Error "Cannot set paper parent layer name because it has no child layers" if children.isEmpty()
     newName = 'PDF ' + children.layers[0].getPDFNumber()
     @layer.name = newName
     return @

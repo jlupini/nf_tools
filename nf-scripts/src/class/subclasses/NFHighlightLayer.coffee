@@ -11,7 +11,7 @@ class NFHighlightLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
     unless NFHighlightLayer.isHighlightLayer(@layer)
-      throw "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
+      throw new Error "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
     @
   toString: ->
     return "NFHighlightLayer: '#{@layer.name}'"

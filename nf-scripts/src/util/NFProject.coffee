@@ -72,7 +72,7 @@ NFProject =
 
     # Get a PDF Number from the input, if any
     mainComp = @activeComp()
-    throw "Can only run instruction on a part comp" unless mainComp instanceof NFPartComp
+    throw new Error "Can only run instruction on a part comp" unless mainComp instanceof NFPartComp
     targetPDFNumber = /(^\d+)/i.exec(input)
     targetPDFNumber = targetPDFNumber[1] if targetPDFNumber?
     if targetPDFNumber?
@@ -107,12 +107,12 @@ NFProject =
               if option.priority? and instruction.priority? and option.priority < instruction.priority
                 instruction = option
               else if (option.priority? and instruction.priority?) or (not option.priority? and not instruction.priority?)
-                throw "instruction matched two instruction options (#{instruction.display} and #{option.display}) with the same priority. Check layoutDictionary."
+                throw new Error "instruction matched two instruction options (#{instruction.display} and #{option.display}) with the same priority. Check layoutDictionary."
               else if option.priority?
                 instruction = option
             else
               instruction = option
-      throw "No instruction matches instruction string" unless instruction?
+      throw new Error "No instruction matches instruction string" unless instruction?
 
     # OK, now we have four key pieces of information: the instruction, flags, the current PDF and the active PDF
 
@@ -130,10 +130,11 @@ NFProject =
         group = mainComp.groupFromPDF activePDF
         for theLayer in group.getChildren(yes).layers
           theLayer.layer.outPoint = outPoint
+
     # if the instruction is a highlight, let's call animateToHighlight
     else if instruction.type = NFLayoutType.HIGHLIGHT
       highlight = targetPDF.findHighlight instruction.look
-      throw "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
+      throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
       mainComp.animateToHighlight
         highlight: highlight

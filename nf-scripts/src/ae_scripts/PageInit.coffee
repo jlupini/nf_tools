@@ -11,14 +11,14 @@ presentUI = ->
 	if _.mainComp.selectedLayers().onlyContainsPageLayers()
 		_.selectedPages = _.mainComp.selectedPageLayers()
 	else
-		throw "Can't initialize non-page layers"
+		throw new Error "Can't initialize non-page layers"
 
-	throw "Can't initialize pages from different PDFs at the same time" unless _.selectedPages.fromSamePDF()
+	throw new Error "Can't initialize pages from different PDFs at the same time" unless _.selectedPages.fromSamePDF()
 
 	allHighlights = _.selectedPages.highlights()
 
 	# Check if there are duplicate highlight names and get out if there are
-	throw "Some highlights in the selected pages have the same name - Please ensure unique names" if allHighlights.duplicateNames()
+	throw new Error "Some highlights in the selected pages have the same name - Please ensure unique names" if allHighlights.duplicateNames()
 
 	# Present UI
 	w = new Window('dialog', 'Page Initialization')
@@ -33,7 +33,7 @@ presentUI = ->
 	for theLayer in _.selectedPages.layers
 		orphans++ unless theLayer.hasNullParent()
 	if 0 < orphans < _.selectedPages.count()
-		throw "Can't run this script on both initialized and uninitialized page layers at the same time"
+		throw new Error "Can't run this script on both initialized and uninitialized page layers at the same time"
 
 	# Only Show the Init tab if pages are ORPHANS (Not Initialized)
 	if orphans > 0

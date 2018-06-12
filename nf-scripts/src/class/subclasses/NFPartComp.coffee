@@ -10,14 +10,16 @@ Creates a new NFPartComp and sets its comp property.
 class NFPartComp extends NFComp
   constructor: (comp) ->
     NFComp.call(this, comp)
-    throw "Can't create an NFPartComp from a non-part comp" unless @name.indexOf("Part") >= 0
+    throw new Error "Can't create an NFPartComp from a non-part comp" unless @name.indexOf("Part") >= 0
     @
 
   toString: ->
     return "NFPartComp: '#{@name}'"
 
   ###*
-  Animates to a given highlight, with options.
+  Animates to a given highlight, with options. Will throw an error if there are
+  other animations that take place after the current time on the same PDF in
+  this comp.
   @memberof NFPartComp
   @param {Object} model - the model object
   @param {NFHighlightLayer} model.highlight - the highlight to animate to
@@ -28,10 +30,13 @@ class NFPartComp extends NFComp
   for the final highlight to take up
   @param {boolean} [model.skipTitle=false] - whether we should skip going to the
   title page if this PDF is new in the project
+  @throws Throw error if not given a highlight
+  @throws Throw error if there is movement on the target page parent layer
+  after the current comp time in this comp.
   @returns {NFPartComp} self
   ###
   animateToHighlight: (model) ->
-    throw "Can't animate to a highlight because I don't have one..." unless model.highlight instanceof NFHighlightLayer
+    throw new Error "Can't animate to a highlight because I don't have one..." unless model.highlight instanceof NFHighlightLayer
     model =
       highlight: model.highlight
       duration: model.animationDuration ? 3
@@ -77,7 +82,7 @@ class NFPartComp extends NFComp
             frameUp:
               highlight: model.highlight
               fillPercentage: model.fillPercentage * 0.7
-          targetPageLayer.bubbleUp model.highlight
+          targetPageLayer.bubbleUp model.highlight unless model.highlight.isBubbled()
 
           titlePageLayer.animatePageTurn()
 
@@ -95,7 +100,16 @@ class NFPartComp extends NFComp
     # else (this pdf is in a part comp somewhere)
     else
 
-    # If it's the active PDF now
+      # Ensure there are no keyframes on the target's parent in the future
+      targetGroup = @groupFromPDF targetPDF
+      if targetGroup?
+        posProp = targetGroup.paperParent.transform().position
+        if posProp.numKeys > 0
+          for i in [1..posProp.numKeys]
+            if posProp.keyTime(i) > @getTime()
+              throw new Error "Can't animate to highlight because animations exist in the FUTURE on the target PDF"
+
+      # If it's the active PDF now
       if @activePDF().is targetPDF
         activePageLayer = @activePage()
         group = new NFPaperLayerGroup activePageLayer.getPaperParentLayer()
@@ -108,7 +122,7 @@ class NFPartComp extends NFComp
             fillPercentage: model.fillPercentage
             maxScale: model.maxPageScale
 
-          activePageLayer.bubbleUp model.highlight
+          activePageLayer.bubbleUp model.highlight unless model.highlight.isBubbled()
 
         # else (the highlight is on a different page)
         else
@@ -127,7 +141,7 @@ class NFPartComp extends NFComp
                   highlight: model.highlight
                   fillPercentage: model.fillPercentage * 2
 
-              targetPageLayer.bubbleUp model.highlight
+              targetPageLayer.bubbleUp model.highlight unless model.highlight.isBubbled()
 
               # Run a page turn flip down starting half a second back from now
               targetPageLayer.animatePageTurn
@@ -156,7 +170,7 @@ class NFPartComp extends NFComp
                 highlight: model.highlight
                 fillPercentage: model.fillPercentage * 0.7
 
-            targetPageLayer.bubbleUp model.highlight
+            targetPageLayer.bubbleUp model.highlight unless model.highlight.isBubbled()
 
             # Run a page turn flip down starting half a second back from now
             activePageLayer.animatePageTurn
@@ -172,17 +186,33 @@ class NFPartComp extends NFComp
       # else (not the active PDF)
       else
         # Animate in the page ALREADY focused on the highlight
-        # FIXME: Pickup here - bring it in below it's soon-to-be-parent layer, then
-        # adjust behaviour accordingly based on whether it's now below or above
-        # the currently active page...
+        activePageLayer = @activePage()
+        targetGroup = @groupFromPDF targetPDF
+        alreadyInThisPart = targetGroup?
+
         targetPageLayer = @insertPage
           page: targetPage
-          above: activePageLayer
-          animate: yes
           continuous: yes
           frameUp:
             highlight: model.highlight
-            fillPercentage: model.fillPercentage * 0.7
+            fillPercentage: model.fillPercentage
+
+        targetPageLayer.bubbleUp model.highlight unless model.highlight.isBubbled()
+
+        targetGroup = @groupFromPDF targetPDF
+
+        if alreadyInThisPart
+          targetGroup.gatherLayers new NFLayerCollection [targetPageLayer]
+
+          if targetPageLayer.index() > activePageLayer.index()
+            targetPageLayer.slideIn()
+          else
+            # FIXME: Pickup here and fix the add in out markers function to support
+            # Adding or removing only the ins or outs for a property
+            alert "Slide out the above layer!"
+        else
+          targetPageLayer.slideIn()
+
     @
 
   ###*
@@ -207,7 +237,7 @@ class NFPartComp extends NFComp
   and .at
   ###
   insertPage: (model) ->
-    throw "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
+    throw new Error "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
 
     model.at = 1 unless model.above? or model.below? or model.at?
     model.time = model.time ? @getTime()
@@ -233,7 +263,7 @@ class NFPartComp extends NFComp
     if model.pageTurn is NFPageLayer.PAGETURN_FLIPPED_UP or model.pageTurn is NFPageLayer.PAGETURN_FLIPPED_DOWN
       pageLayer.setupPageTurnEffect model.pageTurn
     else if model.pageTurn isnt NFPageLayer.PAGETURN_NONE
-      throw "Invalid pageturn type to insert page with"
+      throw new Error "Invalid pageturn type to insert page with"
 
     pageLayer.makeContinuous() if model.continuous
 
@@ -251,7 +281,7 @@ class NFPartComp extends NFComp
   ###
   getZoomer: ->
     zoomer = @layerWithName 'Zoomer'
-    throw "This NFPartComp has no zoomer!" unless zoomer?
+    throw new Error "This NFPartComp has no zoomer!" unless zoomer?
     return zoomer
 
   ###*
@@ -300,7 +330,7 @@ class NFPartComp extends NFComp
   @returns {NFPaperLayerGroup | null} The found group
   ###
   groupFromPDF: (pdf) ->
-    throw "given pdf is not an NFPDF" unless pdf instanceof NFPDF
+    throw new Error "given pdf is not an NFPDF" unless pdf instanceof NFPDF
     matchedLayers = new NFLayerCollection
     parentLayer = @layerWithName pdf.getName()
 
@@ -318,7 +348,7 @@ class NFPartComp extends NFComp
   @returns {NFPageLayerCollection} The found page layers
   ###
   layersForPage: (page) ->
-    throw "given page is not an NFPageComp" unless page instanceof NFPageComp
+    throw new Error "given page is not an NFPageComp" unless page instanceof NFPageComp
     matchedPages = new NFPageLayerCollection
     for theLayer in @allLayers().layers
       if theLayer instanceof NFPageLayer and theLayer.getPageComp().is page
