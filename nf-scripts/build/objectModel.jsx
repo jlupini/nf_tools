@@ -733,6 +733,9 @@ NFLayer = (function() {
     if (!((options.property != null) && options.property instanceof Property)) {
       throw new Error("Invalid property");
     }
+    if (!options.property.canSetExpression) {
+      throw new Error("Can't set expression on this property");
+    }
     if (!(((options.startEquation != null) && (options.startValue != null)) || ((options.endEquation != null) && (options.endValue != null)))) {
       throw new Error("Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value");
     }
@@ -780,15 +783,11 @@ NFLayer = (function() {
       if (inMarker == null) {
         markers.setValueAtTime(this.layer.inPoint + options.length, new MarkerValue(inComm));
       }
-    } else if (inMarker != null) {
-      this.layer.removeMarker(inComm);
     }
     if (options.endValue != null) {
       if (outMarker == null) {
         markers.setValueAtTime(this.layer.outPoint - options.length, new MarkerValue(outComm));
       }
-    } else if (outMarker != null) {
-      this.layer.removeMarker(outComm);
     }
     fileText = NF.Util.readFile("expressions/marker-animation-main-function.js");
     fileText = NF.Util.fixLineBreaks(fileText);
@@ -838,9 +837,6 @@ NFLayer = (function() {
         outValueString = options.endValue;
       }
       expression = ("var outValue = " + outValueString + ";\n") + expression;
-    }
-    if (!options.property.canSetExpression) {
-      throw new Error("Can't set expression on this property");
     }
     options.property.expression = expression;
     return this;
@@ -2975,7 +2971,82 @@ NFPageLayer = (function(superClass) {
 
 
   /**
-  Slides in the pageLayer using markers. Overrides existing markers!!!
+  Slides in or out the pageLayer using markers. #slideIn and #slideOut both
+  call this method
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model] - The options
+  @param {enum} [model.fromEdge=NFComp.RIGHT] - The direction to slide in from.
+  Default is the right.
+  @param {boolean} [model.in=yes] - If page should slide in. No means out
+   */
+
+  NFPageLayer.prototype.slide = function(model) {
+    var animatingX, animatingY, endEquation, endValue, positionProperty, slider, startEquation, startOffset, startValue, xVal, yVal, zVal;
+    if (model == null) {
+      model = [];
+    }
+    if (model.fromEdge == null) {
+      model.fromEdge = NFComp.RIGHT;
+    }
+    if (model["in"] == null) {
+      model["in"] = true;
+    }
+    positionProperty = this.layer.property("Transform").property("Position");
+    animatingX = model.fromEdge === NFComp.RIGHT || model.fromEdge === NFComp.LEFT;
+    animatingY = model.fromEdge === NFComp.TOP || model.fromEdge === NFComp.BOTTOM;
+    startOffset = (function() {
+      switch (false) {
+        case model.fromEdge !== NFComp.RIGHT:
+          return 3000;
+        case model.fromEdge !== NFComp.LEFT:
+          return -3000;
+        case model.fromEdge !== NFComp.BOTTOM:
+          return this.containingComp().comp.height * 1.1;
+        case model.fromEdge !== NFComp.TOP:
+          return this.sourceRect().height * 1.1;
+        default:
+          return 0;
+      }
+    }).call(this);
+    slider = this.addSlider("Start Offset", startOffset);
+    xVal = (function() {
+      switch (false) {
+        case !animatingX:
+          return slider.property("Slider");
+        default:
+          return positionProperty.value[0];
+      }
+    })();
+    yVal = (function() {
+      switch (false) {
+        case !animatingY:
+          return slider.property("Slider");
+        default:
+          return positionProperty.value[1];
+      }
+    })();
+    zVal = positionProperty.value[2];
+    if (model["in"]) {
+      startEquation = NF.Util.easingEquations.out_quint;
+      startValue = [xVal, yVal, zVal];
+    } else {
+      endEquation = NF.Util.easingEquations.in_quint;
+      endValue = [xVal, yVal, zVal];
+    }
+    this.addInOutMarkersForProperty({
+      property: positionProperty,
+      startEquation: startEquation,
+      startValue: startValue,
+      endEquation: endEquation,
+      endValue: endValue
+    });
+    return this;
+  };
+
+
+  /**
+  Slides in the pageLayer using markers.
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {Object} [model] - The options
@@ -2984,21 +3055,27 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.slideIn = function(model) {
-    var positionProperty, slider;
-    if (model == null) {
-      model = [];
-    }
-    if (model.fromEdge == null) {
-      model.fromEdge = NFComp.RIGHT;
-    }
-    positionProperty = this.layer.property("Transform").property("Position");
-    slider = this.addSlider("Start Offset", 3000);
-    this.addInOutMarkersForProperty({
-      property: positionProperty,
-      startEquation: NF.Util.easingEquations.out_quint,
-      startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
+    return this.slide({
+      "in": true,
+      fromEdge: model != null ? model.fromEdge : void 0
     });
-    return this;
+  };
+
+
+  /**
+  Slides out the pageLayer using markers.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model] - The options
+  @param {enum} [model.toEdge=NFComp.RIGHT] - The direction to slide out to.
+  Default is the right.
+   */
+
+  NFPageLayer.prototype.slideOut = function(model) {
+    return this.slide({
+      "in": false,
+      fromEdge: model != null ? model.toEdge : void 0
+    });
   };
 
 

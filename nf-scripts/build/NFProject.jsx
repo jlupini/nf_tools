@@ -154,7 +154,11 @@ NFProject = {
         results = [];
         for (l = 0, len2 = ref2.length; l < len2; l++) {
           theLayer = ref2[l];
-          results.push(theLayer.layer.outPoint = outPoint);
+          if (theLayer.layer.outPoint > outPoint) {
+            results.push(theLayer.layer.outPoint = outPoint);
+          } else {
+            results.push(void 0);
+          }
         }
         return results;
       }

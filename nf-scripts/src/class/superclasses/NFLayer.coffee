@@ -322,8 +322,10 @@ class NFLayer
   number of dimensions for this property
   ###
   addInOutMarkersForProperty: (options) ->
-    # FIXME: Add a removeInOutMarkers() function to clear existing ones.
+    # FIXME: Pickup here and find a way to let this method add a new marker for
+    # say the out position to an existing in position one...
     throw new Error "Invalid property" unless options.property? and options.property instanceof Property
+    throw new Error "Can't set expression on this property" unless options.property.canSetExpression
     unless (options.startEquation? and options.startValue?) or (options.endEquation? and options.endValue?)
       throw new Error "Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value"
 
@@ -355,15 +357,11 @@ class NFLayer
       outMarker = markers.keyValue(outComm)
     catch e
 
+    # Add the in and/or out markers if given a start/end value
     if options.startValue?
       markers.setValueAtTime @layer.inPoint + options.length, new MarkerValue(inComm) unless inMarker?
-    else if inMarker?
-      @layer.removeMarker(inComm)
-
     if options.endValue?
       markers.setValueAtTime @layer.outPoint - options.length, new MarkerValue(outComm) unless outMarker?
-    else if outMarker?
-      @layer.removeMarker(outComm)
 
     # Create and add the expression to the property
     fileText = NF.Util.readFile "expressions/marker-animation-main-function.js"
@@ -406,7 +404,6 @@ class NFLayer
         outValueString = options.endValue
       expression = "var outValue = #{outValueString};\n" + expression
 
-    throw new Error "Can't set expression on this property" unless options.property.canSetExpression
     options.property.expression = expression
 
     @

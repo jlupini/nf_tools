@@ -340,7 +340,59 @@ class NFPageLayer extends NFLayer
     return paperParentLayer
 
   ###*
-  Slides in the pageLayer using markers. Overrides existing markers!!!
+  Slides in or out the pageLayer using markers. #slideIn and #slideOut both
+  call this method
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model] - The options
+  @param {enum} [model.fromEdge=NFComp.RIGHT] - The direction to slide in from.
+  Default is the right.
+  @param {boolean} [model.in=yes] - If page should slide in. No means out
+  ###
+  slide: (model) ->
+    model ?= []
+    model.fromEdge ?= NFComp.RIGHT
+    model.in ?= yes
+
+    positionProperty = @layer.property("Transform").property("Position")
+
+    animatingX = model.fromEdge is NFComp.RIGHT or model.fromEdge is NFComp.LEFT
+    animatingY = model.fromEdge is NFComp.TOP or model.fromEdge is NFComp.BOTTOM
+
+    # Make a slider for controlling the start position
+    startOffset = switch
+      when model.fromEdge is NFComp.RIGHT then 3000
+      when model.fromEdge is NFComp.LEFT then -3000
+      when model.fromEdge is NFComp.BOTTOM then @containingComp().comp.height * 1.1
+      when model.fromEdge is NFComp.TOP then @sourceRect().height * 1.1
+      else 0
+    slider = @addSlider("Start Offset", startOffset)
+
+    xVal = switch
+      when animatingX then slider.property("Slider")
+      else positionProperty.value[0]
+    yVal = switch
+      when animatingY then slider.property("Slider")
+      else positionProperty.value[1]
+    zVal = positionProperty.value[2]
+
+    if model.in
+      startEquation = NF.Util.easingEquations.out_quint
+      startValue = [xVal, yVal, zVal]
+    else
+      endEquation = NF.Util.easingEquations.in_quint
+      endValue = [xVal, yVal, zVal]
+
+    @addInOutMarkersForProperty
+      property: positionProperty
+      startEquation: startEquation
+      startValue: startValue
+      endEquation: endEquation
+      endValue: endValue
+    @
+
+  ###*
+  Slides in the pageLayer using markers.
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {Object} [model] - The options
@@ -348,17 +400,22 @@ class NFPageLayer extends NFLayer
   Default is the right.
   ###
   slideIn: (model) ->
-    model ?= []
-    model.fromEdge ?= NFComp.RIGHT
+    @slide
+      in: yes
+      fromEdge: model?.fromEdge
 
-    positionProperty = @layer.property("Transform").property("Position")
-    # Make a slider for controlling the start position
-    slider = @addSlider("Start Offset", 3000)
-    @addInOutMarkersForProperty
-      property: positionProperty
-      startEquation: NF.Util.easingEquations.out_quint
-      startValue: [slider.property("Slider"), positionProperty.value[1], positionProperty.value[2]]
-    @
+  ###*
+  Slides out the pageLayer using markers.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model] - The options
+  @param {enum} [model.toEdge=NFComp.RIGHT] - The direction to slide out to.
+  Default is the right.
+  ###
+  slideOut: (model) ->
+    @slide
+      in: no
+      fromEdge: model?.toEdge
 
   ###*
   Adds the pageturn effect, motion blur effect and drop shadow to the layer in

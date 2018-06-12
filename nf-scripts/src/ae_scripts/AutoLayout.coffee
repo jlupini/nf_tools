@@ -15,10 +15,11 @@ main = ->
 	input = prompt('Enter the instruction (without brackets):')
 	# break if input is "" or not input?
 
-	try
-		NFProject.followInstruction input
-	catch e
-		alert "Ah shit... Error message:\n\"#{e.message}\"\n\nFrom line ##{e.line} in file '#{e.fileName}'"
+	NFProject.followInstruction input
+	# try
+	# 	NFProject.followInstruction input
+	# catch e
+	# 	alert "Ah shit... Error message:\n\"#{e.message}\"\n\nFrom line ##{e.line} in file '#{e.fileName}'"
 
 	# alert('Moving on')
 	# time += 5
