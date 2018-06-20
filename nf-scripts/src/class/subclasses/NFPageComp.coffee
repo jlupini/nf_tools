@@ -48,7 +48,7 @@ class NFPageComp extends NFComp
     highlightLayers = new NFHighlightLayerCollection()
     for theLayer in sourceLayers
       if NFHighlightLayer.isHighlightLayer(theLayer)
-        highlightLayers.addLayer(theLayer)
+        highlightLayers.add(theLayer)
     return highlightLayers
 
   ###*

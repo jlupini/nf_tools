@@ -9,7 +9,7 @@ endEquation = function(t, b, c, d) {
 };
 
 easeAndWizz = function() {
-  var d, dimensionCount, e, eX, eY, eZ, endValue, error, i, idx, inMarker, outMarker, ref, sX, sY, sZ, startValue, t, testMarker, val1, val2, val3;
+  var d, dimensionCount, e, eX, eY, eZ, endValue, error, error1, error2, error3, error4, i, idx, inMarker, outMarker, outValue, ref, sX, sY, sZ, startValue, t, testMarker, val1, val2, val3;
   if (marker.numKeys > 0) {
     for (idx = i = 1, ref = marker.numKeys; 1 <= ref ? i <= ref : i >= ref; idx = 1 <= ref ? ++i : --i) {
       testMarker = marker.key(idx);
@@ -35,9 +35,66 @@ easeAndWizz = function() {
   } catch (error) {
     e = error;
   }
-  if ((inMarker != null) && (inPoint <= time && time <= inMarker.time)) {
+  if ((inMarker != null) && time < inPoint) {
+    startValue = inValue;
+    try {
+      startValue[0];
+    } catch (error1) {
+      e = error1;
+      startValue = [startValue];
+    }
+    sX = startValue[0];
+    if (dimensionCount >= 2) {
+      sY = startValue[1];
+      if (dimensionCount >= 3) {
+        sZ = startValue[2];
+      }
+    }
+    switch (dimensionCount) {
+      case 1:
+        return sX;
+      case 2:
+        return [sX, sY];
+      case 3:
+        return [sX, sY, sZ];
+      default:
+        return null;
+    }
+  } else if ((outMarker != null) && time > outPoint) {
+    endValue = outValue;
+    try {
+      outValue[0];
+    } catch (error2) {
+      e = error2;
+      outValue = [outValue];
+    }
+    sX = outValue[0];
+    if (dimensionCount >= 2) {
+      sY = outValue[1];
+      if (dimensionCount >= 3) {
+        sZ = outValue[2];
+      }
+    }
+    switch (dimensionCount) {
+      case 1:
+        return sX;
+      case 2:
+        return [sX, sY];
+      case 3:
+        return [sX, sY, sZ];
+      default:
+        return null;
+    }
+  } else if ((inMarker != null) && (inPoint <= time && time <= inMarker.time)) {
     startValue = inValue;
     endValue = valueAtTime(inMarker.time);
+    try {
+      startValue[0];
+    } catch (error3) {
+      e = error3;
+      startValue = [startValue];
+      endValue = [endValue];
+    }
     t = time - inPoint;
     d = inMarker.time - inPoint;
     sX = startValue[0];
@@ -67,6 +124,13 @@ easeAndWizz = function() {
   } else if ((outMarker != null) && (outMarker.time <= time && time <= outPoint)) {
     startValue = valueAtTime(outMarker.time);
     endValue = outValue;
+    try {
+      endValue[0];
+    } catch (error4) {
+      e = error4;
+      startValue = [startValue];
+      endValue = [endValue];
+    }
     t = time - inPoint;
     d = outPoint - outMarker.time;
     sX = startValue[0];

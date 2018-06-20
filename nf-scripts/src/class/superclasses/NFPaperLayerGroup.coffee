@@ -31,7 +31,7 @@ class NFPaperLayerGroup
     allChildren = @getChildren()
     pageChildren = new NFPageLayerCollection()
     for layer in allChildren.layers
-      pageChildren.addLayer layer if layer instanceof NFPageLayer
+      pageChildren.add layer if layer instanceof NFPageLayer
     return pageChildren
 
   ###*
@@ -147,8 +147,8 @@ class NFPaperLayerGroup
     layersAboveGroup = new NFLayerCollection()
     layersBelowGroup = new NFLayerCollection()
     for layer in layersToGather.layers
-      layersAboveGroup.addLayer layer if layer.index() < @paperParent.index()
-      layersBelowGroup.addLayer layer if layer.index() > childLayers.getBottommostLayer().index()
+      layersAboveGroup.add layer if layer.index() < @paperParent.index()
+      layersBelowGroup.add layer if layer.index() > childLayers.getBottommostLayer().index()
 
     # For the layers in this collection above the group
     while layersAboveGroup.count() > 0

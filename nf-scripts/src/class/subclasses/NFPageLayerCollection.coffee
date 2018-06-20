@@ -29,13 +29,13 @@ class NFPageLayerCollection extends NFLayerCollection
   @param {NFPageLayer | AVLayer} newLayer - the layer to add
   @throws Throw error if not adding a NFPageLayer or an AVLayer that's a valid NFPageLayer
   ###
-  addLayer: (newLayer) ->
+  add: (newLayer) ->
     if newLayer.isAVLayer()
       @layers.push new NFPageLayer(newLayer)
     else if newLayer instanceof NFPageLayer
       @layers.push newLayer
     else
-      throw new Error "addLayer() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection"
+      throw new Error "add() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection"
     @
 
   ###*
@@ -68,7 +68,7 @@ class NFPageLayerCollection extends NFLayerCollection
       if theLayer instanceof NFPageLayer
         # Get the layer's NFPageComp
         for testHighlight in theLayer.highlights().layers
-          foundHighlights.addLayer theLayer if highlight.is testHighlight
+          foundHighlights.add theLayer if highlight.is testHighlight
     return foundHighlights
 
   ###*
@@ -135,9 +135,9 @@ class NFPageLayerCollection extends NFLayerCollection
     letteredNames = new NFPageLayerCollection
     for theLayer in @layers
       if theLayer.getName().indexOf("(") >= 0 and theLayer.getName().indexOf(")") >= 0
-        letteredNames.addLayer theLayer
+        letteredNames.add theLayer
       else
-        noLetterNames.addLayer theLayer
+        noLetterNames.add theLayer
 
     alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
 

@@ -306,15 +306,15 @@ class NFLayer
   values. Equations found in easingEquations.coffee
   @param {Property} options.property - the property to use for the in/outs.
   required
-  @param {float} options.length - the length of the transition. Default 2.0
-  @param {string} options.startEquation - the equation to use for the in
+  @param {float} [options.length=2.0] - the length of the transition. Default 2.0
+  @param {string} [options.startEquation=NF.Util.easingEquations.out_quint] - the equation to use for the in
   transition of the property.
-  @param {string} options.endEquation - the equation to use for the out
+  @param {string} [options.endEquation=NF.Util.easingEquations.in_quint] - the equation to use for the out
   transition of the property.
-  @param {any | Array} options.startValue - the value for this property
+  @param {any | Array} [options.startValue] - the value for this property
   at its inPoint. If the property is multidimensional, this should be an
   array of that many dimensions. Can also pass a slider property.
-  @param {any | Array} options.endValue - the value for this property at
+  @param {any | Array} [options.endValue] - the value for this property at
   its outPoint. If the property is multidimensional, this should be an
   array of that many dimensions. Can also pass a slider property.
   @throws Throws error if not given at least a start or end equation and value
@@ -326,8 +326,8 @@ class NFLayer
     # say the out position to an existing in position one...
     throw new Error "Invalid property" unless options.property? and options.property instanceof Property
     throw new Error "Can't set expression on this property" unless options.property.canSetExpression
-    unless (options.startEquation? and options.startValue?) or (options.endEquation? and options.endValue?)
-      throw new Error "Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value"
+    unless options.startValue? or options.endValue?
+      throw new Error "Can't run makeEasedInOutFromMarkers() without at least a start or end value"
 
     # Make sure the given vales are the right number of dimensions
     shouldFail = no
@@ -344,6 +344,9 @@ class NFLayer
     throw new Error "Given start or end value type doesn't match property value" if shouldFail
 
     options.length ?= 2.0
+    options.startEquation ?= NF.Util.easingEquations.out_quint
+    options.endEquation ?= NF.Util.easingEquations.in_quint
+
     inComm = "NF In"
     outComm = "NF Out"
 

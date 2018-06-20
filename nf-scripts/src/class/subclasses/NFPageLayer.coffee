@@ -280,7 +280,7 @@ class NFPageLayer extends NFLayer
     for partComp in partComps
       layersInComp = partComp.layersForPage thisPage
       unless layersInComp.isEmpty()
-        layerInstances.addLayer theLayer for theLayer in layersInComp.layers
+        layerInstances.add theLayer for theLayer in layersInComp.layers
 
     # Get the last time we saw
     unless layerInstances.isEmpty()

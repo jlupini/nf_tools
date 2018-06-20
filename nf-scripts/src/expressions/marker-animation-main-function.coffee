@@ -1,5 +1,5 @@
 startEquation = (t, b, c, d) ->
-	return eval startEquationString
+  return eval startEquationString
 
 endEquation =  (t, b, c, d) ->
   return eval endEquationString
@@ -26,10 +26,66 @@ easeAndWizz = ->
     dimensionCount = 3
   catch e
 
-  if inMarker? and inPoint <= time <= inMarker.time
+  # Deal with before and after
+  if inMarker? and time < inPoint
+
+    startValue = inValue
+    try
+      startValue[0]
+    catch e
+      startValue = [startValue]
+
+    sX = startValue[0]
+    if dimensionCount>= 2
+      sY = startValue[1]
+      if dimensionCount>= 3
+        sZ = startValue[2]
+
+    switch dimensionCount
+      when 1
+        return sX
+      when 2
+        return [sX, sY]
+      when 3
+        return [sX, sY, sZ]
+      else
+        return null
+
+  else if outMarker? and time > outPoint
+
+    endValue = outValue
+    try
+      outValue[0]
+    catch e
+      outValue = [outValue]
+
+    sX = outValue[0]
+    if dimensionCount>= 2
+      sY = outValue[1]
+      if dimensionCount>= 3
+        sZ = outValue[2]
+
+    switch dimensionCount
+      when 1
+        return sX
+      when 2
+        return [sX, sY]
+      when 3
+        return [sX, sY, sZ]
+      else
+        return null
+
+  # Deal with the Beginning Stuff
+  else if inMarker? and inPoint <= time <= inMarker.time
 
     startValue = inValue
     endValue = valueAtTime(inMarker.time)
+
+    try
+      startValue[0]
+    catch e
+      startValue = [startValue]
+      endValue = [endValue]
 
     t = time - (inPoint)
     d = inMarker.time - (inPoint)
@@ -55,10 +111,17 @@ easeAndWizz = ->
         return [val1, val2, val3]
       else
         return null
+
+  # Deal with the Ending Stuff
   else if outMarker? and outMarker.time <= time <= outPoint
 
     startValue = valueAtTime(outMarker.time)
     endValue = outValue
+    try
+      endValue[0]
+    catch e
+      startValue = [startValue]
+      endValue = [endValue]
 
     t = time - (inPoint)
     d = outPoint - outMarker.time

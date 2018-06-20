@@ -102,7 +102,7 @@ presentUI = function() {
         highlight = ref2[k];
         checkbox = highlightCheckboxes[highlight.getName()];
         if (checkbox.value === true) {
-          highlightChoices.addLayer(highlight);
+          highlightChoices.add(highlight);
         }
       }
       if (onlyBubbleUpCheckbox.value === false) {

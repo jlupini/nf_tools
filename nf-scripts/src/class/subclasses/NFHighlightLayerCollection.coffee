@@ -28,13 +28,13 @@ class NFHighlightLayerCollection extends NFLayerCollection
   @returns {NFHighlightLayerCollection} self
   @throws Throws error if not given an NFHighlightLayer or valid highlight AVLayer (ShapeLayer)
   ###
-  addLayer: (newLayer) ->
+  add: (newLayer) ->
     if newLayer.isAVLayer()
       @layers.push new NFHighlightLayer(newLayer)
     else if newLayer instanceof NFHighlightLayer
       @layers.push newLayer
     else
-      throw new Error "addLayer() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection"
+      throw new Error "add() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection"
     @
 
   ###*
@@ -77,7 +77,7 @@ class NFHighlightLayerCollection extends NFLayerCollection
     throw new Error "Can't getHighlightsInPage() when not given an NFPageComp" unless page instanceof NFPageComp
     highlightsInPage = new NFHighlightLayerCollection()
     for highlight in @layers
-      highlightsInPage.addLayer highlight if highlight.getPageComp().is page
+      highlightsInPage.add highlight if highlight.getPageComp().is page
     return highlightsInPage
 
   ###*

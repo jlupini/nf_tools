@@ -49,13 +49,38 @@ class NFLayerCollection
   @param {NFLayer | AVLayer} newLayer - the layer to add
   @returns {NFLayerCollection} self
   ###
-  addLayer: (newLayer) ->
+  add: (newLayer) ->
     if newLayer instanceof NFLayer
       @layers.push newLayer
     else if newLayer.isAVLayer()
       @layers.push NFLayer.getSpecializedLayerFromAVLayer(newLayer)
     else
       throw new Error "You can only add NFLayers or AVLayers to an NFLayerCollection"
+    @
+
+  ###*
+  Returns the layer at the given index
+  @memberof NFLayerCollection
+  @param {int} idx - the layer index to access
+  @returns {NFLayerCollection} self
+  ###
+  get: (idx) ->
+    throw new Error "Index is out of bounds" if idx >= @count()
+    return @layers[idx]
+
+  ###*
+  Iterates through each layer in the collection. The given function can take
+  three parameters: i, layer, and layers.
+  @example
+  myCollection.forEach (i, layer, layers) ->
+    return "Layer number #{i} is called #{layer.getName()}"
+  @memberof NFLayerCollection
+  @param {function} fn - the function to use
+  @returns {NFLayerCollection} self
+  ###
+  forEach: (fn) ->
+    for i in [0..@count()-1]
+      fn i, @layers[i], @layers
     @
 
   ###*

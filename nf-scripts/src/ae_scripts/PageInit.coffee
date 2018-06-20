@@ -95,7 +95,7 @@ presentUI = ->
 			highlightChoices = new NFHighlightLayerCollection()
 			for highlight in allHighlights.layers
 				checkbox = highlightCheckboxes[highlight.getName()]
-				highlightChoices.addLayer highlight if checkbox.value is true
+				highlightChoices.add highlight if checkbox.value is true
 
 			if onlyBubbleUpCheckbox.value is no
 				curTime = _.mainComp.getTime()

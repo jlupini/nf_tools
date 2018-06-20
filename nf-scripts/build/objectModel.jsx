@@ -81,7 +81,7 @@ NFComp = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       layer = ref[i];
       if (layer instanceof NFPageLayer) {
-        selectedPageLayers.addLayer(layer);
+        selectedPageLayers.add(layer);
       }
     }
     return selectedPageLayers;
@@ -106,7 +106,7 @@ NFComp = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       layer = ref[i];
       if (layer.isActive()) {
-        activeLayers.addLayer(layer);
+        activeLayers.add(layer);
       }
     }
     if (originalTime != null) {
@@ -150,7 +150,7 @@ NFComp = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       theLayer = ref[i];
       if (theLayer.getName() === name) {
-        foundLayers.addLayer(theLayer);
+        foundLayers.add(theLayer);
       }
     }
     return foundLayers;
@@ -712,15 +712,15 @@ NFLayer = (function() {
   values. Equations found in easingEquations.coffee
   @param {Property} options.property - the property to use for the in/outs.
   required
-  @param {float} options.length - the length of the transition. Default 2.0
-  @param {string} options.startEquation - the equation to use for the in
+  @param {float} [options.length=2.0] - the length of the transition. Default 2.0
+  @param {string} [options.startEquation=NF.Util.easingEquations.out_quint] - the equation to use for the in
   transition of the property.
-  @param {string} options.endEquation - the equation to use for the out
+  @param {string} [options.endEquation=NF.Util.easingEquations.in_quint] - the equation to use for the out
   transition of the property.
-  @param {any | Array} options.startValue - the value for this property
+  @param {any | Array} [options.startValue] - the value for this property
   at its inPoint. If the property is multidimensional, this should be an
   array of that many dimensions. Can also pass a slider property.
-  @param {any | Array} options.endValue - the value for this property at
+  @param {any | Array} [options.endValue] - the value for this property at
   its outPoint. If the property is multidimensional, this should be an
   array of that many dimensions. Can also pass a slider property.
   @throws Throws error if not given at least a start or end equation and value
@@ -736,8 +736,8 @@ NFLayer = (function() {
     if (!options.property.canSetExpression) {
       throw new Error("Can't set expression on this property");
     }
-    if (!(((options.startEquation != null) && (options.startValue != null)) || ((options.endEquation != null) && (options.endValue != null)))) {
-      throw new Error("Can't run makeEasedInOutFromMarkers() without at least a start or end equation and value");
+    if (!((options.startValue != null) || (options.endValue != null))) {
+      throw new Error("Can't run makeEasedInOutFromMarkers() without at least a start or end value");
     }
     shouldFail = false;
     if (options.property.value instanceof Array) {
@@ -764,6 +764,12 @@ NFLayer = (function() {
     }
     if (options.length == null) {
       options.length = 2.0;
+    }
+    if (options.startEquation == null) {
+      options.startEquation = NF.Util.easingEquations.out_quint;
+    }
+    if (options.endEquation == null) {
+      options.endEquation = NF.Util.easingEquations.in_quint;
     }
     inComm = "NF In";
     outComm = "NF Out";
@@ -1130,13 +1136,48 @@ NFLayerCollection = (function() {
   @returns {NFLayerCollection} self
    */
 
-  NFLayerCollection.prototype.addLayer = function(newLayer) {
+  NFLayerCollection.prototype.add = function(newLayer) {
     if (newLayer instanceof NFLayer) {
       this.layers.push(newLayer);
     } else if (newLayer.isAVLayer()) {
       this.layers.push(NFLayer.getSpecializedLayerFromAVLayer(newLayer));
     } else {
       throw new Error("You can only add NFLayers or AVLayers to an NFLayerCollection");
+    }
+    return this;
+  };
+
+
+  /**
+  Returns the layer at the given index
+  @memberof NFLayerCollection
+  @param {int} idx - the layer index to access
+  @returns {NFLayerCollection} self
+   */
+
+  NFLayerCollection.prototype.get = function(idx) {
+    if (idx >= this.count()) {
+      throw new Error("Index is out of bounds");
+    }
+    return this.layers[idx];
+  };
+
+
+  /**
+  Iterates through each layer in the collection. The given function can take
+  three parameters: i, layer, and layers.
+  @example
+  myCollection.forEach (i, layer, layers) ->
+    return "Layer number #{i} is called #{layer.getName()}"
+  @memberof NFLayerCollection
+  @param {function} fn - the function to use
+  @returns {NFLayerCollection} self
+   */
+
+  NFLayerCollection.prototype.forEach = function(fn) {
+    var i, j, ref;
+    for (i = j = 0, ref = this.count() - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+      fn(i, this.layers[i], this.layers);
     }
     return this;
   };
@@ -1682,7 +1723,7 @@ NFPaperLayerGroup = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       layer = ref[i];
       if (layer instanceof NFPageLayer) {
-        pageChildren.addLayer(layer);
+        pageChildren.add(layer);
       }
     }
     return pageChildren;
@@ -1825,10 +1866,10 @@ NFPaperLayerGroup = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       layer = ref[i];
       if (layer.index() < this.paperParent.index()) {
-        layersAboveGroup.addLayer(layer);
+        layersAboveGroup.add(layer);
       }
       if (layer.index() > childLayers.getBottommostLayer().index()) {
-        layersBelowGroup.addLayer(layer);
+        layersBelowGroup.add(layer);
       }
     }
     while (layersAboveGroup.count() > 0) {
@@ -2239,13 +2280,13 @@ NFHighlightLayerCollection = (function(superClass) {
   @throws Throws error if not given an NFHighlightLayer or valid highlight AVLayer (ShapeLayer)
    */
 
-  NFHighlightLayerCollection.prototype.addLayer = function(newLayer) {
+  NFHighlightLayerCollection.prototype.add = function(newLayer) {
     if (newLayer.isAVLayer()) {
       this.layers.push(new NFHighlightLayer(newLayer));
     } else if (newLayer instanceof NFHighlightLayer) {
       this.layers.push(newLayer);
     } else {
-      throw new Error("addLayer() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection");
+      throw new Error("add() can only be used to add AVLayers or NFHighlightLayers to an NFHighlightLayerCollection");
     }
     return this;
   };
@@ -2316,7 +2357,7 @@ NFHighlightLayerCollection = (function(superClass) {
     for (i = 0, len = ref.length; i < len; i++) {
       highlight = ref[i];
       if (highlight.getPageComp().is(page)) {
-        highlightsInPage.addLayer(highlight);
+        highlightsInPage.add(highlight);
       }
     }
     return highlightsInPage;
@@ -2470,7 +2511,7 @@ NFPageComp = (function(superClass) {
     for (i = 0, len = sourceLayers.length; i < len; i++) {
       theLayer = sourceLayers[i];
       if (NFHighlightLayer.isHighlightLayer(theLayer)) {
-        highlightLayers.addLayer(theLayer);
+        highlightLayers.add(theLayer);
       }
     }
     return highlightLayers;
@@ -2889,7 +2930,7 @@ NFPageLayer = (function(superClass) {
         ref = layersInComp.layers;
         for (j = 0, len1 = ref.length; j < len1; j++) {
           theLayer = ref[j];
-          layerInstances.addLayer(theLayer);
+          layerInstances.add(theLayer);
         }
       }
     }
@@ -3441,13 +3482,13 @@ NFPageLayerCollection = (function(superClass) {
   @throws Throw error if not adding a NFPageLayer or an AVLayer that's a valid NFPageLayer
    */
 
-  NFPageLayerCollection.prototype.addLayer = function(newLayer) {
+  NFPageLayerCollection.prototype.add = function(newLayer) {
     if (newLayer.isAVLayer()) {
       this.layers.push(new NFPageLayer(newLayer));
     } else if (newLayer instanceof NFPageLayer) {
       this.layers.push(newLayer);
     } else {
-      throw new Error("addLayer() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection");
+      throw new Error("add() can only be used to add AVLayers or NFPageLayers to an NFPageLayerCollection");
     }
     return this;
   };
@@ -3499,7 +3540,7 @@ NFPageLayerCollection = (function(superClass) {
         for (k = 0, len1 = ref1.length; k < len1; k++) {
           testHighlight = ref1[k];
           if (highlight.is(testHighlight)) {
-            foundHighlights.addLayer(theLayer);
+            foundHighlights.add(theLayer);
           }
         }
       }
@@ -3614,9 +3655,9 @@ NFPageLayerCollection = (function(superClass) {
     for (j = 0, len = ref.length; j < len; j++) {
       theLayer = ref[j];
       if (theLayer.getName().indexOf("(") >= 0 && theLayer.getName().indexOf(")") >= 0) {
-        letteredNames.addLayer(theLayer);
+        letteredNames.add(theLayer);
       } else {
-        noLetterNames.addLayer(theLayer);
+        noLetterNames.add(theLayer);
       }
     }
     alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -4193,7 +4234,7 @@ NFPartComp = (function(superClass) {
     for (j = 0, len = ref.length; j < len; j++) {
       theLayer = ref[j];
       if (theLayer instanceof NFPageLayer && theLayer.getPageComp().is(page)) {
-        matchedPages.addLayer(theLayer);
+        matchedPages.add(theLayer);
       }
     }
     return matchedPages;

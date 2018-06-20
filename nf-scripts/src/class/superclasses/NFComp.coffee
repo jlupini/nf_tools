@@ -57,7 +57,7 @@ class NFComp
   selectedPageLayers: ->
     selectedPageLayers = new NFPageLayerCollection
     for layer in @selectedLayers().layers
-      selectedPageLayers.addLayer(layer) if layer instanceof NFPageLayer
+      selectedPageLayers.add(layer) if layer instanceof NFPageLayer
     return selectedPageLayers
 
   ###*
@@ -74,7 +74,7 @@ class NFComp
 
     activeLayers = new NFLayerCollection
     for layer in @allLayers().layers
-      activeLayers.addLayer layer if layer.isActive()
+      activeLayers.add layer if layer.isActive()
 
     @setTime originalTime if originalTime?
     return activeLayers
@@ -103,7 +103,7 @@ class NFComp
   layersWithName: (name) ->
     foundLayers = new NFLayerCollection
     for theLayer in @allLayers().layers
-      foundLayers.addLayer theLayer if theLayer.getName() is name
+      foundLayers.add theLayer if theLayer.getName() is name
     return foundLayers
 
   ###*

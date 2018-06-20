@@ -352,5 +352,5 @@ class NFPartComp extends NFComp
     matchedPages = new NFPageLayerCollection
     for theLayer in @allLayers().layers
       if theLayer instanceof NFPageLayer and theLayer.getPageComp().is page
-        matchedPages.addLayer theLayer
+        matchedPages.add theLayer
     return matchedPages
