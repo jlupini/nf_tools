@@ -16,20 +16,20 @@ _ =
 		endAfterTurn: yes
 		maxPageScale: 115
 
-newGoTo = (highlight, options) ->
-	_.w.hide()
-	tree = _.pageTree
-
-	activeComp = NFProject.activeComp()
-	selectedLayers = activeComp.selectedPageLayers()
-
-	# For now, let's grab the first highlight on the selectedLayers
-	testLayer = selectedLayers.layers[0]
-	testHighlight = testLayer.highlights().layers[0]
-
-	activeComp.animateToHighlight
-		highlight: testHighlight
-		animationDuration: 4
+# newGoTo = (highlight, options) ->
+# 	_.w.hide()
+# 	tree = _.pageTree
+#
+# 	activeComp = NFProject.activeComp()
+# 	selectedLayers = activeComp.selectedPageLayers()
+#
+# 	# For now, let's grab the first highlight on the selectedLayers
+# 	testLayer = selectedLayers.layers[0]
+# 	testHighlight = testLayer.highlights().layers[0]
+#
+# 	activeComp.animateToHighlight
+# 		highlight: testHighlight
+# 		animationDuration: 4
 
 goToHighlight = (highlight, options) ->
 	options =
@@ -330,7 +330,7 @@ askForChoice = ->
 
 		_.w = w
 
-		newGoTo highlightChoice, options
+		goToHighlight highlightChoice, options
 
 		w.hide()
 

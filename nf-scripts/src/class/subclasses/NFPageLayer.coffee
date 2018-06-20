@@ -71,9 +71,21 @@ class NFPageLayer extends NFLayer
   ###
   bubbledHighlights: ->
     bubbledHighlights = []
-    for highlight in @highlights().layers
+    @highlights().forEach (highlight) ->
       bubbledHighlights.push highlight if highlight.isBubbled() and highlight.getConnectedPageLayer()?.is(@)
     return new NFHighlightLayerCollection(bubbledHighlights)
+
+  ###*
+  Returns NFHighlightLayerCollection of all highlights that can be bubbled (aka
+  not bubbled already and not broken)
+  @memberof NFPageLayer
+  @returns {NFHighlightLayerCollection} The collection of highlights
+  ###
+  bubblableHighlights: ->
+    bubblableHighlights = []
+    @highlights().forEach (highlight) ->
+      bubblableHighlights.push highlight unless highlight.isBubbled() and not highlight.isBroken()
+    return new NFHighlightLayerCollection(bubblableHighlights)
 
   ###*
   Bubbles up given highlights or highlight to this layer.

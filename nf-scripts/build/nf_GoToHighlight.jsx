@@ -1,5 +1,5 @@
 #include "runtimeLibraries.jsx";
-var NF, _, absoluteScaleOfLayer, askForChoice, getTargetPosition, getTargetPositionDelta, getTargetPositionUsingDelta, getTargetScale, getTargetScaleFactor, getTargetScaleUsingFactor, goToHighlight, newGoTo;
+var NF, _, absoluteScaleOfLayer, askForChoice, getTargetPosition, getTargetPositionDelta, getTargetPositionUsingDelta, getTargetScale, getTargetScaleFactor, getTargetScaleUsingFactor, goToHighlight;
 
 NF = app.NF;
 
@@ -18,20 +18,6 @@ _ = {
     endAfterTurn: true,
     maxPageScale: 115
   }
-};
-
-newGoTo = function(highlight, options) {
-  var activeComp, selectedLayers, testHighlight, testLayer, tree;
-  _.w.hide();
-  tree = _.pageTree;
-  activeComp = NFProject.activeComp();
-  selectedLayers = activeComp.selectedPageLayers();
-  testLayer = selectedLayers.layers[0];
-  testHighlight = testLayer.highlights().layers[0];
-  return activeComp.animateToHighlight({
-    highlight: testHighlight,
-    animationDuration: 4
-  });
 };
 
 goToHighlight = function(highlight, options) {
@@ -332,7 +318,7 @@ askForChoice = function() {
       relevantPages: _.pageTree.pages
     };
     _.w = w;
-    newGoTo(highlightChoice, options);
+    goToHighlight(highlightChoice, options);
     return w.hide();
   };
   cancelButton.onClick = function() {

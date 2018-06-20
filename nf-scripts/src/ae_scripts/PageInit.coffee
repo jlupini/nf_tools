@@ -118,6 +118,45 @@ presentUI = ->
 			_.selectedPages.bubbleUpHighlights(highlightChoices)
 
 			w.hide()
+	else
+		# Add a bubble up tab if there are unBubbled or broken highlights
+		shouldPresentBubbleOnlyPanel = no
+		_.selectedPages.forEach (page) ->
+			bubblableForPage = page.bubblableHighlights()
+			shouldPresentBubbleOnlyPanel = yes unless bubblableForPage.isEmpty()
+
+		if shouldPresentBubbleOnlyPanel
+
+			bubbleOnlyTab = tPanel.add("tab", undefined, "Bubble Only")
+			bubbleOnlyTab.alignChildren = "fill"
+
+			# Highlights
+			highlightBubblePanel = bubbleOnlyTab.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
+			highlightBubblePanel.alignChildren = 'left'
+			highlightBubblePanel.margins.top = 16
+
+			bubblableHighlights = []
+			highlightBubbleCheckboxes = {}
+			_.selectedPages.forEach (page) ->
+				page.bubblableHighlights().forEach (highlight) ->
+					highlightBubbleCheckboxes[highlight.getName()] = highlightBubblePanel.add "checkbox {text: '#{highlight.getName()} (#{page.getName()})'}"
+					highlightBubbleCheckboxes[highlight.getName()].value = off
+					highlightBubbleCheckboxes[highlight.getName()].sourcePage = page
+					bubblableHighlights.push highlight
+
+			bubButtonGroup = bubbleOnlyTab.add 'group', undefined
+			bubOkButton = bubButtonGroup.add('button', undefined, 'Continue')
+			bubCancelButton = bubButtonGroup.add('button', undefined, 'Cancel', name: 'cancel')
+			bubCancelButton.onClick = getCancelFunction w
+
+			bubOkButton.onClick = ->
+				bubblableHighlights.forEach (highlight) ->
+					bubbleCheckbox = highlightBubbleCheckboxes[highlight.getName()]
+					if bubbleCheckbox?
+						if bubbleCheckbox.value is true
+							bubbleCheckbox.sourcePage.bubbleUp(highlight)
+
+				w.hide()
 
 	unless allHighlights.isEmpty()
 		# DISCONNECTIONS
@@ -139,7 +178,7 @@ presentUI = ->
 		highlightDisconnectCheckboxes = {}
 		for highlight in allHighlights.layers
 			if highlight.isBubbled()
-				highlightDisconnectCheckboxes[highlight.getName()] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.name}'}"
+				highlightDisconnectCheckboxes[highlight.getName()] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.getName()}'}"
 				highlightDisconnectCheckboxes[highlight.getName()].value = off
 
 		disButtonGroup = disconnectTab.add 'group', undefined

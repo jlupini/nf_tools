@@ -1165,9 +1165,9 @@ NFLayerCollection = (function() {
 
   /**
   Iterates through each layer in the collection. The given function can take
-  three parameters: i, layer, and layers.
+  three parameters: layer, i, and layers. None of the parameters are required
   @example
-  myCollection.forEach (i, layer, layers) ->
+  myCollection.forEach (layer, i, layers) ->
     return "Layer number #{i} is called #{layer.getName()}"
   @memberof NFLayerCollection
   @param {function} fn - the function to use
@@ -1177,7 +1177,7 @@ NFLayerCollection = (function() {
   NFLayerCollection.prototype.forEach = function(fn) {
     var i, j, ref;
     for (i = j = 0, ref = this.count() - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
-      fn(i, this.layers[i], this.layers);
+      fn(this.layers[i], i, this.layers);
     }
     return this;
   };
@@ -2644,16 +2644,34 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.bubbledHighlights = function() {
-    var bubbledHighlights, highlight, i, len, ref, ref1;
+    var bubbledHighlights;
     bubbledHighlights = [];
-    ref = this.highlights().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      highlight = ref[i];
-      if (highlight.isBubbled() && ((ref1 = highlight.getConnectedPageLayer()) != null ? ref1.is(this) : void 0)) {
-        bubbledHighlights.push(highlight);
+    this.highlights().forEach(function(highlight) {
+      var ref;
+      if (highlight.isBubbled() && ((ref = highlight.getConnectedPageLayer()) != null ? ref.is(this) : void 0)) {
+        return bubbledHighlights.push(highlight);
       }
-    }
+    });
     return new NFHighlightLayerCollection(bubbledHighlights);
+  };
+
+
+  /**
+  Returns NFHighlightLayerCollection of all highlights that can be bubbled (aka
+  not bubbled already and not broken)
+  @memberof NFPageLayer
+  @returns {NFHighlightLayerCollection} The collection of highlights
+   */
+
+  NFPageLayer.prototype.bubblableHighlights = function() {
+    var bubblableHighlights;
+    bubblableHighlights = [];
+    this.highlights().forEach(function(highlight) {
+      if (!(highlight.isBubbled() && !highlight.isBroken())) {
+        return bubblableHighlights.push(highlight);
+      }
+    });
+    return new NFHighlightLayerCollection(bubblableHighlights);
   };
 
 
