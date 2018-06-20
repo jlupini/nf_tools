@@ -128,7 +128,7 @@ NFProject =
       if activePDF?
         outPoint = titlePageLayer.markers().keyTime("NF In")
         group = mainComp.groupFromPDF activePDF
-        for theLayer in group.getChildren(yes).layers
+        group.getChildren(yes).forEach (theLayer) =>
           theLayer.layer.outPoint = outPoint if theLayer.layer.outPoint > outPoint
 
     # if the instruction is a highlight, let's call animateToHighlight

@@ -58,6 +58,6 @@ class NFPageComp extends NFComp
   @returns {NFHighlightLayer | null} The found highlight or null
   ###
   highlightWithName: (name) ->
-    for highlight in @highlights().layers
+    @highlights().forEach (highlight) =>
       return highlight if highlight.getName() is name
     return null

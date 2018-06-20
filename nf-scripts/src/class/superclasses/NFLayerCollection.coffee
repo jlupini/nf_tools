@@ -70,9 +70,11 @@ class NFLayerCollection
 
   ###*
   Iterates through each layer in the collection. The given function can take
-  three parameters: layer, i, and layers. None of the parameters are required
+  three parameters: layer, i, and layers. None of the parameters are required.
+  IMPORTANT: Should be used with a fat arrow to call the callback function, so
+  that scope is preserved.
   @example
-  myCollection.forEach (layer, i, layers) ->
+  myCollection.forEach (layer, i, layers) =>
     return "Layer number #{i} is called #{layer.getName()}"
   @memberof NFLayerCollection
   @param {function} fn - the function to use

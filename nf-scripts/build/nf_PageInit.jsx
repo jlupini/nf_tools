@@ -10,7 +10,7 @@ _ = {
 };
 
 presentUI = function() {
-  var allHighlights, animatePageCheckbox, bubButtonGroup, bubCancelButton, bubOkButton, bubblableHighlights, bubbleOnlyTab, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, displayName, highlight, highlightAlreadyConnectedToThisLayer, highlightBubbleCheckboxes, highlightBubblePanel, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, i, initLayerTransformsCheckbox, initTab, j, k, len, len1, len2, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, ref, ref1, ref2, removeCheckbox, shouldPresentBubbleOnlyPanel, tPanel, theLayer, w;
+  var allHighlights, animatePageCheckbox, bubButtonGroup, bubCancelButton, bubOkButton, bubblableHighlights, bubbleOnlyTab, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, highlightBubbleCheckboxes, highlightBubblePanel, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initLayerTransformsCheckbox, initTab, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, removeCheckbox, shouldPresentBubbleOnlyPanel, tPanel, w;
   if (_.mainComp.selectedLayers().onlyContainsPageLayers()) {
     _.selectedPages = _.mainComp.selectedPageLayers();
   } else {
@@ -29,13 +29,13 @@ presentUI = function() {
   tPanel.alignChildren = ["fill", "fill"];
   tPanel.preferredSize = [350, 300];
   orphans = 0;
-  ref = _.selectedPages.layers;
-  for (i = 0, len = ref.length; i < len; i++) {
-    theLayer = ref[i];
-    if (!theLayer.hasNullParent()) {
-      orphans++;
-    }
-  }
+  _.selectedPages.forEach((function(_this) {
+    return function(theLayer) {
+      if (!theLayer.hasNullParent()) {
+        return orphans++;
+      }
+    };
+  })(this));
   if ((0 < orphans && orphans < _.selectedPages.count())) {
     throw new Error("Can't run this script on both initialized and uninitialized page layers at the same time");
   }
@@ -68,26 +68,27 @@ presentUI = function() {
     highlightPanel.alignChildren = 'left';
     highlightPanel.margins.top = 16;
     highlightCheckboxes = {};
-    ref1 = allHighlights.layers;
-    for (j = 0, len1 = ref1.length; j < len1; j++) {
-      highlight = ref1[j];
-      displayName = highlight.getName() + " - pg" + highlight.getPageComp().getPageNumber();
-      highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer(highlight.getConnectedPageLayer());
-      if (highlight.isBubbled()) {
-        if (highlight.isBroken()) {
-          displayName += " (OVERRIDE/BROKEN)";
-        } else if (highlightAlreadyConnectedToThisLayer) {
-          displayName += " (ALREADY CONNECTED TO THIS PAGE LAYER)";
-        } else {
-          displayName += " (OVERRIDE)";
+    allHighlights.forEach((function(_this) {
+      return function(highlight) {
+        var displayName, highlightAlreadyConnectedToThisLayer;
+        displayName = highlight.getName() + " - pg" + highlight.getPageComp().getPageNumber();
+        highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer(highlight.getConnectedPageLayer());
+        if (highlight.isBubbled()) {
+          if (highlight.isBroken()) {
+            displayName += " (OVERRIDE/BROKEN)";
+          } else if (highlightAlreadyConnectedToThisLayer) {
+            displayName += " (ALREADY CONNECTED TO THIS PAGE LAYER)";
+          } else {
+            displayName += " (OVERRIDE)";
+          }
+        } else if (highlight.isBroken()) {
+          displayName += " (BROKEN)";
         }
-      } else if (highlight.isBroken()) {
-        displayName += " (BROKEN)";
-      }
-      highlightCheckboxes[highlight.getName()] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
-      highlightCheckboxes[highlight.getName()].value = !highlight.isBubbled();
-      highlightCheckboxes[highlight.getName()].enabled = !highlightAlreadyConnectedToThisLayer;
-    }
+        highlightCheckboxes[highlight.getName()] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
+        highlightCheckboxes[highlight.getName()].value = !highlight.isBubbled();
+        return highlightCheckboxes[highlight.getName()].enabled = !highlightAlreadyConnectedToThisLayer;
+      };
+    })(this));
     buttonGroup = initTab.add('group', void 0);
     okButton = buttonGroup.add('button', void 0, 'Continue');
     cancelButton = buttonGroup.add('button', void 0, 'Cancel', {
@@ -95,16 +96,17 @@ presentUI = function() {
     });
     cancelButton.onClick = getCancelFunction(w);
     okButton.onClick = function() {
-      var checkbox, curTime, highlightChoices, k, l, layer, len2, len3, newParent, ref2, ref3, topLayer;
+      var curTime, highlightChoices, newParent, topLayer;
       highlightChoices = new NFHighlightLayerCollection();
-      ref2 = allHighlights.layers;
-      for (k = 0, len2 = ref2.length; k < len2; k++) {
-        highlight = ref2[k];
-        checkbox = highlightCheckboxes[highlight.getName()];
-        if (checkbox.value === true) {
-          highlightChoices.add(highlight);
-        }
-      }
+      allHighlights.forEach((function(_this) {
+        return function(highlight) {
+          var checkbox;
+          checkbox = highlightCheckboxes[highlight.getName()];
+          if (checkbox.value === true) {
+            return highlightChoices.add(highlight);
+          }
+        };
+      })(this));
       if (onlyBubbleUpCheckbox.value === false) {
         curTime = _.mainComp.getTime();
         topLayer = _.selectedPages.getTopmostLayer();
@@ -117,13 +119,13 @@ presentUI = function() {
         _.mainComp.setTime(curTime);
         if (animatePageCheckbox.value) {
           topLayer.slideIn();
-          ref3 = _.selectedPages.layers;
-          for (l = 0, len3 = ref3.length; l < len3; l++) {
-            layer = ref3[l];
-            if (!layer.is(topLayer)) {
-              layer.layer.startTime = topLayer.getInMarkerTime();
-            }
-          }
+          _.selectedPages.forEach((function(_this) {
+            return function(layer) {
+              if (!layer.is(topLayer)) {
+                return layer.layer.startTime = topLayer.getInMarkerTime();
+              }
+            };
+          })(this));
         }
       }
       highlightChoices.disconnectHighlights();
@@ -132,13 +134,15 @@ presentUI = function() {
     };
   } else {
     shouldPresentBubbleOnlyPanel = false;
-    _.selectedPages.forEach(function(page) {
-      var bubblableForPage;
-      bubblableForPage = page.bubblableHighlights();
-      if (!bubblableForPage.isEmpty()) {
-        return shouldPresentBubbleOnlyPanel = true;
-      }
-    });
+    _.selectedPages.forEach((function(_this) {
+      return function(page) {
+        var bubblableForPage;
+        bubblableForPage = page.bubblableHighlights();
+        if (!bubblableForPage.isEmpty()) {
+          return shouldPresentBubbleOnlyPanel = true;
+        }
+      };
+    })(this));
     if (shouldPresentBubbleOnlyPanel) {
       bubbleOnlyTab = tPanel.add("tab", void 0, "Bubble Only");
       bubbleOnlyTab.alignChildren = "fill";
@@ -149,14 +153,16 @@ presentUI = function() {
       highlightBubblePanel.margins.top = 16;
       bubblableHighlights = [];
       highlightBubbleCheckboxes = {};
-      _.selectedPages.forEach(function(page) {
-        return page.bubblableHighlights().forEach(function(highlight) {
-          highlightBubbleCheckboxes[highlight.getName()] = highlightBubblePanel.add("checkbox {text: '" + (highlight.getName()) + " (" + (page.getName()) + ")'}");
-          highlightBubbleCheckboxes[highlight.getName()].value = false;
-          highlightBubbleCheckboxes[highlight.getName()].sourcePage = page;
-          return bubblableHighlights.push(highlight);
-        });
-      });
+      _.selectedPages.forEach((function(_this) {
+        return function(page) {
+          return page.bubblableHighlights().forEach(function(highlight) {
+            highlightBubbleCheckboxes[highlight.getName()] = highlightBubblePanel.add("checkbox {text: '" + (highlight.getName()) + " (" + (page.getName()) + ")'}");
+            highlightBubbleCheckboxes[highlight.getName()].value = false;
+            highlightBubbleCheckboxes[highlight.getName()].sourcePage = page;
+            return bubblableHighlights.push(highlight);
+          });
+        };
+      })(this));
       bubButtonGroup = bubbleOnlyTab.add('group', void 0);
       bubOkButton = bubButtonGroup.add('button', void 0, 'Continue');
       bubCancelButton = bubButtonGroup.add('button', void 0, 'Cancel', {
@@ -164,15 +170,17 @@ presentUI = function() {
       });
       bubCancelButton.onClick = getCancelFunction(w);
       bubOkButton.onClick = function() {
-        bubblableHighlights.forEach(function(highlight) {
-          var bubbleCheckbox;
-          bubbleCheckbox = highlightBubbleCheckboxes[highlight.getName()];
-          if (bubbleCheckbox != null) {
-            if (bubbleCheckbox.value === true) {
-              return bubbleCheckbox.sourcePage.bubbleUp(highlight);
+        bubblableHighlights.forEach((function(_this) {
+          return function(highlight) {
+            var bubbleCheckbox;
+            bubbleCheckbox = highlightBubbleCheckboxes[highlight.getName()];
+            if (bubbleCheckbox != null) {
+              if (bubbleCheckbox.value === true) {
+                return bubbleCheckbox.sourcePage.bubbleUp(highlight);
+              }
             }
-          }
-        });
+          };
+        })(this));
         return w.hide();
       };
     }
@@ -193,14 +201,14 @@ presentUI = function() {
     highlightDisconnectPanel.alignChildren = 'left';
     highlightDisconnectPanel.margins.top = 16;
     highlightDisconnectCheckboxes = {};
-    ref2 = allHighlights.layers;
-    for (k = 0, len2 = ref2.length; k < len2; k++) {
-      highlight = ref2[k];
-      if (highlight.isBubbled()) {
-        highlightDisconnectCheckboxes[highlight.getName()] = highlightDisconnectPanel.add("checkbox {text: '" + (highlight.getName()) + "'}");
-        highlightDisconnectCheckboxes[highlight.getName()].value = false;
-      }
-    }
+    allHighlights.forEach((function(_this) {
+      return function(highlight) {
+        if (highlight.isBubbled()) {
+          highlightDisconnectCheckboxes[highlight.getName()] = highlightDisconnectPanel.add("checkbox {text: '" + (highlight.getName()) + "'}");
+          return highlightDisconnectCheckboxes[highlight.getName()].value = false;
+        }
+      };
+    })(this));
     disButtonGroup = disconnectTab.add('group', void 0);
     disOkButton = disButtonGroup.add('button', void 0, 'Continue');
     disCancelButton = disButtonGroup.add('button', void 0, 'Cancel', {
@@ -208,22 +216,22 @@ presentUI = function() {
     });
     disCancelButton.onClick = getCancelFunction(w);
     disOkButton.onClick = function() {
-      var disconnectCheckbox, l, len3, ref3, ref4;
-      ref3 = allHighlights.layers;
-      for (l = 0, len3 = ref3.length; l < len3; l++) {
-        highlight = ref3[l];
-        disconnectCheckbox = highlightDisconnectCheckboxes[highlight.getName()];
-        if (disconnectCheckbox != null) {
-          if (disconnectCheckbox.value === true) {
-            if (removeCheckbox.value === true) {
-              if ((ref4 = highlight.connectedPageLayerHighlighterEffect()) != null) {
-                ref4.remove();
+      allHighlights.forEach((function(_this) {
+        return function(highlight) {
+          var disconnectCheckbox, ref;
+          disconnectCheckbox = highlightDisconnectCheckboxes[highlight.getName()];
+          if (disconnectCheckbox != null) {
+            if (disconnectCheckbox.value === true) {
+              if (removeCheckbox.value === true) {
+                if ((ref = highlight.connectedPageLayerHighlighterEffect()) != null) {
+                  ref.remove();
+                }
               }
+              return highlight.disconnect();
             }
-            highlight.disconnect();
           }
-        }
-      }
+        };
+      })(this));
       return w.hide();
     };
   }

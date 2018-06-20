@@ -54,9 +54,9 @@ class NFHighlightLayer extends NFLayer
         if possibleLayers.isEmpty()
           return null
         else if possibleLayers.count() is 1
-          return possibleLayers.layers[0]
+          return possibleLayers.get 0
         else
-          for theLayer in possibleLayers.layers
+          possibleLayers.forEach (theLayer) =>
             return theLayer if theLayer.effect(effectName)?
 
   ###*

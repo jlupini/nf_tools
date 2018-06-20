@@ -208,7 +208,7 @@ class NFLayer
         testLayer = testLayer.getSpecializedLayer()
         childLayers.push testLayer
         if recursive
-          for recLayer in testLayer.getChildren(yes).layers
+          testLayer.getChildren(yes).forEach (recLayer) =>
             childLayers.push recLayer
 
     return new NFLayerCollection childLayers

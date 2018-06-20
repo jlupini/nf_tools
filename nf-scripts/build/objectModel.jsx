@@ -75,15 +75,15 @@ NFComp = (function() {
    */
 
   NFComp.prototype.selectedPageLayers = function() {
-    var i, layer, len, ref, selectedPageLayers;
+    var selectedPageLayers;
     selectedPageLayers = new NFPageLayerCollection;
-    ref = this.selectedLayers().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
-      if (layer instanceof NFPageLayer) {
-        selectedPageLayers.add(layer);
-      }
-    }
+    this.selectedLayers().forEach((function(_this) {
+      return function(layer) {
+        if (layer instanceof NFPageLayer) {
+          return selectedPageLayers.add(layer);
+        }
+      };
+    })(this));
     return selectedPageLayers;
   };
 
@@ -96,19 +96,19 @@ NFComp = (function() {
    */
 
   NFComp.prototype.activeLayers = function(time) {
-    var activeLayers, i, layer, len, originalTime, ref;
+    var activeLayers, originalTime;
     if (time != null) {
       originalTime = this.getTime();
       this.setTime(time);
     }
     activeLayers = new NFLayerCollection;
-    ref = this.allLayers().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
-      if (layer.isActive()) {
-        activeLayers.add(layer);
-      }
-    }
+    this.allLayers().forEach((function(_this) {
+      return function(layer) {
+        if (layer.isActive()) {
+          return activeLayers.add(layer);
+        }
+      };
+    })(this));
     if (originalTime != null) {
       this.setTime(originalTime);
     }
@@ -144,15 +144,15 @@ NFComp = (function() {
    */
 
   NFComp.prototype.layersWithName = function(name) {
-    var foundLayers, i, len, ref, theLayer;
+    var foundLayers;
     foundLayers = new NFLayerCollection;
-    ref = this.allLayers().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      theLayer = ref[i];
-      if (theLayer.getName() === name) {
-        foundLayers.add(theLayer);
-      }
-    }
+    this.allLayers().forEach((function(_this) {
+      return function(layer) {
+        if (layer.getName() === name) {
+          return foundLayers.add(layer);
+        }
+      };
+    })(this));
     return foundLayers;
   };
 
@@ -562,7 +562,7 @@ NFLayer = (function() {
    */
 
   NFLayer.prototype.getChildren = function(recursive) {
-    var allLayers, childLayers, i, j, len, len1, recLayer, ref, testLayer, theLayer;
+    var allLayers, childLayers, i, len, testLayer, theLayer;
     if (recursive == null) {
       recursive = false;
     }
@@ -575,11 +575,11 @@ NFLayer = (function() {
         testLayer = testLayer.getSpecializedLayer();
         childLayers.push(testLayer);
         if (recursive) {
-          ref = testLayer.getChildren(true).layers;
-          for (j = 0, len1 = ref.length; j < len1; j++) {
-            recLayer = ref[j];
-            childLayers.push(recLayer);
-          }
+          testLayer.getChildren(true).forEach((function(_this) {
+            return function(recLayer) {
+              return childLayers.push(recLayer);
+            };
+          })(this));
         }
       }
     }
@@ -1165,9 +1165,11 @@ NFLayerCollection = (function() {
 
   /**
   Iterates through each layer in the collection. The given function can take
-  three parameters: layer, i, and layers. None of the parameters are required
+  three parameters: layer, i, and layers. None of the parameters are required.
+  IMPORTANT: Should be used with a fat arrow to call the callback function, so
+  that scope is preserved.
   @example
-  myCollection.forEach (layer, i, layers) ->
+  myCollection.forEach (layer, i, layers) =>
     return "Layer number #{i} is called #{layer.getName()}"
   @memberof NFLayerCollection
   @param {function} fn - the function to use
@@ -1716,16 +1718,16 @@ NFPaperLayerGroup = (function() {
    */
 
   NFPaperLayerGroup.prototype.getPages = function() {
-    var allChildren, i, layer, len, pageChildren, ref;
+    var allChildren, pageChildren;
     allChildren = this.getChildren();
     pageChildren = new NFPageLayerCollection();
-    ref = allChildren.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
-      if (layer instanceof NFPageLayer) {
-        pageChildren.add(layer);
-      }
-    }
+    allChildren.forEach((function(_this) {
+      return function(layer) {
+        if (layer instanceof NFPageLayer) {
+          return pageChildren.add(layer);
+        }
+      };
+    })(this));
     return pageChildren;
   };
 
@@ -1738,18 +1740,15 @@ NFPaperLayerGroup = (function() {
    */
 
   NFPaperLayerGroup.prototype.containsHighlight = function(highlight) {
-    var i, j, len, len1, pageLayer, ref, ref1, testHighlight;
-    ref = this.getPages().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      pageLayer = ref[i];
-      ref1 = pageLayer.highlights().layers;
-      for (j = 0, len1 = ref1.length; j < len1; j++) {
-        testHighlight = ref1[j];
-        if (testHighlight.is(highlight)) {
-          return true;
-        }
-      }
-    }
+    this.getPages().forEach((function(_this) {
+      return function(pageLayer) {
+        return pageLayer.highlights().forEach(function(testHighlight) {
+          if (testHighlight.is(highlight)) {
+            return true;
+          }
+        });
+      };
+    })(this));
     return false;
   };
 
@@ -1786,7 +1785,7 @@ NFPaperLayerGroup = (function() {
    */
 
   NFPaperLayerGroup.prototype.moveToHighlight = function(model) {
-    var activePageLayer, i, initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, len, originalParent, originalTime, positionDelta, positionProp, possibleLayers, ref, ref1, ref2, ref3, ref4, scaleFactor, scaleProp, targetPosition, targetScale, theLayer;
+    var activePageLayer, initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, originalParent, originalTime, positionDelta, positionProp, possibleLayers, ref, ref1, ref2, ref3, scaleFactor, scaleProp, targetPosition, targetScale;
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
       throw new Error("\nInvalid highlight");
     }
@@ -1805,13 +1804,13 @@ NFPaperLayerGroup = (function() {
     this.paperParent.setParent(null);
     possibleLayers = this.getPages().layersWithHighlight(model.highlight);
     activePageLayer = null;
-    ref4 = possibleLayers.layers;
-    for (i = 0, len = ref4.length; i < len; i++) {
-      theLayer = ref4[i];
-      if (theLayer.isActiveAtTime(model.time)) {
-        activePageLayer = theLayer;
-      }
-    }
+    possibleLayers.forEach((function(_this) {
+      return function(theLayer) {
+        if (theLayer.isActiveAtTime(model.time)) {
+          return activePageLayer = theLayer;
+        }
+      };
+    })(this));
     keyframeTimes = [model.time, model.time + model.duration];
     scaleFactor = activePageLayer.getScaleFactorToFrameUpHighlight({
       highlight: model.highlight,
@@ -1855,23 +1854,23 @@ NFPaperLayerGroup = (function() {
    */
 
   NFPaperLayerGroup.prototype.gatherLayers = function(layersToGather, shouldParent) {
-    var bottomLayer, childLayers, i, layer, layersAboveGroup, layersBelowGroup, len, ref, topLayer;
+    var bottomLayer, childLayers, layersAboveGroup, layersBelowGroup, topLayer;
     if (shouldParent == null) {
       shouldParent = true;
     }
     childLayers = this.getChildren();
     layersAboveGroup = new NFLayerCollection();
     layersBelowGroup = new NFLayerCollection();
-    ref = layersToGather.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
-      if (layer.index() < this.paperParent.index()) {
-        layersAboveGroup.add(layer);
-      }
-      if (layer.index() > childLayers.getBottommostLayer().index()) {
-        layersBelowGroup.add(layer);
-      }
-    }
+    layersToGather.forEach((function(_this) {
+      return function(layer) {
+        if (layer.index() < _this.paperParent.index()) {
+          layersAboveGroup.add(layer);
+        }
+        if (layer.index() > childLayers.getBottommostLayer().index()) {
+          return layersBelowGroup.add(layer);
+        }
+      };
+    })(this));
     while (layersAboveGroup.count() > 0) {
       bottomLayer = layersAboveGroup.getBottommostLayer();
       bottomLayer.moveAfter(this.paperParent);
@@ -2038,7 +2037,7 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.getConnectedPageLayer = function() {
-    var comp, compName, effectName, expression, j, layerName, len, possibleLayers, ref, theLayer;
+    var comp, compName, effectName, expression, layerName, possibleLayers;
     if (this.isBubbled()) {
       expression = this.highlighterEffect().property("Spacing").expression;
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
@@ -2050,15 +2049,15 @@ NFHighlightLayer = (function(superClass) {
         if (possibleLayers.isEmpty()) {
           return null;
         } else if (possibleLayers.count() === 1) {
-          return possibleLayers.layers[0];
+          return possibleLayers.get(0);
         } else {
-          ref = possibleLayers.layers;
-          for (j = 0, len = ref.length; j < len; j++) {
-            theLayer = ref[j];
-            if (theLayer.effect(effectName) != null) {
-              return theLayer;
-            }
-          }
+          return possibleLayers.forEach((function(_this) {
+            return function(theLayer) {
+              if (theLayer.effect(effectName) != null) {
+                return theLayer;
+              }
+            };
+          })(this));
         }
       }
     }
@@ -2526,14 +2525,13 @@ NFPageComp = (function(superClass) {
    */
 
   NFPageComp.prototype.highlightWithName = function(name) {
-    var highlight, i, len, ref;
-    ref = this.highlights().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      highlight = ref[i];
-      if (highlight.getName() === name) {
-        return highlight;
-      }
-    }
+    this.highlights().forEach((function(_this) {
+      return function(highlight) {
+        if (highlight.getName() === name) {
+          return highlight;
+        }
+      };
+    })(this));
     return null;
   };
 
@@ -2646,12 +2644,14 @@ NFPageLayer = (function(superClass) {
   NFPageLayer.prototype.bubbledHighlights = function() {
     var bubbledHighlights;
     bubbledHighlights = [];
-    this.highlights().forEach(function(highlight) {
-      var ref;
-      if (highlight.isBubbled() && ((ref = highlight.getConnectedPageLayer()) != null ? ref.is(this) : void 0)) {
-        return bubbledHighlights.push(highlight);
-      }
-    });
+    this.highlights().forEach((function(_this) {
+      return function(highlight) {
+        var ref;
+        if (highlight.isBubbled() && ((ref = highlight.getConnectedPageLayer()) != null ? ref.is(_this) : void 0)) {
+          return bubbledHighlights.push(highlight);
+        }
+      };
+    })(this));
     return new NFHighlightLayerCollection(bubbledHighlights);
   };
 
@@ -2666,11 +2666,13 @@ NFPageLayer = (function(superClass) {
   NFPageLayer.prototype.bubblableHighlights = function() {
     var bubblableHighlights;
     bubblableHighlights = [];
-    this.highlights().forEach(function(highlight) {
-      if (!(highlight.isBubbled() && !highlight.isBroken())) {
-        return bubblableHighlights.push(highlight);
-      }
-    });
+    this.highlights().forEach((function(_this) {
+      return function(highlight) {
+        if (!(highlight.isBubbled() && !highlight.isBroken())) {
+          return bubblableHighlights.push(highlight);
+        }
+      };
+    })(this));
     return new NFHighlightLayerCollection(bubblableHighlights);
   };
 
@@ -2687,34 +2689,36 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.bubbleUp = function(highlightsToBubble) {
-    var highlight, highlighterProperty, i, j, len, len1, ref, ref1, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
     if (highlightsToBubble instanceof NFHighlightLayer) {
       highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble]);
     }
     if (!highlightsToBubble.isEmpty()) {
-      ref = highlightsToBubble.layers;
-      for (i = 0, len = ref.length; i < len; i++) {
-        highlight = ref[i];
-        if (!highlight.canBubbleUp()) {
-          throw new Error("Cannot bubble highlight if already connected and not broken. Disconnect first");
-        }
-        if (!this.getPageComp().is(highlight.getPageComp())) {
-          throw new Error("Cannot bubble highlight because it is not in this page!");
-        }
-        targetPageLayerEffects = this.effects();
-        sourceEffect = highlight.highlighterEffect();
-        targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter');
-        targetHighlighterEffect.name = highlight.layer.name;
-        targetComp = this.containingComp();
-        ref1 = NF.Util.highlighterProperties;
-        for (j = 0, len1 = ref1.length; j < len1; j++) {
-          highlighterProperty = ref1[j];
-          sourceValue = sourceEffect.property(highlighterProperty).value;
-          targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
-          sourceExpression = "var offsetTime = comp(\"" + targetComp.comp.name + "\").layer(\"" + this.layer.name + "\").startTime; comp(\"" + targetComp.comp.name + "\").layer(\"" + this.layer.name + "\").effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
-          sourceEffect.property(highlighterProperty).expression = sourceExpression;
-        }
-      }
+      highlightsToBubble.forEach((function(_this) {
+        return function(highlight) {
+          var highlighterProperty, i, len, ref, results, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
+          if (!highlight.canBubbleUp()) {
+            throw new Error("Cannot bubble highlight if already connected and not broken. Disconnect first");
+          }
+          if (!_this.getPageComp().is(highlight.getPageComp())) {
+            throw new Error("Cannot bubble highlight because it is not in this page!");
+          }
+          targetPageLayerEffects = _this.effects();
+          sourceEffect = highlight.highlighterEffect();
+          targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter');
+          targetHighlighterEffect.name = highlight.layer.name;
+          targetComp = _this.containingComp();
+          ref = NF.Util.highlighterProperties;
+          results = [];
+          for (i = 0, len = ref.length; i < len; i++) {
+            highlighterProperty = ref[i];
+            sourceValue = sourceEffect.property(highlighterProperty).value;
+            targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
+            sourceExpression = "var offsetTime = comp(\"" + targetComp.comp.name + "\").layer(\"" + _this.layer.name + "\").startTime; comp(\"" + targetComp.comp.name + "\").layer(\"" + _this.layer.name + "\").effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
+            results.push(sourceEffect.property(highlighterProperty).expression = sourceExpression);
+          }
+          return results;
+        };
+      })(this));
     }
     return this;
   };
@@ -2916,14 +2920,13 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.containsHighlight = function(highlight) {
-    var i, len, ref, testHighlight;
-    ref = this.highlights().layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      testHighlight = ref[i];
-      if (testHighlight.is(highlight)) {
-        return true;
-      }
-    }
+    this.highlights().forEach((function(_this) {
+      return function(testHighlight) {
+        if (testHighlight.is(highlight)) {
+          return true;
+        }
+      };
+    })(this));
     return false;
   };
 
@@ -2936,7 +2939,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.makeContinuous = function() {
-    var i, internalEndTime, j, k, latestInternalEndTime, layerInstances, layersInComp, len, len1, len2, partComp, partComps, ref, ref1, theInstance, theLayer, thePDF, thisPage;
+    var i, latestInternalEndTime, layerInstances, layersInComp, len, partComp, partComps, thePDF, thisPage;
     thisPage = this.getPageComp();
     thePDF = NFPDF.fromPageLayer(this);
     partComps = thePDF.containingPartComps();
@@ -2945,25 +2948,26 @@ NFPageLayer = (function(superClass) {
       partComp = partComps[i];
       layersInComp = partComp.layersForPage(thisPage);
       if (!layersInComp.isEmpty()) {
-        ref = layersInComp.layers;
-        for (j = 0, len1 = ref.length; j < len1; j++) {
-          theLayer = ref[j];
-          layerInstances.add(theLayer);
-        }
+        layersInComp.forEach((function(_this) {
+          return function(theLayer) {
+            return layerInstances.add(theLayer);
+          };
+        })(this));
       }
     }
     if (!layerInstances.isEmpty()) {
       latestInternalEndTime = 0;
-      ref1 = layerInstances.layers;
-      for (k = 0, len2 = ref1.length; k < len2; k++) {
-        theInstance = ref1[k];
-        if (!theInstance.is(this)) {
-          internalEndTime = theInstance.internalEndTime();
-          if (internalEndTime > latestInternalEndTime) {
-            latestInternalEndTime = internalEndTime;
+      layerInstances.forEach((function(_this) {
+        return function(theInstance) {
+          var internalEndTime;
+          if (!theInstance.is(_this)) {
+            internalEndTime = theInstance.internalEndTime();
+            if (internalEndTime > latestInternalEndTime) {
+              return latestInternalEndTime = internalEndTime;
+            }
           }
-        }
-      }
+        };
+      })(this));
     }
     this.beginAt(latestInternalEndTime + this.containingComp().comp.frameDuration);
     return this;
@@ -3519,21 +3523,19 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.highlights = function() {
-    var containingLayerArray, highlight, highlightArray, highlights, j, k, len, len1, ref, ref1, theLayer;
+    var containingLayerArray, highlightArray, highlights;
     highlightArray = [];
     containingLayerArray = [];
-    ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      theLayer = ref[j];
-      if (theLayer instanceof NFPageLayer) {
-        ref1 = theLayer.highlights().layers;
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
-          highlight = ref1[k];
-          highlightArray.push(highlight);
-          containingLayerArray.push(theLayer);
+    this.forEach((function(_this) {
+      return function(theLayer) {
+        if (theLayer instanceof NFPageLayer) {
+          return theLayer.highlights().forEach(function(highlight) {
+            highlightArray.push(highlight);
+            return containingLayerArray.push(theLayer);
+          });
         }
-      }
-    }
+      };
+    })(this));
     highlights = new NFHighlightLayerCollection(highlightArray);
     return highlights;
   };
@@ -3548,21 +3550,19 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.layersWithHighlight = function(highlight) {
-    var foundHighlights, j, k, len, len1, ref, ref1, testHighlight, theLayer;
+    var foundHighlights;
     foundHighlights = new NFPageLayerCollection;
-    ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      theLayer = ref[j];
-      if (theLayer instanceof NFPageLayer) {
-        ref1 = theLayer.highlights().layers;
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
-          testHighlight = ref1[k];
-          if (highlight.is(testHighlight)) {
-            foundHighlights.add(theLayer);
-          }
+    this.forEach((function(_this) {
+      return function(theLayer) {
+        if (theLayer instanceof NFPageLayer) {
+          return theLayer.highlights().forEach(function(testHighlight) {
+            if (highlight.is(testHighlight)) {
+              return foundHighlights.add(theLayer);
+            }
+          });
         }
-      }
-    }
+      };
+    })(this));
     return foundHighlights;
   };
 
@@ -3663,7 +3663,7 @@ NFPageLayerCollection = (function(superClass) {
    */
 
   NFPageLayerCollection.prototype.differentiate = function() {
-    var alphabet, bubbledToFix, highlight, i, j, k, l, lastUsedLetter, lastUsedLetterIndex, len, len1, len2, len3, letterIndex, letteredNames, m, n, noLetterNames, o, ref, ref1, ref2, ref3, ref4, ref5, theLayer;
+    var alphabet, bubbledToFix, i, j, k, l, lastUsedLetterIndex, len, letteredNames, noLetterNames, ref, ref1, ref2, theLayer;
     if (this.isEmpty()) {
       return this;
     }
@@ -3684,42 +3684,43 @@ NFPageLayerCollection = (function(superClass) {
         theLayer = noLetterNames.layers[i];
         bubbledToFix = theLayer.bubbledHighlights();
         if (!bubbledToFix.isEmpty()) {
-          ref2 = bubbledToFix.layers;
-          for (l = 0, len1 = ref2.length; l < len1; l++) {
-            highlight = ref2[l];
-            highlight.fixExpressionWithDiffLetter(alphabet[i]);
-          }
+          bubbledToFix.forEach((function(_this) {
+            return function(highlight) {
+              return highlight.fixExpressionWithDiffLetter(alphabet[i]);
+            };
+          })(this));
         }
         theLayer.layer.name += " (" + alphabet[i] + ")";
         bubbledToFix.resetExpressionErrors();
       }
     } else {
       lastUsedLetterIndex = null;
-      ref3 = letteredNames.layers;
-      for (m = 0, len2 = ref3.length; m < len2; m++) {
-        theLayer = ref3[m];
-        lastUsedLetter = theLayer.getName().charAt(theLayer.getName().indexOf("(") + 1);
-        letterIndex = alphabet.indexOf(lastUsedLetter);
-        if (lastUsedLetterIndex != null) {
-          if (letterIndex > lastUsedLetterIndex) {
-            lastUsedLetterIndex = letterIndex;
+      letteredNames.forEach((function(_this) {
+        return function(theLayer) {
+          var lastUsedLetter, letterIndex;
+          lastUsedLetter = theLayer.getName().charAt(theLayer.getName().indexOf("(") + 1);
+          letterIndex = alphabet.indexOf(lastUsedLetter);
+          if (lastUsedLetterIndex != null) {
+            if (letterIndex > lastUsedLetterIndex) {
+              return lastUsedLetterIndex = letterIndex;
+            }
+          } else {
+            return lastUsedLetterIndex = letterIndex;
           }
-        } else {
-          lastUsedLetterIndex = letterIndex;
-        }
-      }
+        };
+      })(this));
       if (lastUsedLetterIndex == null) {
         throw new Error("Something is wrong with the layer naming...");
       }
-      for (i = n = 0, ref4 = noLetterNames.count() - 1; 0 <= ref4 ? n <= ref4 : n >= ref4; i = 0 <= ref4 ? ++n : --n) {
+      for (i = l = 0, ref2 = noLetterNames.count() - 1; 0 <= ref2 ? l <= ref2 : l >= ref2; i = 0 <= ref2 ? ++l : --l) {
         theLayer = noLetterNames.layers[i];
         bubbledToFix = theLayer.bubbledHighlights();
         if (!bubbledToFix.isEmpty()) {
-          ref5 = bubbledToFix.layers;
-          for (o = 0, len3 = ref5.length; o < len3; o++) {
-            highlight = ref5[o];
-            highlight.fixExpressionWithDiffLetter(alphabet[lastUsedLetterIndex + 1]).resetExpressionErrors();
-          }
+          bubbledToFix.forEach((function(_this) {
+            return function(highlight) {
+              return highlight.fixExpressionWithDiffLetter(alphabet[lastUsedLetterIndex + 1]).resetExpressionErrors();
+            };
+          })(this));
         }
         theLayer.layer.name += " (" + alphabet[lastUsedLetterIndex + 1] + ")";
         bubbledToFix.resetExpressionErrors();
@@ -4243,18 +4244,18 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.layersForPage = function(page) {
-    var j, len, matchedPages, ref, theLayer;
+    var matchedPages;
     if (!(page instanceof NFPageComp)) {
       throw new Error("given page is not an NFPageComp");
     }
     matchedPages = new NFPageLayerCollection;
-    ref = this.allLayers().layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      theLayer = ref[j];
-      if (theLayer instanceof NFPageLayer && theLayer.getPageComp().is(page)) {
-        matchedPages.add(theLayer);
-      }
-    }
+    this.allLayers().forEach((function(_this) {
+      return function(theLayer) {
+        if (theLayer instanceof NFPageLayer && theLayer.getPageComp().is(page)) {
+          return matchedPages.add(theLayer);
+        }
+      };
+    })(this));
     return matchedPages;
   };
 

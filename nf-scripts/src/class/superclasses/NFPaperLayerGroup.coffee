@@ -30,7 +30,7 @@ class NFPaperLayerGroup
   getPages: ->
     allChildren = @getChildren()
     pageChildren = new NFPageLayerCollection()
-    for layer in allChildren.layers
+    allChildren.forEach (layer) =>
       pageChildren.add layer if layer instanceof NFPageLayer
     return pageChildren
 
@@ -41,8 +41,8 @@ class NFPaperLayerGroup
   @returns {boolean} the result
   ###
   containsHighlight: (highlight) ->
-    for pageLayer in @getPages().layers
-      for testHighlight in pageLayer.highlights().layers
+    @getPages().forEach (pageLayer) =>
+      pageLayer.highlights().forEach (testHighlight) =>
         return true if testHighlight.is highlight
     return false
 
@@ -95,7 +95,7 @@ class NFPaperLayerGroup
     # Move to the Highlight
     possibleLayers = @getPages().layersWithHighlight model.highlight
     activePageLayer = null
-    for theLayer in possibleLayers.layers
+    possibleLayers.forEach (theLayer) =>
       activePageLayer = theLayer if theLayer.isActiveAtTime model.time
 
     keyframeTimes = [model.time, model.time + model.duration]
@@ -146,7 +146,7 @@ class NFPaperLayerGroup
 
     layersAboveGroup = new NFLayerCollection()
     layersBelowGroup = new NFLayerCollection()
-    for layer in layersToGather.layers
+    layersToGather.forEach (layer) =>
       layersAboveGroup.add layer if layer.index() < @paperParent.index()
       layersBelowGroup.add layer if layer.index() > childLayers.getBottommostLayer().index()
 

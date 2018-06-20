@@ -71,7 +71,7 @@ class NFPageLayer extends NFLayer
   ###
   bubbledHighlights: ->
     bubbledHighlights = []
-    @highlights().forEach (highlight) ->
+    @highlights().forEach (highlight) =>
       bubbledHighlights.push highlight if highlight.isBubbled() and highlight.getConnectedPageLayer()?.is(@)
     return new NFHighlightLayerCollection(bubbledHighlights)
 
@@ -83,7 +83,7 @@ class NFPageLayer extends NFLayer
   ###
   bubblableHighlights: ->
     bubblableHighlights = []
-    @highlights().forEach (highlight) ->
+    @highlights().forEach (highlight) =>
       bubblableHighlights.push highlight unless highlight.isBubbled() and not highlight.isBroken()
     return new NFHighlightLayerCollection(bubblableHighlights)
 
@@ -103,7 +103,7 @@ class NFPageLayer extends NFLayer
       highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble])
 
     unless highlightsToBubble.isEmpty()
-      for highlight in highlightsToBubble.layers
+      highlightsToBubble.forEach (highlight) =>
 
         unless highlight.canBubbleUp()
           throw new Error "Cannot bubble highlight if already connected and not broken. Disconnect first"
@@ -272,7 +272,7 @@ class NFPageLayer extends NFLayer
   @returns {boolean} the result
   ###
   containsHighlight: (highlight) ->
-    for testHighlight in @highlights().layers
+    @highlights().forEach (testHighlight) =>
       return true if testHighlight.is highlight
     return false
 
@@ -292,12 +292,14 @@ class NFPageLayer extends NFLayer
     for partComp in partComps
       layersInComp = partComp.layersForPage thisPage
       unless layersInComp.isEmpty()
-        layerInstances.add theLayer for theLayer in layersInComp.layers
+        layersInComp.forEach (theLayer) =>
+          layerInstances.add theLayer
 
     # Get the last time we saw
     unless layerInstances.isEmpty()
       latestInternalEndTime = 0
-      for theInstance in layerInstances.layers
+
+      layerInstances.forEach (theInstance) =>
         unless theInstance.is @
           internalEndTime = theInstance.internalEndTime()
           latestInternalEndTime = internalEndTime if internalEndTime > latestInternalEndTime

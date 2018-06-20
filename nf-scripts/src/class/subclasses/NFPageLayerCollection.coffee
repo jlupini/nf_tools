@@ -46,10 +46,10 @@ class NFPageLayerCollection extends NFLayerCollection
   highlights: ->
     highlightArray = []
     containingLayerArray = []
-    for theLayer in @layers
+    @forEach (theLayer) =>
       if theLayer instanceof NFPageLayer
         # Get the layer's NFPageComp
-        for highlight in theLayer.highlights().layers
+        theLayer.highlights().forEach (highlight) =>
           highlightArray.push highlight
           containingLayerArray.push theLayer
     highlights = new NFHighlightLayerCollection(highlightArray)
@@ -64,10 +64,10 @@ class NFPageLayerCollection extends NFLayerCollection
   ###
   layersWithHighlight: (highlight) ->
     foundHighlights = new NFPageLayerCollection
-    for theLayer in @layers
+    @forEach (theLayer) =>
       if theLayer instanceof NFPageLayer
         # Get the layer's NFPageComp
-        for testHighlight in theLayer.highlights().layers
+        theLayer.highlights().forEach (testHighlight) =>
           foundHighlights.add theLayer if highlight.is testHighlight
     return foundHighlights
 
@@ -147,14 +147,14 @@ class NFPageLayerCollection extends NFLayerCollection
 
         bubbledToFix = theLayer.bubbledHighlights()
         unless bubbledToFix.isEmpty()
-          for highlight in bubbledToFix.layers
+          bubbledToFix.forEach (highlight) =>
             highlight.fixExpressionWithDiffLetter(alphabet[i])
 
         theLayer.layer.name += " (#{alphabet[i]})"
         bubbledToFix.resetExpressionErrors()
     else
       lastUsedLetterIndex = null
-      for theLayer in letteredNames.layers
+      letteredNames.forEach (theLayer) =>
         lastUsedLetter = theLayer.getName().charAt(theLayer.getName().indexOf("(")+1)
         letterIndex = alphabet.indexOf lastUsedLetter
         if lastUsedLetterIndex?
@@ -168,7 +168,7 @@ class NFPageLayerCollection extends NFLayerCollection
 
         bubbledToFix = theLayer.bubbledHighlights()
         unless bubbledToFix.isEmpty()
-          for highlight in bubbledToFix.layers
+          bubbledToFix.forEach (highlight) =>
             highlight.fixExpressionWithDiffLetter(alphabet[lastUsedLetterIndex+1]).resetExpressionErrors()
 
         theLayer.layer.name += " (#{alphabet[lastUsedLetterIndex+1]})"

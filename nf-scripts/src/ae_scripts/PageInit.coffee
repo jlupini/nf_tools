@@ -30,7 +30,7 @@ presentUI = ->
 
 	# Warn and abort if we're trying to run the script on both initialized and uninitialized pages at the same time
 	orphans = 0
-	for theLayer in _.selectedPages.layers
+	_.selectedPages.forEach (theLayer) =>
 		orphans++ unless theLayer.hasNullParent()
 	if 0 < orphans < _.selectedPages.count()
 		throw new Error "Can't run this script on both initialized and uninitialized page layers at the same time"
@@ -67,7 +67,7 @@ presentUI = ->
 		highlightPanel.margins.top = 16
 
 		highlightCheckboxes = {}
-		for highlight in allHighlights.layers
+		allHighlights.forEach (highlight) =>
 			displayName = highlight.getName() + " - pg" + highlight.getPageComp().getPageNumber()
 			highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer highlight.getConnectedPageLayer()
 
@@ -93,7 +93,7 @@ presentUI = ->
 
 		okButton.onClick = ->
 			highlightChoices = new NFHighlightLayerCollection()
-			for highlight in allHighlights.layers
+			allHighlights.forEach (highlight) =>
 				checkbox = highlightCheckboxes[highlight.getName()]
 				highlightChoices.add highlight if checkbox.value is true
 
@@ -111,7 +111,7 @@ presentUI = ->
 
 				if animatePageCheckbox.value
 					topLayer.slideIn()
-					for layer in _.selectedPages.layers
+					_.selectedPages.forEach (layer) =>
 						layer.layer.startTime = topLayer.getInMarkerTime() unless layer.is topLayer
 
 			highlightChoices.disconnectHighlights()
@@ -121,7 +121,7 @@ presentUI = ->
 	else
 		# Add a bubble up tab if there are unBubbled or broken highlights
 		shouldPresentBubbleOnlyPanel = no
-		_.selectedPages.forEach (page) ->
+		_.selectedPages.forEach (page) =>
 			bubblableForPage = page.bubblableHighlights()
 			shouldPresentBubbleOnlyPanel = yes unless bubblableForPage.isEmpty()
 
@@ -137,8 +137,8 @@ presentUI = ->
 
 			bubblableHighlights = []
 			highlightBubbleCheckboxes = {}
-			_.selectedPages.forEach (page) ->
-				page.bubblableHighlights().forEach (highlight) ->
+			_.selectedPages.forEach (page) =>
+				page.bubblableHighlights().forEach (highlight) =>
 					highlightBubbleCheckboxes[highlight.getName()] = highlightBubblePanel.add "checkbox {text: '#{highlight.getName()} (#{page.getName()})'}"
 					highlightBubbleCheckboxes[highlight.getName()].value = off
 					highlightBubbleCheckboxes[highlight.getName()].sourcePage = page
@@ -150,7 +150,7 @@ presentUI = ->
 			bubCancelButton.onClick = getCancelFunction w
 
 			bubOkButton.onClick = ->
-				bubblableHighlights.forEach (highlight) ->
+				bubblableHighlights.forEach (highlight) =>
 					bubbleCheckbox = highlightBubbleCheckboxes[highlight.getName()]
 					if bubbleCheckbox?
 						if bubbleCheckbox.value is true
@@ -176,7 +176,7 @@ presentUI = ->
 		highlightDisconnectPanel.margins.top = 16
 
 		highlightDisconnectCheckboxes = {}
-		for highlight in allHighlights.layers
+		allHighlights.forEach (highlight) =>
 			if highlight.isBubbled()
 				highlightDisconnectCheckboxes[highlight.getName()] = highlightDisconnectPanel.add "checkbox {text: '#{highlight.getName()}'}"
 				highlightDisconnectCheckboxes[highlight.getName()].value = off
@@ -187,7 +187,7 @@ presentUI = ->
 		disCancelButton.onClick = getCancelFunction w
 
 		disOkButton.onClick = ->
-			for highlight in allHighlights.layers
+			allHighlights.forEach (highlight) =>
 				disconnectCheckbox = highlightDisconnectCheckboxes[highlight.getName()]
 				if disconnectCheckbox?
 					if disconnectCheckbox.value is true

@@ -85,7 +85,7 @@ NFProject = {
   @returns {Item | null} the found item or null
    */
   followInstruction: function(input) {
-    var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, group, highlight, instruction, instructionString, j, k, key, l, len, len1, len2, mainComp, option, outPoint, ref, ref1, ref2, results, targetPDF, targetPDFNumber, theLayer, titlePage, titlePageLayer;
+    var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, group, highlight, instruction, instructionString, j, k, key, len, len1, mainComp, option, outPoint, ref, ref1, targetPDF, targetPDFNumber, titlePage, titlePageLayer;
     mainComp = this.activeComp();
     if (!(mainComp instanceof NFPartComp)) {
       throw new Error("Can only run instruction on a part comp");
@@ -150,17 +150,13 @@ NFProject = {
       if (activePDF != null) {
         outPoint = titlePageLayer.markers().keyTime("NF In");
         group = mainComp.groupFromPDF(activePDF);
-        ref2 = group.getChildren(true).layers;
-        results = [];
-        for (l = 0, len2 = ref2.length; l < len2; l++) {
-          theLayer = ref2[l];
-          if (theLayer.layer.outPoint > outPoint) {
-            results.push(theLayer.layer.outPoint = outPoint);
-          } else {
-            results.push(void 0);
-          }
-        }
-        return results;
+        return group.getChildren(true).forEach((function(_this) {
+          return function(theLayer) {
+            if (theLayer.layer.outPoint > outPoint) {
+              return theLayer.layer.outPoint = outPoint;
+            }
+          };
+        })(this));
       }
     } else if (instruction.type = NFLayoutType.HIGHLIGHT) {
       highlight = targetPDF.findHighlight(instruction.look);

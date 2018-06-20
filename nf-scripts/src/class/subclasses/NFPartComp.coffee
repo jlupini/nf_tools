@@ -350,7 +350,7 @@ class NFPartComp extends NFComp
   layersForPage: (page) ->
     throw new Error "given page is not an NFPageComp" unless page instanceof NFPageComp
     matchedPages = new NFPageLayerCollection
-    for theLayer in @allLayers().layers
+    @allLayers().forEach (theLayer) =>
       if theLayer instanceof NFPageLayer and theLayer.getPageComp().is page
         matchedPages.add theLayer
     return matchedPages
