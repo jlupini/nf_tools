@@ -955,7 +955,12 @@ NFLayer = (function() {
 
   /**
   Uses a null hack to get the source Rect of the layer in it's containing comp.
-  Optional time parameter
+  Optional time parameter. WARNING: This method is very likely to cause the time
+  of whatever comp you're working with to jump around. It's strongly recommended
+  to save and restore the current time of the comp you're working in before
+  and after calling this. That happens when you're in a time-sensitive comp
+  (like a part comp) and you end up calling this function (even through other)
+  functions.
   @memberof NFLayer
   @param {float} [time=Current time] - the optional time of the containing comp to
   check at. Default is the current time of the containingComp.
@@ -2918,14 +2923,16 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.sourceRectForHighlight = function(highlight, targetTime) {
-    var highlightRect;
+    var currentTime, highlightRect;
     if (targetTime == null) {
       targetTime = null;
     }
     if (!this.containsHighlight(highlight)) {
       throw new Error("Can't get source rect for this highlight since it's not in the layer");
     }
+    currentTime = this.containingComp().getTime();
     highlightRect = highlight.sourceRect();
+    this.containingComp().setTime(currentTime);
     return this.relativeRect(highlightRect, targetTime);
   };
 
@@ -3952,12 +3959,14 @@ NFPartComp = (function(superClass) {
     containingPartComps = targetPDF.containingPartComps();
     targetPage = model.highlight.getPageComp();
     if (containingPartComps.length === 0) {
+      activePageLayer = this.activePage();
       if (model.skipTitle === false) {
         titlePage = targetPDF.getTitlePage();
         titlePageLayer = this.insertPage({
           page: titlePage,
           animate: true
         });
+        activePageLayer.layer.outPoint = titlePageLayer.getInMarkerTime();
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
         if (targetPage.is(titlePage)) {
           titlePageLayer.bubbleUp(model.highlight);
@@ -4087,13 +4096,16 @@ NFPartComp = (function(superClass) {
         targetGroup = this.groupFromPDF(targetPDF);
         if (alreadyInThisPart) {
           targetGroup.gatherLayers(new NFLayerCollection([targetPageLayer]));
-          if (targetPageLayer.index() > activePageLayer.index()) {
+          if (targetPageLayer.index() < activePageLayer.index()) {
             targetPageLayer.slideIn();
+            activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
           } else {
-            alert("Slide out the above layer!");
+            activePageLayer.layer.outPoint = targetPageLayer.layer.inPoint + 2.0;
+            activePageLayer.slideOut();
           }
         } else {
           targetPageLayer.slideIn();
+          activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
         }
       }
     }

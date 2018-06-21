@@ -51,6 +51,9 @@ class NFPartComp extends NFComp
 
     # If we've NEVER SEEN THIS PDF before
     if containingPartComps.length is 0
+      # Get the active page, if any
+      activePageLayer = @activePage()
+
       #  If we don't have the 'no q' flag
       if model.skipTitle is no
         # Bring in the motherfucking title page, initialize it
@@ -58,6 +61,8 @@ class NFPartComp extends NFComp
         titlePageLayer = @insertPage
           page: titlePage
           animate: yes
+
+        activePageLayer.layer.outPoint = titlePageLayer.getInMarkerTime()
 
         group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
         # If the highlight we want is on the title page
@@ -201,17 +206,21 @@ class NFPartComp extends NFComp
 
         targetGroup = @groupFromPDF targetPDF
 
+        # FIXME: Pickup here and make the slide ins and outs smart based on
+        # highlight location so we go the right direction.
         if alreadyInThisPart
           targetGroup.gatherLayers new NFLayerCollection [targetPageLayer]
 
-          if targetPageLayer.index() > activePageLayer.index()
+          if targetPageLayer.index() < activePageLayer.index()
             targetPageLayer.slideIn()
+
+            activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime()
           else
-            # FIXME: Pickup here and fix the add in out markers function to support
-            # Adding or removing only the ins or outs for a property
-            alert "Slide out the above layer!"
+            activePageLayer.layer.outPoint = targetPageLayer.layer.inPoint + 2.0
+            activePageLayer.slideOut()
         else
           targetPageLayer.slideIn()
+          activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime()
 
     @
 

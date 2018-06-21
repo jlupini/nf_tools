@@ -372,7 +372,7 @@ class NFLayer
     prevExpression = options.property.expression
     alreadyContainsInValue = prevExpression.indexOf("var inValue") >= 0
     alreadyContainsOutValue = prevExpression.indexOf("var outValue") >= 0
-    
+
     shouldPreserveInValue = not options.startValue? and alreadyContainsInValue
     shouldPreserveOutValue = not options.endValue? and alreadyContainsOutValue
 
@@ -498,7 +498,12 @@ class NFLayer
 
   ###*
   Uses a null hack to get the source Rect of the layer in it's containing comp.
-  Optional time parameter
+  Optional time parameter. WARNING: This method is very likely to cause the time
+  of whatever comp you're working with to jump around. It's strongly recommended
+  to save and restore the current time of the comp you're working in before
+  and after calling this. That happens when you're in a time-sensitive comp
+  (like a part comp) and you end up calling this function (even through other)
+  functions.
   @memberof NFLayer
   @param {float} [time=Current time] - the optional time of the containing comp to
   check at. Default is the current time of the containingComp.
@@ -508,8 +513,6 @@ class NFLayer
     compTime = @containingComp().getTime()
     time = time ? compTime
     tempNull = @containingComp().addNull()
-    # This line stops the mainComp time from jumping forward.
-    # @containingComp().setTime compTime
 
     expressionBase = "rect = thisComp.layer(#{@index()}).sourceRectAtTime(time);"
     tempNull.transform().position.expression = expressionBase + "thisComp.layer(#{@index()}).toComp([rect.left, rect.top])"

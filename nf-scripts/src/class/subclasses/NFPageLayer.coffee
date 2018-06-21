@@ -262,7 +262,9 @@ class NFPageLayer extends NFLayer
   ###
   sourceRectForHighlight: (highlight, targetTime = null) ->
     throw new Error "Can't get source rect for this highlight since it's not in the layer" unless @containsHighlight highlight
+    currentTime = @containingComp().getTime()
     highlightRect = highlight.sourceRect()
+    @containingComp().setTime currentTime
     @relativeRect highlightRect, targetTime
 
   ###*
