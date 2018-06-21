@@ -713,9 +713,9 @@ NFLayer = (function() {
   @param {Property} options.property - the property to use for the in/outs.
   required
   @param {float} [options.length=2.0] - the length of the transition. Default 2.0
-  @param {string} [options.startEquation=NF.Util.easingEquations.out_quint] - the equation to use for the in
+  @param {string} [options.startEquation=EasingEquation.quint.out] - the equation to use for the in
   transition of the property.
-  @param {string} [options.endEquation=NF.Util.easingEquations.in_quint] - the equation to use for the out
+  @param {string} [options.endEquation=EasingEquation.quint.in] - the equation to use for the out
   transition of the property.
   @param {any | Array} [options.startValue] - the value for this property
   at its inPoint. If the property is multidimensional, this should be an
@@ -729,7 +729,7 @@ NFLayer = (function() {
    */
 
   NFLayer.prototype.addInOutMarkersForProperty = function(options) {
-    var e, element, error, error1, expression, fileText, i, idx, inComm, inMarker, inValueString, j, markers, outComm, outMarker, outValueString, ref, ref1, shouldFail;
+    var alreadyContainsInValue, alreadyContainsOutValue, e, element, error, error1, expression, fileText, i, idx, inComm, inMarker, inValueString, j, markers, outComm, outMarker, outValueString, prevExpression, ref, ref1, shouldFail, shouldPreserveInValue, shouldPreserveOutValue;
     if (!((options.property != null) && options.property instanceof Property)) {
       throw new Error("Invalid property");
     }
@@ -766,10 +766,10 @@ NFLayer = (function() {
       options.length = 2.0;
     }
     if (options.startEquation == null) {
-      options.startEquation = NF.Util.easingEquations.out_quint;
+      options.startEquation = EasingEquation.quint.out;
     }
     if (options.endEquation == null) {
-      options.endEquation = NF.Util.easingEquations.in_quint;
+      options.endEquation = EasingEquation.quint["in"];
     }
     inComm = "NF In";
     outComm = "NF Out";
@@ -795,11 +795,20 @@ NFLayer = (function() {
         markers.setValueAtTime(this.layer.outPoint - options.length, new MarkerValue(outComm));
       }
     }
-    fileText = NF.Util.readFile("expressions/marker-animation-main-function.js");
-    fileText = NF.Util.fixLineBreaks(fileText);
-    expression = fileText;
-    if (options.startEquation != null) {
-      expression = ("var startEquationString = '" + options.startEquation + "';\n") + expression;
+    prevExpression = options.property.expression;
+    alreadyContainsInValue = prevExpression.indexOf("var inValue") >= 0;
+    alreadyContainsOutValue = prevExpression.indexOf("var outValue") >= 0;
+    shouldPreserveInValue = (options.startValue == null) && alreadyContainsInValue;
+    shouldPreserveOutValue = (options.endValue == null) && alreadyContainsOutValue;
+    if (shouldPreserveInValue || shouldPreserveOutValue) {
+      expression = prevExpression;
+    } else {
+      fileText = NF.Util.readFile("expressions/marker-animation-main-function.js");
+      fileText = NF.Util.fixLineBreaks(fileText);
+      expression = fileText;
+    }
+    if (options.startValue != null) {
+      expression = ("var startEquationFunc = " + options.startEquation + "\n") + expression;
       if (options.startValue instanceof Array) {
         inValueString = "[";
         for (idx = i = 0, ref = options.startValue.length - 1; 0 <= ref ? i <= ref : i >= ref; idx = 0 <= ref ? ++i : --i) {
@@ -821,8 +830,8 @@ NFLayer = (function() {
       }
       expression = ("var inValue = " + inValueString + ";\n") + expression;
     }
-    if (options.endEquation != null) {
-      expression = ("var endEquationString = '" + options.endEquation + "';\n") + expression;
+    if (options.endValue != null) {
+      expression = ("var endEquationFunc = " + options.endEquation + "\n") + expression;
       if (options.endValue instanceof Array) {
         outValueString = "[";
         for (idx = j = 0, ref1 = options.endValue.length - 1; 0 <= ref1 ? j <= ref1 : j >= ref1; idx = 0 <= ref1 ? ++j : --j) {
@@ -1178,6 +1187,9 @@ NFLayerCollection = (function() {
 
   NFLayerCollection.prototype.forEach = function(fn) {
     var i, j, ref;
+    if (this.isEmpty()) {
+      return null;
+    }
     for (i = j = 0, ref = this.count() - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
       fn(this.layers[i], i, this.layers);
     }
@@ -3091,10 +3103,10 @@ NFPageLayer = (function(superClass) {
     })();
     zVal = positionProperty.value[2];
     if (model["in"]) {
-      startEquation = NF.Util.easingEquations.out_quint;
+      startEquation = EasingEquation.quint.out;
       startValue = [xVal, yVal, zVal];
     } else {
-      endEquation = NF.Util.easingEquations.in_quint;
+      endEquation = EasingEquation.quint["in"];
       endValue = [xVal, yVal, zVal];
     }
     this.addInOutMarkersForProperty({

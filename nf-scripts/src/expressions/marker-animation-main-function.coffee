@@ -1,8 +1,8 @@
 startEquation = (t, b, c, d) ->
-  return eval startEquationString
+  return startEquationFunc t, b, c, d
 
 endEquation =  (t, b, c, d) ->
-  return eval endEquationString
+  return endEquationFunc t, b, c, d
 
 easeAndWizz = ->
   # Get the relevant marker
@@ -27,12 +27,12 @@ easeAndWizz = ->
   catch e
 
   # Deal with before and after
-  if inMarker? and time < inPoint
+  if inMarker? and inValue? and time < inPoint
 
     startValue = inValue
     try
       startValue[0]
-    catch e
+    catch
       startValue = [startValue]
 
     sX = startValue[0]
@@ -51,19 +51,19 @@ easeAndWizz = ->
       else
         return null
 
-  else if outMarker? and time > outPoint
+  else if outMarker? and outValue? and time > outPoint
 
     endValue = outValue
     try
-      outValue[0]
-    catch e
-      outValue = [outValue]
+      endValue[0]
+    catch
+      endValue = [endValue]
 
-    sX = outValue[0]
+    sX = endValue[0]
     if dimensionCount>= 2
-      sY = outValue[1]
+      sY = endValue[1]
       if dimensionCount>= 3
-        sZ = outValue[2]
+        sZ = endValue[2]
 
     switch dimensionCount
       when 1
@@ -76,7 +76,7 @@ easeAndWizz = ->
         return null
 
   # Deal with the Beginning Stuff
-  else if inMarker? and inPoint <= time <= inMarker.time
+  else if inMarker? and inValue? and inPoint <= time <= inMarker.time
 
     startValue = inValue
     endValue = valueAtTime(inMarker.time)
@@ -113,7 +113,7 @@ easeAndWizz = ->
         return null
 
   # Deal with the Ending Stuff
-  else if outMarker? and outMarker.time <= time <= outPoint
+  else if outMarker? and outValue? and outMarker.time <= time <= outPoint
 
     startValue = valueAtTime(outMarker.time)
     endValue = outValue
@@ -123,7 +123,7 @@ easeAndWizz = ->
       startValue = [startValue]
       endValue = [endValue]
 
-    t = time - (inPoint)
+    t = time - outMarker.time
     d = outPoint - outMarker.time
     sX = startValue[0]
     eX = endValue[0] - (startValue[0])
@@ -150,4 +150,4 @@ easeAndWizz = ->
 
   return null
 
-easeAndWizz() or value
+easeAndWizz() ? value

@@ -391,10 +391,10 @@ class NFPageLayer extends NFLayer
     zVal = positionProperty.value[2]
 
     if model.in
-      startEquation = NF.Util.easingEquations.out_quint
+      startEquation = EasingEquation.quint.out
       startValue = [xVal, yVal, zVal]
     else
-      endEquation = NF.Util.easingEquations.in_quint
+      endEquation = EasingEquation.quint.in
       endValue = [xVal, yVal, zVal]
 
     @addInOutMarkersForProperty

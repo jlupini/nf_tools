@@ -81,6 +81,7 @@ class NFLayerCollection
   @returns {NFLayerCollection} self
   ###
   forEach: (fn) ->
+    return null if @isEmpty()
     for i in [0..@count()-1]
       fn @layers[i], i, @layers
     @

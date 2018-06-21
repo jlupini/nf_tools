@@ -307,9 +307,9 @@ class NFLayer
   @param {Property} options.property - the property to use for the in/outs.
   required
   @param {float} [options.length=2.0] - the length of the transition. Default 2.0
-  @param {string} [options.startEquation=NF.Util.easingEquations.out_quint] - the equation to use for the in
+  @param {string} [options.startEquation=EasingEquation.quint.out] - the equation to use for the in
   transition of the property.
-  @param {string} [options.endEquation=NF.Util.easingEquations.in_quint] - the equation to use for the out
+  @param {string} [options.endEquation=EasingEquation.quint.in] - the equation to use for the out
   transition of the property.
   @param {any | Array} [options.startValue] - the value for this property
   at its inPoint. If the property is multidimensional, this should be an
@@ -344,8 +344,8 @@ class NFLayer
     throw new Error "Given start or end value type doesn't match property value" if shouldFail
 
     options.length ?= 2.0
-    options.startEquation ?= NF.Util.easingEquations.out_quint
-    options.endEquation ?= NF.Util.easingEquations.in_quint
+    options.startEquation ?= EasingEquation.quint.out
+    options.endEquation ?= EasingEquation.quint.in
 
     inComm = "NF In"
     outComm = "NF Out"
@@ -366,13 +366,27 @@ class NFLayer
     if options.endValue?
       markers.setValueAtTime @layer.outPoint - options.length, new MarkerValue(outComm) unless outMarker?
 
-    # Create and add the expression to the property
-    fileText = NF.Util.readFile "expressions/marker-animation-main-function.js"
-    fileText = NF.Util.fixLineBreaks(fileText)
-    expression = fileText
+    # Get our base expression. If there's an existing expression with an in or
+    # out value declared, we want to preserve that value UNLESS we were just
+    # given a replacement for it
+    prevExpression = options.property.expression
+    alreadyContainsInValue = prevExpression.indexOf("var inValue") >= 0
+    alreadyContainsOutValue = prevExpression.indexOf("var outValue") >= 0
+    
+    shouldPreserveInValue = not options.startValue? and alreadyContainsInValue
+    shouldPreserveOutValue = not options.endValue? and alreadyContainsOutValue
 
-    if options.startEquation?
-      expression = "var startEquationString = '#{options.startEquation}';\n" + expression
+    if shouldPreserveInValue or shouldPreserveOutValue
+      expression = prevExpression
+    else
+      fileText = NF.Util.readFile "expressions/marker-animation-main-function.js"
+      fileText = NF.Util.fixLineBreaks(fileText)
+      expression = fileText
+
+
+    # Update and add the expression to the property
+    if options.startValue?
+      expression = "var startEquationFunc = #{options.startEquation}\n" + expression
       if options.startValue instanceof Array
         inValueString = "["
         for idx in [0..options.startValue.length-1]
@@ -389,8 +403,8 @@ class NFLayer
         inValueString = options.startValue
       expression = "var inValue = #{inValueString};\n" + expression
 
-    if options.endEquation?
-      expression = "var endEquationString = '#{options.endEquation}';\n" + expression
+    if options.endValue?
+      expression = "var endEquationFunc = #{options.endEquation}\n" + expression
       if options.endValue instanceof Array
         outValueString = "["
         for idx in [0..options.endValue.length-1]

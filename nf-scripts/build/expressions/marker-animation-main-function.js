@@ -1,15 +1,15 @@
-var easeAndWizz, endEquation, startEquation;
+var easeAndWizz, endEquation, ref, startEquation;
 
 startEquation = function(t, b, c, d) {
-  return eval(startEquationString);
+  return startEquationFunc(t, b, c, d);
 };
 
 endEquation = function(t, b, c, d) {
-  return eval(endEquationString);
+  return endEquationFunc(t, b, c, d);
 };
 
 easeAndWizz = function() {
-  var d, dimensionCount, e, eX, eY, eZ, endValue, error, error1, error2, error3, error4, i, idx, inMarker, outMarker, outValue, ref, sX, sY, sZ, startValue, t, testMarker, val1, val2, val3;
+  var d, dimensionCount, e, eX, eY, eZ, endValue, error, error1, error2, error3, error4, i, idx, inMarker, outMarker, ref, sX, sY, sZ, startValue, t, testMarker, val1, val2, val3;
   if (marker.numKeys > 0) {
     for (idx = i = 1, ref = marker.numKeys; 1 <= ref ? i <= ref : i >= ref; idx = 1 <= ref ? ++i : --i) {
       testMarker = marker.key(idx);
@@ -35,12 +35,11 @@ easeAndWizz = function() {
   } catch (error) {
     e = error;
   }
-  if ((inMarker != null) && time < inPoint) {
+  if ((inMarker != null) && (typeof inValue !== "undefined" && inValue !== null) && time < inPoint) {
     startValue = inValue;
     try {
       startValue[0];
     } catch (error1) {
-      e = error1;
       startValue = [startValue];
     }
     sX = startValue[0];
@@ -60,19 +59,18 @@ easeAndWizz = function() {
       default:
         return null;
     }
-  } else if ((outMarker != null) && time > outPoint) {
+  } else if ((outMarker != null) && (typeof outValue !== "undefined" && outValue !== null) && time > outPoint) {
     endValue = outValue;
     try {
-      outValue[0];
+      endValue[0];
     } catch (error2) {
-      e = error2;
-      outValue = [outValue];
+      endValue = [endValue];
     }
-    sX = outValue[0];
+    sX = endValue[0];
     if (dimensionCount >= 2) {
-      sY = outValue[1];
+      sY = endValue[1];
       if (dimensionCount >= 3) {
-        sZ = outValue[2];
+        sZ = endValue[2];
       }
     }
     switch (dimensionCount) {
@@ -85,7 +83,7 @@ easeAndWizz = function() {
       default:
         return null;
     }
-  } else if ((inMarker != null) && (inPoint <= time && time <= inMarker.time)) {
+  } else if ((inMarker != null) && (typeof inValue !== "undefined" && inValue !== null) && (inPoint <= time && time <= inMarker.time)) {
     startValue = inValue;
     endValue = valueAtTime(inMarker.time);
     try {
@@ -121,7 +119,7 @@ easeAndWizz = function() {
       default:
         return null;
     }
-  } else if ((outMarker != null) && (outMarker.time <= time && time <= outPoint)) {
+  } else if ((outMarker != null) && (typeof outValue !== "undefined" && outValue !== null) && (outMarker.time <= time && time <= outPoint)) {
     startValue = valueAtTime(outMarker.time);
     endValue = outValue;
     try {
@@ -131,7 +129,7 @@ easeAndWizz = function() {
       startValue = [startValue];
       endValue = [endValue];
     }
-    t = time - inPoint;
+    t = time - outMarker.time;
     d = outPoint - outMarker.time;
     sX = startValue[0];
     eX = endValue[0] - startValue[0];
@@ -161,4 +159,8 @@ easeAndWizz = function() {
   return null;
 };
 
-easeAndWizz() || value;
+if ((ref = easeAndWizz()) != null) {
+  ref;
+} else {
+  value;
+};
