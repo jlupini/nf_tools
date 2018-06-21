@@ -272,9 +272,10 @@ class NFPageLayer extends NFLayer
   @returns {boolean} the result
   ###
   containsHighlight: (highlight) ->
+    foundHighlight = false
     @highlights().forEach (testHighlight) =>
-      return true if testHighlight.is highlight
-    return false
+      foundHighlight = true if testHighlight.is highlight
+    return foundHighlight
 
   ###*
   Sets the start point of the layer to be the first frame of the page comp that

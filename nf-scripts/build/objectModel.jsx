@@ -1176,7 +1176,7 @@ NFLayerCollection = (function() {
   Iterates through each layer in the collection. The given function can take
   three parameters: layer, i, and layers. None of the parameters are required.
   IMPORTANT: Should be used with a fat arrow to call the callback function, so
-  that scope is preserved.
+  that scope is preserved. Don't add returns inside the function plz...
   @example
   myCollection.forEach (layer, i, layers) =>
     return "Layer number #{i} is called #{layer.getName()}"
@@ -1752,16 +1752,18 @@ NFPaperLayerGroup = (function() {
    */
 
   NFPaperLayerGroup.prototype.containsHighlight = function(highlight) {
+    var foundHighlight;
+    foundHighlight = false;
     this.getPages().forEach((function(_this) {
       return function(pageLayer) {
         return pageLayer.highlights().forEach(function(testHighlight) {
           if (testHighlight.is(highlight)) {
-            return true;
+            return foundHighlight = true;
           }
         });
       };
     })(this));
-    return false;
+    return foundHighlight;
   };
 
 
@@ -2049,7 +2051,7 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.getConnectedPageLayer = function() {
-    var comp, compName, effectName, expression, layerName, possibleLayers;
+    var comp, compName, effectName, expression, foundLayer, layerName, possibleLayers;
     if (this.isBubbled()) {
       expression = this.highlighterEffect().property("Spacing").expression;
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
@@ -2063,13 +2065,15 @@ NFHighlightLayer = (function(superClass) {
         } else if (possibleLayers.count() === 1) {
           return possibleLayers.get(0);
         } else {
-          return possibleLayers.forEach((function(_this) {
+          foundLayer = null;
+          possibleLayers.forEach((function(_this) {
             return function(theLayer) {
               if (theLayer.effect(effectName) != null) {
-                return theLayer;
+                return foundLayer = theLayer;
               }
             };
           })(this));
+          return foundLayer;
         }
       }
     }
@@ -2537,14 +2541,16 @@ NFPageComp = (function(superClass) {
    */
 
   NFPageComp.prototype.highlightWithName = function(name) {
+    var foundHighlight;
+    foundHighlight = null;
     this.highlights().forEach((function(_this) {
       return function(highlight) {
         if (highlight.getName() === name) {
-          return highlight;
+          return foundHighlight = highlight;
         }
       };
     })(this));
-    return null;
+    return foundHighlight;
   };
 
   return NFPageComp;
@@ -2932,14 +2938,16 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.containsHighlight = function(highlight) {
+    var foundHighlight;
+    foundHighlight = false;
     this.highlights().forEach((function(_this) {
       return function(testHighlight) {
         if (testHighlight.is(highlight)) {
-          return true;
+          return foundHighlight = true;
         }
       };
     })(this));
-    return false;
+    return foundHighlight;
   };
 
 

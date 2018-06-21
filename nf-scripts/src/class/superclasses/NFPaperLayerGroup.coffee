@@ -41,10 +41,11 @@ class NFPaperLayerGroup
   @returns {boolean} the result
   ###
   containsHighlight: (highlight) ->
+    foundHighlight = false
     @getPages().forEach (pageLayer) =>
       pageLayer.highlights().forEach (testHighlight) =>
-        return true if testHighlight.is highlight
-    return false
+        foundHighlight = true if testHighlight.is highlight
+    return foundHighlight
 
   ###*
   Returns the containing NFComp

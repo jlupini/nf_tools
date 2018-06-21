@@ -56,8 +56,10 @@ class NFHighlightLayer extends NFLayer
         else if possibleLayers.count() is 1
           return possibleLayers.get 0
         else
+          foundLayer = null
           possibleLayers.forEach (theLayer) =>
-            return theLayer if theLayer.effect(effectName)?
+            foundLayer = theLayer if theLayer.effect(effectName)?
+          return foundLayer
 
   ###*
   Returns the NFPageComp this highlight lives in
