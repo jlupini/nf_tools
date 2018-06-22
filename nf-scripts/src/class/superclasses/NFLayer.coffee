@@ -565,6 +565,17 @@ class NFLayer
     tempNull.remove()
     newPoint
 
+  ###*
+  Uses a null hack to get the center point of this layer in it's containing comp
+  @memberof NFLayer
+  @param {float} [targetTime=Current Time] - the optional time of the
+  containing comp to check at. Default is the current time of the containingComp.
+  @returns {Point} the resulting Point
+  ###
+  relativeCenterPoint: (targetTime = null) ->
+    sourceRect = @sourceRect(targetTime)
+    return [sourceRect.left + sourceRect.width / 2, sourceRect.top + sourceRect.height / 2]
+
 # Class Methods
 NFLayer = Object.assign NFLayer,
 

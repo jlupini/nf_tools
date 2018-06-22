@@ -362,19 +362,31 @@ class NFPageLayer extends NFLayer
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {Object} [model] - The options
-  @param {enum} [model.fromEdge=NFComp.RIGHT] - The direction to slide in from.
-  Default is the right.
+  @param {enum} [model.fromEdge=NFComp.AUTO] - The direction to slide in from.
+  Default if page is centered is the right.
   @param {boolean} [model.in=yes] - If page should slide in. No means out
   ###
   slide: (model) ->
     model ?= []
-    model.fromEdge ?= NFComp.RIGHT
+    model.fromEdge ?= NFComp.AUTO
     model.in ?= yes
+
+    # If .fromEdge is AUTO, figure out which edge to use.
+    if model.fromEdge is NFComp.AUTO
+      layerCenter = @relativeCenterPoint()
+      compCenter = @containingComp().centerPoint()
+      $.bp()
+      if layerCenter[0] < compCenter[0]
+        model.fromEdge = NFComp.LEFT
+      else
+        model.fromEdge = NFComp.RIGHT
 
     positionProperty = @layer.property("Transform").property("Position")
 
     animatingX = model.fromEdge is NFComp.RIGHT or model.fromEdge is NFComp.LEFT
     animatingY = model.fromEdge is NFComp.TOP or model.fromEdge is NFComp.BOTTOM
+
+    throw new Error "Invalid Edge" unless animatingX or animatingY
 
     # Make a slider for controlling the start position
     startOffset = switch
@@ -413,8 +425,8 @@ class NFPageLayer extends NFLayer
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {Object} [model] - The options
-  @param {enum} [model.fromEdge=NFComp.RIGHT] - The direction to slide in from.
-  Default is the right.
+  @param {enum} [model.fromEdge=NFComp.AUTO] - The direction to slide in from.
+  Default if page is centered is the right.
   ###
   slideIn: (model) ->
     @slide
@@ -426,8 +438,8 @@ class NFPageLayer extends NFLayer
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {Object} [model] - The options
-  @param {enum} [model.toEdge=NFComp.RIGHT] - The direction to slide out to.
-  Default is the right.
+  @param {enum} [model.toEdge=NFComp.AUTO] - The direction to slide out to.
+  Default if page is centered is the right.
   ###
   slideOut: (model) ->
     @slide

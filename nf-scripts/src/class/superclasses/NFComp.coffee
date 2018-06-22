@@ -134,6 +134,14 @@ class NFComp
     return @comp.time
 
   ###*
+  Gets the center point of the comp
+  @memberof NFComp
+  @returns {Point} the center point
+  ###
+  centerPoint: ->
+    return [@comp.width / 2, @comp.height / 2]
+
+  ###*
   # Creates and returns a new null layer in this comp
   # @memberof NFComp
   # @returns {NFLayer} The newly created null layer
@@ -214,3 +222,4 @@ NFComp = Object.assign NFComp,
   LEFT: 200
   BOTTOM: 300
   RIGHT: 400
+  AUTO: 500

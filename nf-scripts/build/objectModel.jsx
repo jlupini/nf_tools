@@ -195,6 +195,17 @@ NFComp = (function() {
 
 
   /**
+  Gets the center point of the comp
+  @memberof NFComp
+  @returns {Point} the center point
+   */
+
+  NFComp.prototype.centerPoint = function() {
+    return [this.comp.width / 2, this.comp.height / 2];
+  };
+
+
+  /**
    * Creates and returns a new null layer in this comp
    * @memberof NFComp
    * @returns {NFLayer} The newly created null layer
@@ -295,7 +306,8 @@ NFComp = Object.assign(NFComp, {
   TOP: 100,
   LEFT: 200,
   BOTTOM: 300,
-  RIGHT: 400
+  RIGHT: 400,
+  AUTO: 500
 });
 
 
@@ -1037,6 +1049,24 @@ NFLayer = (function() {
     newPoint = tempNull.transform().position.valueAtTime(targetTime, false);
     tempNull.remove();
     return newPoint;
+  };
+
+
+  /**
+  Uses a null hack to get the center point of this layer in it's containing comp
+  @memberof NFLayer
+  @param {float} [targetTime=Current Time] - the optional time of the
+  containing comp to check at. Default is the current time of the containingComp.
+  @returns {Point} the resulting Point
+   */
+
+  NFLayer.prototype.relativeCenterPoint = function(targetTime) {
+    var sourceRect;
+    if (targetTime == null) {
+      targetTime = null;
+    }
+    sourceRect = this.sourceRect(targetTime);
+    return [sourceRect.left + sourceRect.width / 2, sourceRect.top + sourceRect.height / 2];
   };
 
   return NFLayer;
@@ -3066,25 +3096,38 @@ NFPageLayer = (function(superClass) {
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {Object} [model] - The options
-  @param {enum} [model.fromEdge=NFComp.RIGHT] - The direction to slide in from.
-  Default is the right.
+  @param {enum} [model.fromEdge=NFComp.AUTO] - The direction to slide in from.
+  Default if page is centered is the right.
   @param {boolean} [model.in=yes] - If page should slide in. No means out
    */
 
   NFPageLayer.prototype.slide = function(model) {
-    var animatingX, animatingY, endEquation, endValue, positionProperty, slider, startEquation, startOffset, startValue, xVal, yVal, zVal;
+    var animatingX, animatingY, compCenter, endEquation, endValue, layerCenter, positionProperty, slider, startEquation, startOffset, startValue, xVal, yVal, zVal;
     if (model == null) {
       model = [];
     }
     if (model.fromEdge == null) {
-      model.fromEdge = NFComp.RIGHT;
+      model.fromEdge = NFComp.AUTO;
     }
     if (model["in"] == null) {
       model["in"] = true;
     }
+    if (model.fromEdge === NFComp.AUTO) {
+      layerCenter = this.relativeCenterPoint();
+      compCenter = this.containingComp().centerPoint();
+      $.bp();
+      if (layerCenter[0] < compCenter[0]) {
+        model.fromEdge = NFComp.LEFT;
+      } else {
+        model.fromEdge = NFComp.RIGHT;
+      }
+    }
     positionProperty = this.layer.property("Transform").property("Position");
     animatingX = model.fromEdge === NFComp.RIGHT || model.fromEdge === NFComp.LEFT;
     animatingY = model.fromEdge === NFComp.TOP || model.fromEdge === NFComp.BOTTOM;
+    if (!(animatingX || animatingY)) {
+      throw new Error("Invalid Edge");
+    }
     startOffset = (function() {
       switch (false) {
         case model.fromEdge !== NFComp.RIGHT:
@@ -3140,8 +3183,8 @@ NFPageLayer = (function(superClass) {
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {Object} [model] - The options
-  @param {enum} [model.fromEdge=NFComp.RIGHT] - The direction to slide in from.
-  Default is the right.
+  @param {enum} [model.fromEdge=NFComp.AUTO] - The direction to slide in from.
+  Default if page is centered is the right.
    */
 
   NFPageLayer.prototype.slideIn = function(model) {
@@ -3157,8 +3200,8 @@ NFPageLayer = (function(superClass) {
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {Object} [model] - The options
-  @param {enum} [model.toEdge=NFComp.RIGHT] - The direction to slide out to.
-  Default is the right.
+  @param {enum} [model.toEdge=NFComp.AUTO] - The direction to slide out to.
+  Default if page is centered is the right.
    */
 
   NFPageLayer.prototype.slideOut = function(model) {
