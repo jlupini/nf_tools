@@ -375,7 +375,6 @@ class NFPageLayer extends NFLayer
     if model.fromEdge is NFComp.AUTO
       layerCenter = @relativeCenterPoint()
       compCenter = @containingComp().centerPoint()
-      $.bp()
       if layerCenter[0] < compCenter[0]
         model.fromEdge = NFComp.LEFT
       else

@@ -3115,7 +3115,6 @@ NFPageLayer = (function(superClass) {
     if (model.fromEdge === NFComp.AUTO) {
       layerCenter = this.relativeCenterPoint();
       compCenter = this.containingComp().centerPoint();
-      $.bp();
       if (layerCenter[0] < compCenter[0]) {
         model.fromEdge = NFComp.LEFT;
       } else {
@@ -4009,7 +4008,9 @@ NFPartComp = (function(superClass) {
           page: titlePage,
           animate: true
         });
-        activePageLayer.layer.outPoint = titlePageLayer.getInMarkerTime();
+        if (activePageLayer != null) {
+          activePageLayer.layer.outPoint = titlePageLayer.getInMarkerTime();
+        }
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
         if (targetPage.is(titlePage)) {
           titlePageLayer.bubbleUp(model.highlight);
@@ -4042,7 +4043,20 @@ NFPartComp = (function(superClass) {
           });
         }
       } else {
-        alert("No q - I don't know how to deal yet");
+        targetPageLayer = this.insertPage({
+          page: targetPage,
+          animate: true,
+          frameUp: {
+            highlight: model.highlight,
+            fillPercentage: model.fillPercentage
+          }
+        });
+        if (!model.highlight.isBubbled()) {
+          targetPageLayer.bubbleUp(model.highlight);
+        }
+        if (activePageLayer != null) {
+          activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
+        }
       }
     } else {
       targetGroup = this.groupFromPDF(targetPDF);
@@ -4200,11 +4214,11 @@ NFPartComp = (function(superClass) {
       pageLayer.initTransforms().init();
       pageLayer.assignPaperParentLayer();
     }
-    if (model.animate === true) {
-      pageLayer.slideIn();
-    }
     if (model.frameUp != null) {
       pageLayer.frameUpHighlight(model.frameUp);
+    }
+    if (model.animate === true) {
+      pageLayer.slideIn();
     }
     if (model.pageTurn === NFPageLayer.PAGETURN_FLIPPED_UP || model.pageTurn === NFPageLayer.PAGETURN_FLIPPED_DOWN) {
       pageLayer.setupPageTurnEffect(model.pageTurn);

@@ -62,7 +62,7 @@ class NFPartComp extends NFComp
           page: titlePage
           animate: yes
 
-        activePageLayer.layer.outPoint = titlePageLayer.getInMarkerTime()
+        activePageLayer?.layer.outPoint = titlePageLayer.getInMarkerTime()
 
         group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
         # If the highlight we want is on the title page
@@ -99,8 +99,17 @@ class NFPartComp extends NFComp
 
       #  else (we've been passed the 'no q' flag)
       else
-        alert "No q - I don't know how to deal yet"
-        # TODO: Animate in the page ALREADY focused on the highlight
+        targetPageLayer = @insertPage
+          page: targetPage
+          animate: yes
+          frameUp:
+            highlight: model.highlight
+            fillPercentage: model.fillPercentage
+
+        targetPageLayer.bubbleUp model.highlight unless model.highlight.isBubbled()
+
+        # Trim the old layer to the end of the page turn
+        activePageLayer?.layer.outPoint = targetPageLayer.getInMarkerTime()
 
     # else (this pdf is in a part comp somewhere)
     else
@@ -206,8 +215,6 @@ class NFPartComp extends NFComp
 
         targetGroup = @groupFromPDF targetPDF
 
-        # FIXME: Pickup here and make the slide ins and outs smart based on
-        # highlight location so we go the right direction.
         if alreadyInThisPart
           targetGroup.gatherLayers new NFLayerCollection [targetPageLayer]
 
@@ -263,11 +270,11 @@ class NFPartComp extends NFComp
       pageLayer.initTransforms().init()
       pageLayer.assignPaperParentLayer()
 
-    if model.animate is yes
-      pageLayer.slideIn()
-
     if model.frameUp?
       pageLayer.frameUpHighlight model.frameUp
+
+    if model.animate is yes
+      pageLayer.slideIn()
 
     if model.pageTurn is NFPageLayer.PAGETURN_FLIPPED_UP or model.pageTurn is NFPageLayer.PAGETURN_FLIPPED_DOWN
       pageLayer.setupPageTurnEffect model.pageTurn
