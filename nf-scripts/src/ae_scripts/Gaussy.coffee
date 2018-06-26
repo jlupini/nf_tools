@@ -8,7 +8,7 @@ _ =
 createGaussyLayer = ->
 	targetLayer = _.mainComp.selectedLayers[0]
 	gaussyName = newGaussyNameForLayer(targetLayer)
-	
+
 	# Create new adjustment layer
 	gaussyLayer = _.mainComp.layers.addSolid([1, 1, 1], gaussyName, targetLayer.width, targetLayer.height, 1)
 	gaussyLayer.adjustmentLayer = true
@@ -74,8 +74,8 @@ createGaussyLayer = ->
 
 newGaussyNameForLayer = (targetLayer) ->
 	layerName = targetLayer.name
-	shortName = layerName.substr(0, layerName.indexOf('.'))
-	name = 'Blur' + shortName
+	shortName = layerName
+	name = 'Blur ' + shortName
 	if targetLayer.mask(name) == null
 		return name
 	else

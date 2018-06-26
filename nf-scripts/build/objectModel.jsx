@@ -4008,7 +4008,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, j, layersForPage, posProp, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, j, layersForPage, posProp, preAnimationTime, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     model = {
       highlight: model.highlight,
       page: model.page,
@@ -4037,6 +4037,7 @@ NFPartComp = (function(superClass) {
     }
     containingPartComps = targetPDF.containingPartComps();
     targetPage = (ref5 = model.page) != null ? ref5 : model.highlight.getPageComp();
+    preAnimationTime = this.getTime();
     if (containingPartComps.length === 0) {
       activePageLayer = this.activePage();
       if (model.skipTitle === false) {
@@ -4223,6 +4224,7 @@ NFPartComp = (function(superClass) {
         }
       }
     }
+    this.setTime(preAnimationTime);
     return model.page || model.highlight;
   };
 

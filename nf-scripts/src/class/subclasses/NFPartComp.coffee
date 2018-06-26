@@ -61,6 +61,7 @@ class NFPartComp extends NFComp
 
     containingPartComps = targetPDF.containingPartComps()
     targetPage = model.page ? model.highlight.getPageComp()
+    preAnimationTime = @getTime()
 
     # If we've NEVER SEEN THIS PDF before
     if containingPartComps.length is 0
@@ -254,6 +255,7 @@ class NFPartComp extends NFComp
           targetPageLayer.slideIn()
           activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime()
 
+    @setTime preAnimationTime
     return model.page or model.highlight
 
   ###*

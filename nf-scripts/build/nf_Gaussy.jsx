@@ -73,8 +73,8 @@ createGaussyLayer = function() {
 newGaussyNameForLayer = function(targetLayer) {
   var i, layerName, name, shortName, testName;
   layerName = targetLayer.name;
-  shortName = layerName.substr(0, layerName.indexOf('.'));
-  name = 'Blur' + shortName;
+  shortName = layerName;
+  name = 'Blur ' + shortName;
   if (targetLayer.mask(name) === null) {
     return name;
   } else {

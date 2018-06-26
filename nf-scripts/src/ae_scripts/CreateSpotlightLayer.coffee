@@ -21,7 +21,7 @@ askForChoice = ->
 
   highlightRects = NF.Util.sourceRectsForHighlightsInTargetLayer selectedLayer
   if highlightRects?
-    
+
     w.grp2 = w.add 'panel', undefined, 'Create Spotlight from Highlight', {borderStyle:'none'}
     w.grp2.alignChildren = 'left'
     w.grp2.margins.top = 16
@@ -203,20 +203,6 @@ spotlightLayerMaskExpression = (targetLayer, spotlightLayer, spotlightControl, s
                 } else {
                   0
                 }"
-  # trimString = "if (thisComp.layer(\"#{spanLayer.name}\")){
-  #                 d = thisComp.layer(\"#{spanLayer.name}\").effect(\"#{spotlightControl.name}\")(\"Duration\");
-
-  #                 spotIn = thisComp.layer(\"#{spanLayer.name}\").inPoint;
-  #                 spotOut = thisComp.layer(\"#{spanLayer.name}\").outPoint;
-
-  #                 if (time < (spotIn+spotOut)/2) {
-  #                   ease(time,spotIn,spotIn + d * thisComp.frameDuration,0,100)
-  #                 } else {
-  #                   ease(time,spotOut - d * thisComp.frameDuration,spotOut,100,0)
-  #                 }
-  #               } else {
-  #                 0;
-  #               }"
 
 layerOpacityExpression = (targetLayer, spotlightLayer, spotlightControl, spanLayer, children) ->
   # FIXME: add edge case where layers just slightly overlap and we switch from the easeOut of one to the easeIn of another very suddenly
@@ -376,7 +362,7 @@ newSolid = (props) ->
 
 spotlightNameForLayer = (targetLayer) ->
   layerName = targetLayer.name
-  shortName = layerName.substr(0, layerName.indexOf('.'))
+  shortName = layerName
   name = 'Spot - ' + shortName
 
 # Array.indexOf polyfill

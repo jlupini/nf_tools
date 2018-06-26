@@ -265,7 +265,7 @@ newSolid = function(props) {
 spotlightNameForLayer = function(targetLayer) {
   var layerName, name, shortName;
   layerName = targetLayer.name;
-  shortName = layerName.substr(0, layerName.indexOf('.'));
+  shortName = layerName;
   return name = 'Spot - ' + shortName;
 };
 
