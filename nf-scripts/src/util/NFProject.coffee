@@ -136,7 +136,7 @@ NFProject =
           theLayer.layer.outPoint = outPoint if theLayer.layer.outPoint > outPoint
 
     # if the instruction is a highlight, let's call animateTo
-    else if instruction.type = NFLayoutType.HIGHLIGHT
+    else if instruction.type is NFLayoutType.HIGHLIGHT
       highlight = targetPDF.findHighlight instruction.look
       throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
@@ -144,24 +144,13 @@ NFProject =
         highlight: highlight
         skipTitle: flags.skipTitle
 
-    else
-      # FIXME: Build this
+    else if instruction.type is NFLayoutType.INSTRUCTION
+      if instruction.instruction is NFLayoutInstruction.SHOW_TITLE
+        mainComp.animateTo
+          page: targetPDF.getTitlePage()
+      else
+        # FIXME: FINISH BUILDING this
+        @
       @
 
-
-
-		# if activePDFNumber isnt targetPDFNumber
-		# 	# We need to bring in the paper before we can go further
-		#
-		# 	# If the PDF has been used before, We can bring in the page at the highlight point (aka GOTO)
-		# 	if NFProject.
-		#
-		# 	# Was the paper's title page already used in this or another part comp?
-		# 	# Then we can trim to where it left off
-		# 	# Could be something like...
-		# 	# comp.addPageWithTrim pageToBringIn
-		# 	# And that function can call one on NFPageLayer: thePageLayer.trimToLastPointUsed()
-		# 	# Whichl looks at all past instances of a page layer and finds the last frame that was 'in'
-		#
-		# else
-		# 	# GoToHighlight
+    @

@@ -156,7 +156,7 @@ NFProject = {
       if ((activePDF != null) && !activePDF.is(targetPDF)) {
         outPoint = titlePageLayer.markers().keyTime("NF In");
         group = mainComp.groupFromPDF(activePDF);
-        return group.getChildren(true).forEach((function(_this) {
+        group.getChildren(true).forEach((function(_this) {
           return function(theLayer) {
             if (theLayer.layer.outPoint > outPoint) {
               return theLayer.layer.outPoint = outPoint;
@@ -164,17 +164,25 @@ NFProject = {
           };
         })(this));
       }
-    } else if (instruction.type = NFLayoutType.HIGHLIGHT) {
+    } else if (instruction.type === NFLayoutType.HIGHLIGHT) {
       highlight = targetPDF.findHighlight(instruction.look);
       if (highlight == null) {
         throw new Error("Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'");
       }
-      return mainComp.animateTo({
+      mainComp.animateTo({
         highlight: highlight,
         skipTitle: flags.skipTitle
       });
-    } else {
-      return this;
+    } else if (instruction.type === NFLayoutType.INSTRUCTION) {
+      if (instruction.instruction === NFLayoutInstruction.SHOW_TITLE) {
+        mainComp.animateTo({
+          page: targetPDF.getTitlePage()
+        });
+      } else {
+        this;
+      }
+      this;
     }
+    return this;
   }
 };

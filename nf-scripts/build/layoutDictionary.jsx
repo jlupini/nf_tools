@@ -1,9 +1,15 @@
-var NFLayoutFlagDict, NFLayoutInstructionDict, NFLayoutType;
+var NFLayoutFlagDict, NFLayoutInstruction, NFLayoutInstructionDict, NFLayoutType;
 
 NFLayoutType = {
   HIGHLIGHT: 100,
   INSTRUCTION: 200,
   FLAG: 300
+};
+
+NFLayoutInstruction = {
+  DO_NOTHING: 101,
+  SHOW_TITLE: 102,
+  ICON_SEQUENCE: 103
 };
 
 NFLayoutFlagDict = {
@@ -60,11 +66,19 @@ NFLayoutInstructionDict = {
   doNothing: {
     code: ['do nothing', 'nothing'],
     display: "Do Nothing",
-    type: NFLayoutType.INSTRUCTION
+    type: NFLayoutType.INSTRUCTION,
+    instruction: NFLayoutInstruction.DO_NOTHING
+  },
+  showTitle: {
+    code: ['title', 'show title', 'clear'],
+    display: "Show title",
+    type: NFLayoutType.INSTRUCTION,
+    instruction: NFLayoutInstruction.SHOW_TITLE
   },
   iconSequence: {
     code: ['icons', 'icon sequence'],
     display: "Icon Sequence Placeholder",
-    type: NFLayoutType.INSTRUCTION
+    type: NFLayoutType.INSTRUCTION,
+    instruction: NFLayoutInstruction.ICON_SEQUENCE
   }
 };

@@ -4004,7 +4004,7 @@ NFPartComp = (function(superClass) {
   @throws Throw error if not given a highlight
   @throws Throw error if there is movement on the target page parent layer
   after the current comp time in this comp.
-  @returns {NFPageLayer || NFHighlightLayer} model.page || model.highlight
+  @returns {NFPageLayer|NFHighlightLayer} model.page or model.highlight
    */
 
   NFPartComp.prototype.animateTo = function(model) {
