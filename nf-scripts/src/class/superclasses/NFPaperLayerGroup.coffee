@@ -60,7 +60,7 @@ class NFPaperLayerGroup
   highlight is visible and centered in frame, via the page parent layer.
   Always adds keyframes. Will NOT add page layers and will throw an
   error if the given highlight is not in this group already. use NFPartComp's
-  animateToHighlight() instead to perform all the page addition,
+  animateTo() instead to perform all the page addition,
   pageturns, etc.
   @memberof NFPaperLayerGroup
   @returns {NFPaperLayerGroup} self

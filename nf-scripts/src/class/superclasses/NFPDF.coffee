@@ -135,9 +135,18 @@ NFPDF = Object.assign NFPDF,
   @throws throws error if cannot find the pages for the given number
   ###
   fromPDFNumber: (theNumber) ->
+    searchString = theNumber + "_"
     folder = NFProject.findItem "PDF Precomps"
-    items = NFProject.searchItems(theNumber + "_", folder)
+    items = NFProject.searchItems(searchString, folder)
 
-    throw new Error "Cannot find PDF pages for the given number: '#{theNumber}'" if items.length is 0
+    # Filter out items that don't begin with the searchString (this avoids
+    # including '44_pg01' when searching for '4_')
+    filteredItems = []
+    unless items.length is 0
+      for item in items
+        filteredItems.push item if item.name.startsWith searchString
 
-    return new NFPDF(items)
+    if filteredItems.length is 0
+      throw new Error "Cannot find PDF pages for the given number: '#{theNumber}'"
+
+    return new NFPDF(filteredItems)

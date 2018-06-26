@@ -27,7 +27,7 @@ _ =
 # 	testLayer = selectedLayers.layers[0]
 # 	testHighlight = testLayer.highlights().layers[0]
 #
-# 	activeComp.animateToHighlight
+# 	activeComp.animateTo
 # 		highlight: testHighlight
 # 		animationDuration: 4
 

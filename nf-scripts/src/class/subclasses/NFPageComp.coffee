@@ -38,6 +38,14 @@ class NFPageComp extends NFComp
     throw new Error "Could not get the Page Number from this NFPageComp"
 
   ###*
+  Returns the NFPDF this page lives in
+  @memberof NFPageComp
+  @returns {NFPDF} the PDF
+  ###
+  getPDF: ->
+    return NFPDF.fromPDFNumber @getPDFNumber()
+
+  ###*
   Gets the Highlight layers in this item
   @memberof NFPageComp
   @returns {NFHighlightLayerCollection} highlight layers in this pageComp

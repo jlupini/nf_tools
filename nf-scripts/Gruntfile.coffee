@@ -25,6 +25,8 @@ module.exports = (grunt) ->
         dest: 'build/expressions'
         ext: '.js'
       compilePanels:
+        options:
+          bare: true
         expand: true
         flatten: true
         cwd: 'src/panel'

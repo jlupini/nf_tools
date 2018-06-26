@@ -143,11 +143,17 @@ NFProject = {
     }
     if ((targetPDF != null) && (instruction == null)) {
       titlePage = targetPDF.getTitlePage();
-      titlePageLayer = mainComp.insertPage({
-        page: titlePage,
-        animate: true
-      });
-      if (activePDF != null) {
+      if (targetPDF.is(activePDF)) {
+        titlePageLayer = mainComp.animateTo({
+          page: titlePage
+        });
+      } else {
+        titlePageLayer = mainComp.insertPage({
+          page: titlePage,
+          animate: true
+        });
+      }
+      if ((activePDF != null) && !activePDF.is(targetPDF)) {
         outPoint = titlePageLayer.markers().keyTime("NF In");
         group = mainComp.groupFromPDF(activePDF);
         return group.getChildren(true).forEach((function(_this) {
@@ -163,7 +169,7 @@ NFProject = {
       if (highlight == null) {
         throw new Error("Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'");
       }
-      return mainComp.animateToHighlight({
+      return mainComp.animateTo({
         highlight: highlight,
         skipTitle: flags.skipTitle
       });

@@ -27,6 +27,12 @@ NFLayoutInstructionDict = {
     display: "Green Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
+  orangeHighlight: {
+    code: ['o'],
+    look: "Orange",
+    display: "Orange Highlight",
+    type: NFLayoutType.HIGHLIGHT
+  },
   yellowHighlight: {
     code: ['y'],
     look: "Yellow",
@@ -37,6 +43,12 @@ NFLayoutInstructionDict = {
     code: ['i'],
     look: "Pink",
     display: "Pink Highlight",
+    type: NFLayoutType.HIGHLIGHT
+  },
+  purpleHighlight: {
+    code: ['u'],
+    look: "Purple",
+    display: "Purple Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
   blueHighlight: {

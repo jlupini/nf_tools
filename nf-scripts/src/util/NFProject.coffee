@@ -120,23 +120,27 @@ NFProject =
     # the title page
     if targetPDF? and not instruction?
       titlePage = targetPDF.getTitlePage()
-      titlePageLayer = mainComp.insertPage
-        page: titlePage
-        animate: yes
+      if targetPDF.is activePDF
+        titlePageLayer = mainComp.animateTo
+          page: titlePage
+      else
+        titlePageLayer = mainComp.insertPage
+          page: titlePage
+          animate: yes
 
       # Clean up the previous PDF
-      if activePDF?
+      if activePDF? and not activePDF.is targetPDF
         outPoint = titlePageLayer.markers().keyTime("NF In")
         group = mainComp.groupFromPDF activePDF
         group.getChildren(yes).forEach (theLayer) =>
           theLayer.layer.outPoint = outPoint if theLayer.layer.outPoint > outPoint
 
-    # if the instruction is a highlight, let's call animateToHighlight
+    # if the instruction is a highlight, let's call animateTo
     else if instruction.type = NFLayoutType.HIGHLIGHT
       highlight = targetPDF.findHighlight instruction.look
       throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
-      mainComp.animateToHighlight
+      mainComp.animateTo
         highlight: highlight
         skipTitle: flags.skipTitle
 

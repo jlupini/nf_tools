@@ -1713,13 +1713,23 @@ NFPDF = Object.assign(NFPDF, {
   @throws throws error if cannot find the pages for the given number
    */
   fromPDFNumber: function(theNumber) {
-    var folder, items;
+    var filteredItems, folder, i, item, items, len, searchString;
+    searchString = theNumber + "_";
     folder = NFProject.findItem("PDF Precomps");
-    items = NFProject.searchItems(theNumber + "_", folder);
-    if (items.length === 0) {
+    items = NFProject.searchItems(searchString, folder);
+    filteredItems = [];
+    if (items.length !== 0) {
+      for (i = 0, len = items.length; i < len; i++) {
+        item = items[i];
+        if (item.name.startsWith(searchString)) {
+          filteredItems.push(item);
+        }
+      }
+    }
+    if (filteredItems.length === 0) {
       throw new Error("Cannot find PDF pages for the given number: '" + theNumber + "'");
     }
-    return new NFPDF(items);
+    return new NFPDF(filteredItems);
   }
 });
 
@@ -1818,7 +1828,7 @@ NFPaperLayerGroup = (function() {
   highlight is visible and centered in frame, via the page parent layer.
   Always adds keyframes. Will NOT add page layers and will throw an
   error if the given highlight is not in this group already. use NFPartComp's
-  animateToHighlight() instead to perform all the page addition,
+  animateTo() instead to perform all the page addition,
   pageturns, etc.
   @memberof NFPaperLayerGroup
   @returns {NFPaperLayerGroup} self
@@ -2549,6 +2559,17 @@ NFPageComp = (function(superClass) {
 
 
   /**
+  Returns the NFPDF this page lives in
+  @memberof NFPageComp
+  @returns {NFPDF} the PDF
+   */
+
+  NFPageComp.prototype.getPDF = function() {
+    return NFPDF.fromPDFNumber(this.getPDFNumber());
+  };
+
+
+  /**
   Gets the Highlight layers in this item
   @memberof NFPageComp
   @returns {NFHighlightLayerCollection} highlight layers in this pageComp
@@ -3113,8 +3134,8 @@ NFPageLayer = (function(superClass) {
       model["in"] = true;
     }
     if (model.fromEdge === NFComp.AUTO) {
-      layerCenter = this.relativeCenterPoint();
-      compCenter = this.containingComp().centerPoint();
+      layerCenter = Math.round(this.relativeCenterPoint());
+      compCenter = Math.round(this.containingComp().centerPoint());
       if (layerCenter[0] < compCenter[0]) {
         model.fromEdge = NFComp.LEFT;
       } else {
@@ -3965,12 +3986,14 @@ NFPartComp = (function(superClass) {
 
 
   /**
-  Animates to a given highlight, with options. Will throw an error if there are
+  Animates to a given highlight or page, with options. Will throw an error if
+  there are
   other animations that take place after the current time on the same PDF in
-  this comp.
+  this comp. Must include one of model.highlight or model.page
   @memberof NFPartComp
   @param {Object} model - the model object
-  @param {NFHighlightLayer} model.highlight - the highlight to animate to
+  @param {NFHighlightLayer} [model.highlight] - the highlight to animate to
+  @param {NFPageComp} [model.page] - the page to animate to
   @param {float} [model.animationDuration=3] - the length of the move and scale
   @param {float} [model.pageTurnDuration=2] - the length of the pageturn
   @param {float} [model.maxPageScale=115] - the maximum a page will scale
@@ -3981,25 +4004,39 @@ NFPartComp = (function(superClass) {
   @throws Throw error if not given a highlight
   @throws Throw error if there is movement on the target page parent layer
   after the current comp time in this comp.
-  @returns {NFPartComp} self
+  @returns {NFPageLayer || NFHighlightLayer} model.page || model.highlight
    */
 
-  NFPartComp.prototype.animateToHighlight = function(model) {
-    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, j, layersForPage, posProp, ref, ref1, ref2, ref3, ref4, ref5, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
-    if (!(model.highlight instanceof NFHighlightLayer)) {
-      throw new Error("Can't animate to a highlight because I don't have one...");
-    }
+  NFPartComp.prototype.animateTo = function(model) {
+    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, j, layersForPage, posProp, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     model = {
       highlight: model.highlight,
+      page: model.page,
       duration: (ref = model.animationDuration) != null ? ref : 3,
       pageTurnDuration: (ref1 = model.pageTurnDuration) != null ? ref1 : 2,
       maxPageScale: (ref2 = model.maxPageScale) != null ? ref2 : 115,
       skipTitle: (ref3 = model.skipTitle) != null ? ref3 : false,
       fillPercentage: (ref4 = model.fillPercentage) != null ? ref4 : 85
     };
-    targetPDF = model.highlight.getPDF();
+    if (!((model.highlight != null) || (model.page != null))) {
+      throw new Error("No highlight or page to animate to");
+    }
+    if ((model.highlight != null) && (model.page != null)) {
+      throw new Error("Cannot animate to both a page and highlight.");
+    }
+    if (model.page != null) {
+      if (!(model.page instanceof NFPageComp)) {
+        throw new Error("Page is of wrong type");
+      }
+      targetPDF = model.page.getPDF();
+    } else if (model.highlight != null) {
+      if (!(model.highlight instanceof NFHighlightLayer)) {
+        throw new Error("Highlight is of wrong type");
+      }
+      targetPDF = model.highlight.getPDF();
+    }
     containingPartComps = targetPDF.containingPartComps();
-    targetPage = model.highlight.getPageComp();
+    targetPage = (ref5 = model.page) != null ? ref5 : model.highlight.getPageComp();
     if (containingPartComps.length === 0) {
       activePageLayer = this.activePage();
       if (model.skipTitle === false) {
@@ -4012,7 +4049,7 @@ NFPartComp = (function(superClass) {
           activePageLayer.layer.outPoint = titlePageLayer.getInMarkerTime();
         }
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
-        if (targetPage.is(titlePage)) {
+        if ((model.highlight != null) && targetPage.is(titlePage)) {
           titlePageLayer.bubbleUp(model.highlight);
           this.setTime(titlePageLayer.getInMarkerTime());
           group.moveToHighlight({
@@ -4031,16 +4068,20 @@ NFPartComp = (function(superClass) {
               fillPercentage: model.fillPercentage * 0.7
             }
           });
-          if (!model.highlight.isBubbled()) {
-            targetPageLayer.bubbleUp(model.highlight);
+          if (model.highlight != null) {
+            if (!model.highlight.isBubbled()) {
+              targetPageLayer.bubbleUp(model.highlight);
+            }
           }
           titlePageLayer.animatePageTurn();
-          group.moveToHighlight({
-            highlight: model.highlight,
-            duration: model.animationDuration,
-            fillPercentage: model.fillPercentage,
-            maxScale: model.maxPageScale
-          });
+          if (model.highlight != null) {
+            group.moveToHighlight({
+              highlight: model.highlight,
+              duration: model.animationDuration,
+              fillPercentage: model.fillPercentage,
+              maxScale: model.maxPageScale
+            });
+          }
         }
       } else {
         targetPageLayer = this.insertPage({
@@ -4051,8 +4092,10 @@ NFPartComp = (function(superClass) {
             fillPercentage: model.fillPercentage
           }
         });
-        if (!model.highlight.isBubbled()) {
-          targetPageLayer.bubbleUp(model.highlight);
+        if (model.highlight != null) {
+          if (!model.highlight.isBubbled()) {
+            targetPageLayer.bubbleUp(model.highlight);
+          }
         }
         if (activePageLayer != null) {
           activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
@@ -4063,9 +4106,9 @@ NFPartComp = (function(superClass) {
       if (targetGroup != null) {
         posProp = targetGroup.paperParent.transform().position;
         if (posProp.numKeys > 0) {
-          for (i = j = 1, ref5 = posProp.numKeys; 1 <= ref5 ? j <= ref5 : j >= ref5; i = 1 <= ref5 ? ++j : --j) {
+          for (i = j = 1, ref6 = posProp.numKeys; 1 <= ref6 ? j <= ref6 : j >= ref6; i = 1 <= ref6 ? ++j : --j) {
             if (posProp.keyTime(i) > this.getTime()) {
-              throw new Error("Can't animate to highlight because animations exist in the FUTURE on the target PDF");
+              throw new Error("Can't animate to page or highlight because animations exist in the FUTURE on the target PDF");
             }
           }
         }
@@ -4074,14 +4117,18 @@ NFPartComp = (function(superClass) {
         activePageLayer = this.activePage();
         group = new NFPaperLayerGroup(activePageLayer.getPaperParentLayer());
         if (targetPage.is(activePageLayer.getPageComp())) {
-          group.moveToHighlight({
-            highlight: model.highlight,
-            duration: model.animationDuration,
-            fillPercentage: model.fillPercentage,
-            maxScale: model.maxPageScale
-          });
-          if (!model.highlight.isBubbled()) {
-            activePageLayer.bubbleUp(model.highlight);
+          if (model.highlight != null) {
+            group.moveToHighlight({
+              highlight: model.highlight,
+              duration: model.animationDuration,
+              fillPercentage: model.fillPercentage,
+              maxScale: model.maxPageScale
+            });
+          }
+          if (model.highlight != null) {
+            if (!model.highlight.isBubbled()) {
+              activePageLayer.bubbleUp(model.highlight);
+            }
           }
         } else {
           layersForPage = this.layersForPage(targetPage);
@@ -4097,18 +4144,22 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage * 2
               }
             });
-            if (!model.highlight.isBubbled()) {
-              targetPageLayer.bubbleUp(model.highlight);
+            if (model.highlight != null) {
+              if (!model.highlight.isBubbled()) {
+                targetPageLayer.bubbleUp(model.highlight);
+              }
             }
             targetPageLayer.animatePageTurn({
               time: this.getTime() - 0.5,
               duration: 2.0
             });
-            group.moveToHighlight({
-              highlight: model.highlight,
-              duration: model.animationDuration,
-              fillPercentage: model.fillPercentage
-            });
+            if (model.highlight != null) {
+              group.moveToHighlight({
+                highlight: model.highlight,
+                duration: model.animationDuration,
+                fillPercentage: model.fillPercentage
+              });
+            }
             activePageLayer.layer.outPoint = this.getTime() - 0.5 + 2.0;
           } else {
             targetPageLayer = this.insertPage({
@@ -4121,18 +4172,22 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage * 0.7
               }
             });
-            if (!model.highlight.isBubbled()) {
-              targetPageLayer.bubbleUp(model.highlight);
+            if (model.highlight != null) {
+              if (!model.highlight.isBubbled()) {
+                targetPageLayer.bubbleUp(model.highlight);
+              }
             }
             activePageLayer.animatePageTurn({
               time: this.getTime() - 0.5,
               duration: 2.0
             });
-            group.moveToHighlight({
-              highlight: model.highlight,
-              duration: model.animationDuration,
-              fillPercentage: model.fillPercentage
-            });
+            if (model.highlight != null) {
+              group.moveToHighlight({
+                highlight: model.highlight,
+                duration: model.animationDuration,
+                fillPercentage: model.fillPercentage
+              });
+            }
           }
         }
       } else {
@@ -4147,8 +4202,10 @@ NFPartComp = (function(superClass) {
             fillPercentage: model.fillPercentage
           }
         });
-        if (!model.highlight.isBubbled()) {
-          targetPageLayer.bubbleUp(model.highlight);
+        if (model.highlight != null) {
+          if (!model.highlight.isBubbled()) {
+            targetPageLayer.bubbleUp(model.highlight);
+          }
         }
         targetGroup = this.groupFromPDF(targetPDF);
         if (alreadyInThisPart) {
@@ -4166,7 +4223,7 @@ NFPartComp = (function(superClass) {
         }
       }
     }
-    return this;
+    return model.page || model.highlight;
   };
 
 
@@ -4214,7 +4271,7 @@ NFPartComp = (function(superClass) {
       pageLayer.initTransforms().init();
       pageLayer.assignPaperParentLayer();
     }
-    if (model.frameUp != null) {
+    if ((model.frameUp != null) && (model.frameUp.highlight != null)) {
       pageLayer.frameUpHighlight(model.frameUp);
     }
     if (model.animate === true) {
