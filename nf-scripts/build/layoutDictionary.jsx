@@ -27,6 +27,13 @@ NFLayoutInstructionDict = {
     priority: 1,
     type: NFLayoutType.HIGHLIGHT
   },
+  greenUnderlineHighlight: {
+    code: ['gunderline'],
+    look: "Green Underline",
+    display: "Green Underline Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
   greenHighlight: {
     code: ['g'],
     look: "Green",
@@ -63,6 +70,12 @@ NFLayoutInstructionDict = {
     display: "Blue Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
+  greyHighlight: {
+    code: ['r'],
+    look: "Grey",
+    display: "Grey Highlight",
+    type: NFLayoutType.HIGHLIGHT
+  },
   doNothing: {
     code: ['do nothing', 'nothing'],
     display: "Do Nothing",
@@ -73,6 +86,7 @@ NFLayoutInstructionDict = {
     code: ['title', 'show title', 'clear'],
     display: "Show title",
     type: NFLayoutType.INSTRUCTION,
+    priority: 1,
     instruction: NFLayoutInstruction.SHOW_TITLE
   },
   iconSequence: {

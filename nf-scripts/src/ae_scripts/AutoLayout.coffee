@@ -1,4 +1,8 @@
+d = new Date()
+n = d.getTime()
+$.write "\n\nSTARTING\n----------------\nInitializing Libraries!\n"
 `#include "runtimeLibraries.jsx"`
+$.write "Setting up Script: +#{NFTools.now()-n}ms\n"
 
 NF = app.NF
 _ =
@@ -8,31 +12,22 @@ _ =
 app.beginUndoGroup _.undoGroupName
 
 main = ->
-	$.write "AutoLayout..."
+	curr = NFTools.now()-n
+	$.write "Boom! Time: +#{curr}ms\nAsking for input...\n"
 	comp = _.mainComp
 	time = comp.getTime()
 
-	# selectedLayer = comp.selectedLayers().get(0)
-	# opacityProp = selectedLayer.transform().scale
-	# return selectedLayer.addInOutMarkersForProperty
-	# 	property: opacityProp
-	# 	startValue: [0, 0, 80]
-	# 	#endValue: [0, 0, 100]
-	#
-
-	# while true
 	input = prompt('Enter the instruction (without brackets):')
-	# break if input is "" or not input?
 
-	NFProject.followInstruction input
-	# try
-	# 	NFProject.followInstruction input
-	# catch e
-	# 	alert "Ah shit... Error message:\n\"#{e.message}\"\n\nFrom line ##{e.line} in file '#{e.fileName}'"
+	postInstructionTime = NFTools.now()
+	$.write "Following instruction!\n"
 
-	# alert('Moving on')
-	# time += 5
-	# comp.setTime time
+	try
+		NFProject.followInstruction input
+	catch e
+		return alert "Error:\n#{e.message}"
+
+	$.write "Done! Time: +#{NFTools.now()-postInstructionTime}ms\n"
 
 	true
 

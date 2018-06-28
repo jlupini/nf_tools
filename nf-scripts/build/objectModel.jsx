@@ -1592,10 +1592,14 @@ NFPDF = (function() {
    */
 
   NFPDF.prototype.is = function(testPDF) {
-    if (!(testPDF instanceof NFPDF)) {
-      throw new Error("testPDF must be an NFPDF");
+    if (testPDF != null) {
+      if (!(testPDF instanceof NFPDF)) {
+        throw new Error("testPDF must be an NFPDF");
+      }
+      return this.getPDFNumber() === testPDF.getPDFNumber();
+    } else {
+      return false;
     }
-    return this.getPDFNumber() === testPDF.getPDFNumber();
   };
 
 
@@ -2549,10 +2553,11 @@ NFPageComp = (function(superClass) {
    */
 
   NFPageComp.prototype.getPageNumber = function() {
-    var searchIndex;
+    var endIdx, searchIndex;
     searchIndex = this.name.indexOf("pg");
+    endIdx = this.name.indexOf(" NFPage");
     if (searchIndex > 0) {
-      return this.name.substr(searchIndex + 2, 2);
+      return this.name.substr(searchIndex + 2, endIdx);
     }
     throw new Error("Could not get the Page Number from this NFPageComp");
   };

@@ -33,8 +33,9 @@ class NFPageComp extends NFComp
   ###
   getPageNumber: ->
     # Assuming every page number is two digits long
-    searchIndex = @name.indexOf("pg")
-    return @name.substr(searchIndex + 2, 2) if searchIndex > 0
+    searchIndex = @name.indexOf "pg"
+    endIdx = @name.indexOf " NFPage"
+    return @name.substr(searchIndex + 2, endIdx) if searchIndex > 0
     throw new Error "Could not get the Page Number from this NFPageComp"
 
   ###*

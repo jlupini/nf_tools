@@ -54,8 +54,11 @@ class NFPDF
   @param {NFPDF} testPDF - the PDF to test
   ###
   is: (testPDF) ->
-    throw new Error "testPDF must be an NFPDF" unless testPDF instanceof NFPDF
-    return @getPDFNumber() is testPDF.getPDFNumber()
+    if testPDF?
+      throw new Error "testPDF must be an NFPDF" unless testPDF instanceof NFPDF
+      return @getPDFNumber() is testPDF.getPDFNumber()
+    else
+      return no
 
   ###*
   Returns the PDF Number as a string

@@ -33,15 +33,7 @@ if (!String.prototype.trim) {
 if (!String.prototype.startsWith) {
 	(function() {
 		'use strict'; // needed to support `apply`/`call` with `undefined`/`null`
-		var defineProperty = (function() {
-			// IE 8 only supports `Object.defineProperty` on DOM elements
-			try {
-				var object = {};
-				var $defineProperty = Object.defineProperty;
-				var result = $defineProperty(object, object, object) && $defineProperty;
-			} catch(error) {}
-			return result;
-		}());
+		var defineProperty = false;
 		var toString = {}.toString;
 		var startsWith = function(search) {
 			if (this == null) {

@@ -123,12 +123,13 @@ toggleGuideLayers = (w) ->
         guideLayer.property("Transform").property("Opacity").expression = "comp(\"#{guideReference.compName}\").layer(\"#{guideReference.layerName}\").enabled * 60"
 
     # Look for and delete all guide layer effects in part comps
-    parts = NF.Util.toArr videoProject.partsFolder()?.items
-    for thePartComp in parts
-      partLayers = NF.Util.toArr thePartComp.layers
-      for theLayer in partLayers
-        guideEffect = theLayer.property("Effects")?.property(guideReference.effectName)
-        guideEffect.remove() if guideEffect?
+    if videoProject.partsFolder()?
+      parts = NF.Util.toArr videoProject.partsFolder()?.items
+      for thePartComp in parts
+        partLayers = NF.Util.toArr thePartComp.layers
+        for theLayer in partLayers
+          guideEffect = theLayer.property("Effects")?.property(guideReference.effectName)
+          guideEffect.remove() if guideEffect?
 
     alert "All done upgrading!\nIf you see expression errors, it's possible that you have PDF Page Comps out of the PDF Precomps folder. If that happens, hit undo, then try moving them there and running the script again."
     app.endUndoGroup()
