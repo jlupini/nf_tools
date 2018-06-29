@@ -5,15 +5,65 @@ panelTest = this
 
 toolRegistry =
 
-  renamePDFPrecomps:
-    name: "Rename PDF Precomps"
-    callback: (w) ->
-      precompFolder = NFProject.findItem "PDF Precomps"
-      unless precompFolder?.typeName is "Folder"
-        throw new Error "Couldn't get the PDF Precomp folder"
-      for i in [1..precompFolder.numItems]
-        item = precompFolder.item i
-        item.name = item.name.replace '.pdf', ' NFPage'
+  setup:
+
+    name: "Setup"
+    tools:
+
+      renamePDFPrecomps:
+        name: "Rename PDF Precomps"
+        callback: ->
+          precompFolder = NFProject.findItem "PDF Precomps"
+          unless precompFolder?.typeName is "Folder"
+            throw new Error "Couldn't get the PDF Precomp folder"
+          for i in [1..precompFolder.numItems]
+            item = precompFolder.item i
+            item.name = item.name.replace '.pdf', ' NFPage'
+
+  Render:
+
+    name: "Render"
+    tools:
+
+      prepareForSafeRender:
+        name: "Arm Settings for Software Render"
+        callback: ->
+          # Set the GPU settings
+          if app.availableGPUAccelTypes.indexOf GpuAccelType.SOFTWARE >= 0
+            app.project.gpuAccelType = GpuAccelType.SOFTWARE
+
+          # Set Motion Blur on/resolution full
+          mainComp = NFProject.mainComp()
+          mainComp.motionBlur = on
+          mainComp.resolutionFactor = [1,1]
+
+      prepareForStandardRender:
+        name: "Arm Settings for Fast Render"
+        callback: ->
+          # Set the GPU settings
+          if app.availableGPUAccelTypes.indexOf GpuAccelType.OPENCL >= 0
+            app.project.gpuAccelType = GpuAccelType.OPENCL
+          else if app.availableGPUAccelTypes.indexOf GpuAccelType.CUDA >= 0
+            app.project.gpuAccelType = GpuAccelType.CUDA
+
+          # Set Motion Blur on/resolution full
+          mainComp = NFProject.mainComp()
+          mainComp.motionBlur = on
+          mainComp.resolutionFactor = [1,1]
+
+      prepareForEditing:
+        name: "Arm Settings for Editing"
+        callback: ->
+          # Set the GPU settings
+          if app.availableGPUAccelTypes.indexOf GpuAccelType.OPENCL >= 0
+            app.project.gpuAccelType = GpuAccelType.OPENCL
+          else if app.availableGPUAccelTypes.indexOf GpuAccelType.CUDA >= 0
+            app.project.gpuAccelType = GpuAccelType.CUDA
+
+          # Set Motion Blur off/resolution half
+          mainComp = NFProject.mainComp()
+          mainComp.motionBlur = off
+          mainComp.resolutionFactor = [2,2]
 
 main = ->
   _.panel = getPanelUI()
@@ -38,24 +88,41 @@ getPanelUI = ->
 
   panel.alignChildren = 'left'
 
-  buttonPanel = panel.add 'panel', undefined, 'Controls', {borderStyle:'none'}
+  buttonPanel = panel.add 'panel', undefined, 'Tools', {borderStyle:'none'}
   buttonPanel.alignChildren = 'left'
   buttonPanel.margins.top = 16
 
+  treeView = buttonPanel.add 'treeview', undefined #[0, 0, 250, 150]
+  treeView.preferredSize = [200, 150]
+
+  for key of toolRegistry
+    category = toolRegistry[key]
+    thisCategoryNode = treeView.add 'node', category.name
+
+    for toolKey of category.tools
+      thisTool = category.tools[toolKey]
+      thisToolItem = thisCategoryNode.add 'item', thisTool.name
+      thisToolItem.data = thisTool
+
+    thisCategoryNode.expanded = yes
+
   buttonGroup = buttonPanel.add 'group', undefined
 
-  _.toggleGuideLayersButton = buttonGroup.add('button', undefined, toolRegistry.renamePDFPrecomps.name)
+  goButton = buttonGroup.add('button', undefined, 'Do it!')
 
-  _.toggleGuideLayersButton.onClick = (w) ->
-    toolRegistry.renamePDFPrecomps.callback w
+  goButton.onClick = (w) ->
+    choice = treeView.selection.data if treeView.selection?.data && treeView.selection?.type is 'item'
+    return alert "No Tool Selected!" unless choice?
+    app.beginUndoGroup "NF Tool: #{choice.name}"
+    choice.callback()
     @active = false
+    app.endUndoGroup()
 
   # Layout + Resize handling
   panel.layout.layout(true)
-  buttonGroup.minimumSize = buttonGroup.size;
+  treeView.minimumSize = treeView.size;
   panel.layout.resize()
-  panel.onResizing =
-  panel.onResize = ->
+  panel.onResizing = panel.onResize = ->
     @layout.resize()
     return
 

@@ -24,7 +24,7 @@ NFProject =
     return allItems
 
   ###*
-  Looks for an item globally in the project
+  Looks for an item globally in the project. Returns first item found. Exact name
   @memberof NFProject
   @param {string} itemName - the string to search for
   @returns {Item | null} the found item or null
@@ -37,6 +37,17 @@ NFProject =
         return thisItem
       i++
     null
+
+  ###*
+  Returns the MainComp
+  @memberof NFProject
+  @returns {CompItem} the MainComp
+  ###
+  mainComp: ->
+    foundItems = NFProject.searchItems "MainComp"
+    mainComp = foundItems[0]
+    throw new Error "Cannot find MainComp! Did you change the name?" unless mainComp?
+    return mainComp
 
   ###*
   Given a string with the name of an item to find and it's parent folder,

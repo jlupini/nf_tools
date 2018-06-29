@@ -31,7 +31,7 @@ NFProject = {
   },
 
   /**
-  Looks for an item globally in the project
+  Looks for an item globally in the project. Returns first item found. Exact name
   @memberof NFProject
   @param {string} itemName - the string to search for
   @returns {Item | null} the found item or null
@@ -47,6 +47,21 @@ NFProject = {
       i++;
     }
     return null;
+  },
+
+  /**
+  Returns the MainComp
+  @memberof NFProject
+  @returns {CompItem} the MainComp
+   */
+  mainComp: function() {
+    var foundItems, mainComp;
+    foundItems = NFProject.searchItems("MainComp");
+    mainComp = foundItems[0];
+    if (mainComp == null) {
+      throw new Error("Cannot find MainComp! Did you change the name?");
+    }
+    return mainComp;
   },
 
   /**

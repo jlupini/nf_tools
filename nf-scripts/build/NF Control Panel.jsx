@@ -129,15 +129,17 @@ toggleGuideLayers = function(w) {
         guideLayer.property("Transform").property("Opacity").expression = "comp(\"" + guideReference.compName + "\").layer(\"" + guideReference.layerName + "\").enabled * 60";
       }
     }
-    parts = NF.Util.toArr((ref1 = videoProject.partsFolder()) != null ? ref1.items : void 0);
-    for (j = 0, len1 = parts.length; j < len1; j++) {
-      thePartComp = parts[j];
-      partLayers = NF.Util.toArr(thePartComp.layers);
-      for (k = 0, len2 = partLayers.length; k < len2; k++) {
-        theLayer = partLayers[k];
-        guideEffect = (ref2 = theLayer.property("Effects")) != null ? ref2.property(guideReference.effectName) : void 0;
-        if (guideEffect != null) {
-          guideEffect.remove();
+    if (videoProject.partsFolder() != null) {
+      parts = NF.Util.toArr((ref1 = videoProject.partsFolder()) != null ? ref1.items : void 0);
+      for (j = 0, len1 = parts.length; j < len1; j++) {
+        thePartComp = parts[j];
+        partLayers = NF.Util.toArr(thePartComp.layers);
+        for (k = 0, len2 = partLayers.length; k < len2; k++) {
+          theLayer = partLayers[k];
+          guideEffect = (ref2 = theLayer.property("Effects")) != null ? ref2.property(guideReference.effectName) : void 0;
+          if (guideEffect != null) {
+            guideEffect.remove();
+          }
         }
       }
     }
