@@ -94,6 +94,44 @@ NFProject = {
   },
 
   /**
+  Returns all the page comps in the project
+  @memberof NFProject
+  @returns {NFPageComp[]} an array of NFPageComp items
+   */
+  allPageComps: function() {
+    var i, item, j, pageComps, precompFolder, ref;
+    pageComps = [];
+    precompFolder = NFProject.findItem("PDF Precomps");
+    if ((precompFolder != null ? precompFolder.typeName : void 0) !== "Folder") {
+      throw new Error("Couldn't find the PDF Precomp folder");
+    }
+    for (i = j = 1, ref = precompFolder.numItems; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+      item = precompFolder.item(i);
+      pageComps.push(new NFPageComp(item));
+    }
+    return pageComps;
+  },
+
+  /**
+  Returns all the highlight layers in the project
+  @memberof NFProject
+  @returns {NFHighlightLayerCollection} the collection of highlight layers
+   */
+  allHighlights: function() {
+    var allHighlights, j, len, pageComp, pageComps, pageHighlights;
+    pageComps = NFProject.allPageComps();
+    allHighlights = new NFHighlightLayerCollection();
+    for (j = 0, len = pageComps.length; j < len; j++) {
+      pageComp = pageComps[j];
+      pageHighlights = pageComp.highlights();
+      pageHighlights.forEach(function(highlight) {
+        return allHighlights.add(highlight);
+      });
+    }
+    return allHighlights;
+  },
+
+  /**
   Follow an instruction string (ie. "41g")
   @memberof NFProject
   @param {string} itemName - the string to search for

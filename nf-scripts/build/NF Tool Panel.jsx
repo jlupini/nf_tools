@@ -27,7 +27,7 @@ toolRegistry = {
       }
     }
   },
-  Render: {
+  render: {
     name: "Render",
     tools: {
       prepareForSafeRender: {
@@ -71,6 +71,27 @@ toolRegistry = {
         }
       }
     }
+  },
+  misc: {
+    name: "Misc",
+    tools: {
+      disconnectBrokenHighlights: {
+        name: "Disconnect Broken Highlights",
+        callback: function() {
+          var allHighlights;
+          allHighlights = NFProject.allHighlights();
+          return allHighlights.forEach((function(_this) {
+            return function(highlight) {
+              highlight.resetExpressionErrors();
+              if (highlight.isBroken()) {
+                highlight.disconnect();
+                return $.write("Disconnected highlight: " + (highlight.getName()) + " in page: " + (highlight.getPageComp().comp.name) + "\n");
+              }
+            };
+          })(this));
+        }
+      }
+    }
   }
 };
 
@@ -99,7 +120,7 @@ getPanelUI = function() {
   buttonPanel.alignChildren = 'left';
   buttonPanel.margins.top = 16;
   treeView = buttonPanel.add('treeview', void 0);
-  treeView.preferredSize = [200, 150];
+  treeView.preferredSize = [220, 150];
   for (key in toolRegistry) {
     category = toolRegistry[key];
     thisCategoryNode = treeView.add('node', category.name);

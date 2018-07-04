@@ -20,7 +20,7 @@ toolRegistry =
             item = precompFolder.item i
             item.name = item.name.replace '.pdf', ' NFPage'
 
-  Render:
+  render:
 
     name: "Render"
     tools:
@@ -65,6 +65,20 @@ toolRegistry =
           mainComp.motionBlur = off
           mainComp.resolutionFactor = [2,2]
 
+  misc:
+    name: "Misc"
+    tools:
+
+      disconnectBrokenHighlights:
+        name: "Disconnect Broken Highlights"
+        callback: ->
+          allHighlights = NFProject.allHighlights()
+          allHighlights.forEach (highlight) =>
+            highlight.resetExpressionErrors()
+            if highlight.isBroken()
+              highlight.disconnect()
+              $.write "Disconnected highlight: #{highlight.getName()} in page: #{highlight.getPageComp().comp.name}\n"
+
 main = ->
   _.panel = getPanelUI()
 
@@ -93,7 +107,7 @@ getPanelUI = ->
   buttonPanel.margins.top = 16
 
   treeView = buttonPanel.add 'treeview', undefined #[0, 0, 250, 150]
-  treeView.preferredSize = [200, 150]
+  treeView.preferredSize = [220, 150]
 
   for key of toolRegistry
     category = toolRegistry[key]

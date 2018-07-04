@@ -74,6 +74,35 @@ NFProject =
     return NFComp.specializedComp app.project.activeItem
 
   ###*
+  Returns all the page comps in the project
+  @memberof NFProject
+  @returns {NFPageComp[]} an array of NFPageComp items
+  ###
+  allPageComps: ->
+    pageComps = []
+    precompFolder = NFProject.findItem "PDF Precomps"
+    unless precompFolder?.typeName is "Folder"
+      throw new Error "Couldn't find the PDF Precomp folder"
+    for i in [1..precompFolder.numItems]
+      item = precompFolder.item i
+      pageComps.push new NFPageComp item
+    return pageComps
+
+  ###*
+  Returns all the highlight layers in the project
+  @memberof NFProject
+  @returns {NFHighlightLayerCollection} the collection of highlight layers
+  ###
+  allHighlights: ->
+    pageComps = NFProject.allPageComps()
+    allHighlights = new NFHighlightLayerCollection()
+    for pageComp in pageComps
+      pageHighlights = pageComp.highlights()
+      pageHighlights.forEach (highlight) ->
+        allHighlights.add highlight
+    return allHighlights
+
+  ###*
   Follow an instruction string (ie. "41g")
   @memberof NFProject
   @param {string} itemName - the string to search for
