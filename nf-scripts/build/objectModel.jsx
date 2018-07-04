@@ -3517,7 +3517,7 @@ NFPageLayer = (function(superClass) {
     if (rectAfterReposition.top > 0) {
       delta[1] -= rectAfterReposition.top;
     }
-    if (rectAfterReposition.left + rectAfterReposition.width < _.mainComp.width) {
+    if (rectAfterReposition.left + rectAfterReposition.width < this.containingComp().comp.width) {
       delta[0] += this.containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width);
     }
     if (rectAfterReposition.top + rectAfterReposition.height < this.containingComp().comp.height) {

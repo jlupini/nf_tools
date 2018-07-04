@@ -689,7 +689,7 @@ class NFPageLayer extends NFLayer
       delta[0] -= rectAfterReposition.left
     if rectAfterReposition.top > 0
       delta[1] -= rectAfterReposition.top
-    if rectAfterReposition.left + rectAfterReposition.width < _.mainComp.width
+    if rectAfterReposition.left + rectAfterReposition.width < @containingComp().comp.width
       delta[0] += @containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width)
     if rectAfterReposition.top + rectAfterReposition.height < @containingComp().comp.height
       delta[1] += @containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height)
