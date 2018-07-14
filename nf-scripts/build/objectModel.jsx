@@ -2401,7 +2401,7 @@ NFHighlightLayer = Object.assign(NFHighlightLayer, {
    */
   isHighlightLayer: function(theLayer) {
     var ref;
-    return theLayer instanceof ShapeLayer && ((ref = theLayer.Effects.property(1)) != null ? ref.matchName : void 0) === "AV_Highlighter";
+    return theLayer instanceof ShapeLayer && theLayer.Effects.numProperties > 0 && ((ref = theLayer.Effects.property(1)) != null ? ref.matchName : void 0) === "AV_Highlighter";
   },
   highlighterProperties: ['Spacing', 'Thickness', 'Start Offset', 'Completion', 'Offset', 'Opacity', 'Highlight Colour', 'End Offset']
 });
@@ -2910,7 +2910,7 @@ NFPageLayer = (function(superClass) {
             sourceValue = sourceEffect.property(highlighterProperty).value;
             highlighterEffect.property(highlighterProperty).setValue(sourceValue);
             if (highlighterProperty === "Opacity") {
-              sourceExpression = "var animationEnd, animationStart, controlEnd, controlStart, duration, pageStart, partTime, progress, targetValue; pageStart = comp(\"" + targetComp.comp.name + "\").layer(\"" + _this.layer.name + "\").startTime; controlStart = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").startTime; controlEnd = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").outPoint; partTime = time + pageStart; duration = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect('Highlight Control')('Opacity Duration').value; animationStart = controlStart - duration; animationEnd = controlEnd + duration; targetValue = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+controlStart); if (partTime <= animationStart) { 0; } else if ((animationStart < partTime && partTime < controlStart)) { progress = partTime - animationStart; progress / duration * targetValue; } else { if (comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect('Highlight Control')('Endless').value === 1 || partTime <= controlEnd) { targetValue; } else if ((controlEnd < partTime && partTime < animationEnd)) { progress = partTime - controlEnd; (1 - (progress / duration)) * targetValue; } else { 0; } }";
+              sourceExpression = "var animationEnd, theLayer, animationStart, controlEnd, controlStart, duration, pageStart, partTime, progress, targetValue, targetPage, activeBabbies, numLayers;\n // Get the in and out points of the control layer\n var controlIn  = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").inPoint;\n var controlOut = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").outPoint;\n var endless = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect('Highlight Control')('Endless').value === 1;\n duration = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect('Highlight Control')('Opacity Duration').value;\n targetValue = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").value;\n // Get our matching page layer\n activeBabbies = [];\n var activeAtControlIn;\n var activeAtControlOut;\n targetPage = '" + (_this.getPageBaseName()) + "';\n numLayers = comp(\"" + targetComp.comp.name + "\").numLayers;\n for (i = 1; i <= numLayers; i++) {\n theLayer = comp(\"" + targetComp.comp.name + "\").layer(i);\n if (theLayer.name.indexOf(targetPage) >= 0) {\n activeBabbies.push(theLayer);\n if (theLayer.inPoint < controlIn && controlIn < theLayer.outPoint) {\n activeAtControlIn = theLayer;\n } if (theLayer.inPoint < controlOut && controlOut < theLayer.outPoint) {\n activeAtControlOut = theLayer;\n }\n }\n }\n // If we don't have activeAtControlIn or Out, let's get the first and last active\n if (activeAtControlIn == null) {\n activeAtControlIn = activeBabbies[0];\n for (i = 0; i < activeBabbies.length; i++) {\n if (activeBabbies[i].inPoint < activeAtControlIn.inPoint) {\n activeAtControlIn = activeBabbies[i];\n }\n }\n }\n if (activeAtControlOut == null) {\n activeAtControlOut = activeBabbies[0];\n for (i = 0; i < activeBabbies.length; i++) {\n if (activeBabbies[i].inPoint < activeAtControlOut.outPoint) {\n activeAtControlOut = activeBabbies[i];\n }\n }\n }\n // Let's translate those to relative control ins and outs\n var relControlIn  = controlIn  - activeAtControlIn.startTime;\n var relControlOut = controlOut - activeAtControlOut.startTime;\n var relAnimStart = relControlIn - duration;\n var relAnimEnd = relControlOut + duration;\n animationStart = controlStart - duration;\n animationEnd = controlEnd + duration;\n if (time <= relAnimStart) {\n 0;\n } else if (relAnimStart < time && time < relControlIn) {\n progress = time - relAnimStart;\n progress / duration * targetValue;\n } else {\n if (endless || time <= relControlOut) {\n targetValue;\n } else if (relControlOut < time && time < relAnimEnd) {\n progress = time - relControlOut;\n (1 - (progress / duration)) * targetValue;\n } else {\n 0;\n }\n }";
             } else {
               sourceExpression = "var offsetTime = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").startTime;\n comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\") .effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
             }
@@ -2932,6 +2932,17 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.isInitted = function() {
     return this.layer.name.indexOf("[+]") >= 0;
+  };
+
+
+  /**
+  Returns the base page name (everything before the space)
+  @memberof NFPageLayer
+  @returns {String} the page base name
+   */
+
+  NFPageLayer.prototype.getPageBaseName = function() {
+    return this.layer.name.substr(0, this.layer.name.indexOf(' '));
   };
 
 

@@ -170,7 +170,7 @@ NFHighlightLayer = Object.assign NFHighlightLayer,
   @returns {boolean} whether the AV layer is a valid highlight layer
   ###
   isHighlightLayer: (theLayer) ->
-    return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
+    return theLayer instanceof ShapeLayer and theLayer.Effects.numProperties > 0 and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
 
 
   highlighterProperties: [
