@@ -2043,6 +2043,118 @@ NFGaussyLayer = (function(superClass) {
 
 
 /**
+Creates a new NFHighlightControlLayer from a given AVLayer
+@class NFHighlightControlLayer
+@classdesc Subclass of {@link NFLayer} for a highlight control layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@property {NFHighlightLayer} highlight - the highlight this layer controls
+@extends NFLayer
+@throws Will throw an error if not given an AVLayer with a highlight control
+ */
+var NFHighlightControlLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+NFHighlightControlLayer = (function(superClass) {
+  extend(NFHighlightControlLayer, superClass);
+
+  function NFHighlightControlLayer(layer) {
+    NFLayer.call(this, layer);
+    if (!NFHighlightControlLayer.isHighlightControlLayer(this.layer)) {
+      throw new Error("NF Highlight Control Layer is invalid and the wrapper class cannot be created");
+    }
+    this;
+  }
+
+  NFHighlightControlLayer.prototype.toString = function() {
+    return "NFHighlightControlLayer: '" + this.layer.name + "'";
+  };
+
+
+  /**
+  Returns the AV Highlighter effect
+  @memberof NFHighlightControlLayer
+  @returns {Property} the AV Highlighter Property on the control layer
+   */
+
+  NFHighlightControlLayer.prototype.highlighterEffect = function() {
+    return this.layer.Effects.property("AV_Highlighter");
+  };
+
+
+  /**
+  Returns the AV Highlight Control effect
+  @memberof NFHighlightControlLayer
+  @returns {Property} the AV Highlighter Control property on the control layer
+   */
+
+  NFHighlightControlLayer.prototype.highlightControlEffect = function() {
+    return this.layer.Effects.property("AV_Highlight_Control");
+  };
+
+
+  /**
+  Returns the AV Spotlight effect
+  @memberof NFHighlightControlLayer
+  @returns {Property} the AV Spotlight property on the control layer
+   */
+
+  NFHighlightControlLayer.prototype.spotlightEffect = function() {
+    return this.layer.Effects.property("AV_Spotlight");
+  };
+
+  return NFHighlightControlLayer;
+
+})(NFLayer);
+
+NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
+
+  /**
+  Returns whether or not the given AVLayer is a valid Highlight Control Layer
+  @memberof NFHighlightControlLayer
+  @param {AVLayer} the layer to check
+  @returns {boolean} whether the AV layer is a valid highlight layer
+   */
+  isHighlightControlLayer: function(theLayer) {
+    return true;
+  },
+
+  /**
+  Creates a new NFHighlightControlLayer for the given page, at the given time,
+  for the given highlight
+  @memberof NFHighlightControlLayer
+  @param {Object} model - the model
+  @param {NFPageLayer} model.page - the page layer
+  @param {NFHighlightLayer} model.highlight - the highlight
+  @param {float} model.time - the start time for the control
+  @returns {NFHighlightControlLayer} the new control layer
+   */
+  newHighlightControlLayer: function(model) {
+    var controlEffect, controlLayer, effects, highlighterEffect, partComp, ref, spotlightEffect;
+    if (!(((model != null ? model.page : void 0) != null) && (model.highlight != null))) {
+      throw new Error("Missing parameters");
+    }
+    partComp = model.page.containingComp();
+    controlLayer = new NFHighlightControlLayer(partComp.addNull());
+    controlLayer.moveAfter(model.page.getPaperParentLayer());
+    controlLayer.layer.startTime = (ref = model.time) != null ? ref : partComp.getTime();
+    controlLayer.layer.endTime = controlLayer.layer.startTime + 5;
+    controlLayer.layer.name = (model.page.getPDFNumber()) + " - " + model.highlight.layer.name + " Highlight";
+    effects = controlLayer.effects();
+    highlighterEffect = effects.addProperty("AV_Highlighter");
+    highlighterEffect.name = model.highlight.layer.name;
+    controlEffect = effects.addProperty("AV_Highlight_Control");
+    controlEffect.name = "Highlight Control";
+    controlEffect.property("Endless").setValue(true);
+    spotlightEffect = effects.addProperty("AV_Spotlight");
+    spotlightEffect.name = "Spotlight";
+    return controlLayer;
+  }
+});
+
+
+/**
 Creates a new NFHighlightLayer from a given AVLayer
 @class NFHighlightLayer
 @classdesc Subclass of {@link NFLayer} for a highlight layer
@@ -2202,7 +2314,7 @@ NFHighlightLayer = (function(superClass) {
   NFHighlightLayer.prototype.fixExpressionAfterInit = function() {
     var expression, j, len, property, ref;
     if (this.isBubbled()) {
-      ref = NF.Util.highlighterProperties;
+      ref = NFHighlightLayer.highlighterProperties;
       for (j = 0, len = ref.length; j < len; j++) {
         property = ref[j];
         expression = this.highlighterEffect().property(property).expression;
@@ -2223,7 +2335,7 @@ NFHighlightLayer = (function(superClass) {
   NFHighlightLayer.prototype.fixExpressionWithDiffLetter = function(diffLetter) {
     var expression, j, len, property, ref, replString;
     if (this.isBubbled()) {
-      ref = NF.Util.highlighterProperties;
+      ref = NFHighlightLayer.highlighterProperties;
       for (j = 0, len = ref.length; j < len; j++) {
         property = ref[j];
         expression = this.highlighterEffect().property(property).expression;
@@ -2244,7 +2356,7 @@ NFHighlightLayer = (function(superClass) {
   NFHighlightLayer.prototype.resetExpressionErrors = function() {
     var expression, j, len, property, ref;
     if (this.isBubbled()) {
-      ref = NF.Util.highlighterProperties;
+      ref = NFHighlightLayer.highlighterProperties;
       for (j = 0, len = ref.length; j < len; j++) {
         property = ref[j];
         expression = this.highlighterEffect().property(property).expression;
@@ -2290,7 +2402,8 @@ NFHighlightLayer = Object.assign(NFHighlightLayer, {
   isHighlightLayer: function(theLayer) {
     var ref;
     return theLayer instanceof ShapeLayer && ((ref = theLayer.Effects.property(1)) != null ? ref.matchName : void 0) === "AV_Highlighter";
-  }
+  },
+  highlighterProperties: ['Spacing', 'Thickness', 'Start Offset', 'Completion', 'Offset', 'Opacity', 'Highlight Colour', 'End Offset']
 });
 
 
@@ -2757,7 +2870,8 @@ NFPageLayer = (function(superClass) {
 
 
   /**
-  Bubbles up given highlights or highlight to this layer.
+  Bubbles up given highlights or highlight to this comp by creating an
+  NFHighlightControlLayer.
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {NFHighlightLayer | NFHighlightLayerCollection}
@@ -2774,7 +2888,7 @@ NFPageLayer = (function(superClass) {
     if (!highlightsToBubble.isEmpty()) {
       highlightsToBubble.forEach((function(_this) {
         return function(highlight) {
-          var highlighterProperty, i, len, ref, results, sourceEffect, sourceExpression, sourceValue, targetComp, targetHighlighterEffect, targetPageLayerEffects;
+          var controlLayer, highlighterEffect, highlighterProperty, i, len, ref, results, sourceEffect, sourceExpression, sourceValue, targetComp, targetPageLayerEffects;
           if (!highlight.canBubbleUp()) {
             throw new Error("Cannot bubble highlight if already connected and not broken. Disconnect first");
           }
@@ -2783,16 +2897,23 @@ NFPageLayer = (function(superClass) {
           }
           targetPageLayerEffects = _this.effects();
           sourceEffect = highlight.highlighterEffect();
-          targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter');
-          targetHighlighterEffect.name = highlight.layer.name;
           targetComp = _this.containingComp();
-          ref = NF.Util.highlighterProperties;
+          controlLayer = NFHighlightControlLayer.newHighlightControlLayer({
+            page: _this,
+            highlight: highlight
+          });
+          highlighterEffect = controlLayer.highlighterEffect();
+          ref = NFHighlightLayer.highlighterProperties;
           results = [];
           for (i = 0, len = ref.length; i < len; i++) {
             highlighterProperty = ref[i];
             sourceValue = sourceEffect.property(highlighterProperty).value;
-            targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue);
-            sourceExpression = "var offsetTime = comp(\"" + targetComp.comp.name + "\").layer(\"" + _this.layer.name + "\").startTime; comp(\"" + targetComp.comp.name + "\").layer(\"" + _this.layer.name + "\").effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
+            highlighterEffect.property(highlighterProperty).setValue(sourceValue);
+            if (highlighterProperty === "Opacity") {
+              sourceExpression = "var animationEnd, animationStart, controlEnd, controlStart, duration, pageStart, partTime, progress, targetValue; pageStart = comp(\"" + targetComp.comp.name + "\").layer(\"" + _this.layer.name + "\").startTime; controlStart = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").startTime; controlEnd = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").outPoint; partTime = time + pageStart; duration = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect('Highlight Control')('Opacity Duration').value; animationStart = controlStart - duration; animationEnd = controlEnd + duration; targetValue = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+controlStart); if (partTime <= animationStart) { 0; } else if ((animationStart < partTime && partTime < controlStart)) { progress = partTime - animationStart; progress / duration * targetValue; } else { if (comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").effect('Highlight Control')('Endless').value === 1 || partTime <= controlEnd) { targetValue; } else if ((controlEnd < partTime && partTime < animationEnd)) { progress = partTime - controlEnd; (1 - (progress / duration)) * targetValue; } else { 0; } }";
+            } else {
+              sourceExpression = "var offsetTime = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").startTime;\n comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\") .effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
+            }
             results.push(sourceEffect.property(highlighterProperty).expression = sourceExpression);
           }
           return results;

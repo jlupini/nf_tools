@@ -20,7 +20,7 @@ _ = {
 app.beginUndoGroup(_.undoGroupName);
 
 main = function() {
-  var comp, curr, e, error, input, postInstructionTime, time;
+  var comp, curr, input, postInstructionTime, time;
   curr = NFTools.now() - n;
   $.write("Boom! Time: +" + curr + "ms\nAsking for input...\n");
   comp = _.mainComp;
@@ -28,12 +28,7 @@ main = function() {
   input = prompt('Enter the instruction (without brackets):');
   postInstructionTime = NFTools.now();
   $.write("Following instruction!\n");
-  try {
-    NFProject.followInstruction(input);
-  } catch (error) {
-    e = error;
-    return alert("Error:\n" + e.message);
-  }
+  NFProject.followInstruction(input);
   $.write("Done! Time: +" + (NFTools.now() - postInstructionTime) + "ms\n");
   return true;
 };

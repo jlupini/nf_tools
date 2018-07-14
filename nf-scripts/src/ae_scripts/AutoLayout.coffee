@@ -22,10 +22,11 @@ main = ->
 	postInstructionTime = NFTools.now()
 	$.write "Following instruction!\n"
 
-	try
-		NFProject.followInstruction input
-	catch e
-		return alert "Error:\n#{e.message}"
+	NFProject.followInstruction input
+	# try
+	# 	NFProject.followInstruction input
+	# catch e
+	# 	return alert "Error:\n#{e.message}"
 
 	$.write "Done! Time: +#{NFTools.now()-postInstructionTime}ms\n"
 

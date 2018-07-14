@@ -115,7 +115,7 @@ class NFHighlightLayer extends NFLayer
   ###
   fixExpressionAfterInit: ->
     if @isBubbled()
-      for property in NF.Util.highlighterProperties
+      for property in NFHighlightLayer.highlighterProperties
         expression = @highlighterEffect().property(property).expression
         @highlighterEffect().property(property).expression = expression.replace(new RegExp(" NFPage", 'g'), " [+]")
     @
@@ -128,7 +128,7 @@ class NFHighlightLayer extends NFLayer
   ###
   fixExpressionWithDiffLetter: (diffLetter) ->
     if @isBubbled()
-      for property in NF.Util.highlighterProperties
+      for property in NFHighlightLayer.highlighterProperties
         expression = @highlighterEffect().property(property).expression
         replString = " [+] (#{diffLetter})\""
         @highlighterEffect().property(property).expression = expression.replace(" [+]\"", replString).replace(" [+]\"", replString)
@@ -141,7 +141,7 @@ class NFHighlightLayer extends NFLayer
   ###
   resetExpressionErrors: ->
     if @isBubbled()
-      for property in NF.Util.highlighterProperties
+      for property in NFHighlightLayer.highlighterProperties
         expression = @highlighterEffect().property(property).expression
         @highlighterEffect().property(property).expression = ""
         @highlighterEffect().property(property).expression = expression
@@ -171,3 +171,15 @@ NFHighlightLayer = Object.assign NFHighlightLayer,
   ###
   isHighlightLayer: (theLayer) ->
     return theLayer instanceof ShapeLayer and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
+
+
+  highlighterProperties: [
+    'Spacing'
+    'Thickness'
+    'Start Offset'
+    'Completion'
+    'Offset'
+    'Opacity'
+    'Highlight Colour'
+    'End Offset'
+  ]

@@ -88,7 +88,8 @@ class NFPageLayer extends NFLayer
     return new NFHighlightLayerCollection(bubblableHighlights)
 
   ###*
-  Bubbles up given highlights or highlight to this layer.
+  Bubbles up given highlights or highlight to this comp by creating an
+  NFHighlightControlLayer.
   @memberof NFPageLayer
   @returns {NFPageLayer} self
   @param {NFHighlightLayer | NFHighlightLayerCollection}
@@ -115,17 +116,54 @@ class NFPageLayer extends NFLayer
         targetPageLayerEffects = @effects()
         sourceEffect = highlight.highlighterEffect()
 
-        targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter')
-        targetHighlighterEffect.name = highlight.layer.name
+        # targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter')
+        # targetHighlighterEffect.name = highlight.layer.name
 
         targetComp = @containingComp()
 
+        controlLayer = NFHighlightControlLayer.newHighlightControlLayer
+          page: @
+          highlight: highlight
+
+        highlighterEffect = controlLayer.highlighterEffect()
+
         # Iterate through the properties and connect each one
-        for highlighterProperty in NF.Util.highlighterProperties
+        for highlighterProperty in NFHighlightLayer.highlighterProperties
           sourceValue = sourceEffect.property(highlighterProperty).value
-          targetHighlighterEffect.property(highlighterProperty).setValue(sourceValue)
-          sourceExpression = "var offsetTime = comp(\"#{targetComp.comp.name}\").layer(\"#{@layer.name}\").startTime;
-                              comp(\"#{targetComp.comp.name}\").layer(\"#{@layer.name}\").effect(\"#{highlight.getName()}\")(\"#{highlighterProperty}\").valueAtTime(time+offsetTime)"
+          highlighterEffect.property(highlighterProperty).setValue(sourceValue)
+
+          if highlighterProperty is "Opacity"
+            sourceExpression = "var animationEnd, animationStart, controlEnd, controlStart, duration, pageStart, partTime, progress, targetValue;
+                                pageStart = comp(\"#{targetComp.comp.name}\").layer(\"#{@layer.name}\").startTime;
+                                controlStart = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").startTime;
+                                controlEnd = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").outPoint;
+                                partTime = time + pageStart;
+                                duration = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").effect('Highlight Control')('Opacity Duration').value;
+                                animationStart = controlStart - duration;
+                                animationEnd = controlEnd + duration;
+                                targetValue = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").effect(\"#{highlight.getName()}\")(\"#{highlighterProperty}\").valueAtTime(time+controlStart);
+
+                                if (partTime <= animationStart) {
+                                  0;
+                                } else if ((animationStart < partTime && partTime < controlStart)) {
+                                  progress = partTime - animationStart;
+                                  progress / duration * targetValue;
+                                } else {
+                                  if (comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").effect('Highlight Control')('Endless').value === 1 || partTime <= controlEnd) {
+                                    targetValue;
+                                  } else if ((controlEnd < partTime && partTime < animationEnd)) {
+                                    progress = partTime - controlEnd;
+                                    (1 - (progress / duration)) * targetValue;
+                                  } else {
+                                    0;
+                                  }
+                                }"
+
+          else
+            sourceExpression = "var offsetTime = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").startTime;\n
+                                comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\")
+                                .effect(\"#{highlight.getName()}\")(\"#{highlighterProperty}\").valueAtTime(time+offsetTime)"
+
           sourceEffect.property(highlighterProperty).expression = sourceExpression
     @
 
