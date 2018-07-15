@@ -11,6 +11,7 @@ presentUI = ->
 	if _.mainComp.selectedLayers().onlyContainsPageLayers()
 		_.selectedPages = _.mainComp.selectedPageLayers()
 	else
+		# FIXME: Support selecting a highlight control layer to remove it
 		throw new Error "Can't initialize non-page layers"
 
 	throw new Error "Can't initialize pages from different PDFs at the same time" unless _.selectedPages.fromSamePDF()
@@ -69,13 +70,13 @@ presentUI = ->
 		highlightCheckboxes = {}
 		allHighlights.forEach (highlight) =>
 			displayName = highlight.getName() + " - pg" + highlight.getPageComp().getPageNumber()
-			highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer highlight.getConnectedPageLayer()
+			highlightAlreadyBubbledInThisComp = highlight.getControlLayer()?
 
 			if highlight.isBubbled()
 				if highlight.isBroken()
 					displayName += " (OVERRIDE/BROKEN)"
-				else if highlightAlreadyConnectedToThisLayer
-					displayName += " (ALREADY CONNECTED TO THIS PAGE LAYER)"
+				else if highlightAlreadyBubbledInThisComp
+					displayName += " (ALREADY BUBBLED TO THIS COMP)"
 				else
 					displayName += " (OVERRIDE)"
 			else if highlight.isBroken()
@@ -167,8 +168,7 @@ presentUI = ->
 		disOptionsPanel = disconnectTab.add 'panel', undefined, 'Options', {borderStyle:'none'}
 		disOptionsPanel.alignChildren = 'left'
 		disOptionsPanel.margins.top = 16
-		removeCheckbox = disOptionsPanel.add "checkbox {text: 'Also Remove Controls'}"
-		removeCheckbox.value = yes
+
 
 		# Highlights
 		highlightDisconnectPanel = disconnectTab.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
@@ -191,8 +191,6 @@ presentUI = ->
 				disconnectCheckbox = highlightDisconnectCheckboxes[highlight.getName()]
 				if disconnectCheckbox?
 					if disconnectCheckbox.value is true
-						if removeCheckbox.value is yes
-							highlight.connectedPageLayerHighlighterEffect()?.remove()
 						highlight.disconnect()
 
 			w.hide()

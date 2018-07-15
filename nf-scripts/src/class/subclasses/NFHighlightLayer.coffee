@@ -33,17 +33,16 @@ class NFHighlightLayer extends NFLayer
     return @highlighterEffect().property("Spacing").expressionError isnt ""
 
   ###*
-  Returns the connected NFPageLayer if it exists
+  Returns the connected NFHighlightControlLayer if it exists
   @memberof NFHighlightLayer
-  @returns {NFPageLayer | null} the connectedPageLayer or null
+  @returns {NFHighlightControlLayer | null} the control layer or null
   ###
-  getConnectedPageLayer: ->
+  getControlLayer: ->
     # FIXME: This fucks up if there are two layers with the same name in the comp
     if @isBubbled()
       expression = @highlighterEffect().property("Spacing").expression
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression)
-      effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression)
       comp = new NFComp NF.Util.findItem(compName)
 
 
@@ -53,13 +52,8 @@ class NFHighlightLayer extends NFLayer
         possibleLayers = comp.layersWithName layerName
         if possibleLayers.isEmpty()
           return null
-        else if possibleLayers.count() is 1
-          return possibleLayers.get 0
         else
-          foundLayer = null
-          possibleLayers.forEach (theLayer) =>
-            foundLayer = theLayer if theLayer.effect(effectName)?
-          return foundLayer
+          return possibleLayers.get 0
 
   ###*
   Returns the NFPageComp this highlight lives in
@@ -85,19 +79,6 @@ class NFHighlightLayer extends NFLayer
   highlighterEffect: ->
     return @layer.Effects.property("AV_Highlighter")
 
-  ###*
-  Returns the Bubbled Up AV Highlighter effect on a page layer
-  @memberof NFHighlightLayer
-  @returns {Property | null} the AV_Highlighter Property on an NFPageLayer if connected, null if not
-  ###
-  connectedPageLayerHighlighterEffect: ->
-    connectedPageLayer = @getConnectedPageLayer()
-    if connectedPageLayer?
-      expression = @highlighterEffect().property("Spacing").expression
-      effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression)
-      effect = connectedPageLayer.effect(effectName)
-      return effect
-    return null
 
   ###*
   Returns true if the highlight can be bubbled up. In other words, true if not currently bubbled up
@@ -154,7 +135,7 @@ class NFHighlightLayer extends NFLayer
   ###
   disconnect: ->
     # Remove the bubbled up AV Highlighter Effect if it exists
-    @connectedPageLayerHighlighterEffect()?.remove()
+    @getControlLayer()?.remove()
     effect = @highlighterEffect()
     propertyCount = effect?.numProperties
     for i in [1..propertyCount]

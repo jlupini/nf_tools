@@ -72,7 +72,7 @@ class NFPageLayer extends NFLayer
   bubbledHighlights: ->
     bubbledHighlights = []
     @highlights().forEach (highlight) =>
-      bubbledHighlights.push highlight if highlight.isBubbled() and highlight.getConnectedPageLayer()?.is(@)
+      bubbledHighlights.push highlight if highlight.isBubbled() and highlight.getControlLayer()?.containingComp().is(@containingComp())
     return new NFHighlightLayerCollection(bubbledHighlights)
 
   ###*

@@ -2206,35 +2206,24 @@ NFHighlightLayer = (function(superClass) {
 
 
   /**
-  Returns the connected NFPageLayer if it exists
+  Returns the connected NFHighlightControlLayer if it exists
   @memberof NFHighlightLayer
-  @returns {NFPageLayer | null} the connectedPageLayer or null
+  @returns {NFHighlightControlLayer | null} the control layer or null
    */
 
-  NFHighlightLayer.prototype.getConnectedPageLayer = function() {
-    var comp, compName, effectName, expression, foundLayer, layerName, possibleLayers;
+  NFHighlightLayer.prototype.getControlLayer = function() {
+    var comp, compName, expression, layerName, possibleLayers;
     if (this.isBubbled()) {
       expression = this.highlighterEffect().property("Spacing").expression;
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression);
-      effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression);
       comp = new NFComp(NF.Util.findItem(compName));
       if (comp != null) {
         possibleLayers = comp.layersWithName(layerName);
         if (possibleLayers.isEmpty()) {
           return null;
-        } else if (possibleLayers.count() === 1) {
-          return possibleLayers.get(0);
         } else {
-          foundLayer = null;
-          possibleLayers.forEach((function(_this) {
-            return function(theLayer) {
-              if (theLayer.effect(effectName) != null) {
-                return foundLayer = theLayer;
-              }
-            };
-          })(this));
-          return foundLayer;
+          return possibleLayers.get(0);
         }
       }
     }
@@ -2271,25 +2260,6 @@ NFHighlightLayer = (function(superClass) {
 
   NFHighlightLayer.prototype.highlighterEffect = function() {
     return this.layer.Effects.property("AV_Highlighter");
-  };
-
-
-  /**
-  Returns the Bubbled Up AV Highlighter effect on a page layer
-  @memberof NFHighlightLayer
-  @returns {Property | null} the AV_Highlighter Property on an NFPageLayer if connected, null if not
-   */
-
-  NFHighlightLayer.prototype.connectedPageLayerHighlighterEffect = function() {
-    var connectedPageLayer, effect, effectName, expression;
-    connectedPageLayer = this.getConnectedPageLayer();
-    if (connectedPageLayer != null) {
-      expression = this.highlighterEffect().property("Spacing").expression;
-      effectName = NF.Util.getCleanedArgumentOfPropertyFromExpression("effect", expression);
-      effect = connectedPageLayer.effect(effectName);
-      return effect;
-    }
-    return null;
   };
 
 
@@ -2376,7 +2346,7 @@ NFHighlightLayer = (function(superClass) {
 
   NFHighlightLayer.prototype.disconnect = function() {
     var effect, i, j, property, propertyCount, ref, ref1;
-    if ((ref = this.connectedPageLayerHighlighterEffect()) != null) {
+    if ((ref = this.getControlLayer()) != null) {
       ref.remove();
     }
     effect = this.highlighterEffect();
@@ -2839,7 +2809,7 @@ NFPageLayer = (function(superClass) {
     this.highlights().forEach((function(_this) {
       return function(highlight) {
         var ref;
-        if (highlight.isBubbled() && ((ref = highlight.getConnectedPageLayer()) != null ? ref.is(_this) : void 0)) {
+        if (highlight.isBubbled() && ((ref = highlight.getControlLayer()) != null ? ref.containingComp().is(_this.containingComp()) : void 0)) {
           return bubbledHighlights.push(highlight);
         }
       };

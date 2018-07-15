@@ -10,7 +10,7 @@ _ = {
 };
 
 presentUI = function() {
-  var allHighlights, animatePageCheckbox, bubButtonGroup, bubCancelButton, bubOkButton, bubblableHighlights, bubbleOnlyTab, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, highlightBubbleCheckboxes, highlightBubblePanel, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initLayerTransformsCheckbox, initTab, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, removeCheckbox, shouldPresentBubbleOnlyPanel, tPanel, w;
+  var allHighlights, animatePageCheckbox, bubButtonGroup, bubCancelButton, bubOkButton, bubblableHighlights, bubbleOnlyTab, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, highlightBubbleCheckboxes, highlightBubblePanel, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initLayerTransformsCheckbox, initTab, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, shouldPresentBubbleOnlyPanel, tPanel, w;
   if (_.mainComp.selectedLayers().onlyContainsPageLayers()) {
     _.selectedPages = _.mainComp.selectedPageLayers();
   } else {
@@ -70,14 +70,14 @@ presentUI = function() {
     highlightCheckboxes = {};
     allHighlights.forEach((function(_this) {
       return function(highlight) {
-        var displayName, highlightAlreadyConnectedToThisLayer;
+        var displayName, highlightAlreadyBubbledInThisComp;
         displayName = highlight.getName() + " - pg" + highlight.getPageComp().getPageNumber();
-        highlightAlreadyConnectedToThisLayer = _.selectedPages.containsLayer(highlight.getConnectedPageLayer());
+        highlightAlreadyBubbledInThisComp = highlight.getControlLayer() != null;
         if (highlight.isBubbled()) {
           if (highlight.isBroken()) {
             displayName += " (OVERRIDE/BROKEN)";
-          } else if (highlightAlreadyConnectedToThisLayer) {
-            displayName += " (ALREADY CONNECTED TO THIS PAGE LAYER)";
+          } else if (highlightAlreadyBubbledInThisComp) {
+            displayName += " (ALREADY BUBBLED TO THIS COMP)";
           } else {
             displayName += " (OVERRIDE)";
           }
@@ -193,8 +193,6 @@ presentUI = function() {
     });
     disOptionsPanel.alignChildren = 'left';
     disOptionsPanel.margins.top = 16;
-    removeCheckbox = disOptionsPanel.add("checkbox {text: 'Also Remove Controls'}");
-    removeCheckbox.value = true;
     highlightDisconnectPanel = disconnectTab.add('panel', void 0, 'Highlights', {
       borderStyle: 'none'
     });
@@ -218,15 +216,10 @@ presentUI = function() {
     disOkButton.onClick = function() {
       allHighlights.forEach((function(_this) {
         return function(highlight) {
-          var disconnectCheckbox, ref;
+          var disconnectCheckbox;
           disconnectCheckbox = highlightDisconnectCheckboxes[highlight.getName()];
           if (disconnectCheckbox != null) {
             if (disconnectCheckbox.value === true) {
-              if (removeCheckbox.value === true) {
-                if ((ref = highlight.connectedPageLayerHighlighterEffect()) != null) {
-                  ref.remove();
-                }
-              }
               return highlight.disconnect();
             }
           }
