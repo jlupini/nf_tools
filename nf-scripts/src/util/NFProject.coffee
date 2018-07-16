@@ -160,20 +160,8 @@ NFProject =
     # the title page
     if targetPDF? and not instruction?
       titlePage = targetPDF.getTitlePage()
-      if targetPDF.is activePDF
-        titlePageLayer = mainComp.animateTo
-          page: titlePage
-      else
-        titlePageLayer = mainComp.insertPage
-          page: titlePage
-          animate: yes
-
-      # Clean up the previous PDF
-      if activePDF? and not activePDF.is targetPDF
-        outPoint = titlePageLayer.markers().keyTime("NF In")
-        group = mainComp.groupFromPDF activePDF
-        group.getChildren(yes).forEach (theLayer) =>
-          theLayer.layer.outPoint = outPoint if theLayer.layer.outPoint > outPoint
+      mainComp.animateTo
+        page: titlePage
 
     # if the instruction is a highlight, let's call animateTo
     else if instruction.type is NFLayoutType.HIGHLIGHT

@@ -433,6 +433,28 @@ NFLayer = (function() {
 
 
   /**
+  Checks if this layer is a valid highlight control layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid highlight control layer
+   */
+
+  NFLayer.prototype.isHighlightControlLayer = function() {
+    return NFHighlightControlLayer.isHighlightControlLayer(this.layer);
+  };
+
+
+  /**
+  Checks if this layer is a valid spotlight layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid spotlight layer
+   */
+
+  NFLayer.prototype.isSpotlightLayer = function() {
+    return NFSpotlightLayer.isSpotlightLayer(this.layer);
+  };
+
+
+  /**
   Returns a new layer of a specialized type for the contents of this layer
   @memberof NFLayer
   @returns {NFPageLayer | NFHighlightLayer | NFPaperParentLayer | NFLayer} the specialized layer or self if no specialized layer options
@@ -445,6 +467,10 @@ NFLayer = (function() {
       return new NFHighlightLayer(this.layer);
     } else if (this.isPaperParentLayer()) {
       return new NFPaperParentLayer(this.layer);
+    } else if (this.isHighlightControlLayer()) {
+      return new NFHighlightControlLayer(this.layer);
+    } else if (this.isSpotlightLayer()) {
+      return new NFSpotlightLayer(this.layer);
     } else {
       return this;
     }
@@ -1773,6 +1799,26 @@ NFPaperLayerGroup = (function() {
 
 
   /**
+  Returns the PDF Number
+  @memberof NFPaperLayerGroup
+  @returns {String} the pdf number
+   */
+
+  NFPaperLayerGroup.prototype.getPDFNumber = function() {
+    var children, i, layer, len, ref;
+    children = this.getChildren();
+    ref = children.layers;
+    for (i = 0, len = ref.length; i < len; i++) {
+      layer = ref[i];
+      if (layer instanceof NFPageLayer) {
+        return layer.getPDFNumber();
+      }
+    }
+    return null;
+  };
+
+
+  /**
   Gets all the NFPageLayers in the group
   @memberof NFPaperLayerGroup
   @returns {NFPageLayerCollection} the page layers
@@ -1790,6 +1836,27 @@ NFPaperLayerGroup = (function() {
       };
     })(this));
     return pageChildren;
+  };
+
+
+  /**
+  Gets all the NFHighlightControlLayer in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the control layers
+   */
+
+  NFPaperLayerGroup.prototype.getControlLayers = function() {
+    var allChildren, controlChildren;
+    allChildren = this.getChildren();
+    controlChildren = new NFLayerCollection();
+    allChildren.forEach((function(_this) {
+      return function(layer) {
+        if (layer instanceof NFHighlightControlLayer) {
+          return controlChildren.add(layer);
+        }
+      };
+    })(this));
+    return controlChildren;
   };
 
 
@@ -1824,6 +1891,36 @@ NFPaperLayerGroup = (function() {
 
   NFPaperLayerGroup.prototype.containingComp = function() {
     return this.paperParent.containingComp();
+  };
+
+
+  /**
+  Returns the spotlight layer if it exists
+  @memberof NFPaperLayerGroup
+  @returns {NFSpotlightLayer | null} the spotlight layer
+   */
+
+  NFPaperLayerGroup.prototype.getSpotlight = function() {
+    return this.containingComp().layerWithName(NFSpotlightLayer.nameForPDFNumber(this.getPDFNumber()));
+  };
+
+
+  /**
+  Adds a spotlight for the given highlight.
+  @memberof NFPaperLayerGroup
+  @param {NFHighlightLayer} highlight - the highlight to spotlight
+  @returns {NFSpotlightLayer} the spotlight layer
+   */
+
+  NFPaperLayerGroup.prototype.addSpotlight = function(highlight) {
+    var spotlightLayer;
+    if (!(highlight instanceof NFHighlightLayer)) {
+      throw new Error("Must provide a highlight to create a spotlight");
+    }
+    spotlightLayer = this.getSpotlight();
+    if (spotlightLayer == null) {
+      return NFSpotlightLayer.newSpotlightLayer(this);
+    }
   };
 
 
@@ -1917,7 +2014,7 @@ NFPaperLayerGroup = (function() {
    */
 
   NFPaperLayerGroup.prototype.gatherLayers = function(layersToGather, shouldParent) {
-    var bottomLayer, childLayers, layersAboveGroup, layersBelowGroup, topLayer;
+    var bottomLayer, childLayers, controlLayers, layerAbove, layersAboveGroup, layersBelowGroup, topLayer;
     if (shouldParent == null) {
       shouldParent = true;
     }
@@ -1935,8 +2032,14 @@ NFPaperLayerGroup = (function() {
       };
     })(this));
     while (layersAboveGroup.count() > 0) {
+      controlLayers = this.getControlLayers();
+      if (controlLayers.isEmpty()) {
+        layerAbove = this.paperParent;
+      } else {
+        layerAbove = controlLayers.getBottommostLayer();
+      }
       bottomLayer = layersAboveGroup.getBottommostLayer();
-      bottomLayer.moveAfter(this.paperParent);
+      bottomLayer.moveAfter(layerAbove);
       layersAboveGroup.remove(bottomLayer);
     }
     while (layersBelowGroup.count() > 0) {
@@ -2111,13 +2214,22 @@ NFHighlightControlLayer = (function(superClass) {
 NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
 
   /**
+  Returns the name for a control layer for a given PDF Number and highlight
+  @memberof NFHighlightControlLayer
+  @returns {String} the appropriate name
+   */
+  nameForPDFNumberAndHighlight: function(num, highlight) {
+    return num + " - " + highlight.layer.name + " Highlight Control";
+  },
+
+  /**
   Returns whether or not the given AVLayer is a valid Highlight Control Layer
   @memberof NFHighlightControlLayer
   @param {AVLayer} the layer to check
   @returns {boolean} whether the AV layer is a valid highlight layer
    */
   isHighlightControlLayer: function(theLayer) {
-    return true;
+    return theLayer.nullLayer && theLayer.name.indexOf("Highlight Control") >= 0;
   },
 
   /**
@@ -2131,16 +2243,24 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
   @returns {NFHighlightControlLayer} the new control layer
    */
   newHighlightControlLayer: function(model) {
-    var controlEffect, controlLayer, effects, highlighterEffect, partComp, ref, spotlightEffect;
+    var controlEffect, controlLayer, effects, existingControlLayers, group, highlighterEffect, partComp, ref, spotlightEffect;
     if (!(((model != null ? model.page : void 0) != null) && (model.highlight != null))) {
       throw new Error("Missing parameters");
     }
+    group = new NFPaperLayerGroup(model.page.getPaperParentLayer());
     partComp = model.page.containingComp();
-    controlLayer = new NFHighlightControlLayer(partComp.addNull());
-    controlLayer.moveAfter(model.page.getPaperParentLayer());
+    controlLayer = partComp.addNull();
+    controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight(model.page.getPDFNumber(), model.highlight);
+    controlLayer = new NFHighlightControlLayer(controlLayer);
+    existingControlLayers = group.getControlLayers();
+    if (existingControlLayers.isEmpty()) {
+      controlLayer.moveAfter(group.paperParent);
+    } else {
+      controlLayer.moveBefore(existingControlLayers.getTopmostLayer());
+    }
     controlLayer.layer.startTime = (ref = model.time) != null ? ref : partComp.getTime();
     controlLayer.layer.endTime = controlLayer.layer.startTime + 5;
-    controlLayer.layer.name = (model.page.getPDFNumber()) + " - " + model.highlight.layer.name + " Highlight";
+    controlLayer.setParent(model.page.getPaperParentLayer());
     effects = controlLayer.effects();
     highlighterEffect = effects.addProperty("AV_Highlighter");
     highlighterEffect.name = model.highlight.layer.name;
@@ -2858,7 +2978,7 @@ NFPageLayer = (function(superClass) {
     if (!highlightsToBubble.isEmpty()) {
       highlightsToBubble.forEach((function(_this) {
         return function(highlight) {
-          var controlLayer, highlighterEffect, highlighterProperty, i, len, ref, results, sourceEffect, sourceExpression, sourceValue, targetComp, targetPageLayerEffects;
+          var controlLayer, highlighterEffect, highlighterProperty, i, len, ref, sourceEffect, sourceExpression, sourceValue, spotlightLayer, targetComp, targetPageLayerEffects;
           if (!highlight.canBubbleUp()) {
             throw new Error("Cannot bubble highlight if already connected and not broken. Disconnect first");
           }
@@ -2874,7 +2994,6 @@ NFPageLayer = (function(superClass) {
           });
           highlighterEffect = controlLayer.highlighterEffect();
           ref = NFHighlightLayer.highlighterProperties;
-          results = [];
           for (i = 0, len = ref.length; i < len; i++) {
             highlighterProperty = ref[i];
             sourceValue = sourceEffect.property(highlighterProperty).value;
@@ -2884,9 +3003,9 @@ NFPageLayer = (function(superClass) {
             } else {
               sourceExpression = "var offsetTime = comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\").startTime;\n comp(\"" + targetComp.comp.name + "\").layer(\"" + controlLayer.layer.name + "\") .effect(\"" + (highlight.getName()) + "\")(\"" + highlighterProperty + "\").valueAtTime(time+offsetTime)";
             }
-            results.push(sourceEffect.property(highlighterProperty).expression = sourceExpression);
+            sourceEffect.property(highlighterProperty).expression = sourceExpression;
           }
-          return results;
+          return spotlightLayer = _this.getPaperLayerGroup().addSpotlight(highlight);
         };
       })(this));
     }
@@ -3219,6 +3338,21 @@ NFPageLayer = (function(superClass) {
 
 
   /**
+  Returns the NFPaperLayerGroup for this page, if it exists. Will not create one
+  @memberof NFPageLayer
+  @returns {NFPaperLayerGroup} the paper layer group
+   */
+
+  NFPageLayer.prototype.getPaperLayerGroup = function() {
+    var paperParentLayer;
+    paperParentLayer = this.getPaperParentLayer();
+    if (paperParentLayer != null) {
+      return new NFPaperLayerGroup(paperParentLayer);
+    }
+  };
+
+
+  /**
   Slides in or out the pageLayer using markers. #slideIn and #slideOut both
   call this method
   @memberof NFPageLayer
@@ -3241,8 +3375,10 @@ NFPageLayer = (function(superClass) {
       model["in"] = true;
     }
     if (model.fromEdge === NFComp.AUTO) {
-      layerCenter = Math.round(this.relativeCenterPoint());
-      compCenter = Math.round(this.containingComp().centerPoint());
+      layerCenter = this.relativeCenterPoint();
+      layerCenter = [Math.round(layerCenter[0], Math.round(layerCenter[1]))];
+      compCenter = this.containingComp().centerPoint();
+      compCenter = [Math.round(compCenter[0], Math.round(compCenter[1]))];
       if (layerCenter[0] < compCenter[0]) {
         model.fromEdge = NFComp.LEFT;
       } else {
@@ -4048,7 +4184,7 @@ NFPaperParentLayer = Object.assign(NFPaperParentLayer, {
   @returns {boolean} whether or not the layer is a valid paper parent
    */
   isPaperParentLayer: function(layer) {
-    return layer.nullLayer && layer.name.indexOf('PDF' >= 0);
+    return layer.nullLayer && layer.name.indexOf('PDF') >= 0;
   },
 
   /**
@@ -4115,7 +4251,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, j, layersForPage, posProp, preAnimationTime, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, posProp, preAnimationTime, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     model = {
       highlight: model.highlight,
       page: model.page,
@@ -4240,7 +4376,9 @@ NFPartComp = (function(superClass) {
           }
         } else {
           layersForPage = this.layersForPage(targetPage);
-          if (layersForPage.count() > 0 && layersForPage.layers[0].index() < activePageLayer.index()) {
+          isUsedInPartAboveCurrentLayer = layersForPage.count() > 0 && layersForPage.layers[0].index() < activePageLayer.index();
+          isTitlePage = targetPDF.getTitlePage().getPageNumber() === targetPage.getPageNumber();
+          if (isUsedInPartAboveCurrentLayer || isTitlePage) {
             targetPageLayer = this.insertPage({
               page: targetPage,
               above: activePageLayer,
@@ -4517,3 +4655,96 @@ NFPartComp = (function(superClass) {
   return NFPartComp;
 
 })(NFComp);
+
+
+/**
+Creates a new NFSpotlightLayer from a given AVLayer
+@class NFSpotlightLayer
+@classdesc Subclass of {@link NFLayer} for a spotlight layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
+ */
+var NFSpotlightLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+NFSpotlightLayer = (function(superClass) {
+  extend(NFSpotlightLayer, superClass);
+
+  function NFSpotlightLayer(layer) {
+    NFLayer.call(this, layer);
+    if (!NFSpotlightLayer.isSpotlightLayer(this.layer)) {
+      throw new Error("NF Spotlight Layer is invalid and the wrapper class cannot be created");
+    }
+    this;
+  }
+
+  NFSpotlightLayer.prototype.toString = function() {
+    return "NFSpotlightLayer: '" + this.layer.name + "'";
+  };
+
+  return NFSpotlightLayer;
+
+})(NFLayer);
+
+NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
+
+  /**
+  Returns whether or not the given AVLayer is a valid Spotlight Layer
+  @memberof NFSpotlightLayer
+  @param {AVLayer} the layer to check
+  @returns {boolean} whether the AV layer is a valid spotlight layer
+   */
+  isSpotlightLayer: function(theLayer) {
+    var ref;
+    return theLayer.isAVLayer() && ((ref = theLayer.source) != null ? ref.mainSource : void 0) instanceof SolidSource;
+  },
+
+  /**
+  Returns the name for a spotlight layer for a given PDF Number
+  @memberof NFSpotlightLayer
+  @returns {String} the appropriate name
+   */
+  nameForPDFNumber: function(num) {
+    return num + " - Spotlight";
+  },
+
+  /**
+  Creates a new Spotlight layer for the given NFPaperLayerGroup
+  @memberof NFSpotlightLayer
+  @param {NFPaperLayerGroup} group - the paper layer group
+  @returns {NFSpotlightLayer} the new spotlight layer
+   */
+  newSpotlightLayer: function(group) {
+    var controlLayers, currTime, existingSpot, newSolidAVLayer, props, spotlightLayer;
+    if (!(group instanceof NFPaperLayerGroup)) {
+      throw new Error("group must be an NFPaperLayerGroup");
+    }
+    existingSpot = group.getSpotlight();
+    if (existingSpot != null) {
+      return existingSpot;
+    }
+    props = {
+      color: [0.0078, 0, 0.1216],
+      name: NFSpotlightLayer.nameForPDFNumber(group.getPDFNumber()),
+      width: group.containingComp().comp.width,
+      height: group.containingComp().comp.height,
+      pixelAspect: 1
+    };
+    newSolidAVLayer = group.containingComp().comp.layers.addSolid(props.color, props.name, props.width, props.height, props.pixelAspect);
+    spotlightLayer = new NFSpotlightLayer(newSolidAVLayer);
+    controlLayers = group.getControlLayers();
+    if (controlLayers.isEmpty()) {
+      spotlightLayer.moveAfter(group.paperParent);
+    } else {
+      spotlightLayer.moveBefore(controlLayers.getTopmostLayer());
+    }
+    spotlightLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint;
+    currTime = spotlightLayer.containingComp().getTime();
+    spotlightLayer.containingComp().setTime(spotlightLayer.layer.startTime);
+    spotlightLayer.setParent(group.paperParent);
+    spotlightLayer.containingComp().setTime(currTime);
+    return spotlightLayer;
+  }
+});

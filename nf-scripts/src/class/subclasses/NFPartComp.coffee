@@ -162,8 +162,11 @@ class NFPartComp extends NFComp
         # else (the highlight is on a different page)
         else
           # If the target page was used in this part and it was above the currently active layer
+          # or if we're going to the title page
           layersForPage = @layersForPage targetPage
-          if layersForPage.count() > 0 and layersForPage.layers[0].index() < activePageLayer.index()
+          isUsedInPartAboveCurrentLayer = layersForPage.count() > 0 and layersForPage.layers[0].index() < activePageLayer.index()
+          isTitlePage = targetPDF.getTitlePage().getPageNumber() is targetPage.getPageNumber()
+          if isUsedInPartAboveCurrentLayer or isTitlePage
               # Add the page layer above this current one, but peeled up.
               # Also frame it up
               targetPageLayer = @insertPage
@@ -224,7 +227,7 @@ class NFPartComp extends NFComp
 
       # else (not the active PDF)
       else
-        # Animate in the page ALREADY focused on the highlight
+        # Animate in the page ALREADY focused on the highlight or page
         activePageLayer = @activePage()
         targetGroup = @groupFromPDF targetPDF
         alreadyInThisPart = targetGroup?

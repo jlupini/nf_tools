@@ -23,6 +23,19 @@ class NFPaperLayerGroup
     return @paperParent.getChildren()
 
   ###*
+  Returns the PDF Number
+  @memberof NFPaperLayerGroup
+  @returns {String} the pdf number
+  ###
+  getPDFNumber: ->
+    # FIXME: Pickup here - this breaks because layers[0] in this case is the highlight control... oops
+    children = @getChildren()
+    for layer in children.layers
+      return layer.getPDFNumber() if layer instanceof NFPageLayer
+    return null
+
+
+  ###*
   Gets all the NFPageLayers in the group
   @memberof NFPaperLayerGroup
   @returns {NFPageLayerCollection} the page layers
@@ -33,6 +46,18 @@ class NFPaperLayerGroup
     allChildren.forEach (layer) =>
       pageChildren.add layer if layer instanceof NFPageLayer
     return pageChildren
+
+  ###*
+  Gets all the NFHighlightControlLayer in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the control layers
+  ###
+  getControlLayers: ->
+    allChildren = @getChildren()
+    controlChildren = new NFLayerCollection()
+    allChildren.forEach (layer) =>
+      controlChildren.add layer if layer instanceof NFHighlightControlLayer
+    return controlChildren
 
   ###*
   Returns whether a given highlight is in one of the group's layers
@@ -54,6 +79,28 @@ class NFPaperLayerGroup
   ###
   containingComp: ->
     return @paperParent.containingComp()
+
+  ###*
+  Returns the spotlight layer if it exists
+  @memberof NFPaperLayerGroup
+  @returns {NFSpotlightLayer | null} the spotlight layer
+  ###
+  getSpotlight: ->
+    return @containingComp().layerWithName NFSpotlightLayer.nameForPDFNumber(@getPDFNumber())
+
+  ###*
+  Adds a spotlight for the given highlight.
+  @memberof NFPaperLayerGroup
+  @param {NFHighlightLayer} highlight - the highlight to spotlight
+  @returns {NFSpotlightLayer} the spotlight layer
+  ###
+  addSpotlight: (highlight) ->
+    throw new Error "Must provide a highlight to create a spotlight" unless highlight instanceof NFHighlightLayer
+
+    spotlightLayer = @getSpotlight()
+
+    unless spotlightLayer?
+      NFSpotlightLayer.newSpotlightLayer(@)
 
   ###*
   Animates the parent layer starting at the given time such that a given
@@ -153,9 +200,15 @@ class NFPaperLayerGroup
 
     # For the layers in this collection above the group
     while layersAboveGroup.count() > 0
-      # starting with the bottommost and working up, move each one just below the parent
+      controlLayers = @getControlLayers()
+      if controlLayers.isEmpty()
+        layerAbove = @paperParent
+      else
+        layerAbove = controlLayers.getBottommostLayer()
+
+      # starting with the bottommost and working up, move each one just below the lowest control layer
       bottomLayer = layersAboveGroup.getBottommostLayer()
-      bottomLayer.moveAfter @paperParent
+      bottomLayer.moveAfter layerAbove
       layersAboveGroup.remove bottomLayer
     # for the layers in this coll below the group
     while layersBelowGroup.count() > 0

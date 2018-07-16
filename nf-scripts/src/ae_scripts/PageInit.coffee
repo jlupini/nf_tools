@@ -195,6 +195,8 @@ presentUI = ->
 
 			w.hide()
 
+	return alert "Nothing to do here!" unless disconnectTab? or initTab? or bubbleOnlyTab?
+
 	w.show()
 
 	return

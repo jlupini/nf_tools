@@ -38,7 +38,7 @@ NFPaperParentLayer = Object.assign NFPaperParentLayer,
   @returns {boolean} whether or not the layer is a valid paper parent
   ###
   isPaperParentLayer: (layer) ->
-    return layer.nullLayer and layer.name.indexOf 'PDF' >= 0
+    return layer.nullLayer and layer.name.indexOf('PDF') >= 0
 
   ###*
   Class Method. Returns the name string for the paper parent for a given layer

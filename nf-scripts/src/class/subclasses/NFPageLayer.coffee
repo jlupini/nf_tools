@@ -100,6 +100,7 @@ class NFPageLayer extends NFLayer
   ###
   bubbleUp: (highlightsToBubble) ->
     # If given a single highlight, wrap it.
+    # FIXME: This should probably belong to NFPaperLayerGroup now
     if highlightsToBubble instanceof NFHighlightLayer
       highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble])
 
@@ -136,14 +137,12 @@ class NFPageLayer extends NFLayer
             sourceExpression = "var animationEnd, theLayer, animationStart, controlEnd, controlStart, duration, pageStart,
                                 partTime, progress, targetValue, targetPage, activeBabbies, numLayers;\n
 
-
                                 // Get the in and out points of the control layer\n
                                 var controlIn  = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").inPoint;\n
                                 var controlOut = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").outPoint;\n
                                 var endless = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").effect('Highlight Control')('Endless').value === 1;\n
                                 duration = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").effect('Highlight Control')('Opacity Duration').value;\n
                                 targetValue = comp(\"#{targetComp.comp.name}\").layer(\"#{controlLayer.layer.name}\").effect(\"#{highlight.getName()}\")(\"#{highlighterProperty}\").value;\n
-
 
                                 // Get our matching page layer\n
                                 activeBabbies = [];\n
@@ -185,17 +184,14 @@ class NFPageLayer extends NFLayer
                                   }\n
                                 }\n
 
-
                                 // Let's translate those to relative control ins and outs\n
                                 var relControlIn  = controlIn  - activeAtControlIn.startTime;\n
                                 var relControlOut = controlOut - activeAtControlOut.startTime;\n
                                 var relAnimStart = relControlIn - duration;\n
                                 var relAnimEnd = relControlOut + duration;\n
 
-
                                 animationStart = controlStart - duration;\n
                                 animationEnd = controlEnd + duration;\n
-
 
                                 if (time <= relAnimStart) {\n
                                   0;\n
@@ -219,6 +215,8 @@ class NFPageLayer extends NFLayer
                                 .effect(\"#{highlight.getName()}\")(\"#{highlighterProperty}\").valueAtTime(time+offsetTime)"
 
           sourceEffect.property(highlighterProperty).expression = sourceExpression
+
+        spotlightLayer = @getPaperLayerGroup().addSpotlight(highlight)
     @
 
   ###*
@@ -457,6 +455,16 @@ class NFPageLayer extends NFLayer
     return paperParentLayer
 
   ###*
+  Returns the NFPaperLayerGroup for this page, if it exists. Will not create one
+  @memberof NFPageLayer
+  @returns {NFPaperLayerGroup} the paper layer group
+  ###
+  getPaperLayerGroup: ->
+    paperParentLayer = @getPaperParentLayer()
+    return new NFPaperLayerGroup paperParentLayer if paperParentLayer?
+
+
+  ###*
   Slides in or out the pageLayer using markers. #slideIn and #slideOut both
   call this method
   @memberof NFPageLayer
@@ -473,8 +481,10 @@ class NFPageLayer extends NFLayer
 
     # If .fromEdge is AUTO, figure out which edge to use.
     if model.fromEdge is NFComp.AUTO
-      layerCenter = Math.round @relativeCenterPoint()
-      compCenter = Math.round @containingComp().centerPoint()
+      layerCenter = @relativeCenterPoint()
+      layerCenter = [Math.round layerCenter[0], Math.round layerCenter[1]]
+      compCenter = @containingComp().centerPoint()
+      compCenter = [Math.round compCenter[0], Math.round compCenter[1]]
       if layerCenter[0] < compCenter[0]
         model.fromEdge = NFComp.LEFT
       else

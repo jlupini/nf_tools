@@ -90,6 +90,22 @@ class NFLayer
     return NFPaperParentLayer.isPaperParentLayer(@layer)
 
   ###*
+  Checks if this layer is a valid highlight control layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid highlight control layer
+  ###
+  isHighlightControlLayer: ->
+    return NFHighlightControlLayer.isHighlightControlLayer(@layer)
+
+  ###*
+  Checks if this layer is a valid spotlight layer
+  @memberof NFLayer
+  @returns {boolean} if this is a valid spotlight layer
+  ###
+  isSpotlightLayer: ->
+    return NFSpotlightLayer.isSpotlightLayer(@layer)
+
+  ###*
   Returns a new layer of a specialized type for the contents of this layer
   @memberof NFLayer
   @returns {NFPageLayer | NFHighlightLayer | NFPaperParentLayer | NFLayer} the specialized layer or self if no specialized layer options
@@ -102,6 +118,10 @@ class NFLayer
       return new NFHighlightLayer @layer
     else if @isPaperParentLayer()
       return new NFPaperParentLayer @layer
+    else if @isHighlightControlLayer()
+      return new NFHighlightControlLayer @layer
+    else if @isSpotlightLayer()
+      return new NFSpotlightLayer @layer
     else
       return @
 

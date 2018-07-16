@@ -228,6 +228,9 @@ presentUI = function() {
       return w.hide();
     };
   }
+  if (!((disconnectTab != null) || (initTab != null) || (bubbleOnlyTab != null))) {
+    return alert("Nothing to do here!");
+  }
   w.show();
 };
 

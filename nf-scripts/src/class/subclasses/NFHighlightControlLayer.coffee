@@ -44,14 +44,21 @@ class NFHighlightControlLayer extends NFLayer
 NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
 
   ###*
+  Returns the name for a control layer for a given PDF Number and highlight
+  @memberof NFHighlightControlLayer
+  @returns {String} the appropriate name
+  ###
+  nameForPDFNumberAndHighlight: (num, highlight) ->
+    return "#{num} - #{highlight.layer.name} Highlight Control"
+
+  ###*
   Returns whether or not the given AVLayer is a valid Highlight Control Layer
   @memberof NFHighlightControlLayer
   @param {AVLayer} the layer to check
   @returns {boolean} whether the AV layer is a valid highlight layer
   ###
   isHighlightControlLayer: (theLayer) ->
-    # FIXME: Write this
-    return true
+    return theLayer.nullLayer and theLayer.name.indexOf("Highlight Control") >= 0
 
   ###*
   Creates a new NFHighlightControlLayer for the given page, at the given time,
@@ -66,13 +73,23 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
   newHighlightControlLayer: (model) ->
     throw new Error "Missing parameters" unless model?.page? and model.highlight?
 
+    group = new NFPaperLayerGroup model.page.getPaperParentLayer()
+
     # Create the control layer
     partComp = model.page.containingComp()
-    controlLayer = new NFHighlightControlLayer partComp.addNull()
-    controlLayer.moveAfter model.page.getPaperParentLayer()
+    controlLayer = partComp.addNull()
+    controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight model.page.getPDFNumber(), model.highlight
+    controlLayer = new NFHighlightControlLayer controlLayer
+
+    existingControlLayers = group.getControlLayers()
+    if existingControlLayers.isEmpty()
+      controlLayer.moveAfter group.paperParent
+    else
+      controlLayer.moveBefore existingControlLayers.getTopmostLayer()
+
     controlLayer.layer.startTime = model.time ? partComp.getTime()
     controlLayer.layer.endTime = controlLayer.layer.startTime + 5
-    controlLayer.layer.name = "#{model.page.getPDFNumber()} - #{model.highlight.layer.name} Highlight"
+    controlLayer.setParent model.page.getPaperParentLayer()
 
     effects = controlLayer.effects()
 
