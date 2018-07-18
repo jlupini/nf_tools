@@ -328,16 +328,17 @@ class NFLayer
   @throw Throws error if marker already exists at given time
   @returns {Property} The marker property
   ###
-  addMarker: ->
+  addMarker: (model) ->
     unless model?.comment? and model.time?
       throw new Error "Invalid properties for new marker"
 
     markers = @markers()
 
     # Check time for existing marker
-    nearestMarkerIdx = markers.nearestKeyIndex model.time
-    nearestMarkerTime = markers.keyTime nearestMarkerIdx
-    throw new Error "Already marker at this time" if nearestMarkerTime is model.time
+    if markers.numKeys > 0
+      nearestMarkerIdx = markers.nearestKeyIndex model.time
+      nearestMarkerTime = markers.keyTime nearestMarkerIdx
+      throw new Error "Already marker at this time" if nearestMarkerTime is model.time
 
     markers.setValueAtTime model.time, new MarkerValue(model.comment)
 

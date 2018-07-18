@@ -780,16 +780,18 @@ NFLayer = (function() {
   @returns {Property} The marker property
    */
 
-  NFLayer.prototype.addMarker = function() {
+  NFLayer.prototype.addMarker = function(model) {
     var markers, nearestMarkerIdx, nearestMarkerTime;
-    if (!(((typeof model !== "undefined" && model !== null ? model.comment : void 0) != null) && (model.time != null))) {
+    if (!(((model != null ? model.comment : void 0) != null) && (model.time != null))) {
       throw new Error("Invalid properties for new marker");
     }
     markers = this.markers();
-    nearestMarkerIdx = markers.nearestKeyIndex(model.time);
-    nearestMarkerTime = markers.keyTime(nearestMarkerIdx);
-    if (nearestMarkerTime === model.time) {
-      throw new Error("Already marker at this time");
+    if (markers.numKeys > 0) {
+      nearestMarkerIdx = markers.nearestKeyIndex(model.time);
+      nearestMarkerTime = markers.keyTime(nearestMarkerIdx);
+      if (nearestMarkerTime === model.time) {
+        throw new Error("Already marker at this time");
+      }
     }
     return markers.setValueAtTime(model.time, new MarkerValue(model.comment));
   };
