@@ -102,8 +102,12 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
     controlEffect.name = "Highlight Control"
     controlEffect.property("Endless").setValue true
 
-    # Add the spotlight effect
-    spotlightEffect = effects.addProperty "AV_Spotlight"
-    spotlightEffect.name = "Spotlight"
+    # Add the spotlight markers
+    controlLayer.addMarker
+      comment: "Spot In"
+      time: controlLayer.layer.startTime + 1
+    controlLayer.addMarker
+      comment: "Spot Out"
+      time: controlLayer.layer.startTime + 10
 
     return controlLayer

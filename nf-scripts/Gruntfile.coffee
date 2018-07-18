@@ -5,7 +5,7 @@ module.exports = (grunt) ->
     clean: ['build/*', 'doc/*']
     jsdoc:
       dist:
-        src: ['build/objectModel.jsx', 'build/utilFunctions.jsx', 'build/extensions.jsx', 'build/easingEquations.jsx', 'build/NFProject.jsx']
+        src: ['build/objectModel.jsx', 'build/utilFunctions.jsx', 'build/extensions.jsx', 'build/easingEquations.jsx', 'build/NFProject.jsx', 'build/NFTools.jsx']
         options:
           destination: 'doc'
           template : "node_modules/@pixi/jsdoc-template",

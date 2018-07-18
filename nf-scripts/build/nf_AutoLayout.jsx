@@ -25,9 +25,12 @@ main = function() {
   $.write("Boom! Time: +" + curr + "ms\nAsking for input...\n");
   comp = _.mainComp;
   time = comp.getTime();
-  input = prompt('Enter the instruction (without brackets):');
+  input = prompt('Enter the instruction (without brackets):', '', 'AutoLayout');
   postInstructionTime = NFTools.now();
   $.write("Following instruction!\n");
+  if (!((input != null) && input !== "")) {
+    return false;
+  }
   NFProject.followInstruction(input);
   $.write("Done! Time: +" + (NFTools.now() - postInstructionTime) + "ms\n");
   return true;

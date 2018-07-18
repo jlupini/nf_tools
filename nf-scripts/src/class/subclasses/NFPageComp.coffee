@@ -47,6 +47,14 @@ class NFPageComp extends NFComp
     return NFPDF.fromPDFNumber @getPDFNumber()
 
   ###*
+  Returns the base page name (everything before the space)
+  @memberof NFPageComp
+  @returns {String} the page base name
+  ###
+  getPageBaseName: ->
+    return @name.substr(0, @name.indexOf(' '))
+
+  ###*
   Gets the Highlight layers in this item
   @memberof NFPageComp
   @returns {NFHighlightLayerCollection} highlight layers in this pageComp

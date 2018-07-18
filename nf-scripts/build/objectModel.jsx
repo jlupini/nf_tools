@@ -4,6 +4,8 @@ Creates a new NFComp and sets its comp property.
 @class NFComp
 @classdesc NF Wrapper object for a CompItem that allows for access to and maniplation of its layers.
 @property {CompItem} comp - the CompItem for this NFComp
+@property {String} name - the name of the comp
+@property {String} id - the comp's ID
 @param {CompItem | NFComp} comp - the CompItem for this NFComp
 @throws Will throw an error if not given a valid CompItem at initialization
  */
@@ -118,7 +120,8 @@ NFComp = (function() {
 
   /**
    * Returns the first NFLayer in this comp with the layer name given or null
-   * if none found
+   * if none found. Use #layersWithName if there's the possibility of multiple
+   * layers with the given name.
    * @memberof NFComp
    * @param {string} name - The search layer's name
    * @returns {NFLayer|null} The found layer or null
@@ -149,6 +152,28 @@ NFComp = (function() {
     this.allLayers().forEach((function(_this) {
       return function(layer) {
         if (layer.getName() === name) {
+          return foundLayers.add(layer);
+        }
+      };
+    })(this));
+    return foundLayers;
+  };
+
+
+  /**
+   * Returns an NFLayerCollection with the NFLayers in this comp that contain
+   * the searchString in their name
+   * @memberof NFComp
+   * @param {string} searchString - The search string
+   * @returns {NFLayerCollection} The found layers
+   */
+
+  NFComp.prototype.searchLayers = function(searchString) {
+    var foundLayers;
+    foundLayers = new NFLayerCollection;
+    this.allLayers().forEach((function(_this) {
+      return function(layer) {
+        if (layer.getName().indexOf(searchString) >= 0) {
           return foundLayers.add(layer);
         }
       };
@@ -514,6 +539,28 @@ NFLayer = (function() {
 
 
   /**
+  Returns the mask Property for the layer, or a given mask if provided
+  @memberof NFLayer
+  @param {String} [maskName] - the mask name
+  @returns {Property | null} the mask property or null if not found
+   */
+
+  NFLayer.prototype.mask = function(maskName) {
+    var mask;
+    if (maskName != null) {
+      mask = this.layer.mask(maskName);
+      if (mask != null) {
+        return mask;
+      } else {
+        return null;
+      }
+    } else {
+      return this.layer.mask;
+    }
+  };
+
+
+  /**
   Returns the transform Property for the layer
   @memberof NFLayer
   @returns {Property} the transform property
@@ -724,6 +771,31 @@ NFLayer = (function() {
 
 
   /**
+  Adds a marker at a given time.
+  @memberof NFLayer
+  @param {Object} model
+  @param {String} model.comment - the marker comment
+  @param {float} model.time - the time to add the marker
+  @throw Throws error if marker already exists at given time
+  @returns {Property} The marker property
+   */
+
+  NFLayer.prototype.addMarker = function() {
+    var markers, nearestMarkerIdx, nearestMarkerTime;
+    if (!(((typeof model !== "undefined" && model !== null ? model.comment : void 0) != null) && (model.time != null))) {
+      throw new Error("Invalid properties for new marker");
+    }
+    markers = this.markers();
+    nearestMarkerIdx = markers.nearestKeyIndex(model.time);
+    nearestMarkerTime = markers.keyTime(nearestMarkerIdx);
+    if (nearestMarkerTime === model.time) {
+      throw new Error("Already marker at this time");
+    }
+    return markers.setValueAtTime(model.time, new MarkerValue(model.comment));
+  };
+
+
+  /**
   Returns the layer's absolute scale, which is the scale of the layer if it had
   no parent.
   @memberof NFLayer
@@ -823,15 +895,17 @@ NFLayer = (function() {
     } catch (error1) {
       e = error1;
     }
-    if (options.startValue != null) {
-      if (inMarker == null) {
-        markers.setValueAtTime(this.layer.inPoint + options.length, new MarkerValue(inComm));
-      }
+    if ((options.startValue != null) && (inMarker == null)) {
+      this.addMarker({
+        time: this.layer.inPoint + options.length,
+        comment: inComm
+      });
     }
-    if (options.endValue != null) {
-      if (outMarker == null) {
-        markers.setValueAtTime(this.layer.outPoint - options.length, new MarkerValue(outComm));
-      }
+    if ((options.endValue != null) && (outMarker == null)) {
+      this.addMarker({
+        time: this.layer.outPoint - options.length,
+        comment: outComm
+      });
     }
     prevExpression = options.property.expression;
     alreadyContainsInValue = prevExpression.indexOf("var inValue") >= 0;
@@ -841,8 +915,7 @@ NFLayer = (function() {
     if (shouldPreserveInValue || shouldPreserveOutValue) {
       expression = prevExpression;
     } else {
-      fileText = NF.Util.readFile("expressions/marker-animation-main-function.js");
-      fileText = NF.Util.fixLineBreaks(fileText);
+      fileText = NFTools.readFile("expressions/marker-animation-main-function.js");
       expression = fileText;
     }
     if (options.startValue != null) {
@@ -2243,7 +2316,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
   @returns {NFHighlightControlLayer} the new control layer
    */
   newHighlightControlLayer: function(model) {
-    var controlEffect, controlLayer, effects, existingControlLayers, group, highlighterEffect, partComp, ref, spotlightEffect;
+    var controlEffect, controlLayer, effects, existingControlLayers, group, highlighterEffect, partComp, ref;
     if (!(((model != null ? model.page : void 0) != null) && (model.highlight != null))) {
       throw new Error("Missing parameters");
     }
@@ -2267,8 +2340,14 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     controlEffect = effects.addProperty("AV_Highlight_Control");
     controlEffect.name = "Highlight Control";
     controlEffect.property("Endless").setValue(true);
-    spotlightEffect = effects.addProperty("AV_Spotlight");
-    spotlightEffect.name = "Spotlight";
+    controlLayer.addMarker({
+      comment: "Spot In",
+      time: controlLayer.layer.startTime + 1
+    });
+    controlLayer.addMarker({
+      comment: "Spot Out",
+      time: controlLayer.layer.startTime + 10
+    });
     return controlLayer;
   }
 });
@@ -2351,6 +2430,44 @@ NFHighlightLayer = (function(superClass) {
 
 
   /**
+  Returns an array of Spotlight mask Properties that reference this layer
+  @memberof NFHighlightLayer
+  @returns {Property[]} a potentially empty array of spotlight
+  mask Property objects
+   */
+
+  NFHighlightLayer.prototype.getSpotlightMasks = function() {
+    var folder, item, items, j, len, part, spotlightLayer, spotlightLayers, targetMasks;
+    folder = NFProject.findItem("Parts");
+    items = NFProject.searchItems("Part", folder);
+    spotlightLayers = new NFLayerCollection;
+    for (j = 0, len = items.length; j < len; j++) {
+      item = items[j];
+      part = new NFPartComp(item);
+      spotlightLayer = part.layerWithName(NFSpotlightLayer.nameForPDFNumber(this.getPDFNumber()));
+      if (spotlightLayer != null) {
+        spotlightLayers.add(spotlightLayer);
+      }
+    }
+    if (spotlightLayers.isEmpty()) {
+      return [];
+    } else {
+      targetMasks = [];
+      spotlightLayers.forEach((function(_this) {
+        return function(spotlight) {
+          var possibleMask;
+          possibleMask = spotlight.mask(_this.getName());
+          if (possibleMask != null) {
+            return targetMasks.push(possibleMask);
+          }
+        };
+      })(this));
+      return targetMasks;
+    }
+  };
+
+
+  /**
   Returns the NFPageComp this highlight lives in
   @memberof NFHighlightLayer
   @returns {NFPageComp} the containing page item for the highlight
@@ -2368,7 +2485,18 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.getPDF = function() {
-    return NFPDF.fromPDFNumber(this.containingComp().getPDFNumber());
+    return NFPDF.fromPDFNumber(this.getPDFNumber());
+  };
+
+
+  /**
+  Returns the PDF number for the containing comp
+  @memberof NFHighlightLayer
+  @returns {String} the PDF number
+   */
+
+  NFHighlightLayer.prototype.getPDFNumber = function() {
+    return this.containingComp().getPDFNumber();
   };
 
 
@@ -2465,13 +2593,18 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.disconnect = function() {
-    var effect, i, j, property, propertyCount, ref, ref1;
+    var effect, i, j, k, len, mask, masks, property, propertyCount, ref, ref1;
     if ((ref = this.getControlLayer()) != null) {
       ref.remove();
     }
+    masks = this.getSpotlightMasks();
+    for (j = 0, len = masks.length; j < len; j++) {
+      mask = masks[j];
+      mask.remove();
+    }
     effect = this.highlighterEffect();
     propertyCount = effect != null ? effect.numProperties : void 0;
-    for (i = j = 1, ref1 = propertyCount; 1 <= ref1 ? j <= ref1 : j >= ref1; i = 1 <= ref1 ? ++j : --j) {
+    for (i = k = 1, ref1 = propertyCount; 1 <= ref1 ? k <= ref1 : k >= ref1; i = 1 <= ref1 ? ++k : --k) {
       property = effect.property(i);
       property.expression = "";
     }
@@ -2778,6 +2911,17 @@ NFPageComp = (function(superClass) {
 
 
   /**
+  Returns the base page name (everything before the space)
+  @memberof NFPageComp
+  @returns {String} the page base name
+   */
+
+  NFPageComp.prototype.getPageBaseName = function() {
+    return this.name.substr(0, this.name.indexOf(' '));
+  };
+
+
+  /**
   Gets the Highlight layers in this item
   @memberof NFPageComp
   @returns {NFHighlightLayerCollection} highlight layers in this pageComp
@@ -2978,7 +3122,7 @@ NFPageLayer = (function(superClass) {
     if (!highlightsToBubble.isEmpty()) {
       highlightsToBubble.forEach((function(_this) {
         return function(highlight) {
-          var controlLayer, highlighterEffect, highlighterProperty, i, len, ref, sourceEffect, sourceExpression, sourceValue, spotlightLayer, targetComp, targetPageLayerEffects;
+          var controlLayer, group, highlighterEffect, highlighterProperty, i, len, ref, ref1, sourceEffect, sourceExpression, sourceValue, spotlightLayer, targetComp, targetPageLayerEffects;
           if (!highlight.canBubbleUp()) {
             throw new Error("Cannot bubble highlight if already connected and not broken. Disconnect first");
           }
@@ -3005,7 +3149,9 @@ NFPageLayer = (function(superClass) {
             }
             sourceEffect.property(highlighterProperty).expression = sourceExpression;
           }
-          return spotlightLayer = _this.getPaperLayerGroup().addSpotlight(highlight);
+          group = _this.getPaperLayerGroup();
+          spotlightLayer = (ref1 = group.getSpotlight()) != null ? ref1 : group.addSpotlight(highlight);
+          return spotlightLayer.trackHighlight(highlight);
         };
       })(this));
     }
@@ -4684,6 +4830,64 @@ NFSpotlightLayer = (function(superClass) {
     return "NFSpotlightLayer: '" + this.layer.name + "'";
   };
 
+
+  /**
+  Start tracking a highlight
+  @memberof NFSpotlightLayer
+  @param {NFHighlightLayer} highlight - the new highlight to track
+  @throw Throws error if highlight is already being tracked
+  @returns {NFSpotlightLayer} self
+   */
+
+  NFSpotlightLayer.prototype.trackHighlight = function(highlight) {
+    var expression, fileText, newMask;
+    if (!(highlight instanceof NFHighlightLayer)) {
+      throw new Error("Highlight invalid to track");
+    }
+    if (this.mask().property(highlight.getName()) != null) {
+      throw new Error("Already tracking highlight");
+    }
+    fileText = NFTools.readFile("expressions/spotlight-mask-expression.js");
+    expression = fileText.replace("TARGET_PAGE", highlight.getPageComp().getPageBaseName());
+    expression = expression.replace("COMP_NAME", highlight.getPageComp().name);
+    expression = expression.replace("HIGHLIGHT_LAYER_NAME", highlight.getName());
+    expression = expression.replace("HIGHLIGHT_CONTROL_LAYER_NAME", highlight.getControlLayer().getName());
+    expression = expression.replace("HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME", highlight.getName());
+    newMask = this.mask().addProperty("Mask");
+    newMask.name = highlight.getName();
+    newMask.maskShape.expression = expression;
+    newMask.maskMode = MaskMode.SUBTRACT;
+    newMask.maskFeather.setValue([80, 80]);
+    newMask.maskExpansion.setValue(45);
+    fileText = NFTools.readFile("expressions/spotlight-mask-opacity-expression.js");
+    expression = fileText.replace("ON_VALUE", "100");
+    expression = expression.replace("HIGHLIGHT_CONTROL_LAYER_NAME", highlight.getControlLayer().getName());
+    newMask.maskOpacity.expression = expression;
+    return this;
+  };
+
+
+  /**
+  Stop tracking a highlight
+  @memberof NFSpotlightLayer
+  @param {NFHighlightLayer} the highlight to stop tracking
+  @returns {NFSpotlightLayer} self
+   */
+
+  NFSpotlightLayer.prototype.stopTrackingHighlight = function(highlight) {
+    var existingMask;
+    if (!(highlight instanceof NFHighlightLayer)) {
+      throw new Error("Highlight invalid to stop tracking");
+    }
+    existingMask = this.mask().property(highlight.getName());
+    if (existingMask != null) {
+      existingMask.remove();
+    } else {
+      throw new Error("Can't stop tracking highlight because it's not currently being tracked");
+    }
+    return this;
+  };
+
   return NFSpotlightLayer;
 
 })(NFLayer);
@@ -4717,7 +4921,7 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
   @returns {NFSpotlightLayer} the new spotlight layer
    */
   newSpotlightLayer: function(group) {
-    var controlLayers, currTime, existingSpot, newSolidAVLayer, props, spotlightLayer;
+    var controlLayers, existingSpot, newMask, newSolidAVLayer, props, spotlightLayer;
     if (!(group instanceof NFPaperLayerGroup)) {
       throw new Error("group must be an NFPaperLayerGroup");
     }
@@ -4741,10 +4945,11 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
       spotlightLayer.moveBefore(controlLayers.getTopmostLayer());
     }
     spotlightLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint;
-    currTime = spotlightLayer.containingComp().getTime();
-    spotlightLayer.containingComp().setTime(spotlightLayer.layer.startTime);
-    spotlightLayer.setParent(group.paperParent);
-    spotlightLayer.containingComp().setTime(currTime);
+    newMask = spotlightLayer.mask().addProperty("Mask");
+    newMask.name = "Dummy";
+    newMask.maskShape.expression = "ori = [0, 0];createPath(points = [ori, ori, ori, ori], inTangents = [], outTangents = [], is_closed = true);";
+    newMask.maskMode = MaskMode.SUBTRACT;
+    newMask.maskOpacity.setValue(35);
     return spotlightLayer;
   }
 });

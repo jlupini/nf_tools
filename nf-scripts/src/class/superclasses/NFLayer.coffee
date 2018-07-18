@@ -152,6 +152,22 @@ class NFLayer
     return @layer.Effects
 
   ###*
+  Returns the mask Property for the layer, or a given mask if provided
+  @memberof NFLayer
+  @param {String} [maskName] - the mask name
+  @returns {Property | null} the mask property or null if not found
+  ###
+  mask: (maskName) ->
+    if maskName?
+      mask = @layer.mask maskName
+      if mask?
+        return mask
+      else
+        return null
+    else
+      return @layer.mask
+
+  ###*
   Returns the transform Property for the layer
   @memberof NFLayer
   @returns {Property} the transform property
@@ -304,6 +320,28 @@ class NFLayer
     return @layer.property("Marker")
 
   ###*
+  Adds a marker at a given time.
+  @memberof NFLayer
+  @param {Object} model
+  @param {String} model.comment - the marker comment
+  @param {float} model.time - the time to add the marker
+  @throw Throws error if marker already exists at given time
+  @returns {Property} The marker property
+  ###
+  addMarker: ->
+    unless model?.comment? and model.time?
+      throw new Error "Invalid properties for new marker"
+
+    markers = @markers()
+
+    # Check time for existing marker
+    nearestMarkerIdx = markers.nearestKeyIndex model.time
+    nearestMarkerTime = markers.keyTime nearestMarkerIdx
+    throw new Error "Already marker at this time" if nearestMarkerTime is model.time
+
+    markers.setValueAtTime model.time, new MarkerValue(model.comment)
+
+  ###*
   Returns the layer's absolute scale, which is the scale of the layer if it had
   no parent.
   @memberof NFLayer
@@ -381,10 +419,14 @@ class NFLayer
     catch e
 
     # Add the in and/or out markers if given a start/end value
-    if options.startValue?
-      markers.setValueAtTime @layer.inPoint + options.length, new MarkerValue(inComm) unless inMarker?
-    if options.endValue?
-      markers.setValueAtTime @layer.outPoint - options.length, new MarkerValue(outComm) unless outMarker?
+    if options.startValue? and not inMarker?
+      @addMarker
+        time: @layer.inPoint + options.length
+        comment: inComm
+    if options.endValue? and not outMarker?
+      @addMarker
+        time: @layer.outPoint - options.length
+        comment: outComm
 
     # Get our base expression. If there's an existing expression with an in or
     # out value declared, we want to preserve that value UNLESS we were just
@@ -399,8 +441,7 @@ class NFLayer
     if shouldPreserveInValue or shouldPreserveOutValue
       expression = prevExpression
     else
-      fileText = NF.Util.readFile "expressions/marker-animation-main-function.js"
-      fileText = NF.Util.fixLineBreaks(fileText)
+      fileText = NFTools.readFile "expressions/marker-animation-main-function.js"
       expression = fileText
 
 

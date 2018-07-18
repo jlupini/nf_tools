@@ -17,10 +17,12 @@ main = ->
 	comp = _.mainComp
 	time = comp.getTime()
 
-	input = prompt('Enter the instruction (without brackets):')
+	input = prompt 'Enter the instruction (without brackets):', '', 'AutoLayout'
 
 	postInstructionTime = NFTools.now()
 	$.write "Following instruction!\n"
+
+	return false unless input? and input isnt "" 
 
 	NFProject.followInstruction input
 	# try

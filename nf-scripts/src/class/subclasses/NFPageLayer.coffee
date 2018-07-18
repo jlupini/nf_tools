@@ -117,9 +117,6 @@ class NFPageLayer extends NFLayer
         targetPageLayerEffects = @effects()
         sourceEffect = highlight.highlighterEffect()
 
-        # targetHighlighterEffect = targetPageLayerEffects.addProperty('AV_Highlighter')
-        # targetHighlighterEffect.name = highlight.layer.name
-
         targetComp = @containingComp()
 
         controlLayer = NFHighlightControlLayer.newHighlightControlLayer
@@ -216,7 +213,10 @@ class NFPageLayer extends NFLayer
 
           sourceEffect.property(highlighterProperty).expression = sourceExpression
 
-        spotlightLayer = @getPaperLayerGroup().addSpotlight(highlight)
+        group = @getPaperLayerGroup()
+        spotlightLayer = group.getSpotlight() ? group.addSpotlight(highlight)
+
+        spotlightLayer.trackHighlight highlight
     @
 
   ###*

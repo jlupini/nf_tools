@@ -38,13 +38,11 @@ class NFHighlightLayer extends NFLayer
   @returns {NFHighlightControlLayer | null} the control layer or null
   ###
   getControlLayer: ->
-    # FIXME: This fucks up if there are two layers with the same name in the comp
     if @isBubbled()
       expression = @highlighterEffect().property("Spacing").expression
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression)
       comp = new NFComp NF.Util.findItem(compName)
-
 
       # This is to deal with the possibility that there are two layers with the
       # same name in the comp...
@@ -54,6 +52,31 @@ class NFHighlightLayer extends NFLayer
           return null
         else
           return possibleLayers.get 0
+
+  ###*
+  Returns an array of Spotlight mask Properties that reference this layer
+  @memberof NFHighlightLayer
+  @returns {Property[]} a potentially empty array of spotlight
+  mask Property objects
+  ###
+  getSpotlightMasks: ->
+    folder = NFProject.findItem "Parts"
+    items = NFProject.searchItems("Part", folder)
+    spotlightLayers = new NFLayerCollection
+
+    for item in items
+      part = new NFPartComp item
+      spotlightLayer = part.layerWithName NFSpotlightLayer.nameForPDFNumber(@getPDFNumber())
+      spotlightLayers.add spotlightLayer if spotlightLayer?
+
+    if spotlightLayers.isEmpty()
+      return []
+    else
+      targetMasks = []
+      spotlightLayers.forEach (spotlight) =>
+        possibleMask = spotlight.mask @getName()
+        targetMasks.push possibleMask if possibleMask?
+      return targetMasks
 
   ###*
   Returns the NFPageComp this highlight lives in
@@ -69,7 +92,15 @@ class NFHighlightLayer extends NFLayer
   @returns {NFPDF} the PDF
   ###
   getPDF: ->
-    return NFPDF.fromPDFNumber @containingComp().getPDFNumber()
+    return NFPDF.fromPDFNumber @getPDFNumber()
+
+  ###*
+  Returns the PDF number for the containing comp
+  @memberof NFHighlightLayer
+  @returns {String} the PDF number
+  ###
+  getPDFNumber: ->
+    return @containingComp().getPDFNumber()
 
   ###*
   Returns the AV Highlighter effect
@@ -134,13 +165,19 @@ class NFHighlightLayer extends NFLayer
   @returns {NFHighlightLayer} self
   ###
   disconnect: ->
-    # Remove the bubbled up AV Highlighter Effect if it exists
+    # Remove the control layer if it exists
     @getControlLayer()?.remove()
+
+    # Remove any referencing spotlight masks if they exist
+    masks = @getSpotlightMasks()
+    mask.remove() for mask in masks
+
     effect = @highlighterEffect()
     propertyCount = effect?.numProperties
     for i in [1..propertyCount]
       property = effect.property(i)
       property.expression = ""
+
     @
 
 NFHighlightLayer = Object.assign NFHighlightLayer,

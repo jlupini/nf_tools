@@ -3,6 +3,8 @@ Creates a new NFComp and sets its comp property.
 @class NFComp
 @classdesc NF Wrapper object for a CompItem that allows for access to and maniplation of its layers.
 @property {CompItem} comp - the CompItem for this NFComp
+@property {String} name - the name of the comp
+@property {String} id - the comp's ID
 @param {CompItem | NFComp} comp - the CompItem for this NFComp
 @throws Will throw an error if not given a valid CompItem at initialization
 ###
@@ -81,7 +83,8 @@ class NFComp
 
   ###*
   # Returns the first NFLayer in this comp with the layer name given or null
-  # if none found
+  # if none found. Use #layersWithName if there's the possibility of multiple
+  # layers with the given name.
   # @memberof NFComp
   # @param {string} name - The search layer's name
   # @returns {NFLayer|null} The found layer or null
@@ -104,6 +107,19 @@ class NFComp
     foundLayers = new NFLayerCollection
     @allLayers().forEach (layer) =>
       foundLayers.add layer if layer.getName() is name
+    return foundLayers
+
+  ###*
+  # Returns an NFLayerCollection with the NFLayers in this comp that contain
+  # the searchString in their name
+  # @memberof NFComp
+  # @param {string} searchString - The search string
+  # @returns {NFLayerCollection} The found layers
+  ###
+  searchLayers: (searchString) ->
+    foundLayers = new NFLayerCollection
+    @allLayers().forEach (layer) =>
+      foundLayers.add layer if layer.getName().indexOf(searchString) >= 0
     return foundLayers
 
   ###*
