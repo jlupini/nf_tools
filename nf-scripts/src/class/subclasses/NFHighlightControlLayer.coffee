@@ -104,10 +104,8 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
 
     # Add the spotlight markers
     controlLayer.addMarker
-      comment: "Spot In"
+      comment: "Spotlight"
       time: controlLayer.layer.startTime + 1
-    controlLayer.addMarker
-      comment: "Spot Out"
-      time: controlLayer.layer.startTime + 10
+      duration: 10
 
     return controlLayer

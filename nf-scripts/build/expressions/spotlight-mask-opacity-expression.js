@@ -2,35 +2,34 @@ var controlLayer, duration, expValue, onValue, ref;
 
 onValue = ON_VALUE;
 
-duration = 1;
+duration = ANIMATION_DURATION;
 
 controlLayer = thisComp.layer("HIGHLIGHT_CONTROL_LAYER_NAME");
 
 expValue = function() {
-  var i, idx, inMarker, outMarker, progress, ref, testMarker;
+  var i, idx, inTime, outTime, progress, ref, spotMarker, testMarker;
   if (controlLayer.marker.numKeys > 0) {
     for (idx = i = 1, ref = controlLayer.marker.numKeys; 1 <= ref ? i <= ref : i >= ref; idx = 1 <= ref ? ++i : --i) {
       testMarker = controlLayer.marker.key(idx);
-      if (testMarker.comment === "Spot In") {
-        inMarker = testMarker;
-      }
-      if (testMarker.comment === "Spot Out") {
-        outMarker = testMarker;
+      if (testMarker.comment === "Spotlight") {
+        spotMarker = testMarker;
       }
     }
   } else {
     return null;
   }
-  if (!((inMarker != null) && (outMarker != null))) {
+  if (spotMarker == null) {
     return null;
   }
-  if ((inMarker.time - duration <= time && time < inMarker.time)) {
-    progress = inMarker.time - time;
+  inTime = spotMarker.time;
+  outTime = spotMarker.time + spotMarker.duration;
+  if ((inTime - duration <= time && time < inTime)) {
+    progress = inTime - time;
     return onValue * (1 - progress / duration);
-  } else if ((inMarker.time <= time && time < outMarker.time)) {
+  } else if ((inTime <= time && time < outTime)) {
     return onValue;
-  } else if ((outMarker.time <= time && time < outMarker.time + duration)) {
-    progress = time - outMarker.time;
+  } else if ((outTime <= time && time < outTime + duration)) {
+    progress = time - outTime;
     return onValue * (1 - progress / duration);
   } else {
     return 0;

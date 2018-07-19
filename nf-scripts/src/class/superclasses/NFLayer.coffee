@@ -340,7 +340,10 @@ class NFLayer
       nearestMarkerTime = markers.keyTime nearestMarkerIdx
       throw new Error "Already marker at this time" if nearestMarkerTime is model.time
 
-    markers.setValueAtTime model.time, new MarkerValue(model.comment)
+    markerValue = new MarkerValue(model.comment)
+    markerValue.duration = model.duration if model.duration?
+    markers.setValueAtTime model.time, markerValue
+    markers
 
   ###*
   Returns the layer's absolute scale, which is the scale of the layer if it had

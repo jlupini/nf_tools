@@ -1,5 +1,5 @@
 onValue = ON_VALUE
-duration = 1
+duration = ANIMATION_DURATION
 controlLayer = thisComp.layer("HIGHLIGHT_CONTROL_LAYER_NAME")
 
 expValue = ->
@@ -7,20 +7,22 @@ expValue = ->
   if controlLayer.marker.numKeys > 0
     for idx in [1..controlLayer.marker.numKeys]
       testMarker = controlLayer.marker.key(idx)
-      inMarker = testMarker if testMarker.comment is "Spot In"
-      outMarker = testMarker if testMarker.comment is "Spot Out"
+      spotMarker = testMarker if testMarker.comment is "Spotlight"
   else
     return null
 
-  return null unless inMarker? and outMarker?
+  return null unless spotMarker?
 
-  if inMarker.time - duration <= time < inMarker.time
-    progress = inMarker.time - time
+  inTime = spotMarker.time
+  outTime = spotMarker.time + spotMarker.duration
+
+  if inTime - duration <= time < inTime
+    progress = inTime - time
     return onValue * (1 - progress / duration)
-  else if inMarker.time <= time < outMarker.time
+  else if inTime <= time < outTime
     return onValue
-  else if outMarker.time <= time < outMarker.time + duration
-    progress = time - outMarker.time
+  else if outTime <= time < outTime + duration
+    progress = time - outTime
     return onValue * (1 - progress / duration)
   else
     return 0

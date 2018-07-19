@@ -48,6 +48,7 @@ class NFSpotlightLayer extends NFLayer
     fileText = NFTools.readFile "expressions/spotlight-mask-opacity-expression.js"
     expression = fileText.replace "ON_VALUE", "100"
     expression = expression.replace "HIGHLIGHT_CONTROL_LAYER_NAME", highlight.getControlLayer().getName()
+    expression = expression.replace "ANIMATION_DURATION", "1"
 
     newMask.maskOpacity.expression = expression
 
@@ -122,11 +123,16 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
     spotlightLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint
 
     # Set up the dummy mask
-    # Setup the mask
     newMask = spotlightLayer.mask().addProperty "Mask"
     newMask.name = "Dummy"
     newMask.maskShape.expression = "ori = [0, 0];createPath(points = [ori, ori, ori, ori], inTangents = [], outTangents = [], is_closed = true);"
     newMask.maskMode = MaskMode.SUBTRACT
     newMask.maskOpacity.setValue 35
+
+    # Get the expression for the opacity
+    fileText = NFTools.readFile "expressions/spotlight-master-opacity-expression.js"
+    expression = fileText.replace "ANIMATION_DURATION", "1"
+    expression = expression.replace "PDF_NUMBER", group.getPDFNumber()
+    newMask.maskOpacity.expression = expression
 
     return spotlightLayer
