@@ -1,12 +1,12 @@
 # These two functions let us look at markers as being wider than they are
 # to account for the start and finish being outside the actual points
-inFunc = (marker) ->
-  return marker.time - duration
-outFunc = (marker) ->
-  return marker.time + marker.duration + duration
+inFunc = (mark) ->
+  return mark.time - duration
+outFunc = (mark) ->
+  return mark.time + mark.duration + duration
 
 # Get all the highlight control layers for this PDF.
-duration = ANIMATION_DURATION * 0.75
+duration = ANIMATION_DURATION
 targetPDF = "PDF_NUMBER"
 
 babbies = []
@@ -39,14 +39,14 @@ else
   blockStartMarker = blockEndMarker = activeMarkers[0]
 
   if activeMarkers.length > 1
-    for idx in [1..activeMarkers.length]
-      marker = activeMarkers[idx]
-      if inFunc(marker) < blockStartTime
-        blockStartTime = inFunc marker
-        blockStartMarker = marker
-      if outFunc(marker) > blockEndTime
-        blockEndTime = outFunc marker
-        blockEndMarker = marker
+    for idx in [0..activeMarkers.length-1]
+      iMarker = activeMarkers[idx]
+      if inFunc(iMarker) < blockStartTime
+        blockStartTime = inFunc iMarker
+        blockStartMarker = iMarker
+      if outFunc(iMarker) > blockEndTime
+        blockEndTime = outFunc iMarker
+        blockEndMarker = iMarker
 
 # If we're at the start of a block
 if blockStartTime < time < blockStartTime + duration

@@ -1,14 +1,14 @@
-var activeMarkers, adjIn, adjOut, babbies, blockEndMarker, blockEndTime, blockStartMarker, blockStartTime, duration, i, idx, inFunc, j, k, marker, numLayers, outFunc, progress, ref, ref1, spotlightMarkers, targetPDF, testMarker, theLayer;
+var activeMarkers, adjIn, adjOut, babbies, blockEndMarker, blockEndTime, blockStartMarker, blockStartTime, duration, i, iMarker, idx, inFunc, j, k, numLayers, outFunc, progress, ref, ref1, spotlightMarkers, targetPDF, testMarker, theLayer;
 
-inFunc = function(marker) {
-  return marker.time - duration;
+inFunc = function(mark) {
+  return mark.time - duration;
 };
 
-outFunc = function(marker) {
-  return marker.time + marker.duration + duration;
+outFunc = function(mark) {
+  return mark.time + mark.duration + duration;
 };
 
-duration = ANIMATION_DURATION * 0.75;
+duration = ANIMATION_DURATION;
 
 targetPDF = "PDF_NUMBER";
 
@@ -50,15 +50,15 @@ if (activeMarkers.length === 0) {
   blockEndTime = outFunc(activeMarkers[0]);
   blockStartMarker = blockEndMarker = activeMarkers[0];
   if (activeMarkers.length > 1) {
-    for (idx = k = 1, ref1 = activeMarkers.length; 1 <= ref1 ? k <= ref1 : k >= ref1; idx = 1 <= ref1 ? ++k : --k) {
-      marker = activeMarkers[idx];
-      if (inFunc(marker) < blockStartTime) {
-        blockStartTime = inFunc(marker);
-        blockStartMarker = marker;
+    for (idx = k = 0, ref1 = activeMarkers.length - 1; 0 <= ref1 ? k <= ref1 : k >= ref1; idx = 0 <= ref1 ? ++k : --k) {
+      iMarker = activeMarkers[idx];
+      if (inFunc(iMarker) < blockStartTime) {
+        blockStartTime = inFunc(iMarker);
+        blockStartMarker = iMarker;
       }
-      if (outFunc(marker) > blockEndTime) {
-        blockEndTime = outFunc(marker);
-        blockEndMarker = marker;
+      if (outFunc(iMarker) > blockEndTime) {
+        blockEndTime = outFunc(iMarker);
+        blockEndMarker = iMarker;
       }
     }
   }

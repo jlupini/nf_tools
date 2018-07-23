@@ -445,8 +445,7 @@ class NFLayer
     if shouldPreserveInValue or shouldPreserveOutValue
       expression = prevExpression
     else
-      fileText = NFTools.readFile "expressions/marker-animation-main-function.js"
-      expression = fileText
+      expression = NFTools.readExpression "marker-animation-main-function"
 
 
     # Update and add the expression to the property

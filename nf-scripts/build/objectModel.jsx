@@ -846,7 +846,7 @@ NFLayer = (function() {
    */
 
   NFLayer.prototype.addInOutMarkersForProperty = function(options) {
-    var alreadyContainsInValue, alreadyContainsOutValue, e, element, error, error1, expression, fileText, i, idx, inComm, inMarker, inValueString, j, markers, outComm, outMarker, outValueString, prevExpression, ref, ref1, shouldFail, shouldPreserveInValue, shouldPreserveOutValue;
+    var alreadyContainsInValue, alreadyContainsOutValue, e, element, error, error1, expression, i, idx, inComm, inMarker, inValueString, j, markers, outComm, outMarker, outValueString, prevExpression, ref, ref1, shouldFail, shouldPreserveInValue, shouldPreserveOutValue;
     if (!((options.property != null) && options.property instanceof Property)) {
       throw new Error("Invalid property");
     }
@@ -922,8 +922,7 @@ NFLayer = (function() {
     if (shouldPreserveInValue || shouldPreserveOutValue) {
       expression = prevExpression;
     } else {
-      fileText = NFTools.readFile("expressions/marker-animation-main-function.js");
-      expression = fileText;
+      expression = NFTools.readExpression("marker-animation-main-function");
     }
     if (options.startValue != null) {
       expression = ("var startEquationFunc = " + options.startEquation + "\n") + expression;
@@ -4844,29 +4843,32 @@ NFSpotlightLayer = (function(superClass) {
    */
 
   NFSpotlightLayer.prototype.trackHighlight = function(highlight) {
-    var expression, fileText, newMask;
+    var expression, newMask;
     if (!(highlight instanceof NFHighlightLayer)) {
       throw new Error("Highlight invalid to track");
     }
     if (this.mask().property(highlight.getName()) != null) {
       throw new Error("Already tracking highlight");
     }
-    fileText = NFTools.readFile("expressions/spotlight-mask-expression.js");
-    expression = fileText.replace("TARGET_PAGE", highlight.getPageComp().getPageBaseName());
-    expression = expression.replace("COMP_NAME", highlight.getPageComp().name);
-    expression = expression.replace("HIGHLIGHT_LAYER_NAME", highlight.getName());
-    expression = expression.replace("HIGHLIGHT_CONTROL_LAYER_NAME", highlight.getControlLayer().getName());
-    expression = expression.replace("HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME", highlight.getName());
+    expression = NFTools.readExpression("spotlight-mask-expression", {
+      TARGET_PAGE: highlight.getPageComp().getPageBaseName(),
+      COMP_NAME: highlight.getPageComp().name,
+      HIGHLIGHT_LAYER_NAME: highlight.getName(),
+      HIGHLIGHT_CONTROL_LAYER_NAME: highlight.getControlLayer().getName(),
+      HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME: highlight.getName()
+    });
     newMask = this.mask().addProperty("Mask");
     newMask.name = highlight.getName();
     newMask.maskShape.expression = expression;
     newMask.maskMode = MaskMode.SUBTRACT;
     newMask.maskFeather.setValue([80, 80]);
     newMask.maskExpansion.setValue(45);
-    fileText = NFTools.readFile("expressions/spotlight-mask-opacity-expression.js");
-    expression = fileText.replace("ON_VALUE", "100");
-    expression = expression.replace("HIGHLIGHT_CONTROL_LAYER_NAME", highlight.getControlLayer().getName());
-    expression = expression.replace("ANIMATION_DURATION", "1");
+    expression = NFTools.readExpression("spotlight-mask-opacity-expression", {
+      ON_VALUE: "100",
+      HIGHLIGHT_CONTROL_LAYER_NAME: highlight.getControlLayer().getName(),
+      ANIMATION_DURATION: NFSpotlightLayer.duration,
+      PDF_NUMBER: highlight.getPDFNumber()
+    });
     newMask.maskOpacity.expression = expression;
     return this;
   };
@@ -4898,6 +4900,7 @@ NFSpotlightLayer = (function(superClass) {
 })(NFLayer);
 
 NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
+  duration: 1,
 
   /**
   Returns whether or not the given AVLayer is a valid Spotlight Layer
@@ -4926,7 +4929,7 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
   @returns {NFSpotlightLayer} the new spotlight layer
    */
   newSpotlightLayer: function(group) {
-    var controlLayers, existingSpot, expression, fileText, newMask, newSolidAVLayer, props, spotlightLayer;
+    var controlLayers, existingSpot, expression, newMask, newSolidAVLayer, props, spotlightLayer;
     if (!(group instanceof NFPaperLayerGroup)) {
       throw new Error("group must be an NFPaperLayerGroup");
     }
@@ -4955,9 +4958,10 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
     newMask.maskShape.expression = "ori = [0, 0];createPath(points = [ori, ori, ori, ori], inTangents = [], outTangents = [], is_closed = true);";
     newMask.maskMode = MaskMode.SUBTRACT;
     newMask.maskOpacity.setValue(35);
-    fileText = NFTools.readFile("expressions/spotlight-master-opacity-expression.js");
-    expression = fileText.replace("ANIMATION_DURATION", "1");
-    expression = expression.replace("PDF_NUMBER", group.getPDFNumber());
+    expression = NFTools.readExpression("spotlight-master-opacity-expression", {
+      ANIMATION_DURATION: NFSpotlightLayer.duration,
+      PDF_NUMBER: group.getPDFNumber()
+    });
     newMask.maskOpacity.expression = expression;
     return spotlightLayer;
   }

@@ -29,12 +29,12 @@ class NFSpotlightLayer extends NFLayer
     throw new Error "Already tracking highlight" if @mask().property(highlight.getName())?
 
     # Get the expression for the mask shape
-    fileText = NFTools.readFile "expressions/spotlight-mask-expression.js"
-    expression = fileText.replace "TARGET_PAGE", highlight.getPageComp().getPageBaseName()
-    expression = expression.replace "COMP_NAME", highlight.getPageComp().name
-    expression = expression.replace "HIGHLIGHT_LAYER_NAME", highlight.getName()
-    expression = expression.replace "HIGHLIGHT_CONTROL_LAYER_NAME", highlight.getControlLayer().getName()
-    expression = expression.replace "HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME", highlight.getName()
+    expression = NFTools.readExpression "spotlight-mask-expression",
+      TARGET_PAGE: highlight.getPageComp().getPageBaseName()
+      COMP_NAME: highlight.getPageComp().name
+      HIGHLIGHT_LAYER_NAME: highlight.getName()
+      HIGHLIGHT_CONTROL_LAYER_NAME: highlight.getControlLayer().getName()
+      HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME: highlight.getName()
 
     # Setup the mask
     newMask = @mask().addProperty "Mask"
@@ -45,10 +45,11 @@ class NFSpotlightLayer extends NFLayer
     newMask.maskExpansion.setValue 45
 
     # Get the expression for the opacity
-    fileText = NFTools.readFile "expressions/spotlight-mask-opacity-expression.js"
-    expression = fileText.replace "ON_VALUE", "100"
-    expression = expression.replace "HIGHLIGHT_CONTROL_LAYER_NAME", highlight.getControlLayer().getName()
-    expression = expression.replace "ANIMATION_DURATION", "1"
+    expression = NFTools.readExpression "spotlight-mask-opacity-expression",
+      ON_VALUE: "100"
+      HIGHLIGHT_CONTROL_LAYER_NAME: highlight.getControlLayer().getName()
+      ANIMATION_DURATION: NFSpotlightLayer.duration
+      PDF_NUMBER: highlight.getPDFNumber()
 
     newMask.maskOpacity.expression = expression
 
@@ -73,6 +74,8 @@ class NFSpotlightLayer extends NFLayer
 
 
 NFSpotlightLayer = Object.assign NFSpotlightLayer,
+
+  duration: 1
 
   ###*
   Returns whether or not the given AVLayer is a valid Spotlight Layer
@@ -130,9 +133,10 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
     newMask.maskOpacity.setValue 35
 
     # Get the expression for the opacity
-    fileText = NFTools.readFile "expressions/spotlight-master-opacity-expression.js"
-    expression = fileText.replace "ANIMATION_DURATION", "1"
-    expression = expression.replace "PDF_NUMBER", group.getPDFNumber()
+    expression = NFTools.readExpression "spotlight-master-opacity-expression",
+       ANIMATION_DURATION: NFSpotlightLayer.duration
+       PDF_NUMBER: group.getPDFNumber()
+
     newMask.maskOpacity.expression = expression
 
     return spotlightLayer
