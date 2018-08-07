@@ -66,6 +66,6 @@ NFTools =
 
     if replacementDict?
       for k of replacementDict
-        file_contents = fileText.replace k, replacementDict[k]
+        file_contents = file_contents.replace k, replacementDict[k]
 
     return file_contents

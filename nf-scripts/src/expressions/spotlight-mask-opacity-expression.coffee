@@ -91,14 +91,22 @@ expValue = ->
   outTime = spotMarker.time + spotMarker.duration
 
   if inTime - duration <= time < inTime and posInBlk isnt firstInBlock and posInBlk isnt onlyInBlock
+    # If we're after the animation start and before the animation completion,
+    # AND this is not the first or only highlight in this block,
+    # we should animate opacity in
     progress = inTime - time
     return onValue * (1 - progress / duration)
   else if outTime <= time < outTime + duration and posInBlk isnt lastInBlock and posInBlk isnt onlyInBlock
+    # If we're after the animation start at the end but before the animation end at the end,
+    # AND this isn't the last or only highlight in this block
+    # we should animate opacity out
     progress = time - outTime
     return onValue * (1 - progress / duration)
-  else if inTime <= time < outTime or (posInBlk is lastInBlock or posInBlk is firstInBlock)
+  else if inTime - duration <= time < outTime + duration or (posInBlk is lastInBlock or posInBlk is firstInBlock)
+    # If we're inside the ol' brackets, we're firmly ON
     return onValue
   else
+    # Otherwise, NOTHING
     return 0
 
 expValue() ? value

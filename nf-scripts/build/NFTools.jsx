@@ -77,7 +77,7 @@ NFTools = {
     file_contents = NFTools.readFile(filename);
     if (replacementDict != null) {
       for (k in replacementDict) {
-        file_contents = fileText.replace(k, replacementDict[k]);
+        file_contents = file_contents.replace(k, replacementDict[k]);
       }
     }
     return file_contents;

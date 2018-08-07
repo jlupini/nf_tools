@@ -119,7 +119,7 @@ expValue = function() {
   } else if ((outTime <= time && time < outTime + duration) && posInBlk !== lastInBlock && posInBlk !== onlyInBlock) {
     progress = time - outTime;
     return onValue * (1 - progress / duration);
-  } else if ((inTime <= time && time < outTime) || (posInBlk === lastInBlock || posInBlk === firstInBlock)) {
+  } else if ((inTime - duration <= time && time < outTime + duration) || (posInBlk === lastInBlock || posInBlk === firstInBlock)) {
     return onValue;
   } else {
     return 0;
