@@ -3,6 +3,8 @@ duration = ANIMATION_DURATION
 controlLayer = thisComp.layer("HIGHLIGHT_CONTROL_LAYER_NAME")
 targetPDF = "PDF_NUMBER"
 
+spotlightMarkers = []
+
 firstInBlock = 101
 lastInBlock = 202
 onlyInBlock = 252
@@ -18,7 +20,6 @@ outFunc = (mark) ->
 # Gets an array of the active markers at this time
 activeMarkersAtTime = ->
   babbies = []
-  spotlightMarkers = []
   activeMarkers = []
   numLayers = thisComp.numLayers
   i = 1
@@ -90,23 +91,37 @@ expValue = ->
   inTime = spotMarker.time
   outTime = spotMarker.time + spotMarker.duration
 
-  if inTime - duration <= time < inTime and posInBlk isnt firstInBlock and posInBlk isnt onlyInBlock
-    # If we're after the animation start and before the animation completion,
-    # AND this is not the first or only highlight in this block,
-    # we should animate opacity in
-    progress = inTime - time
-    return onValue * (1 - progress / duration)
-  else if outTime <= time < outTime + duration and posInBlk isnt lastInBlock and posInBlk isnt onlyInBlock
-    # If we're after the animation start at the end but before the animation end at the end,
-    # AND this isn't the last or only highlight in this block
-    # we should animate opacity out
-    progress = time - outTime
-    return onValue * (1 - progress / duration)
-  else if inTime - duration <= time < outTime + duration or (posInBlk is lastInBlock or posInBlk is firstInBlock)
-    # If we're inside the ol' brackets, we're firmly ON
-    return onValue
+  isntFirstOrOnly = posInBlk isnt firstInBlock and posInBlk isnt onlyInBlock
+  isntLastOrOnly = posInBlk isnt lastInBlock and posInBlk isnt onlyInBlock
+  timeIsWithinOpeningAnimation = inTime - duration <= time < inTime
+  timeIsWithinClosingAnimation = outTime <= time < outTime + duration
+  timeIsWithinAllAnimation = inTime - duration <= time < outTime + duration
+
+  # Figure out if something changes during the opening animation, to fix a
+  # jump bug caused by lack of lookahead/lookbehind
+  blockChangeInMarker = null
+  blockChangeOutMarker = null
+  for spMark in spotlightMarkers
+    if inTime - duration < outFunc(spMark) < inTime
+      blockChangeInMarker = spMark
+    if outTime < inFunc(spMark) < outTime + duration
+      blockChangeOutMarker = spMark
+  somethingElseEndsDuringTheOpening = blockChangeInMarker?
+  somethingElseStartsDuringTheClosing = blockChangeOutMarker?
+
+  # First of all, where are we relative to the key marker?
+  if timeIsWithinAllAnimation
+    if timeIsWithinOpeningAnimation
+      if isntFirstOrOnly or somethingElseEndsDuringTheOpening
+        progress = inTime - time
+        return onValue * (1 - progress / duration)
+    else if timeIsWithinClosingAnimation
+      if isntLastOrOnly or somethingElseStartsDuringTheClosing
+        progress = time - outTime
+        return onValue * (1 - progress / duration)
+    else
+      return onValue
   else
-    # Otherwise, NOTHING
     return 0
 
 expValue() ? value

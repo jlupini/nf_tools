@@ -1,4 +1,4 @@
-var activeMarkers, adjIn, adjOut, babbies, blockEndMarker, blockEndTime, blockStartMarker, blockStartTime, duration, i, iMarker, idx, inFunc, j, k, numLayers, outFunc, progress, ref, ref1, spotlightMarkers, targetPDF, testMarker, theLayer;
+var activeMarkers, adjIn, adjOut, babbies, blockChangeInMarker, blockChangeOutMarker, blockEndMarker, blockEndTime, blockStartMarker, blockStartTime, duration, i, iMarker, idx, inFunc, j, k, l, len, numLayers, outFunc, progress, ref, ref1, ref2, ref3, somethingElseEndsDuringTheOpening, somethingElseStartsDuringTheClosing, spMark, spotlightMarkers, targetPDF, testMarker, theLayer, timeIsWithinAllAnimation, timeIsWithinClosingAnimation, timeIsWithinOpeningAnimation;
 
 inFunc = function(mark) {
   return mark.time - duration;
@@ -64,14 +64,48 @@ if (activeMarkers.length === 0) {
   }
 }
 
-if ((blockStartTime < time && time < blockStartTime + duration)) {
-  progress = time - blockStartTime;
-  progress / duration * value;
-} else if ((blockEndTime - duration < time && time < blockEndTime)) {
-  progress = blockEndTime - time;
-  progress / duration * value;
-} else if (time < blockStartTime || time > blockEndTime) {
-  0;
+blockChangeInMarker = null;
+
+blockChangeOutMarker = null;
+
+for (l = 0, len = spotlightMarkers.length; l < len; l++) {
+  spMark = spotlightMarkers[l];
+  if ((blockStartTime < (ref2 = outFunc(spMark)) && ref2 < blockStartTime + duration)) {
+    blockChangeInMarker = spMark;
+  }
+  if ((blockEndTime - duration < (ref3 = inFunc(spMark)) && ref3 < blockEndTime)) {
+    blockChangeOutMarker = spMark;
+  }
+}
+
+somethingElseEndsDuringTheOpening = blockChangeInMarker != null;
+
+somethingElseStartsDuringTheClosing = blockChangeOutMarker != null;
+
+timeIsWithinAllAnimation = (blockStartTime <= time && time < blockEndTime);
+
+timeIsWithinOpeningAnimation = (blockStartTime < time && time < blockStartTime + duration);
+
+timeIsWithinClosingAnimation = (blockEndTime - duration < time && time < blockEndTime);
+
+if (timeIsWithinAllAnimation) {
+  if (timeIsWithinOpeningAnimation) {
+    if (somethingElseEndsDuringTheOpening) {
+      value;
+    } else {
+      progress = time - blockStartTime;
+      progress / duration * value;
+    }
+  } else if (timeIsWithinClosingAnimation) {
+    if (somethingElseStartsDuringTheClosing) {
+      value;
+    } else {
+      progress = blockEndTime - time;
+      progress / duration * value;
+    }
+  } else {
+    value;
+  }
 } else {
-  value;
+  0;
 }

@@ -48,14 +48,37 @@ else
         blockEndTime = outFunc iMarker
         blockEndMarker = iMarker
 
+# Figure out if something changes during the opening animation, to fix a
+# jump bug caused by lack of lookahead/lookbehind
+blockChangeInMarker = null
+blockChangeOutMarker = null
+for spMark in spotlightMarkers
+  if blockStartTime < outFunc(spMark) < blockStartTime + duration
+    blockChangeInMarker = spMark
+  if blockEndTime - duration < inFunc(spMark) < blockEndTime
+    blockChangeOutMarker = spMark
+somethingElseEndsDuringTheOpening = blockChangeInMarker?
+somethingElseStartsDuringTheClosing = blockChangeOutMarker?
+
+timeIsWithinAllAnimation = blockStartTime <= time < blockEndTime
+timeIsWithinOpeningAnimation = blockStartTime < time < blockStartTime + duration
+timeIsWithinClosingAnimation = blockEndTime - duration < time < blockEndTime
+
 # If we're at the start of a block
-if blockStartTime < time < blockStartTime + duration
-  progress = time - blockStartTime
-  progress / duration * value
-else if blockEndTime - duration < time < blockEndTime
-  progress = blockEndTime - time
-  progress / duration * value
-else if time < blockStartTime or time > blockEndTime
-  0
+if timeIsWithinAllAnimation
+  if timeIsWithinOpeningAnimation
+    if somethingElseEndsDuringTheOpening
+      value
+    else
+      progress = time - blockStartTime
+      progress / duration * value
+  else if timeIsWithinClosingAnimation
+    if somethingElseStartsDuringTheClosing
+      value
+    else
+      progress = blockEndTime - time
+      progress / duration * value
+  else
+    value
 else
-  value
+  0

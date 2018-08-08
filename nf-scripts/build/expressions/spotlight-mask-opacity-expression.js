@@ -1,4 +1,4 @@
-var activeMarkersAtTime, controlLayer, duration, expValue, firstInBlock, inFunc, lastInBlock, notFirstOrLastInBlock, onValue, onlyInBlock, outFunc, positionInBlock, ref, targetPDF, thisSpotlightMarker;
+var activeMarkersAtTime, controlLayer, duration, expValue, firstInBlock, inFunc, lastInBlock, notFirstOrLastInBlock, onValue, onlyInBlock, outFunc, positionInBlock, ref, spotlightMarkers, targetPDF, thisSpotlightMarker;
 
 onValue = ON_VALUE;
 
@@ -7,6 +7,8 @@ duration = ANIMATION_DURATION;
 controlLayer = thisComp.layer("HIGHLIGHT_CONTROL_LAYER_NAME");
 
 targetPDF = "PDF_NUMBER";
+
+spotlightMarkers = [];
 
 firstInBlock = 101;
 
@@ -25,9 +27,8 @@ outFunc = function(mark) {
 };
 
 activeMarkersAtTime = function() {
-  var activeMarkers, adjIn, adjOut, babbies, i, idx, j, numLayers, ref, spotlightMarkers, testMarker, theLayer;
+  var activeMarkers, adjIn, adjOut, babbies, i, idx, j, numLayers, ref, testMarker, theLayer;
   babbies = [];
-  spotlightMarkers = [];
   activeMarkers = [];
   numLayers = thisComp.numLayers;
   i = 1;
@@ -105,7 +106,7 @@ positionInBlock = function() {
 };
 
 expValue = function() {
-  var inTime, outTime, posInBlk, progress, spotMarker;
+  var blockChangeInMarker, blockChangeOutMarker, inTime, isntFirstOrOnly, isntLastOrOnly, j, len, outTime, posInBlk, progress, ref, ref1, somethingElseEndsDuringTheOpening, somethingElseStartsDuringTheClosing, spMark, spotMarker, timeIsWithinAllAnimation, timeIsWithinClosingAnimation, timeIsWithinOpeningAnimation;
   spotMarker = thisSpotlightMarker();
   if (spotMarker == null) {
     return null;
@@ -113,14 +114,38 @@ expValue = function() {
   posInBlk = positionInBlock();
   inTime = spotMarker.time;
   outTime = spotMarker.time + spotMarker.duration;
-  if ((inTime - duration <= time && time < inTime) && posInBlk !== firstInBlock && posInBlk !== onlyInBlock) {
-    progress = inTime - time;
-    return onValue * (1 - progress / duration);
-  } else if ((outTime <= time && time < outTime + duration) && posInBlk !== lastInBlock && posInBlk !== onlyInBlock) {
-    progress = time - outTime;
-    return onValue * (1 - progress / duration);
-  } else if ((inTime - duration <= time && time < outTime + duration) || (posInBlk === lastInBlock || posInBlk === firstInBlock)) {
-    return onValue;
+  isntFirstOrOnly = posInBlk !== firstInBlock && posInBlk !== onlyInBlock;
+  isntLastOrOnly = posInBlk !== lastInBlock && posInBlk !== onlyInBlock;
+  timeIsWithinOpeningAnimation = (inTime - duration <= time && time < inTime);
+  timeIsWithinClosingAnimation = (outTime <= time && time < outTime + duration);
+  timeIsWithinAllAnimation = (inTime - duration <= time && time < outTime + duration);
+  blockChangeInMarker = null;
+  blockChangeOutMarker = null;
+  for (j = 0, len = spotlightMarkers.length; j < len; j++) {
+    spMark = spotlightMarkers[j];
+    if ((inTime - duration < (ref = outFunc(spMark)) && ref < inTime)) {
+      blockChangeInMarker = spMark;
+    }
+    if ((outTime < (ref1 = inFunc(spMark)) && ref1 < outTime + duration)) {
+      blockChangeOutMarker = spMark;
+    }
+  }
+  somethingElseEndsDuringTheOpening = blockChangeInMarker != null;
+  somethingElseStartsDuringTheClosing = blockChangeOutMarker != null;
+  if (timeIsWithinAllAnimation) {
+    if (timeIsWithinOpeningAnimation) {
+      if (isntFirstOrOnly || somethingElseEndsDuringTheOpening) {
+        progress = inTime - time;
+        return onValue * (1 - progress / duration);
+      }
+    } else if (timeIsWithinClosingAnimation) {
+      if (isntLastOrOnly || somethingElseStartsDuringTheClosing) {
+        progress = time - outTime;
+        return onValue * (1 - progress / duration);
+      }
+    } else {
+      return onValue;
+    }
   } else {
     return 0;
   }
