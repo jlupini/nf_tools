@@ -11,9 +11,9 @@ onlyInBlock = 252
 notFirstOrLastInBlock = 303
 
 inFunc = (mark) ->
-  return mark.time - duration
+  return mark.time
 outFunc = (mark) ->
-  return mark.time + mark.duration + duration
+  return mark.time + mark.duration
 
 # FIXME: Pickup here and check if this is the start or end of a block, in which case NO ANIMATION
 
@@ -88,23 +88,23 @@ expValue = ->
 
   posInBlk = positionInBlock()
 
-  inTime = spotMarker.time
-  outTime = spotMarker.time + spotMarker.duration
+  inTime = inFunc spotMarker
+  outTime = outFunc spotMarker
 
   isntFirstOrOnly = posInBlk isnt firstInBlock and posInBlk isnt onlyInBlock
   isntLastOrOnly = posInBlk isnt lastInBlock and posInBlk isnt onlyInBlock
-  timeIsWithinOpeningAnimation = inTime - duration <= time < inTime
-  timeIsWithinClosingAnimation = outTime <= time < outTime + duration
-  timeIsWithinAllAnimation = inTime - duration <= time < outTime + duration
+  timeIsWithinOpeningAnimation = inTime <= time < inTime + duration
+  timeIsWithinClosingAnimation = outTime - duration <= time < outTime
+  timeIsWithinAllAnimation = inTime <= time < outTime
 
   # Figure out if something changes during the opening animation, to fix a
   # jump bug caused by lack of lookahead/lookbehind
   blockChangeInMarker = null
   blockChangeOutMarker = null
   for spMark in spotlightMarkers
-    if inTime - duration < outFunc(spMark) < inTime
+    if inTime < outFunc(spMark) < inTime + duration
       blockChangeInMarker = spMark
-    if outTime < inFunc(spMark) < outTime + duration
+    if outTime - duration < inFunc(spMark) < outTime
       blockChangeOutMarker = spMark
   somethingElseEndsDuringTheOpening = blockChangeInMarker?
   somethingElseStartsDuringTheClosing = blockChangeOutMarker?
@@ -113,11 +113,11 @@ expValue = ->
   if timeIsWithinAllAnimation
     if timeIsWithinOpeningAnimation
       if isntFirstOrOnly or somethingElseEndsDuringTheOpening
-        progress = inTime - time
+        progress = inTime + duration - time
         return onValue * (1 - progress / duration)
     else if timeIsWithinClosingAnimation
       if isntLastOrOnly or somethingElseStartsDuringTheClosing
-        progress = time - outTime
+        progress = time - outTime + duration
         return onValue * (1 - progress / duration)
     else
       return onValue

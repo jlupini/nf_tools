@@ -1,9 +1,9 @@
 # These two functions let us look at markers as being wider than they are
 # to account for the start and finish being outside the actual points
 inFunc = (mark) ->
-  return mark.time - duration
+  return mark.time
 outFunc = (mark) ->
-  return mark.time + mark.duration + duration
+  return mark.time + mark.duration
 
 # Get all the highlight control layers for this PDF.
 duration = ANIMATION_DURATION

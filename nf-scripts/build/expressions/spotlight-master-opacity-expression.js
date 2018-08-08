@@ -1,11 +1,11 @@
 var activeMarkers, adjIn, adjOut, babbies, blockChangeInMarker, blockChangeOutMarker, blockEndMarker, blockEndTime, blockStartMarker, blockStartTime, duration, i, iMarker, idx, inFunc, j, k, l, len, numLayers, outFunc, progress, ref, ref1, ref2, ref3, somethingElseEndsDuringTheOpening, somethingElseStartsDuringTheClosing, spMark, spotlightMarkers, targetPDF, testMarker, theLayer, timeIsWithinAllAnimation, timeIsWithinClosingAnimation, timeIsWithinOpeningAnimation;
 
 inFunc = function(mark) {
-  return mark.time - duration;
+  return mark.time;
 };
 
 outFunc = function(mark) {
-  return mark.time + mark.duration + duration;
+  return mark.time + mark.duration;
 };
 
 duration = ANIMATION_DURATION;

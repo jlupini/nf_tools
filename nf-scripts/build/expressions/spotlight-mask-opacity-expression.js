@@ -19,11 +19,11 @@ onlyInBlock = 252;
 notFirstOrLastInBlock = 303;
 
 inFunc = function(mark) {
-  return mark.time - duration;
+  return mark.time;
 };
 
 outFunc = function(mark) {
-  return mark.time + mark.duration + duration;
+  return mark.time + mark.duration;
 };
 
 activeMarkersAtTime = function() {
@@ -112,21 +112,21 @@ expValue = function() {
     return null;
   }
   posInBlk = positionInBlock();
-  inTime = spotMarker.time;
-  outTime = spotMarker.time + spotMarker.duration;
+  inTime = inFunc(spotMarker);
+  outTime = outFunc(spotMarker);
   isntFirstOrOnly = posInBlk !== firstInBlock && posInBlk !== onlyInBlock;
   isntLastOrOnly = posInBlk !== lastInBlock && posInBlk !== onlyInBlock;
-  timeIsWithinOpeningAnimation = (inTime - duration <= time && time < inTime);
-  timeIsWithinClosingAnimation = (outTime <= time && time < outTime + duration);
-  timeIsWithinAllAnimation = (inTime - duration <= time && time < outTime + duration);
+  timeIsWithinOpeningAnimation = (inTime <= time && time < inTime + duration);
+  timeIsWithinClosingAnimation = (outTime - duration <= time && time < outTime);
+  timeIsWithinAllAnimation = (inTime <= time && time < outTime);
   blockChangeInMarker = null;
   blockChangeOutMarker = null;
   for (j = 0, len = spotlightMarkers.length; j < len; j++) {
     spMark = spotlightMarkers[j];
-    if ((inTime - duration < (ref = outFunc(spMark)) && ref < inTime)) {
+    if ((inTime < (ref = outFunc(spMark)) && ref < inTime + duration)) {
       blockChangeInMarker = spMark;
     }
-    if ((outTime < (ref1 = inFunc(spMark)) && ref1 < outTime + duration)) {
+    if ((outTime - duration < (ref1 = inFunc(spMark)) && ref1 < outTime)) {
       blockChangeOutMarker = spMark;
     }
   }
@@ -135,12 +135,12 @@ expValue = function() {
   if (timeIsWithinAllAnimation) {
     if (timeIsWithinOpeningAnimation) {
       if (isntFirstOrOnly || somethingElseEndsDuringTheOpening) {
-        progress = inTime - time;
+        progress = inTime + duration - time;
         return onValue * (1 - progress / duration);
       }
     } else if (timeIsWithinClosingAnimation) {
       if (isntLastOrOnly || somethingElseStartsDuringTheClosing) {
-        progress = time - outTime;
+        progress = time - outTime + duration;
         return onValue * (1 - progress / duration);
       }
     } else {

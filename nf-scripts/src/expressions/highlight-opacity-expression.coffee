@@ -19,9 +19,9 @@ while i <= numLayers
   theLayer = targetComp.layer(i)
   if theLayer.name.indexOf(targetPage) >= 0
     activeBabbies.push theLayer
-    if theLayer.inPoint < controlIn and controlIn < theLayer.outPoint
+    if theLayer.inPoint < controlIn < theLayer.outPoint
       activeAtControlIn = theLayer
-    if theLayer.inPoint < controlOut and controlOut < theLayer.outPoint
+    if theLayer.inPoint < controlOut < theLayer.outPoint
       activeAtControlOut = theLayer
   i++
 
@@ -44,18 +44,19 @@ unless activeAtControlOut?
 # Let's translate those to relative control ins and outs
 relControlIn = controlIn - (activeAtControlIn.startTime)
 relControlOut = controlOut - (activeAtControlOut.startTime)
-relAnimStart = relControlIn - duration
-relAnimEnd = relControlOut + duration
-if time <= relAnimStart
+relInAnimPeak = relControlIn + duration
+relOutAnimPeak = relControlOut - duration
+
+if time <= relControlIn
   0
-else if relAnimStart < time and time < relControlIn
-  progress = time - relAnimStart
+else if relControlIn < time < relInAnimPeak
+  progress = time - relControlIn
   progress / duration * targetValue
 else
-  if endless or time <= relControlOut
+  if endless or time <= relOutAnimPeak
     targetValue
-  else if relControlOut < time and time < relAnimEnd
-    progress = time - relControlOut
+  else if relOutAnimPeak < time < relControlOut
+    progress = time - relOutAnimPeak
     (1 - (progress / duration)) * targetValue
   else
     0

@@ -1,4 +1,4 @@
-var activeAtControlIn, activeAtControlOut, activeBabbies, controlIn, controlLayer, controlOut, duration, endless, highlightName, i, numLayers, progress, relAnimEnd, relAnimStart, relControlIn, relControlOut, targetComp, targetPage, targetValue, theLayer;
+var activeAtControlIn, activeAtControlOut, activeBabbies, controlIn, controlLayer, controlOut, duration, endless, highlightName, i, numLayers, progress, relControlIn, relControlOut, relInAnimPeak, relOutAnimPeak, targetComp, targetPage, targetValue, theLayer;
 
 targetComp = comp('TARGET_COMP_NAME');
 
@@ -28,10 +28,10 @@ while (i <= numLayers) {
   theLayer = targetComp.layer(i);
   if (theLayer.name.indexOf(targetPage) >= 0) {
     activeBabbies.push(theLayer);
-    if (theLayer.inPoint < controlIn && controlIn < theLayer.outPoint) {
+    if ((theLayer.inPoint < controlIn && controlIn < theLayer.outPoint)) {
       activeAtControlIn = theLayer;
     }
-    if (theLayer.inPoint < controlOut && controlOut < theLayer.outPoint) {
+    if ((theLayer.inPoint < controlOut && controlOut < theLayer.outPoint)) {
       activeAtControlOut = theLayer;
     }
   }
@@ -64,20 +64,20 @@ relControlIn = controlIn - activeAtControlIn.startTime;
 
 relControlOut = controlOut - activeAtControlOut.startTime;
 
-relAnimStart = relControlIn - duration;
+relInAnimPeak = relControlIn + duration;
 
-relAnimEnd = relControlOut + duration;
+relOutAnimPeak = relControlOut - duration;
 
-if (time <= relAnimStart) {
+if (time <= relControlIn) {
   0;
-} else if (relAnimStart < time && time < relControlIn) {
-  progress = time - relAnimStart;
+} else if ((relControlIn < time && time < relInAnimPeak)) {
+  progress = time - relControlIn;
   progress / duration * targetValue;
 } else {
-  if (endless || time <= relControlOut) {
+  if (endless || time <= relOutAnimPeak) {
     targetValue;
-  } else if (relControlOut < time && time < relAnimEnd) {
-    progress = time - relControlOut;
+  } else if ((relOutAnimPeak < time && time < relControlOut)) {
+    progress = time - relOutAnimPeak;
     (1 - (progress / duration)) * targetValue;
   } else {
     0;
