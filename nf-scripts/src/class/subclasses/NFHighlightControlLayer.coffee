@@ -65,31 +65,29 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
   for the given highlight
   @memberof NFHighlightControlLayer
   @param {Object} model - the model
-  @param {NFPageLayer} model.page - the page layer
+  @param {NFPaperLayerGroup} model.group - the layer group
   @param {NFHighlightLayer} model.highlight - the highlight
   @param {float} model.time - the start time for the control
   @returns {NFHighlightControlLayer} the new control layer
   ###
   newHighlightControlLayer: (model) ->
-    throw new Error "Missing parameters" unless model?.page? and model.highlight?
-
-    group = new NFPaperLayerGroup model.page.getPaperParentLayer()
+    throw new Error "Missing parameters" unless model?.group? and model.highlight?
 
     # Create the control layer
-    partComp = model.page.containingComp()
+    partComp = model.group.containingComp()
     controlLayer = partComp.addNull()
-    controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight model.page.getPDFNumber(), model.highlight
+    controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight model.group.getPDFNumber(), model.highlight
     controlLayer = new NFHighlightControlLayer controlLayer
 
-    existingControlLayers = group.getControlLayers()
+    existingControlLayers = model.group.getControlLayers()
     if existingControlLayers.isEmpty()
-      controlLayer.moveAfter group.paperParent
+      controlLayer.moveAfter model.group.paperParent
     else
       controlLayer.moveBefore existingControlLayers.getTopmostLayer()
 
     controlLayer.layer.startTime = model.time ? partComp.getTime()
     controlLayer.layer.endTime = controlLayer.layer.startTime + 5
-    controlLayer.setParent model.page.getPaperParentLayer()
+    controlLayer.setParent model.group.paperParent
 
     effects = controlLayer.effects()
 

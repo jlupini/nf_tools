@@ -384,8 +384,6 @@ class NFLayer
   number of dimensions for this property
   ###
   addInOutMarkersForProperty: (options) ->
-    # FIXME: Pickup here and find a way to let this method add a new marker for
-    # say the out position to an existing in position one...
     throw new Error "Invalid property" unless options.property? and options.property instanceof Property
     throw new Error "Can't set expression on this property" unless options.property.canSetExpression
     unless options.startValue? or options.endValue?

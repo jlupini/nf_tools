@@ -97,59 +97,10 @@ class NFPageLayer extends NFLayer
   so you should have disconnected them first
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
+  @deprecated replaced by NFPaperLayerGroup#bubbleUp
   ###
   bubbleUp: (highlightsToBubble) ->
-    # If given a single highlight, wrap it.
-    # FIXME: This should probably belong to NFPaperLayerGroup now
-    if highlightsToBubble instanceof NFHighlightLayer
-      highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble])
-
-    unless highlightsToBubble.isEmpty()
-      highlightsToBubble.forEach (highlight) =>
-
-        unless highlight.canBubbleUp()
-          throw new Error "Cannot bubble highlight if already connected and not broken. Disconnect first"
-
-        # Make sure the highlight is in this page
-        unless @getPageComp().is highlight.getPageComp()
-          throw new Error "Cannot bubble highlight because it is not in this page!"
-
-        targetPageLayerEffects = @effects()
-        sourceEffect = highlight.highlighterEffect()
-
-        targetComp = @containingComp()
-
-        controlLayer = NFHighlightControlLayer.newHighlightControlLayer
-          page: @
-          highlight: highlight
-
-        highlighterEffect = controlLayer.highlighterEffect()
-
-        # Iterate through the properties and connect each one
-        for highlighterProperty in NFHighlightLayer.highlighterProperties
-          sourceValue = sourceEffect.property(highlighterProperty).value
-          highlighterEffect.property(highlighterProperty).setValue(sourceValue)
-
-          if highlighterProperty is "Opacity"
-            sourceExpression = NFTools.readExpression "highlight-opacity-expression",
-              TARGET_COMP_NAME: targetComp.comp.name
-              CONTROL_LAYER_NAME: controlLayer.layer.name
-              PAGE_BASE_NAME: @getPageBaseName()
-              HIGHLIGHT_NAME: highlight.getName()
-
-          else
-            sourceExpression = NFTools.readExpression "highlight-property-expression",
-              TARGET_COMP_NAME: targetComp.comp.name
-              CONTROL_LAYER_NAME: controlLayer.layer.name
-              HIGHLIGHT_NAME: highlight.getName()
-              HIGHLIGHTER_PROPERTY: highlighterProperty
-
-          sourceEffect.property(highlighterProperty).expression = sourceExpression
-
-        group = @getPaperLayerGroup()
-        spotlightLayer = group.getSpotlight() ? group.addSpotlight(highlight)
-
-        spotlightLayer.trackHighlight highlight
+    @getPaperLayerGroup().bubbleUp highlightsToBubble
     @
 
   ###*

@@ -2004,6 +2004,75 @@ NFPaperLayerGroup = (function() {
 
 
   /**
+  Bubbles up given highlights or highlight to this comp by creating an
+  NFHighlightControlLayer.
+  @memberof NFPaperLayerGroup
+  @returns {NFPaperLayerGroup} self
+  @param {NFHighlightLayer | NFHighlightLayerCollection} highlightsToBubble - the highlights to bubble up
+  @param {float} [time] - the time to create the control layer at
+  @throws Throw error if any highlight choices are connected and not broken,
+  so you should have disconnected them first
+  @throws Throw error if the given highlight is not in this page
+  @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
+   */
+
+  NFPaperLayerGroup.prototype.bubbleUp = function(highlightsToBubble, time) {
+    if (highlightsToBubble instanceof NFHighlightLayer) {
+      highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble]);
+    }
+    if (!highlightsToBubble.isEmpty()) {
+      highlightsToBubble.forEach((function(_this) {
+        return function(highlight) {
+          var controlLayer, highlightIsInGroup, highlighterEffect, highlighterProperty, i, len, propExpressionName, ref, ref1, sourceEffect, sourceExpression, sourceValue, spotlightLayer, targetComp;
+          if (!highlight.canBubbleUp()) {
+            throw new Error("Cannot bubble highlight if already connected and not broken. Disconnect first");
+          }
+          highlightIsInGroup = false;
+          _this.getPages().forEach(function(pageInGroup) {
+            if (pageInGroup.getPageComp().is(highlight.getPageComp())) {
+              return highlightIsInGroup = true;
+            }
+          });
+          if (!highlightIsInGroup) {
+            throw new Error("Cannot bubble highlight because it is not in this group!");
+          }
+          sourceEffect = highlight.highlighterEffect();
+          targetComp = _this.containingComp();
+          controlLayer = NFHighlightControlLayer.newHighlightControlLayer({
+            group: _this,
+            highlight: highlight,
+            time: time != null ? time : null
+          });
+          highlighterEffect = controlLayer.highlighterEffect();
+          ref = NFHighlightLayer.highlighterProperties;
+          for (i = 0, len = ref.length; i < len; i++) {
+            highlighterProperty = ref[i];
+            sourceValue = sourceEffect.property(highlighterProperty).value;
+            highlighterEffect.property(highlighterProperty).setValue(sourceValue);
+            if (highlighterProperty === "Opacity") {
+              propExpressionName = "highlight-opacity-expression";
+            } else {
+              propExpressionName = "highlight-property-expression";
+            }
+            sourceExpression = NFTools.readExpression(propExpressionName, {
+              TARGET_COMP_NAME: targetComp.comp.name,
+              CONTROL_LAYER_NAME: controlLayer.layer.name,
+              PAGE_BASE_NAME: highlight.getPageComp().getPageBaseName(),
+              HIGHLIGHT_NAME: highlight.getName(),
+              HIGHLIGHTER_PROPERTY: highlighterProperty
+            });
+            sourceEffect.property(highlighterProperty).expression = sourceExpression;
+          }
+          spotlightLayer = (ref1 = _this.getSpotlight()) != null ? ref1 : _this.addSpotlight(highlight);
+          return spotlightLayer.trackHighlight(highlight);
+        };
+      })(this));
+    }
+    return this;
+  };
+
+
+  /**
   Animates the parent layer starting at the given time such that a given
   highlight is visible and centered in frame, via the page parent layer.
   Always adds keyframes. Will NOT add page layers and will throw an
@@ -2316,30 +2385,29 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
   for the given highlight
   @memberof NFHighlightControlLayer
   @param {Object} model - the model
-  @param {NFPageLayer} model.page - the page layer
+  @param {NFPaperLayerGroup} model.group - the layer group
   @param {NFHighlightLayer} model.highlight - the highlight
   @param {float} model.time - the start time for the control
   @returns {NFHighlightControlLayer} the new control layer
    */
   newHighlightControlLayer: function(model) {
-    var controlEffect, controlLayer, effects, existingControlLayers, group, highlighterEffect, partComp, ref;
-    if (!(((model != null ? model.page : void 0) != null) && (model.highlight != null))) {
+    var controlEffect, controlLayer, effects, existingControlLayers, highlighterEffect, partComp, ref;
+    if (!(((model != null ? model.group : void 0) != null) && (model.highlight != null))) {
       throw new Error("Missing parameters");
     }
-    group = new NFPaperLayerGroup(model.page.getPaperParentLayer());
-    partComp = model.page.containingComp();
+    partComp = model.group.containingComp();
     controlLayer = partComp.addNull();
-    controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight(model.page.getPDFNumber(), model.highlight);
+    controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight(model.group.getPDFNumber(), model.highlight);
     controlLayer = new NFHighlightControlLayer(controlLayer);
-    existingControlLayers = group.getControlLayers();
+    existingControlLayers = model.group.getControlLayers();
     if (existingControlLayers.isEmpty()) {
-      controlLayer.moveAfter(group.paperParent);
+      controlLayer.moveAfter(model.group.paperParent);
     } else {
       controlLayer.moveBefore(existingControlLayers.getTopmostLayer());
     }
     controlLayer.layer.startTime = (ref = model.time) != null ? ref : partComp.getTime();
     controlLayer.layer.endTime = controlLayer.layer.startTime + 5;
-    controlLayer.setParent(model.page.getPaperParentLayer());
+    controlLayer.setParent(model.group.paperParent);
     effects = controlLayer.effects();
     highlighterEffect = effects.addProperty("AV_Highlighter");
     highlighterEffect.name = model.highlight.layer.name;
@@ -3116,58 +3184,11 @@ NFPageLayer = (function(superClass) {
   so you should have disconnected them first
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
+  @deprecated replaced by NFPaperLayerGroup#bubbleUp
    */
 
   NFPageLayer.prototype.bubbleUp = function(highlightsToBubble) {
-    if (highlightsToBubble instanceof NFHighlightLayer) {
-      highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble]);
-    }
-    if (!highlightsToBubble.isEmpty()) {
-      highlightsToBubble.forEach((function(_this) {
-        return function(highlight) {
-          var controlLayer, group, highlighterEffect, highlighterProperty, i, len, ref, ref1, sourceEffect, sourceExpression, sourceValue, spotlightLayer, targetComp, targetPageLayerEffects;
-          if (!highlight.canBubbleUp()) {
-            throw new Error("Cannot bubble highlight if already connected and not broken. Disconnect first");
-          }
-          if (!_this.getPageComp().is(highlight.getPageComp())) {
-            throw new Error("Cannot bubble highlight because it is not in this page!");
-          }
-          targetPageLayerEffects = _this.effects();
-          sourceEffect = highlight.highlighterEffect();
-          targetComp = _this.containingComp();
-          controlLayer = NFHighlightControlLayer.newHighlightControlLayer({
-            page: _this,
-            highlight: highlight
-          });
-          highlighterEffect = controlLayer.highlighterEffect();
-          ref = NFHighlightLayer.highlighterProperties;
-          for (i = 0, len = ref.length; i < len; i++) {
-            highlighterProperty = ref[i];
-            sourceValue = sourceEffect.property(highlighterProperty).value;
-            highlighterEffect.property(highlighterProperty).setValue(sourceValue);
-            if (highlighterProperty === "Opacity") {
-              sourceExpression = NFTools.readExpression("highlight-opacity-expression", {
-                TARGET_COMP_NAME: targetComp.comp.name,
-                CONTROL_LAYER_NAME: controlLayer.layer.name,
-                PAGE_BASE_NAME: _this.getPageBaseName(),
-                HIGHLIGHT_NAME: highlight.getName()
-              });
-            } else {
-              sourceExpression = NFTools.readExpression("highlight-property-expression", {
-                TARGET_COMP_NAME: targetComp.comp.name,
-                CONTROL_LAYER_NAME: controlLayer.layer.name,
-                HIGHLIGHT_NAME: highlight.getName(),
-                HIGHLIGHTER_PROPERTY: highlighterProperty
-              });
-            }
-            sourceEffect.property(highlighterProperty).expression = sourceExpression;
-          }
-          group = _this.getPaperLayerGroup();
-          spotlightLayer = (ref1 = group.getSpotlight()) != null ? ref1 : group.addSpotlight(highlight);
-          return spotlightLayer.trackHighlight(highlight);
-        };
-      })(this));
-    }
+    this.getPaperLayerGroup().bubbleUp(highlightsToBubble);
     return this;
   };
 
@@ -4065,16 +4086,11 @@ NFPageLayerCollection = (function(superClass) {
   @memberof NFPageLayerCollection
   @returns {NFPageLayerCollection} self
   @param {NFHighlightLayerCollection} highlightCollection - the highlights to bubble up
+  @deprecated replaced by NFPaperLayerGroup#bubbleUp
    */
 
   NFPageLayerCollection.prototype.bubbleUpHighlights = function(highlightCollection) {
-    var j, layer, len, pageHighlights, ref;
-    ref = this.layers;
-    for (j = 0, len = ref.length; j < len; j++) {
-      layer = ref[j];
-      pageHighlights = highlightCollection.getHighlightsInPage(layer.getPageComp());
-      layer.bubbleUp(pageHighlights);
-    }
+    this.getPaperLayerGroup().bubbleUp(highlightCollection);
     return this;
   };
 
@@ -4410,11 +4426,11 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, posProp, preAnimationTime, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     model = {
       highlight: model.highlight,
       page: model.page,
-      duration: (ref = model.animationDuration) != null ? ref : 3,
+      animationDuration: (ref = model.animationDuration) != null ? ref : 3,
       pageTurnDuration: (ref1 = model.pageTurnDuration) != null ? ref1 : 2,
       maxPageScale: (ref2 = model.maxPageScale) != null ? ref2 : 115,
       skipTitle: (ref3 = model.skipTitle) != null ? ref3 : false,
@@ -4453,8 +4469,8 @@ NFPartComp = (function(superClass) {
         }
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
         if ((model.highlight != null) && targetPage.is(titlePage)) {
-          titlePageLayer.bubbleUp(model.highlight);
           this.setTime(titlePageLayer.getInMarkerTime());
+          group.bubbleUp(model.highlight, this.getTime() - 0.5);
           group.moveToHighlight({
             highlight: model.highlight,
             duration: model.animationDuration,
@@ -4471,10 +4487,8 @@ NFPartComp = (function(superClass) {
               fillPercentage: model.fillPercentage * 0.7
             }
           });
-          if (model.highlight != null) {
-            if (!model.highlight.isBubbled()) {
-              targetPageLayer.bubbleUp(model.highlight);
-            }
+          if ((model.highlight != null) && !model.highlight.isBubbled()) {
+            group.bubbleUp(model.highlight, titlePageLayer.getInMarkerTime() + 0.5);
           }
           titlePageLayer.animatePageTurn();
           if (model.highlight != null) {
@@ -4495,10 +4509,8 @@ NFPartComp = (function(superClass) {
             fillPercentage: model.fillPercentage
           }
         });
-        if (model.highlight != null) {
-          if (!model.highlight.isBubbled()) {
-            targetPageLayer.bubbleUp(model.highlight);
-          }
+        if ((model.highlight != null) && !model.highlight.isBubbled()) {
+          group.bubbleUp(model.highlight, this.getTime() + 0.25);
         }
         if (activePageLayer != null) {
           activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
@@ -4528,10 +4540,8 @@ NFPartComp = (function(superClass) {
               maxScale: model.maxPageScale
             });
           }
-          if (model.highlight != null) {
-            if (!model.highlight.isBubbled()) {
-              activePageLayer.bubbleUp(model.highlight);
-            }
+          if ((model.highlight != null) && !model.highlight.isBubbled()) {
+            group.bubbleUp(model.highlight, this.getTime() + (model.animationDuration / 2));
           }
         } else {
           layersForPage = this.layersForPage(targetPage);
@@ -4549,15 +4559,14 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage * 2
               }
             });
-            if (model.highlight != null) {
-              if (!model.highlight.isBubbled()) {
-                targetPageLayer.bubbleUp(model.highlight);
-              }
-            }
+            pageTurnDuration = 2.0;
             targetPageLayer.animatePageTurn({
               time: this.getTime() - 0.5,
-              duration: 2.0
+              duration: pageTurnDuration
             });
+            if ((model.highlight != null) && !model.highlight.isBubbled()) {
+              group.bubbleUp(model.highlight, this.getTime() + 0.5);
+            }
             if (model.highlight != null) {
               group.moveToHighlight({
                 highlight: model.highlight,
@@ -4577,10 +4586,8 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage * 0.7
               }
             });
-            if (model.highlight != null) {
-              if (!model.highlight.isBubbled()) {
-                targetPageLayer.bubbleUp(model.highlight);
-              }
+            if ((model.highlight != null) && !model.highlight.isBubbled()) {
+              group.bubbleUp(model.highlight, this.getTime() + 0.5);
             }
             activePageLayer.animatePageTurn({
               time: this.getTime() - 0.5,
@@ -4607,12 +4614,10 @@ NFPartComp = (function(superClass) {
             fillPercentage: model.fillPercentage
           }
         });
-        if (model.highlight != null) {
-          if (!model.highlight.isBubbled()) {
-            targetPageLayer.bubbleUp(model.highlight);
-          }
-        }
         targetGroup = this.groupFromPDF(targetPDF);
+        if ((model.highlight != null) && !model.highlight.isBubbled()) {
+          targetGroup.bubbleUp(model.highlight, this.getTime() + 0.25);
+        }
         if (alreadyInThisPart) {
           targetGroup.gatherLayers(new NFLayerCollection([targetPageLayer]));
           if (targetPageLayer.index() < activePageLayer.index()) {

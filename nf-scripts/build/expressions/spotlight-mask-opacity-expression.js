@@ -43,7 +43,7 @@ activeMarkersAtTime = function() {
             spotlightMarkers.push(testMarker);
             adjIn = inFunc(testMarker);
             adjOut = outFunc(testMarker);
-            if ((adjIn < time && time < adjOut)) {
+            if ((adjIn <= time && time < adjOut)) {
               activeMarkers.push(testMarker);
             }
           }
@@ -82,7 +82,7 @@ positionInBlock = function() {
     if (activeMarkers.length > 1) {
       for (idx = j = 0, ref = activeMarkers.length - 1; 0 <= ref ? j <= ref : j >= ref; idx = 0 <= ref ? ++j : --j) {
         iMarker = activeMarkers[idx];
-        if (inFunc(iMarker) < blockStartTime) {
+        if (inFunc(iMarker) <= blockStartTime) {
           blockStartTime = inFunc(iMarker);
           blockStartMarker = iMarker;
         }

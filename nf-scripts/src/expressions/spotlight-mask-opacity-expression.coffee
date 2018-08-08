@@ -15,8 +15,6 @@ inFunc = (mark) ->
 outFunc = (mark) ->
   return mark.time + mark.duration
 
-# FIXME: Pickup here and check if this is the start or end of a block, in which case NO ANIMATION
-
 # Gets an array of the active markers at this time
 activeMarkersAtTime = ->
   babbies = []
@@ -36,7 +34,7 @@ activeMarkersAtTime = ->
 
             adjIn = inFunc testMarker
             adjOut = outFunc testMarker
-            activeMarkers.push testMarker if adjIn < time < adjOut
+            activeMarkers.push testMarker if adjIn <= time < adjOut
 
     i++
   return activeMarkers
@@ -64,7 +62,7 @@ positionInBlock = ->
     if activeMarkers.length > 1
       for idx in [0..activeMarkers.length-1]
         iMarker = activeMarkers[idx]
-        if inFunc(iMarker) < blockStartTime
+        if inFunc(iMarker) <= blockStartTime
           blockStartTime = inFunc iMarker
           blockStartMarker = iMarker
         if outFunc(iMarker) > blockEndTime
