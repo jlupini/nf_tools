@@ -30,14 +30,6 @@ class NFLayer extends NFObject
     return @layer.name
 
   ###*
-  Checks if this layer is a valid page Layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid page layer
-  ###
-  isPageLayer: ->
-    return NFPageLayer.isPageLayer(@layer)
-
-  ###*
   Checks if this layer is an AVLayer and ALWAYS RETURNS FALSE
   @memberof NFLayer
   @returns {boolean} if this is a valid AVLayer... so no.
@@ -74,37 +66,18 @@ class NFLayer extends NFObject
     @containingComp().setTime currentTime
     return isActive
 
-  ###*
-  Checks if this layer is a valid highlight layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid highlight layer
-  ###
   isHighlightLayer: ->
     return NFHighlightLayer.isHighlightLayer(@layer)
-
-  ###*
-  Checks if this layer is a valid paper parent layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid paper parent layer
-  ###
   isPaperParentLayer: ->
     return NFPaperParentLayer.isPaperParentLayer(@layer)
-
-  ###*
-  Checks if this layer is a valid highlight control layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid highlight control layer
-  ###
   isHighlightControlLayer: ->
     return NFHighlightControlLayer.isHighlightControlLayer(@layer)
-
-  ###*
-  Checks if this layer is a valid spotlight layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid spotlight layer
-  ###
   isSpotlightLayer: ->
     return NFSpotlightLayer.isSpotlightLayer(@layer)
+  isCitationLayer: ->
+    return NFCitationLayer.isCitationLayer(@layer)
+  isPageLayer: ->
+    return NFPageLayer.isPageLayer(@layer)
 
   ###*
   Returns a new layer of a specialized type for the contents of this layer
@@ -123,6 +96,8 @@ class NFLayer extends NFObject
       return new NFHighlightControlLayer @layer
     else if @isSpotlightLayer()
       return new NFSpotlightLayer @layer
+    else if @isCitationLayer()
+      return new NFCitationLayer @layer
     else
       return @
 

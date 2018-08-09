@@ -77,8 +77,7 @@ class NFPartComp extends NFComp
           page: titlePage
           animate: yes
 
-        activePageLayer?.layer.outPoint = titlePageLayer.getInMarkerTime()
-        prevGroup.trimActiveSpotlights titlePageLayer.getInMarkerTime() - 0.75
+        prevGroup.trim titlePageLayer.getInMarkerTime()
 
         group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
 
@@ -129,8 +128,7 @@ class NFPartComp extends NFComp
             fillPercentage: model.fillPercentage
 
         # Trim the old layer to the end of the page turn
-        activePageLayer?.layer.outPoint = targetPageLayer.getInMarkerTime()
-        prevGroup.trimActiveSpotlights targetPageLayer.getInMarkerTime() - 0.75
+        prevGroup.trim targetPageLayer.getInMarkerTime()
 
         if model.highlight? and not model.highlight.isBubbled()
           group.bubbleUp model.highlight, @getTime() + 0.25
@@ -208,9 +206,7 @@ class NFPartComp extends NFComp
                   fillPercentage: model.fillPercentage
 
               # Trim the old layer to the end of the page turn
-              activePageLayer.layer.outPoint = @getTime() - 0.5 + 2.0
-              # Trim the old spotlights
-              group.trimActiveSpotlights @getTime() + 0.5
+              group.trim @getTime() - 0.5 + 2.0
 
               if model.highlight? and not model.highlight.isBubbled()
                 group.bubbleUp model.highlight, @getTime() + 0.5
@@ -271,18 +267,17 @@ class NFPartComp extends NFComp
           # Otherwise, slide the active layer out
           if targetPageLayer.index() < activePageLayer.index()
             targetPageLayer.slideIn()
-            activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime()
+            prevGroup.trim targetPageLayer.getInMarkerTime()
           else
-            activePageLayer.layer.outPoint = targetPageLayer.layer.inPoint + 2.0
+            prevGroup.trim targetPageLayer.layer.inPoint + 2.0
             activePageLayer.slideOut()
         else
           targetPageLayer.slideIn()
-          activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime()
-
-        prevGroup.trimActiveSpotlights targetPageLayer.getInMarkerTime() - 1.0
+          prevGroup.trim targetPageLayer.getInMarkerTime()
 
         if model.highlight? and not model.highlight.isBubbled()
           targetGroup.bubbleUp model.highlight, @getTime() + 0.25
+
 
     @setTime preAnimationTime
     return model.page or model.highlight
@@ -325,7 +320,9 @@ class NFPartComp extends NFComp
 
     unless model.init is no
       pageLayer.initTransforms().init()
-      pageLayer.assignPaperParentLayer()
+      group = new NFPaperLayerGroup pageLayer.assignPaperParentLayer()
+      group.assignCitationLayer()
+
 
     if model.frameUp? and model.frameUp.highlight?
       pageLayer.frameUpHighlight model.frameUp

@@ -582,7 +582,7 @@ class NFPageLayer extends NFLayer
   ###
   frameUpHighlight: (model) ->
     throw new Error "Invalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
-    @log "Framing up highlight: #{model.highlight}"
+    @log "Framing up highlight: #{model.highlight.toString()}"
 
     positionProp = @transform().position
     scaleProp = @transform().scale

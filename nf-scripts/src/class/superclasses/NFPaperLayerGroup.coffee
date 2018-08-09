@@ -90,6 +90,32 @@ class NFPaperLayerGroup extends NFObject
     return @containingComp().layerWithName NFSpotlightLayer.nameForPDFNumber(@getPDFNumber())
 
   ###*
+  Returns the NFPDF for the group
+  @memberof NFPaperLayerGroup
+  @returns {NFPDF} the PDF for the group
+  ###
+  getPDF: ->
+    return NFPDF.fromGroup @
+
+  ###*
+  Looks for and returns the citation layer for this group if it exists. Does not
+  create one. For that use #assignCitationLayer
+  @memberof NFPaperLayerGroup
+  @returns {NFCitationLayer | null} the citation layer or null
+  ###
+  getCitationLayer: ->
+    return @containingComp().layerWithName NFCitationLayer.nameFor(@getPDF())
+
+  ###*
+  Gives this group a citation layer unless one already exists
+  @memberof NFPaperLayerGroup
+  @returns {NFCitationLayer} the citation layer
+  ###
+  assignCitationLayer: ->
+    citeLayer = @getCitationLayer()? || NFCitationLayer.newCitationLayer(@)
+    return citeLayer
+
+  ###*
   Adds a spotlight for the given highlight.
   @memberof NFPaperLayerGroup
   @param {NFHighlightLayer} highlight - the highlight to spotlight
@@ -143,14 +169,14 @@ class NFPaperLayerGroup extends NFObject
     @
 
   ###*
-  Trims all layers in this group to the given time. Call #extendGroup to restore
+  Trims all layers in this group to the given time. Call #extend to restore
   layers to a given time. Spotlights will end just before the group does
   @memberof NFPaperLayerGroup
   @param {float} [time=currTime] - the time to check at, or the current time by
   default
   @returns {NFPaperLayerGroup} self
   ###
-  trimGroup: (time) ->
+  trim: (time) ->
     @log "Trimming group at time: #{time}"
     time = time ? @containingComp().getTime()
 
@@ -318,7 +344,7 @@ class NFPaperLayerGroup extends NFObject
   @returns {NFPaperLayerGroup} self
   ###
   gatherLayers: (layersToGather, shouldParent = yes) ->
-    @log "Gathering layers: #{layersToGather}"
+    @log "Gathering layers: #{layersToGather.toString()}"
     childLayers = @getChildren()
 
     layersAboveGroup = new NFLayerCollection()

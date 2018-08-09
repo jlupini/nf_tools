@@ -134,6 +134,17 @@ NFPDF = Object.assign NFPDF,
     return NFPDF.fromPDFNumber pageLayer.getPDFNumber()
 
   ###*
+  Gets a new PDF object from a given layer group
+  @memberof NFPDF
+  @param {group} NFPaperLayerGroup - the group
+  @returns {NFPDF} the new NFPDF
+  @throws throws error if not given an NFPaperLayerGroup
+  ###
+  fromGroup: (group) ->
+    throw new Error "Can't make an NFPDF using fromGroup() without a NFPaperLayerGroup..." unless group instanceof NFPaperLayerGroup
+    return NFPDF.fromPDFNumber group.getPDFNumber()
+
+  ###*
   Gets a new PDF object from a given PDF Number string
   @memberof NFPDF
   @param {string} theNumber - the PDF Number

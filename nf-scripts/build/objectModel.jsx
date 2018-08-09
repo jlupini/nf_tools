@@ -440,17 +440,6 @@ NFLayer = (function(superClass) {
 
 
   /**
-  Checks if this layer is a valid page Layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid page layer
-   */
-
-  NFLayer.prototype.isPageLayer = function() {
-    return NFPageLayer.isPageLayer(this.layer);
-  };
-
-
-  /**
   Checks if this layer is an AVLayer and ALWAYS RETURNS FALSE
   @memberof NFLayer
   @returns {boolean} if this is a valid AVLayer... so no.
@@ -499,48 +488,28 @@ NFLayer = (function(superClass) {
     return isActive;
   };
 
-
-  /**
-  Checks if this layer is a valid highlight layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid highlight layer
-   */
-
   NFLayer.prototype.isHighlightLayer = function() {
     return NFHighlightLayer.isHighlightLayer(this.layer);
   };
-
-
-  /**
-  Checks if this layer is a valid paper parent layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid paper parent layer
-   */
 
   NFLayer.prototype.isPaperParentLayer = function() {
     return NFPaperParentLayer.isPaperParentLayer(this.layer);
   };
 
-
-  /**
-  Checks if this layer is a valid highlight control layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid highlight control layer
-   */
-
   NFLayer.prototype.isHighlightControlLayer = function() {
     return NFHighlightControlLayer.isHighlightControlLayer(this.layer);
   };
 
-
-  /**
-  Checks if this layer is a valid spotlight layer
-  @memberof NFLayer
-  @returns {boolean} if this is a valid spotlight layer
-   */
-
   NFLayer.prototype.isSpotlightLayer = function() {
     return NFSpotlightLayer.isSpotlightLayer(this.layer);
+  };
+
+  NFLayer.prototype.isCitationLayer = function() {
+    return NFCitationLayer.isCitationLayer(this.layer);
+  };
+
+  NFLayer.prototype.isPageLayer = function() {
+    return NFPageLayer.isPageLayer(this.layer);
   };
 
 
@@ -561,6 +530,8 @@ NFLayer = (function(superClass) {
       return new NFHighlightControlLayer(this.layer);
     } else if (this.isSpotlightLayer()) {
       return new NFSpotlightLayer(this.layer);
+    } else if (this.isCitationLayer()) {
+      return new NFCitationLayer(this.layer);
     } else {
       return this;
     }
@@ -1891,6 +1862,20 @@ NFPDF = Object.assign(NFPDF, {
   },
 
   /**
+  Gets a new PDF object from a given layer group
+  @memberof NFPDF
+  @param {group} NFPaperLayerGroup - the group
+  @returns {NFPDF} the new NFPDF
+  @throws throws error if not given an NFPaperLayerGroup
+   */
+  fromGroup: function(group) {
+    if (!(group instanceof NFPaperLayerGroup)) {
+      throw new Error("Can't make an NFPDF using fromGroup() without a NFPaperLayerGroup...");
+    }
+    return NFPDF.fromPDFNumber(group.getPDFNumber());
+  },
+
+  /**
   Gets a new PDF object from a given PDF Number string
   @memberof NFPDF
   @param {string} theNumber - the PDF Number
@@ -2067,6 +2052,42 @@ NFPaperLayerGroup = (function(superClass) {
 
 
   /**
+  Returns the NFPDF for the group
+  @memberof NFPaperLayerGroup
+  @returns {NFPDF} the PDF for the group
+   */
+
+  NFPaperLayerGroup.prototype.getPDF = function() {
+    return NFPDF.fromGroup(this);
+  };
+
+
+  /**
+  Looks for and returns the citation layer for this group if it exists. Does not
+  create one. For that use #assignCitationLayer
+  @memberof NFPaperLayerGroup
+  @returns {NFCitationLayer | null} the citation layer or null
+   */
+
+  NFPaperLayerGroup.prototype.getCitationLayer = function() {
+    return this.containingComp().layerWithName(NFCitationLayer.nameFor(this.getPDF()));
+  };
+
+
+  /**
+  Gives this group a citation layer unless one already exists
+  @memberof NFPaperLayerGroup
+  @returns {NFCitationLayer} the citation layer
+   */
+
+  NFPaperLayerGroup.prototype.assignCitationLayer = function() {
+    var citeLayer;
+    citeLayer = (this.getCitationLayer() != null) || NFCitationLayer.newCitationLayer(this);
+    return citeLayer;
+  };
+
+
+  /**
   Adds a spotlight for the given highlight.
   @memberof NFPaperLayerGroup
   @param {NFHighlightLayer} highlight - the highlight to spotlight
@@ -2140,7 +2161,7 @@ NFPaperLayerGroup = (function(superClass) {
 
 
   /**
-  Trims all layers in this group to the given time. Call #extendGroup to restore
+  Trims all layers in this group to the given time. Call #extend to restore
   layers to a given time. Spotlights will end just before the group does
   @memberof NFPaperLayerGroup
   @param {float} [time=currTime] - the time to check at, or the current time by
@@ -2148,7 +2169,7 @@ NFPaperLayerGroup = (function(superClass) {
   @returns {NFPaperLayerGroup} self
    */
 
-  NFPaperLayerGroup.prototype.trimGroup = function(time) {
+  NFPaperLayerGroup.prototype.trim = function(time) {
     this.log("Trimming group at time: " + time);
     time = time != null ? time : this.containingComp().getTime();
     this.trimActiveSpotlights(time - 0.75);
@@ -2326,7 +2347,7 @@ NFPaperLayerGroup = (function(superClass) {
     if (shouldParent == null) {
       shouldParent = true;
     }
-    this.log("Gathering layers: " + layersToGather);
+    this.log("Gathering layers: " + (layersToGather.toString()));
     childLayers = this.getChildren();
     layersAboveGroup = new NFLayerCollection();
     layersBelowGroup = new NFLayerCollection();
@@ -2391,9 +2412,152 @@ NFCitationLayer = (function(superClass) {
     return "NFCitationLayer: '" + this.layer.name + "'";
   };
 
+
+  /**
+  Adds a citation visible marker at the given time
+  @memberof NFCitationLayer
+  @param {float} time - the time to add the marker at
+  @returns {NFCitationLayer} self
+   */
+
+  NFCitationLayer.prototype.showCitation = function(time) {
+    return this;
+  };
+
   return NFCitationLayer;
 
 })(NFLayer);
+
+NFCitationLayer = Object.assign(NFCitationLayer, {
+
+  /**
+  Returns whether or not the given AVLayer is a valid Citation Layer
+  @memberof NFCitationLayer
+  @param {AVLayer} the layer to check
+  @returns {boolean} whether the AV layer is a valid citation layer
+   */
+  isCitationLayer: function(theLayer) {
+    return theLayer.name.indexOf("Citation") >= 0;
+  },
+
+  /**
+  Returns the folder where citation comps live. Makes one if it doesn't exist.
+  @memberof NFCitationLayer
+  @returns {FolderItem} the folder where the cite comps live
+   */
+  folder: function() {
+    var assetsFolder, citeFolder;
+    citeFolder = NFProject.findItem("Citations");
+    if (!citeFolder) {
+      assetsFolder = NFProject.findItem("Assets");
+      citeFolder = assetsFolder.items.addFolder("Citations");
+    }
+    return citeFolder;
+  },
+
+  /**
+  Creates a new citation composition. Note that citation comps, while NFComps,
+  do not have their own unique wrapper class.
+  @memberof NFCitationLayer
+  @param {NFPDF} thePDF - the PDF to make the comp for
+  @returns {NFComp} the new comp
+   */
+  fetchCitation: function(thePDF) {
+    return "Test citation 183020395:09";
+  },
+
+  /**
+  Returns the citation layer/comp name for a given PDF
+  @memberof NFCitationLayer
+  @param {NFPDF} thePDF - the PDF to make the name for
+  @returns {String} the citation layer/comp name
+   */
+  nameFor: function(thePDF) {
+    return "10 - Citation";
+  },
+
+  /**
+  Creates a new citation composition. Note that citation comps, while NFComps,
+  do not have their own unique wrapper class.
+  @memberof NFCitationLayer
+  @param {NFPDF} thePDF - the PDF to make the comp for
+  @returns {NFComp} the new comp
+   */
+  newCitationComp: function(thePDF) {
+    var bgBlur, bgBrightness, bgMask, bgSolid, citationString, citeComp, citeFolder, fontSize, maskPath, maskShape, sourceRectBgMask, sourceRectText, textBoxSizeX, textBoxSizeY, textLayer, textLayer_TextDocument, textLayer_TextProp;
+    if (!(thePDF instanceof NFPDF)) {
+      throw new Error("Missing parameters");
+    }
+    NFTools.log("Creating new citation comp for PDF: " + (thePDF.toString()), "NFCitationLayer");
+    citationString = NFCitationLayer.fetchCitation(thePDF);
+    citeFolder = NFCitationLayer.folder();
+    citeComp = citeFolder.items.addComp(NFCitationLayer.nameFor(thePDF), 1920, 1080, 1, 600, 30);
+    bgSolid = citeComp.layers.addSolid([0, 0, 0], 'colorCorrect', citeComp.width, citeComp.height, 1);
+    bgSolid.adjustmentLayer = true;
+    bgSolid.name = 'Background Blur';
+    bgBlur = bgSolid.property('Effects').addProperty('ADBE Gaussian Blur 2');
+    bgBlur.property('Blurriness').setValue(35);
+    bgBrightness = bgSolid.property('Effects').addProperty('ADBE Brightness & Contrast 2');
+    bgBrightness.property('Brightness').setValue(-148);
+    fontSize = 37;
+    textLayer = citeComp.layers.addBoxText([(fontSize + 20) * citationString.length, fontSize + 20], citationString);
+    textLayer_TextProp = textLayer.property('ADBE Text Properties').property('ADBE Text Document');
+    textLayer_TextDocument = textLayer_TextProp.value;
+    textLayer_TextDocument.resetCharStyle();
+    textLayer_TextDocument.fillColor = [1, 1, 1];
+    textLayer_TextDocument.strokeWidth = 0;
+    textLayer_TextDocument.font = 'Avenir Next';
+    textLayer_TextDocument.justification = ParagraphJustification.RIGHT_JUSTIFY;
+    textLayer_TextDocument.fontSize = fontSize;
+    textLayer_TextDocument.applyFill = true;
+    textLayer_TextDocument.applyStroke = false;
+    textLayer_TextProp.setValue(textLayer_TextDocument);
+    textLayer.boxText = true;
+    sourceRectText = textLayer.sourceRectAtTime(0, false);
+    textLayer.anchorPoint.setValue([sourceRectText.left + sourceRectText.width, sourceRectText.top]);
+    textBoxSizeX = textLayer_TextDocument.boxTextSize[0];
+    textBoxSizeY = textLayer_TextDocument.boxTextSize[1];
+    maskShape = new Shape;
+    maskShape.vertices = [[0, sourceRectText.height + 20], [0, 0], [sourceRectText.width + 25, 0], [sourceRectText.width + 25, sourceRectText.height + 20]];
+    maskShape.closed = true;
+    bgMask = bgSolid.property('Masks').addProperty('Mask');
+    maskPath = bgMask.property('Mask Path');
+    maskPath.setValue(maskShape);
+    sourceRectBgMask = bgSolid.sourceRectAtTime(0, false);
+    bgSolid.anchorPoint.setValue([sourceRectText.width + 25, 0]);
+    bgSolid.position.setValue([citeComp.width, 20, 0]);
+    textLayer.position.setValue([citeComp.width - 10, 30, 0]);
+    textLayer.moveBefore(bgSolid);
+    return new NFComp(citeComp);
+  },
+
+  /**
+  Creates a new NFCitationLayer for the given group
+  @memberof NFCitationLayer
+  @param {NFPaperLayerGroup} group - the group to make the citation layer for
+  @returns {NFCitationLayer} the new citation layer
+   */
+  newCitationLayer: function(group) {
+    var citationComp, citeLayer, compName, thePDF;
+    if (!(group instanceof NFPaperLayerGroup)) {
+      throw new Error("Missing group");
+    }
+    thePDF = NFPDF.fromGroup(group);
+    compName = NFCitationLayer.nameFor(thePDF);
+    citationComp = NFProject.findItem(compName);
+    if (citationComp == null) {
+      citationComp = NFCitationLayer.newCitationComp(thePDF);
+    }
+    NFTools.log("Creating new citation layer for Group: " + (group.toString()), "NFCitationLayer");
+    citeLayer = group.containingComp().insertComp({
+      comp: citationComp,
+      below: group.paperParent,
+      time: group.paperParent.layer.inPoint
+    });
+    citeLayer.layer.collapseTransformation = true;
+    return citeLayer;
+  }
+});
 
 
 /**
@@ -4060,7 +4224,7 @@ NFPageLayer = (function(superClass) {
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
       throw new Error("Invalid highlight");
     }
-    this.log("Framing up highlight: " + model.highlight);
+    this.log("Framing up highlight: " + (model.highlight.toString()));
     positionProp = this.transform().position;
     scaleProp = this.transform().scale;
     originalTime = this.containingComp().getTime();
@@ -4705,10 +4869,7 @@ NFPartComp = (function(superClass) {
           page: titlePage,
           animate: true
         });
-        if (activePageLayer != null) {
-          activePageLayer.layer.outPoint = titlePageLayer.getInMarkerTime();
-        }
-        prevGroup.trimActiveSpotlights(titlePageLayer.getInMarkerTime() - 0.75);
+        prevGroup.trim(titlePageLayer.getInMarkerTime());
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
         if (model.highlight != null) {
           if (targetPage.is(titlePage)) {
@@ -4753,10 +4914,7 @@ NFPartComp = (function(superClass) {
             fillPercentage: model.fillPercentage
           }
         });
-        if (activePageLayer != null) {
-          activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
-        }
-        prevGroup.trimActiveSpotlights(targetPageLayer.getInMarkerTime() - 0.75);
+        prevGroup.trim(targetPageLayer.getInMarkerTime());
         if ((model.highlight != null) && !model.highlight.isBubbled()) {
           group.bubbleUp(model.highlight, this.getTime() + 0.25);
         }
@@ -4818,8 +4976,7 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage
               });
             }
-            activePageLayer.layer.outPoint = this.getTime() - 0.5 + 2.0;
-            group.trimActiveSpotlights(this.getTime() + 0.5);
+            group.trim(this.getTime() - 0.5 + 2.0);
             if ((model.highlight != null) && !model.highlight.isBubbled()) {
               group.bubbleUp(model.highlight, this.getTime() + 0.5);
               model.highlight.getControlLayer().setSpotlightMarkerInPoint(this.getTime() + 0.5);
@@ -4871,16 +5028,15 @@ NFPartComp = (function(superClass) {
           targetGroup.gatherLayers(new NFLayerCollection([targetPageLayer]));
           if (targetPageLayer.index() < activePageLayer.index()) {
             targetPageLayer.slideIn();
-            activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
+            prevGroup.trim(targetPageLayer.getInMarkerTime());
           } else {
-            activePageLayer.layer.outPoint = targetPageLayer.layer.inPoint + 2.0;
+            prevGroup.trim(targetPageLayer.layer.inPoint + 2.0);
             activePageLayer.slideOut();
           }
         } else {
           targetPageLayer.slideIn();
-          activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
+          prevGroup.trim(targetPageLayer.getInMarkerTime());
         }
-        prevGroup.trimActiveSpotlights(targetPageLayer.getInMarkerTime() - 1.0);
         if ((model.highlight != null) && !model.highlight.isBubbled()) {
           targetGroup.bubbleUp(model.highlight, this.getTime() + 0.25);
         }
@@ -4914,7 +5070,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.insertPage = function(model) {
-    var layersForPage, pageLayer, ref, ref1, ref2;
+    var group, layersForPage, pageLayer, ref, ref1, ref2;
     this.log("Inserting page: " + model.page.comp.name);
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
       throw new Error("No page given to insert...");
@@ -4934,7 +5090,8 @@ NFPartComp = (function(superClass) {
     });
     if (model.init !== false) {
       pageLayer.initTransforms().init();
-      pageLayer.assignPaperParentLayer();
+      group = new NFPaperLayerGroup(pageLayer.assignPaperParentLayer());
+      group.assignCitationLayer();
     }
     if ((model.frameUp != null) && (model.frameUp.highlight != null)) {
       pageLayer.frameUpHighlight(model.frameUp);
