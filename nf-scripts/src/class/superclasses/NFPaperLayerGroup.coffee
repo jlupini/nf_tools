@@ -102,6 +102,44 @@ class NFPaperLayerGroup
       NFSpotlightLayer.newSpotlightLayer(@)
 
   ###*
+  Returns a NFLayerCollection of NFHighlightControlLayer with
+  active spotlights at the given time.
+  @memberof NFPaperLayerGroup
+  @param {float} [time=currTime] - the time to check at, or the current time by
+  default
+  @returns {NFLayerCollection} collection of NFHighlightControlLayer with active
+  spotlights at time
+  ###
+  getActiveSpotlights: (time) ->
+    time = time ? @containingComp().getTime()
+    allControlLayers = @getControlLayers()
+    activeControlLayers = new NFLayerCollection()
+
+    allControlLayers.forEach (layer) =>
+      marker = layer.spotlightMarker()
+      start = marker.time
+      end = marker.time + marker.value.duration
+      activeControlLayers.add layer if start <= time < end
+
+    return activeControlLayers
+
+  ###*
+  Trims any active spotlights in the group to the given time
+  @memberof NFPaperLayerGroup
+  @param {float} [time=currTime] - the time to check at, or the current time by
+  default
+  @returns {NFPaperLayerGroup} self
+  ###
+  trimActiveSpotlights: (time) ->
+    time = time ? @containingComp().getTime()
+    activeSpots = @getActiveSpotlights time
+
+    unless activeSpots.isEmpty()
+      activeSpots.forEach (controlLayer) =>
+        controlLayer.setSpotlightMarkerOutPoint time
+    @
+
+  ###*
   Bubbles up given highlights or highlight to this comp by creating an
   NFHighlightControlLayer.
   @memberof NFPaperLayerGroup

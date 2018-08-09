@@ -18,6 +18,70 @@ class NFHighlightControlLayer extends NFLayer
     return "NFHighlightControlLayer: '#{@layer.name}'"
 
   ###*
+  Returns the spotlight marker
+  @memberof NFHighlightControlLayer
+  @returns {Object} the object for the spotlight marker with 'time' and 'value' keys
+  ###
+  spotlightMarker: ->
+    markerObject =
+      value: @markers().keyValue "Spotlight"
+      time: @markers().keyTime "Spotlight"
+    return markerObject
+
+  ###*
+  Sets the in point of the spotlight marker, keeping the out point where it is.
+  If the new in point is after the current out point, the duration will become
+  0 and the out point will move
+  @memberof NFHighlightControlLayer
+  @returns {NFHighlightControlLayer} self
+  @param {float} newInPoint - the new in point
+  ###
+  setSpotlightMarkerInPoint: (newInPoint) ->
+    oldMarker = @spotlightMarker()
+
+    startDelta = newInPoint - oldMarker.time
+    newDuration = oldMarker.value.duration - startDelta
+    newDuration = 0 if newDuration < 0
+
+    # Remove the old marker
+    @markers().removeKey @layer.indexOfMarker("Spotlight")
+
+    @addMarker
+      comment: "Spotlight"
+      time: newInPoint
+      duration: newDuration
+    @
+
+  ###*
+  Sets the out point of the spotlight marker, keeping the in point where it is.
+  If the new out point is before the current in point, the whole marker will
+  move to the new out point with a duration of 0.
+  @memberof NFHighlightControlLayer
+  @returns {NFHighlightControlLayer} self
+  @param {float} newOutPoint - the new out point
+  ###
+  setSpotlightMarkerOutPoint: (newOutPoint) ->
+    oldMarker = @spotlightMarker()
+
+    if newOutPoint < oldMarker.time
+      newInPoint = newOutPoint
+      duration = 0
+    else
+      newInPoint = oldMarker.time
+      currentOutPoint = oldMarker.time + oldMarker.value.duration
+      delta = newOutPoint - currentOutPoint
+      duration = oldMarker.value.duration + delta
+
+    # Remove the old marker
+    @markers().removeKey @layer.indexOfMarker("Spotlight")
+
+    @addMarker
+      comment: "Spotlight"
+      time: newInPoint
+      duration: duration
+    @
+
+  ###*
   Returns the AV Highlighter effect
   @memberof NFHighlightControlLayer
   @returns {Property} the AV Highlighter Property on the control layer

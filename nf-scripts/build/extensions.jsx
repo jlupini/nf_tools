@@ -198,7 +198,7 @@ Layer.prototype.indexOfMarker = function(comment) {
   markers = this.property("Marker");
   if (markers.numKeys > 0) {
     for (idx = j = 1, ref = markers.numKeys; 1 <= ref ? j <= ref : j >= ref; idx = 1 <= ref ? ++j : --j) {
-      if (markers.key(idx).comment === comment) {
+      if (markers.keyValue(idx).comment === comment) {
         return idx;
       }
     }
@@ -206,6 +206,8 @@ Layer.prototype.indexOfMarker = function(comment) {
     return null;
   }
 };
+
+AVLayer.prototype.indexOfMarker = ShapeLayer.prototype.indexOfMarker = TextLayer.prototype.indexOfMarker = Layer.prototype.indexOfMarker;
 
 
 /**
@@ -225,3 +227,5 @@ Layer.prototype.removeMarker = function(comment) {
   }
   return this;
 };
+
+AVLayer.prototype.removeMarker = ShapeLayer.prototype.removeMarker = TextLayer.prototype.removeMarker = Layer.prototype.removeMarker;

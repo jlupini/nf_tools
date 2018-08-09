@@ -2004,6 +2004,59 @@ NFPaperLayerGroup = (function() {
 
 
   /**
+  Returns a NFLayerCollection of NFHighlightControlLayer with
+  active spotlights at the given time.
+  @memberof NFPaperLayerGroup
+  @param {float} [time=currTime] - the time to check at, or the current time by
+  default
+  @returns {NFLayerCollection} collection of NFHighlightControlLayer with active
+  spotlights at time
+   */
+
+  NFPaperLayerGroup.prototype.getActiveSpotlights = function(time) {
+    var activeControlLayers, allControlLayers;
+    time = time != null ? time : this.containingComp().getTime();
+    allControlLayers = this.getControlLayers();
+    activeControlLayers = new NFLayerCollection();
+    allControlLayers.forEach((function(_this) {
+      return function(layer) {
+        var end, marker, start;
+        marker = layer.spotlightMarker();
+        start = marker.time;
+        end = marker.time + marker.value.duration;
+        if ((start <= time && time < end)) {
+          return activeControlLayers.add(layer);
+        }
+      };
+    })(this));
+    return activeControlLayers;
+  };
+
+
+  /**
+  Trims any active spotlights in the group to the given time
+  @memberof NFPaperLayerGroup
+  @param {float} [time=currTime] - the time to check at, or the current time by
+  default
+  @returns {NFPaperLayerGroup} self
+   */
+
+  NFPaperLayerGroup.prototype.trimActiveSpotlights = function(time) {
+    var activeSpots;
+    time = time != null ? time : this.containingComp().getTime();
+    activeSpots = this.getActiveSpotlights(time);
+    if (!activeSpots.isEmpty()) {
+      activeSpots.forEach((function(_this) {
+        return function(controlLayer) {
+          return controlLayer.setSpotlightMarkerOutPoint(time);
+        };
+      })(this));
+    }
+    return this;
+  };
+
+
+  /**
   Bubbles up given highlights or highlight to this comp by creating an
   NFHighlightControlLayer.
   @memberof NFPaperLayerGroup
@@ -2320,6 +2373,80 @@ NFHighlightControlLayer = (function(superClass) {
 
   NFHighlightControlLayer.prototype.toString = function() {
     return "NFHighlightControlLayer: '" + this.layer.name + "'";
+  };
+
+
+  /**
+  Returns the spotlight marker
+  @memberof NFHighlightControlLayer
+  @returns {Object} the object for the spotlight marker with 'time' and 'value' keys
+   */
+
+  NFHighlightControlLayer.prototype.spotlightMarker = function() {
+    var markerObject;
+    markerObject = {
+      value: this.markers().keyValue("Spotlight"),
+      time: this.markers().keyTime("Spotlight")
+    };
+    return markerObject;
+  };
+
+
+  /**
+  Sets the in point of the spotlight marker, keeping the out point where it is.
+  If the new in point is after the current out point, the duration will become
+  0 and the out point will move
+  @memberof NFHighlightControlLayer
+  @returns {NFHighlightControlLayer} self
+  @param {float} newInPoint - the new in point
+   */
+
+  NFHighlightControlLayer.prototype.setSpotlightMarkerInPoint = function(newInPoint) {
+    var newDuration, oldMarker, startDelta;
+    oldMarker = this.spotlightMarker();
+    startDelta = newInPoint - oldMarker.time;
+    newDuration = oldMarker.value.duration - startDelta;
+    if (newDuration < 0) {
+      newDuration = 0;
+    }
+    this.markers().removeKey(this.layer.indexOfMarker("Spotlight"));
+    this.addMarker({
+      comment: "Spotlight",
+      time: newInPoint,
+      duration: newDuration
+    });
+    return this;
+  };
+
+
+  /**
+  Sets the out point of the spotlight marker, keeping the in point where it is.
+  If the new out point is before the current in point, the whole marker will
+  move to the new out point with a duration of 0.
+  @memberof NFHighlightControlLayer
+  @returns {NFHighlightControlLayer} self
+  @param {float} newOutPoint - the new out point
+   */
+
+  NFHighlightControlLayer.prototype.setSpotlightMarkerOutPoint = function(newOutPoint) {
+    var currentOutPoint, delta, duration, newInPoint, oldMarker;
+    oldMarker = this.spotlightMarker();
+    if (newOutPoint < oldMarker.time) {
+      newInPoint = newOutPoint;
+      duration = 0;
+    } else {
+      newInPoint = oldMarker.time;
+      currentOutPoint = oldMarker.time + oldMarker.value.duration;
+      delta = newOutPoint - currentOutPoint;
+      duration = oldMarker.value.duration + delta;
+    }
+    this.markers().removeKey(this.layer.indexOfMarker("Spotlight"));
+    this.addMarker({
+      comment: "Spotlight",
+      time: newInPoint,
+      duration: duration
+    });
+    return this;
   };
 
 
@@ -4426,7 +4553,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     model = {
       highlight: model.highlight,
       page: model.page,
@@ -4456,6 +4583,7 @@ NFPartComp = (function(superClass) {
     containingPartComps = targetPDF.containingPartComps();
     targetPage = (ref5 = model.page) != null ? ref5 : model.highlight.getPageComp();
     preAnimationTime = this.getTime();
+    prevGroup = this.groupFromPDF(this.activePDF());
     if (containingPartComps.length === 0) {
       activePageLayer = this.activePage();
       if (model.skipTitle === false) {
@@ -4467,6 +4595,7 @@ NFPartComp = (function(superClass) {
         if (activePageLayer != null) {
           activePageLayer.layer.outPoint = titlePageLayer.getInMarkerTime();
         }
+        prevGroup.trimActiveSpotlights(titlePageLayer.getInMarkerTime() - 0.75);
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
         if ((model.highlight != null) && targetPage.is(titlePage)) {
           this.setTime(titlePageLayer.getInMarkerTime());
@@ -4509,11 +4638,12 @@ NFPartComp = (function(superClass) {
             fillPercentage: model.fillPercentage
           }
         });
-        if ((model.highlight != null) && !model.highlight.isBubbled()) {
-          group.bubbleUp(model.highlight, this.getTime() + 0.25);
-        }
         if (activePageLayer != null) {
           activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
+        }
+        prevGroup.trimActiveSpotlights(targetPageLayer.getInMarkerTime() - 0.75);
+        if ((model.highlight != null) && !model.highlight.isBubbled()) {
+          group.bubbleUp(model.highlight, this.getTime() + 0.25);
         }
       }
     } else {
@@ -4540,8 +4670,10 @@ NFPartComp = (function(superClass) {
               maxScale: model.maxPageScale
             });
           }
+          group.trimActiveSpotlights(this.getTime() + (model.animationDuration / 2));
           if ((model.highlight != null) && !model.highlight.isBubbled()) {
             group.bubbleUp(model.highlight, this.getTime() + (model.animationDuration / 2));
+            model.highlight.getControlLayer().setSpotlightMarkerInPoint(this.getTime() + (model.animationDuration / 2));
           }
         } else {
           layersForPage = this.layersForPage(targetPage);
@@ -4564,9 +4696,6 @@ NFPartComp = (function(superClass) {
               time: this.getTime() - 0.5,
               duration: pageTurnDuration
             });
-            if ((model.highlight != null) && !model.highlight.isBubbled()) {
-              group.bubbleUp(model.highlight, this.getTime() + 0.5);
-            }
             if (model.highlight != null) {
               group.moveToHighlight({
                 highlight: model.highlight,
@@ -4575,6 +4704,11 @@ NFPartComp = (function(superClass) {
               });
             }
             activePageLayer.layer.outPoint = this.getTime() - 0.5 + 2.0;
+            group.trimActiveSpotlights(this.getTime() + 0.5);
+            if ((model.highlight != null) && !model.highlight.isBubbled()) {
+              group.bubbleUp(model.highlight, this.getTime() + 0.5);
+              model.highlight.getControlLayer().setSpotlightMarkerInPoint(this.getTime() + 0.5);
+            }
           } else {
             targetPageLayer = this.insertPage({
               page: targetPage,
@@ -4586,9 +4720,6 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage * 0.7
               }
             });
-            if ((model.highlight != null) && !model.highlight.isBubbled()) {
-              group.bubbleUp(model.highlight, this.getTime() + 0.5);
-            }
             activePageLayer.animatePageTurn({
               time: this.getTime() - 0.5,
               duration: 2.0
@@ -4599,6 +4730,11 @@ NFPartComp = (function(superClass) {
                 duration: model.animationDuration,
                 fillPercentage: model.fillPercentage
               });
+            }
+            group.trimActiveSpotlights(this.getTime() + 0.5);
+            if ((model.highlight != null) && !model.highlight.isBubbled()) {
+              group.bubbleUp(model.highlight, this.getTime() + 0.5);
+              model.highlight.getControlLayer().setSpotlightMarkerInPoint(this.getTime() + 0.5);
             }
           }
         }
@@ -4615,9 +4751,6 @@ NFPartComp = (function(superClass) {
           }
         });
         targetGroup = this.groupFromPDF(targetPDF);
-        if ((model.highlight != null) && !model.highlight.isBubbled()) {
-          targetGroup.bubbleUp(model.highlight, this.getTime() + 0.25);
-        }
         if (alreadyInThisPart) {
           targetGroup.gatherLayers(new NFLayerCollection([targetPageLayer]));
           if (targetPageLayer.index() < activePageLayer.index()) {
@@ -4630,6 +4763,11 @@ NFPartComp = (function(superClass) {
         } else {
           targetPageLayer.slideIn();
           activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
+        }
+        prevGroup = this.groupFromPDF(this.activePDF());
+        prevGroup.trimActiveSpotlights(targetPageLayer.getInMarkerTime() - 1.0);
+        if ((model.highlight != null) && !model.highlight.isBubbled()) {
+          targetGroup.bubbleUp(model.highlight, this.getTime() + 0.25);
         }
       }
     }

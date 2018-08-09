@@ -62,6 +62,7 @@ class NFPartComp extends NFComp
     containingPartComps = targetPDF.containingPartComps()
     targetPage = model.page ? model.highlight.getPageComp()
     preAnimationTime = @getTime()
+    prevGroup = @groupFromPDF(@activePDF())
 
     # If we've NEVER SEEN THIS PDF before
     if containingPartComps.length is 0
@@ -77,6 +78,7 @@ class NFPartComp extends NFComp
           animate: yes
 
         activePageLayer?.layer.outPoint = titlePageLayer.getInMarkerTime()
+        prevGroup.trimActiveSpotlights titlePageLayer.getInMarkerTime() - 0.75
 
         group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
 
@@ -124,15 +126,15 @@ class NFPartComp extends NFComp
             highlight: model.highlight
             fillPercentage: model.fillPercentage
 
+        # Trim the old layer to the end of the page turn
+        activePageLayer?.layer.outPoint = targetPageLayer.getInMarkerTime()
+        prevGroup.trimActiveSpotlights targetPageLayer.getInMarkerTime() - 0.75
+
         if model.highlight? and not model.highlight.isBubbled()
           group.bubbleUp model.highlight, @getTime() + 0.25
 
-        # Trim the old layer to the end of the page turn
-        activePageLayer?.layer.outPoint = targetPageLayer.getInMarkerTime()
-
     # else (this pdf is in a part comp somewhere)
     else
-
       # Ensure there are no keyframes on the target's parent in the future
       targetGroup = @groupFromPDF targetPDF
       if targetGroup?
@@ -157,17 +159,24 @@ class NFPartComp extends NFComp
               fillPercentage: model.fillPercentage
               maxScale: model.maxPageScale
 
+          # Trim any active spotlights
+          group.trimActiveSpotlights @getTime() + (model.animationDuration / 2)
+
           if model.highlight? and not model.highlight.isBubbled()
             group.bubbleUp model.highlight, @getTime() + (model.animationDuration / 2)
+            model.highlight.getControlLayer().setSpotlightMarkerInPoint @getTime() + (model.animationDuration / 2)
+
 
         # else (the highlight is on a different page)
         else
+
           # If the target page was used in this part and it was above the currently active layer
           # or if we're going to the title page
           layersForPage = @layersForPage targetPage
           isUsedInPartAboveCurrentLayer = layersForPage.count() > 0 and layersForPage.layers[0].index() < activePageLayer.index()
           isTitlePage = targetPDF.getTitlePage().getPageNumber() is targetPage.getPageNumber()
           if isUsedInPartAboveCurrentLayer or isTitlePage
+
               # Add the page layer above this current one, but peeled up.
               # Also frame it up
               targetPageLayer = @insertPage
@@ -186,9 +195,6 @@ class NFPartComp extends NFComp
                 time: @getTime() - 0.5
                 duration: pageTurnDuration
 
-              if model.highlight? and not model.highlight.isBubbled()
-                group.bubbleUp model.highlight, @getTime() + 0.5
-
               # Move the whole shabang to frame up the target highlight
               if model.highlight?
                 group.moveToHighlight
@@ -198,6 +204,12 @@ class NFPartComp extends NFComp
 
               # Trim the old layer to the end of the page turn
               activePageLayer.layer.outPoint = @getTime() - 0.5 + 2.0
+              # Trim the old spotlights
+              group.trimActiveSpotlights @getTime() + 0.5
+
+              if model.highlight? and not model.highlight.isBubbled()
+                group.bubbleUp model.highlight, @getTime() + 0.5
+                model.highlight.getControlLayer().setSpotlightMarkerInPoint @getTime() + 0.5
 
           # else (we haven't seen it in a while or it was below)
           else
@@ -212,9 +224,6 @@ class NFPartComp extends NFComp
                 highlight: model.highlight
                 fillPercentage: model.fillPercentage * 0.7
 
-            if model.highlight? and not model.highlight.isBubbled()
-              group.bubbleUp model.highlight, @getTime() + 0.5
-
             # Run a page turn flip down starting half a second back from now
             activePageLayer.animatePageTurn
               time: @getTime() - 0.5
@@ -226,6 +235,12 @@ class NFPartComp extends NFComp
                 highlight: model.highlight
                 duration: model.animationDuration
                 fillPercentage: model.fillPercentage
+
+            group.trimActiveSpotlights @getTime() + 0.5
+
+            if model.highlight? and not model.highlight.isBubbled()
+              group.bubbleUp model.highlight, @getTime() + 0.5
+              model.highlight.getControlLayer().setSpotlightMarkerInPoint @getTime() + 0.5
 
       # else (not the active PDF)
       else
@@ -243,15 +258,13 @@ class NFPartComp extends NFComp
 
         targetGroup = @groupFromPDF targetPDF
 
-        if model.highlight? and not model.highlight.isBubbled()
-          targetGroup.bubbleUp model.highlight, @getTime() + 0.25
-
         if alreadyInThisPart
           targetGroup.gatherLayers new NFLayerCollection [targetPageLayer]
 
+          # If it's above, the active layer, slide it in
+          # Otherwise, slide the active layer out
           if targetPageLayer.index() < activePageLayer.index()
             targetPageLayer.slideIn()
-
             activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime()
           else
             activePageLayer.layer.outPoint = targetPageLayer.layer.inPoint + 2.0
@@ -259,6 +272,12 @@ class NFPartComp extends NFComp
         else
           targetPageLayer.slideIn()
           activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime()
+
+        prevGroup = @groupFromPDF @activePDF()
+        prevGroup.trimActiveSpotlights targetPageLayer.getInMarkerTime() - 1.0
+
+        if model.highlight? and not model.highlight.isBubbled()
+          targetGroup.bubbleUp model.highlight, @getTime() + 0.25
 
     @setTime preAnimationTime
     return model.page or model.highlight

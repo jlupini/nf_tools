@@ -149,9 +149,10 @@ Layer::indexOfMarker = (comment) ->
   markers = @property("Marker")
   if markers.numKeys > 0
     for idx in [1..markers.numKeys]
-      return idx if markers.key(idx).comment is comment
+      return idx if markers.keyValue(idx).comment is comment
   else
     return null
+AVLayer::indexOfMarker = ShapeLayer::indexOfMarker = TextLayer::indexOfMarker = Layer::indexOfMarker
 
 ###*
 Removes the marker with a given comment
@@ -167,3 +168,4 @@ Layer::removeMarker = (comment) ->
     markers.removeKey index
 
   return @
+AVLayer::removeMarker = ShapeLayer::removeMarker = TextLayer::removeMarker = Layer::removeMarker
