@@ -8,8 +8,9 @@ Creates a new NFComp and sets its comp property.
 @param {CompItem | NFComp} comp - the CompItem for this NFComp
 @throws Will throw an error if not given a valid CompItem at initialization
 ###
-class NFComp
+class NFComp extends NFObject
   constructor: (comp) ->
+    NFObject.call(this)
     if comp instanceof CompItem
       item = comp
     else if comp instanceof NFComp

@@ -6,6 +6,7 @@ NFTools Namespace
 var NFTools;
 
 NFTools = {
+  logging: true,
 
   /**
   Returns the current time (of world, not comp)
@@ -16,6 +17,91 @@ NFTools = {
     var d;
     d = new Date();
     return d.getTime();
+  },
+
+  /**
+  Returns the current timestamp, nicely formatted (of world, not comp)
+  @memberof NFTools
+  @returns {string} the timestamp
+   */
+  timestamp: function() {
+    var date, i, now, suffix, time;
+    now = new Date;
+    date = [now.getMonth() + 1, now.getDate(), now.getFullYear()];
+    time = [now.getHours(), now.getMinutes(), now.getSeconds()];
+    suffix = time[0] < 12 ? 'AM' : 'PM';
+    time[0] = time[0] < 12 ? time[0] : time[0] - 12;
+    time[0] = time[0] || 12;
+    i = 1;
+    while (i < 3) {
+      if (time[i] < 10) {
+        time[i] = '0' + time[i];
+      }
+      i++;
+    }
+    return date.join('/') + ' ' + time.join(':') + ' ' + suffix;
+  },
+
+  /**
+  Opens a file with a given path, and lets you work with the file using a
+  callback function. File will be created if it does not already exist.
+  @memberof NFTools
+  @param {String} filename - the path to the file as a string. No leading
+  slashes are necessary
+  @param {function} fn - the callback function which should return the new file
+  contents
+  @example
+  NFTools.openFile "../log.txt", (theFileText) =>
+    return "Layer number #{i} is called #{layer.getName()}"
+  @returns {null} null
+   */
+  editFile: function(filename, fn) {
+    var closeCheck, encoding, newFileText, openCheck, theFile, theFileText, writeCheck;
+    theFile = new File(filename);
+    if (theFile.exists) {
+      openCheck = theFile.open("r");
+      if (!openCheck) {
+        throw new Error("Can't open the File with read permissions!");
+      }
+      theFileText = theFile.read();
+      closeCheck = theFile.close();
+      if (!closeCheck) {
+        throw new Error("Can't close the File!");
+      }
+    } else {
+      encoding = 'utf-8';
+      theFile.encoding = encoding;
+    }
+    openCheck = theFile.open("w");
+    if (!openCheck) {
+      throw new Error("Can't open the File with write permissions");
+    }
+    newFileText = fn(theFileText);
+    writeCheck = theFile.write(newFileText);
+    if (!writeCheck) {
+      throw new Error("Can't write to the File!");
+    }
+    closeCheck = theFile.close();
+    if (!closeCheck) {
+      throw new Error("Can't close the File!");
+    }
+    return null;
+  },
+
+  /**
+  Opens a file and clears it.
+  @memberof NFTools
+  @param {String} filename - the path to the file as a string. No leading
+  slashes are necessary
+  @returns {null} null
+   */
+  clearFile: function(filename) {
+    NFTools.editFile(filename, (function(_this) {
+      return function(fileText) {
+        return "";
+      };
+    })(this));
+    return null;
   },
 
   /**
@@ -81,5 +167,61 @@ NFTools = {
       }
     }
     return file_contents;
+  },
+
+  /**
+  Logs a message to log.txt
+  @memberof NFTools
+  @param {String} message - The message to log
+  @param {String} sender - The lender to attribute the message to
+  @returns {null} null
+   */
+  log: function(message, sender) {
+    if (sender == null) {
+      sender = "";
+    }
+    if (!NFTools.logging) {
+      return null;
+    }
+    NFTools.editFile("../log.txt", (function(_this) {
+      return function(fileText) {
+        var newEntry, now, timestamp;
+        now = new Date();
+        timestamp = NFTools.timestamp();
+        newEntry = "[" + timestamp + "] (" + sender + ") > " + message;
+        return fileText + "\n" + newEntry;
+      };
+    })(this));
+    return null;
+  },
+
+  /**
+  Adds a section break to log.txt
+  @memberof NFTools
+  @returns {null} null
+   */
+  breakLog: function() {
+    if (!NFTools.logging) {
+      return null;
+    }
+    NFTools.editFile("../log.txt", (function(_this) {
+      return function(fileText) {
+        return fileText + "\n-----------------------------\n\n\n";
+      };
+    })(this));
+    return null;
+  },
+
+  /**
+  Clears log.txt
+  @memberof NFTools
+  @returns {null} null
+   */
+  clearLog: function() {
+    if (!NFTools.logging) {
+      return null;
+    }
+    NFTools.clearFile("../log.txt");
+    return null;
   }
 };

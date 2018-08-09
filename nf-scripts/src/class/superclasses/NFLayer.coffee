@@ -6,8 +6,9 @@ Creates a new NFLayer from a given AVLayer
 @property {AVLayer} layer - the wrapped AVLayer
 @throws Will throw an error if not given a valid AVLayer object
 ###
-class NFLayer
+class NFLayer extends NFObject
   constructor: (layer) ->
+    NFObject.call(this)
     if layer.isAVLayer()
       @layer = layer
     else if layer instanceof NFLayer

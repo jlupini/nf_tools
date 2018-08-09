@@ -12,17 +12,14 @@ _ =
 app.beginUndoGroup _.undoGroupName
 
 main = ->
-	curr = NFTools.now()-n
-	$.write "Boom! Time: +#{curr}ms\nAsking for input...\n"
+	NFTools.log "Asking for input"
 	comp = _.mainComp
-	time = comp.getTime()
 
 	input = prompt 'Enter the instruction (without brackets):', '', 'AutoLayout'
 
-	postInstructionTime = NFTools.now()
-	$.write "Following instruction!\n"
+	NFTools.log "Following Instruction"
 
-	return false unless input? and input isnt "" 
+	return false unless input? and input isnt ""
 
 	NFProject.followInstruction input
 	# try
@@ -30,7 +27,8 @@ main = ->
 	# catch e
 	# 	return alert "Error:\n#{e.message}"
 
-	$.write "Done! Time: +#{NFTools.now()-postInstructionTime}ms\n"
+	NFTools.log "Done following instruction"
+	NFTools.breakLog()
 
 	true
 

@@ -6,10 +6,12 @@ Creates a new NFPaperLayerGroup from an NFPaperParentLayer
 @property {NFPaperParentLayer} paperParent - the NFPaperParentLayer for the group
 @throws Will throw an error if not created with a valid NFPaperParentLayer object
 ###
-class NFPaperLayerGroup
+class NFPaperLayerGroup extends NFObject
   constructor: (paperParent) ->
+    NFObject.call(this)
     @paperParent = paperParent
     throw new Error "Not a valid paper parent" unless @paperParent instanceof NFPaperParentLayer
+    @
   toString: ->
     # FIXME: Write this function
     return "NFPaperLayerGroup: #{@paperParent.layer.name}"
@@ -131,12 +133,30 @@ class NFPaperLayerGroup
   @returns {NFPaperLayerGroup} self
   ###
   trimActiveSpotlights: (time) ->
+    @log "Trimming active spotlights at time: #{time}"
     time = time ? @containingComp().getTime()
     activeSpots = @getActiveSpotlights time
 
     unless activeSpots.isEmpty()
       activeSpots.forEach (controlLayer) =>
         controlLayer.setSpotlightMarkerOutPoint time
+    @
+
+  ###*
+  Trims all layers in this group to the given time. Call #extendGroup to restore
+  layers to a given time. Spotlights will end just before the group does
+  @memberof NFPaperLayerGroup
+  @param {float} [time=currTime] - the time to check at, or the current time by
+  default
+  @returns {NFPaperLayerGroup} self
+  ###
+  trimGroup: (time) ->
+    @log "Trimming group at time: #{time}"
+    time = time ? @containingComp().getTime()
+
+    @trimActiveSpotlights time - 0.75
+    @getChildren().forEach (layer) =>
+      layer.layer.outPoint = time
     @
 
   ###*
@@ -152,6 +172,7 @@ class NFPaperLayerGroup
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
   ###
   bubbleUp: (highlightsToBubble, time) ->
+    @log "Bubbling up highlights: #{highlightsToBubble}"
     # If given a single highlight, wrap it.
     if highlightsToBubble instanceof NFHighlightLayer
       highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble])
@@ -228,6 +249,8 @@ class NFPaperLayerGroup
   ###
   moveToHighlight: (model) ->
     throw new Error "\nInvalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+
+    @log "Moving to highlight: #{model.highlight}"
     model =
       highlight: model.highlight
       time: model.time ? @containingComp().getTime()
@@ -295,6 +318,7 @@ class NFPaperLayerGroup
   @returns {NFPaperLayerGroup} self
   ###
   gatherLayers: (layersToGather, shouldParent = yes) ->
+    @log "Gathering layers: #{layersToGather}"
     childLayers = @getChildren()
 
     layersAboveGroup = new NFLayerCollection()

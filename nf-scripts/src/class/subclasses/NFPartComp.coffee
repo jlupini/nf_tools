@@ -82,40 +82,42 @@ class NFPartComp extends NFComp
 
         group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
 
-        # If the highlight we want is on the title page
-        if model.highlight? and targetPage.is titlePage
-          # Move the time to the in marker and run moveToHighlight
-          @setTime titlePageLayer.getInMarkerTime()
-          group.bubbleUp model.highlight, @getTime() - 0.5
+        # If the target is a highlight, keep working...
+        if model.highlight?
+          # If the highlight we want is on the title page
+          if targetPage.is titlePage
+            # Move the time to the in marker and run moveToHighlight
+            @setTime titlePageLayer.getInMarkerTime()
+            group.bubbleUp model.highlight, @getTime() - 0.5
 
-          group.moveToHighlight
-            highlight: model.highlight
-            duration: model.animationDuration
-            maxScale: model.maxPageScale
-            fillPercentage: model.fillPercentage
-
-        # Else (it's on a different page)
-        else
-          @setTime(titlePageLayer.getInMarkerTime() - 0.4)
-          # Bring that page in below the title page layer
-          targetPageLayer = @insertPage
-            page: targetPage
-            below: titlePageLayer
-            frameUp:
-              highlight: model.highlight
-              fillPercentage: model.fillPercentage * 0.7
-
-          if model.highlight? and not model.highlight.isBubbled()
-            group.bubbleUp model.highlight, titlePageLayer.getInMarkerTime() + 0.5
-
-          titlePageLayer.animatePageTurn()
-
-          if model.highlight?
             group.moveToHighlight
               highlight: model.highlight
               duration: model.animationDuration
-              fillPercentage: model.fillPercentage
               maxScale: model.maxPageScale
+              fillPercentage: model.fillPercentage
+
+          # Else (it's on a different page)
+          else
+            @setTime(titlePageLayer.getInMarkerTime() - 0.4)
+            # Bring that page in below the title page layer
+            targetPageLayer = @insertPage
+              page: targetPage
+              below: titlePageLayer
+              frameUp:
+                highlight: model.highlight
+                fillPercentage: model.fillPercentage * 0.7
+
+            if model.highlight? and not model.highlight.isBubbled()
+              group.bubbleUp model.highlight, titlePageLayer.getInMarkerTime() + 0.5
+
+            titlePageLayer.animatePageTurn()
+
+            if model.highlight?
+              group.moveToHighlight
+                highlight: model.highlight
+                duration: model.animationDuration
+                fillPercentage: model.fillPercentage
+                maxScale: model.maxPageScale
 
       #  else (we've been passed the 'no q' flag)
       else
@@ -158,6 +160,9 @@ class NFPartComp extends NFComp
               duration: model.animationDuration
               fillPercentage: model.fillPercentage
               maxScale: model.maxPageScale
+
+          # FIXME: There should be an ELSE here that allows clearing when already somewhere else on the title page
+          #        This will require adding a 'moveToRect' type function to NFPaperLayerGroup
 
           # Trim any active spotlights
           group.trimActiveSpotlights @getTime() + (model.animationDuration / 2)
@@ -211,7 +216,7 @@ class NFPartComp extends NFComp
                 group.bubbleUp model.highlight, @getTime() + 0.5
                 model.highlight.getControlLayer().setSpotlightMarkerInPoint @getTime() + 0.5
 
-          # else (we haven't seen it in a while or it was below)
+          # else (we haven't seen it in this part or it was below)
           else
             # Add the page layer below this current one.
             # Also frame it up
@@ -247,6 +252,7 @@ class NFPartComp extends NFComp
         # Animate in the page ALREADY focused on the highlight or page
         activePageLayer = @activePage()
         targetGroup = @groupFromPDF targetPDF
+        prevGroup = @groupFromPDF @activePDF()
         alreadyInThisPart = targetGroup?
 
         targetPageLayer = @insertPage
@@ -273,7 +279,6 @@ class NFPartComp extends NFComp
           targetPageLayer.slideIn()
           activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime()
 
-        prevGroup = @groupFromPDF @activePDF()
         prevGroup.trimActiveSpotlights targetPageLayer.getInMarkerTime() - 1.0
 
         if model.highlight? and not model.highlight.isBubbled()
@@ -304,6 +309,7 @@ class NFPartComp extends NFComp
   and .at
   ###
   insertPage: (model) ->
+    @log "Inserting page: #{model.page.comp.name}"
     throw new Error "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
 
     model.at = 1 unless model.above? or model.below? or model.at?

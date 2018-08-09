@@ -1,5 +1,60 @@
 
 /**
+Creates a new NFObject
+@class NFObject
+@classdesc Superclass for all NF objects
+ */
+var NFObject;
+
+NFObject = (function() {
+  function NFObject() {
+    this;
+  }
+
+  NFObject.prototype.toString = function() {
+    return "NFObject";
+  };
+
+
+  /**
+  Logs a message to log.txt
+  @memberof NFObject
+  @param {String} message - The message to log
+  @returns {null} null
+   */
+
+  NFObject.prototype.log = function(message) {
+    return NFTools.log(message, this.toString());
+  };
+
+
+  /**
+  Clears log.txt
+  @memberof NFObject
+  @returns {null} null
+   */
+
+  NFObject.prototype.clearLog = function() {
+    return NFTools.clearLog();
+  };
+
+
+  /**
+  Adds a section break to log.txt
+  @memberof NFObject
+  @returns {null} null
+   */
+
+  NFObject.prototype.breakLog = function() {
+    return NFTools.breakLog();
+  };
+
+  return NFObject;
+
+})();
+
+
+/**
 Creates a new NFComp and sets its comp property.
 @class NFComp
 @classdesc NF Wrapper object for a CompItem that allows for access to and maniplation of its layers.
@@ -9,11 +64,16 @@ Creates a new NFComp and sets its comp property.
 @param {CompItem | NFComp} comp - the CompItem for this NFComp
 @throws Will throw an error if not given a valid CompItem at initialization
  */
-var NFComp;
+var NFComp,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-NFComp = (function() {
+NFComp = (function(superClass) {
+  extend(NFComp, superClass);
+
   function NFComp(comp) {
     var item, ref, ref1;
+    NFObject.call(this);
     if (comp instanceof CompItem) {
       item = comp;
     } else if (comp instanceof NFComp) {
@@ -309,7 +369,7 @@ NFComp = (function() {
 
   return NFComp;
 
-})();
+})(NFObject);
 
 NFComp = Object.assign(NFComp, {
 
@@ -344,10 +404,15 @@ Creates a new NFLayer from a given AVLayer
 @property {AVLayer} layer - the wrapped AVLayer
 @throws Will throw an error if not given a valid AVLayer object
  */
-var NFLayer;
+var NFLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-NFLayer = (function() {
+NFLayer = (function(superClass) {
+  extend(NFLayer, superClass);
+
   function NFLayer(layer) {
+    NFObject.call(this);
     if (layer.isAVLayer()) {
       this.layer = layer;
     } else if (layer instanceof NFLayer) {
@@ -1176,7 +1241,7 @@ NFLayer = (function() {
 
   return NFLayer;
 
-})();
+})(NFObject);
 
 NFLayer = Object.assign(NFLayer, {
 
@@ -1216,11 +1281,16 @@ or an Adobe LayerCollection or an NFLayerCollection to initialize the collection
 @property {Array} layers - the array of [NFLayers]{@link NFLayer} in the collection
 @throws Will throw an error if array contains non-{@link NFLayer} objects
  */
-var NFLayerCollection;
+var NFLayerCollection,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-NFLayerCollection = (function() {
+NFLayerCollection = (function(superClass) {
+  extend(NFLayerCollection, superClass);
+
   function NFLayerCollection(layerArr) {
     var expectingAVLayers, expectingNFLayers, j, layer, len, newArray, newLayer, theLayer;
+    NFObject.call(this);
     this.layers = layerArr != null ? layerArr : [];
     if (layerArr != null) {
       if (layerArr instanceof LayerCollection) {
@@ -1620,7 +1690,7 @@ NFLayerCollection = (function() {
 
   return NFLayerCollection;
 
-})();
+})(NFObject);
 
 
 /**
@@ -1631,11 +1701,16 @@ Creates a new NFPDF from a given array of pages
 @property {NFPageComp[]} pages - the array ofitems
 @throws Throws error if one object in the array is not an NFPageComp
  */
-var NFPDF;
+var NFPDF,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-NFPDF = (function() {
+NFPDF = (function(superClass) {
+  extend(NFPDF, superClass);
+
   function NFPDF(pageArr) {
     var i, len, newArr, page;
+    NFObject.call(this);
     pageArr = pageArr != null ? pageArr : [];
     if (pageArr.length > 0) {
       newArr = [];
@@ -1651,6 +1726,7 @@ NFPDF = (function() {
       }
     }
     this.pages = newArr;
+    this;
   }
 
   NFPDF.prototype.toString = function() {
@@ -1796,7 +1872,7 @@ NFPDF = (function() {
 
   return NFPDF;
 
-})();
+})(NFObject);
 
 NFPDF = Object.assign(NFPDF, {
 
@@ -1851,14 +1927,20 @@ Creates a new NFPaperLayerGroup from an NFPaperParentLayer
 @property {NFPaperParentLayer} paperParent - the NFPaperParentLayer for the group
 @throws Will throw an error if not created with a valid NFPaperParentLayer object
  */
-var NFPaperLayerGroup;
+var NFPaperLayerGroup,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-NFPaperLayerGroup = (function() {
+NFPaperLayerGroup = (function(superClass) {
+  extend(NFPaperLayerGroup, superClass);
+
   function NFPaperLayerGroup(paperParent) {
+    NFObject.call(this);
     this.paperParent = paperParent;
     if (!(this.paperParent instanceof NFPaperParentLayer)) {
       throw new Error("Not a valid paper parent");
     }
+    this;
   }
 
   NFPaperLayerGroup.prototype.toString = function() {
@@ -2043,6 +2125,7 @@ NFPaperLayerGroup = (function() {
 
   NFPaperLayerGroup.prototype.trimActiveSpotlights = function(time) {
     var activeSpots;
+    this.log("Trimming active spotlights at time: " + time);
     time = time != null ? time : this.containingComp().getTime();
     activeSpots = this.getActiveSpotlights(time);
     if (!activeSpots.isEmpty()) {
@@ -2052,6 +2135,28 @@ NFPaperLayerGroup = (function() {
         };
       })(this));
     }
+    return this;
+  };
+
+
+  /**
+  Trims all layers in this group to the given time. Call #extendGroup to restore
+  layers to a given time. Spotlights will end just before the group does
+  @memberof NFPaperLayerGroup
+  @param {float} [time=currTime] - the time to check at, or the current time by
+  default
+  @returns {NFPaperLayerGroup} self
+   */
+
+  NFPaperLayerGroup.prototype.trimGroup = function(time) {
+    this.log("Trimming group at time: " + time);
+    time = time != null ? time : this.containingComp().getTime();
+    this.trimActiveSpotlights(time - 0.75);
+    this.getChildren().forEach((function(_this) {
+      return function(layer) {
+        return layer.layer.outPoint = time;
+      };
+    })(this));
     return this;
   };
 
@@ -2070,6 +2175,7 @@ NFPaperLayerGroup = (function() {
    */
 
   NFPaperLayerGroup.prototype.bubbleUp = function(highlightsToBubble, time) {
+    this.log("Bubbling up highlights: " + highlightsToBubble);
     if (highlightsToBubble instanceof NFHighlightLayer) {
       highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble]);
     }
@@ -2150,6 +2256,7 @@ NFPaperLayerGroup = (function() {
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
       throw new Error("\nInvalid highlight");
     }
+    this.log("Moving to highlight: " + model.highlight);
     model = {
       highlight: model.highlight,
       time: (ref = model.time) != null ? ref : this.containingComp().getTime(),
@@ -2219,6 +2326,7 @@ NFPaperLayerGroup = (function() {
     if (shouldParent == null) {
       shouldParent = true;
     }
+    this.log("Gathering layers: " + layersToGather);
     childLayers = this.getChildren();
     layersAboveGroup = new NFLayerCollection();
     layersBelowGroup = new NFLayerCollection();
@@ -2256,7 +2364,7 @@ NFPaperLayerGroup = (function() {
 
   return NFPaperLayerGroup;
 
-})();
+})(NFObject);
 
 
 /**
@@ -2522,6 +2630,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     if (!(((model != null ? model.group : void 0) != null) && (model.highlight != null))) {
       throw new Error("Missing parameters");
     }
+    this.log("Creating new control layer for highlight: " + model.highlight);
     partComp = model.group.containingComp();
     controlLayer = partComp.addNull();
     controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight(model.group.getPDFNumber(), model.highlight);
@@ -3672,6 +3781,7 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.slide = function(model) {
     var animatingX, animatingY, compCenter, endEquation, endValue, layerCenter, positionProperty, slider, startEquation, startOffset, startValue, xVal, yVal, zVal;
+    this.log("Sliding myself");
     if (model == null) {
       model = [];
     }
@@ -3794,6 +3904,7 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.setupPageTurnEffect = function(pageTurnStatus) {
     var dropShadowEffect, dropShadowMatchName, foldPosition, forceMotionBlurEffect, forceMotionBlurMatchName, pageTurnEffect, pageTurnMatchName;
+    this.log("Setting up page turn effect");
     forceMotionBlurMatchName = "CC Force Motion Blur";
     dropShadowMatchName = "ADBE Drop Shadow";
     pageTurnMatchName = "CC Page Turn";
@@ -3915,6 +4026,7 @@ NFPageLayer = (function(superClass) {
       }
     }
     times = [startTime, endTime];
+    this.log("Animating page turn");
     foldPosition = this.effect("CC Page Turn").property("Fold Position");
     foldPosition.setValuesAtTimes(times, positions);
     foldPosition.easyEaseKeyTimes({
@@ -3948,6 +4060,7 @@ NFPageLayer = (function(superClass) {
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
       throw new Error("Invalid highlight");
     }
+    this.log("Framing up highlight: " + model.highlight);
     positionProp = this.transform().position;
     scaleProp = this.transform().scale;
     originalTime = this.containingComp().getTime();
@@ -4597,36 +4710,38 @@ NFPartComp = (function(superClass) {
         }
         prevGroup.trimActiveSpotlights(titlePageLayer.getInMarkerTime() - 0.75);
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
-        if ((model.highlight != null) && targetPage.is(titlePage)) {
-          this.setTime(titlePageLayer.getInMarkerTime());
-          group.bubbleUp(model.highlight, this.getTime() - 0.5);
-          group.moveToHighlight({
-            highlight: model.highlight,
-            duration: model.animationDuration,
-            maxScale: model.maxPageScale,
-            fillPercentage: model.fillPercentage
-          });
-        } else {
-          this.setTime(titlePageLayer.getInMarkerTime() - 0.4);
-          targetPageLayer = this.insertPage({
-            page: targetPage,
-            below: titlePageLayer,
-            frameUp: {
-              highlight: model.highlight,
-              fillPercentage: model.fillPercentage * 0.7
-            }
-          });
-          if ((model.highlight != null) && !model.highlight.isBubbled()) {
-            group.bubbleUp(model.highlight, titlePageLayer.getInMarkerTime() + 0.5);
-          }
-          titlePageLayer.animatePageTurn();
-          if (model.highlight != null) {
+        if (model.highlight != null) {
+          if (targetPage.is(titlePage)) {
+            this.setTime(titlePageLayer.getInMarkerTime());
+            group.bubbleUp(model.highlight, this.getTime() - 0.5);
             group.moveToHighlight({
               highlight: model.highlight,
               duration: model.animationDuration,
-              fillPercentage: model.fillPercentage,
-              maxScale: model.maxPageScale
+              maxScale: model.maxPageScale,
+              fillPercentage: model.fillPercentage
             });
+          } else {
+            this.setTime(titlePageLayer.getInMarkerTime() - 0.4);
+            targetPageLayer = this.insertPage({
+              page: targetPage,
+              below: titlePageLayer,
+              frameUp: {
+                highlight: model.highlight,
+                fillPercentage: model.fillPercentage * 0.7
+              }
+            });
+            if ((model.highlight != null) && !model.highlight.isBubbled()) {
+              group.bubbleUp(model.highlight, titlePageLayer.getInMarkerTime() + 0.5);
+            }
+            titlePageLayer.animatePageTurn();
+            if (model.highlight != null) {
+              group.moveToHighlight({
+                highlight: model.highlight,
+                duration: model.animationDuration,
+                fillPercentage: model.fillPercentage,
+                maxScale: model.maxPageScale
+              });
+            }
           }
         }
       } else {
@@ -4741,6 +4856,7 @@ NFPartComp = (function(superClass) {
       } else {
         activePageLayer = this.activePage();
         targetGroup = this.groupFromPDF(targetPDF);
+        prevGroup = this.groupFromPDF(this.activePDF());
         alreadyInThisPart = targetGroup != null;
         targetPageLayer = this.insertPage({
           page: targetPage,
@@ -4764,7 +4880,6 @@ NFPartComp = (function(superClass) {
           targetPageLayer.slideIn();
           activePageLayer.layer.outPoint = targetPageLayer.getInMarkerTime();
         }
-        prevGroup = this.groupFromPDF(this.activePDF());
         prevGroup.trimActiveSpotlights(targetPageLayer.getInMarkerTime() - 1.0);
         if ((model.highlight != null) && !model.highlight.isBubbled()) {
           targetGroup.bubbleUp(model.highlight, this.getTime() + 0.25);
@@ -4800,6 +4915,7 @@ NFPartComp = (function(superClass) {
 
   NFPartComp.prototype.insertPage = function(model) {
     var layersForPage, pageLayer, ref, ref1, ref2;
+    this.log("Inserting page: " + model.page.comp.name);
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
       throw new Error("No page given to insert...");
     }

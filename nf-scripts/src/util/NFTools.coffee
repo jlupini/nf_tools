@@ -4,6 +4,9 @@ NFTools Namespace
 ###
 NFTools =
 
+  # Change me to stop or start logging to log.txt
+  logging: yes
+
   ###*
   Returns the current time (of world, not comp)
   @memberof NFTools
@@ -12,6 +15,100 @@ NFTools =
   now: ->
     d = new Date()
     return d.getTime()
+
+  ###*
+  Returns the current timestamp, nicely formatted (of world, not comp)
+  @memberof NFTools
+  @returns {string} the timestamp
+  ###
+  timestamp: ->
+    # Create a date object with the current time
+    now = new Date
+    # Create an array with the current month, day and time
+    date = [
+      now.getMonth() + 1
+      now.getDate()
+      now.getFullYear()
+    ]
+    # Create an array with the current hour, minute and second
+    time = [
+      now.getHours()
+      now.getMinutes()
+      now.getSeconds()
+    ]
+    # Determine AM or PM suffix based on the hour
+    suffix = if time[0] < 12 then 'AM' else 'PM'
+    # Convert hour from military time
+    time[0] = if time[0] < 12 then time[0] else time[0] - 12
+    # If hour is 0, set it to 12
+    time[0] = time[0] or 12
+    # If seconds and minutes are less than 10, add a zero
+    i = 1
+    while i < 3
+      if time[i] < 10
+        time[i] = '0' + time[i]
+      i++
+    # Return the formatted string
+    return date.join('/') + ' ' + time.join(':') + ' ' + suffix
+
+  ###*
+  Opens a file with a given path, and lets you work with the file using a
+  callback function. File will be created if it does not already exist.
+  @memberof NFTools
+  @param {String} filename - the path to the file as a string. No leading
+  slashes are necessary
+  @param {function} fn - the callback function which should return the new file
+  contents
+  @example
+  NFTools.openFile "../log.txt", (theFileText) =>
+    return "Layer number #{i} is called #{layer.getName()}"
+  @returns {null} null
+  ###
+  editFile: (filename, fn) ->
+    theFile = new File filename
+
+    if theFile.exists
+
+      openCheck = theFile.open("r");
+      unless openCheck
+        throw new Error "Can't open the File with read permissions!"
+      theFileText = theFile.read()
+
+      closeCheck = theFile.close()
+      unless closeCheck
+        throw new Error "Can't close the File!"
+
+    else
+      encoding = 'utf-8'
+      theFile.encoding = encoding
+
+    openCheck = theFile.open("w")
+    unless openCheck
+      throw new Error "Can't open the File with write permissions"
+
+    newFileText = fn theFileText
+    writeCheck = theFile.write newFileText
+    unless writeCheck
+      throw new Error "Can't write to the File!"
+
+    closeCheck = theFile.close();
+    unless closeCheck
+      throw new Error "Can't close the File!"
+
+    return null
+
+  ###*
+  Opens a file and clears it.
+  @memberof NFTools
+  @param {String} filename - the path to the file as a string. No leading
+  slashes are necessary
+  @returns {null} null
+  ###
+  clearFile: (filename) ->
+    NFTools.editFile filename, (fileText) =>
+      return ""
+
+    return null
 
 
   ###*
@@ -69,3 +166,42 @@ NFTools =
         file_contents = file_contents.replace k, replacementDict[k]
 
     return file_contents
+
+  ###*
+  Logs a message to log.txt
+  @memberof NFTools
+  @param {String} message - The message to log
+  @param {String} sender - The lender to attribute the message to
+  @returns {null} null
+  ###
+  log: (message, sender = "") ->
+    return null unless NFTools.logging
+    NFTools.editFile "../log.txt", (fileText) =>
+      now = new Date()
+      timestamp = NFTools.timestamp()
+
+      newEntry = "[#{timestamp}] (#{sender}) > #{message}"
+      return "#{fileText}\n#{newEntry}"
+
+    null
+
+  ###*
+  Adds a section break to log.txt
+  @memberof NFTools
+  @returns {null} null
+  ###
+  breakLog: ->
+    return null unless NFTools.logging
+    NFTools.editFile "../log.txt", (fileText) =>
+      return fileText + "\n-----------------------------\n\n\n"
+    null
+
+  ###*
+  Clears log.txt
+  @memberof NFTools
+  @returns {null} null
+  ###
+  clearLog: ->
+    return null unless NFTools.logging
+    NFTools.clearFile "../log.txt"
+    null

@@ -6,8 +6,9 @@ Creates a new NFPDF from a given array of pages
 @property {NFPageComp[]} pages - the array ofitems
 @throws Throws error if one object in the array is not an NFPageComp
 ###
-class NFPDF
+class NFPDF extends NFObject
   constructor: (pageArr) ->
+    NFObject.call(this)
     # FIXME: Should throw error if not all pages are from same PDF
     pageArr = pageArr ? []
     if pageArr.length > 0
@@ -20,8 +21,10 @@ class NFPDF
         else
           throw new Error "You can only add NFPageComps to an NFPDF"
     @pages = newArr
+    @
   toString: ->
     return "NFPDF: #{@getPDFNumber()}"
+
 
   ###*
   Adds an NFPageComp to the PDF

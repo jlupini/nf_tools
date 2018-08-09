@@ -7,8 +7,9 @@ or an Adobe LayerCollection or an NFLayerCollection to initialize the collection
 @property {Array} layers - the array of [NFLayers]{@link NFLayer} in the collection
 @throws Will throw an error if array contains non-{@link NFLayer} objects
 ###
-class NFLayerCollection
+class NFLayerCollection extends NFObject
   constructor: (layerArr) ->
+    NFObject.call(this)
     @layers = layerArr ? []
     if layerArr?
       # Convert to an array if this is a LayerCollection or NFLayerCollection

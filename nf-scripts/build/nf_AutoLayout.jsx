@@ -20,19 +20,17 @@ _ = {
 app.beginUndoGroup(_.undoGroupName);
 
 main = function() {
-  var comp, curr, input, postInstructionTime, time;
-  curr = NFTools.now() - n;
-  $.write("Boom! Time: +" + curr + "ms\nAsking for input...\n");
+  var comp, input;
+  NFTools.log("Asking for input");
   comp = _.mainComp;
-  time = comp.getTime();
   input = prompt('Enter the instruction (without brackets):', '', 'AutoLayout');
-  postInstructionTime = NFTools.now();
-  $.write("Following instruction!\n");
+  NFTools.log("Following Instruction");
   if (!((input != null) && input !== "")) {
     return false;
   }
   NFProject.followInstruction(input);
-  $.write("Done! Time: +" + (NFTools.now() - postInstructionTime) + "ms\n");
+  NFTools.log("Done following instruction");
+  NFTools.breakLog();
   return true;
 };
 

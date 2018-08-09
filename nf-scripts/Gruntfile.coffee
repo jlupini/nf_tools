@@ -59,7 +59,7 @@ module.exports = (grunt) ->
         expand: true
         flatten: false
         cwd: 'src/class'
-        src: ['superclasses/*', 'subclasses/*']
+        src: ['superestclasses/*', 'superclasses/*', 'subclasses/*']
         dest: 'build/'
         ext: '.jsx'
         rename: (dest, src) ->

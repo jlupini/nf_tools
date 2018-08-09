@@ -359,6 +359,7 @@ class NFPageLayer extends NFLayer
   @param {boolean} [model.in=yes] - If page should slide in. No means out
   ###
   slide: (model) ->
+    @log "Sliding myself"
     model ?= []
     model.fromEdge ?= NFComp.AUTO
     model.in ?= yes
@@ -449,6 +450,7 @@ class NFPageLayer extends NFLayer
   to set the turn up with
   ###
   setupPageTurnEffect: (pageTurnStatus) ->
+    @log "Setting up page turn effect"
     forceMotionBlurMatchName = "CC Force Motion Blur"
     dropShadowMatchName = "ADBE Drop Shadow"
     pageTurnMatchName = "CC Page Turn"
@@ -550,6 +552,8 @@ class NFPageLayer extends NFLayer
 
     times = [startTime, endTime]
 
+    @log "Animating page turn"
+
     foldPosition = @effect("CC Page Turn").property("Fold Position")
     foldPosition.setValuesAtTimes times, positions
     foldPosition.easyEaseKeyTimes
@@ -578,6 +582,7 @@ class NFPageLayer extends NFLayer
   ###
   frameUpHighlight: (model) ->
     throw new Error "Invalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+    @log "Framing up highlight: #{model.highlight}"
 
     positionProp = @transform().position
     scaleProp = @transform().scale
