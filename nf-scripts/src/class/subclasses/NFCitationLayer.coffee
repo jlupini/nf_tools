@@ -48,15 +48,43 @@ NFCitationLayer = Object.assign NFCitationLayer,
     return citeFolder
 
   ###*
-  Creates a new citation composition. Note that citation comps, while NFComps,
-  do not have their own unique wrapper class.
+  Fetches the citation from the citations.csv file found in the project
+  directory.
   @memberof NFCitationLayer
   @param {NFPDF} thePDF - the PDF to make the comp for
   @returns {NFComp} the new comp
+  @throw Throws an error if citations.csv could not be found or empty
   ###
   fetchCitation: (thePDF) ->
-    # FIXME: Stub
-    return "Test citation 183020395:09"
+    pdfKey = thePDF.getPDFNumber()
+    if NFTools.testProjectFile "citations.csv"
+      citationsFile = NFTools.readProjectFile "citations.csv", yes
+      citationArray = citationsFile.splitCSV()
+
+      throw new Error "Empty Citation array" unless citationArray.length > 0
+
+      # Figure out our start column
+      startColumn = 0
+      throw new Error "Not enough columns" unless citationArray[0].length > 0
+      for citeLineItemIdx in [0..citationArray[0].length-1]
+        citeLineItem = citationArray[0][citeLineItemIdx]
+        if citeLineItem isnt ""
+          startColumn = citeLineItemIdx
+          break
+
+      throw new Error "Not enough columns" unless citationArray[0].length >= startColumn
+
+      citeObj = {}
+      $.bp()
+      for citeLine in citationArray
+        newKey = citeLine[startColumn]
+        newVal = citeLine[startColumn + 1]
+        citeObj[newKey] = newVal
+
+      if citeObj[pdfKey]?
+        return citeObj[pdfKey]
+
+    throw new Error "No citation found for PDF #{thePDF.getPDFNumber()}"
 
   ###*
   Returns the citation layer/comp name for a given PDF
@@ -65,8 +93,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
   @returns {String} the citation layer/comp name
   ###
   nameFor: (thePDF) ->
-    # FIXME: Stub
-    return "10 - Citation"
+    return "#{thePDF.getPDFNumber()} - Citation"
 
   ###*
   Creates a new citation composition. Note that citation comps, while NFComps,
@@ -139,7 +166,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
     # Order Layers Correctly
     textLayer.moveBefore bgSolid
 
-    return new NFComp citeComp
+    return citeComp
 
   ###*
   Creates a new NFCitationLayer for the given group
@@ -160,7 +187,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
     NFTools.log "Creating new citation layer for Group: #{group.toString()}", "NFCitationLayer"
     # Add the Layer
     citeLayer = group.containingComp().insertComp
-      comp: citationComp
+      comp: new NFComp citationComp
       below: group.paperParent
       time: group.paperParent.layer.inPoint
     citeLayer.layer.collapseTransformation = yes

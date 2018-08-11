@@ -1,8 +1,49 @@
 
 /**
+The Javascript String class
+@namespace String
+ */
+
+/**
+Converts a string in csv format to an array
+@function splitCSV
+@memberof String
+@returns {Array} the array created from this string
+ */
+String.prototype.splitCSV = function(sep) {
+  var foo, fullArr, j, len, line, splitByLine, tl, x;
+  fullArr = [];
+  splitByLine = this.split("\n");
+  for (j = 0, len = splitByLine.length; j < len; j++) {
+    line = splitByLine[j];
+    foo = line.split(sep = sep || ',');
+    x = foo.length - 1;
+    tl = void 0;
+    while (x >= 0) {
+      if (foo[x].replace(/"\s+$/, '"').charAt(foo[x].length - 1) === '"') {
+        if ((tl = foo[x].replace(/^\s+"/, '"')).length > 1 && tl.charAt(0) === '"') {
+          foo[x] = foo[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"');
+        } else if (x) {
+          foo.splice(x - 1, 2, [foo[x - 1], foo[x]].join(sep));
+        } else {
+          foo = foo.shift().split(sep).concat(foo);
+        }
+      } else {
+        foo[x].replace(/""/g, '"');
+      }
+      x--;
+    }
+    fullArr.push(foo);
+  }
+  return fullArr;
+};
+
+
+/**
 The After Effects LayerCollection Class
 @namespace LayerCollection
  */
+
 
 /**
 Returns an Array of all the layers in this collection for easier manipulation
@@ -10,6 +51,7 @@ Returns an Array of all the layers in this collection for easier manipulation
 @memberof LayerCollection
 @returns {Array} the array created from this collection
  */
+
 LayerCollection.prototype.toArr = function() {
   var arr, i;
   arr = [];

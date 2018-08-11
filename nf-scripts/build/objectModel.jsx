@@ -2456,14 +2456,49 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
   },
 
   /**
-  Creates a new citation composition. Note that citation comps, while NFComps,
-  do not have their own unique wrapper class.
+  Fetches the citation from the citations.csv file found in the project
+  directory.
   @memberof NFCitationLayer
   @param {NFPDF} thePDF - the PDF to make the comp for
   @returns {NFComp} the new comp
+  @throw Throws an error if citations.csv could not be found or empty
    */
   fetchCitation: function(thePDF) {
-    return "Test citation 183020395:09";
+    var citationArray, citationsFile, citeLine, citeLineItem, citeLineItemIdx, citeObj, i, j, len, newKey, newVal, pdfKey, ref, startColumn;
+    pdfKey = thePDF.getPDFNumber();
+    if (NFTools.testProjectFile("citations.csv")) {
+      citationsFile = NFTools.readProjectFile("citations.csv", true);
+      citationArray = citationsFile.splitCSV();
+      if (!(citationArray.length > 0)) {
+        throw new Error("Empty Citation array");
+      }
+      startColumn = 0;
+      if (!(citationArray[0].length > 0)) {
+        throw new Error("Not enough columns");
+      }
+      for (citeLineItemIdx = i = 0, ref = citationArray[0].length - 1; 0 <= ref ? i <= ref : i >= ref; citeLineItemIdx = 0 <= ref ? ++i : --i) {
+        citeLineItem = citationArray[0][citeLineItemIdx];
+        if (citeLineItem !== "") {
+          startColumn = citeLineItemIdx;
+          break;
+        }
+      }
+      if (!(citationArray[0].length >= startColumn)) {
+        throw new Error("Not enough columns");
+      }
+      citeObj = {};
+      $.bp();
+      for (j = 0, len = citationArray.length; j < len; j++) {
+        citeLine = citationArray[j];
+        newKey = citeLine[startColumn];
+        newVal = citeLine[startColumn + 1];
+        citeObj[newKey] = newVal;
+      }
+      if (citeObj[pdfKey] != null) {
+        return citeObj[pdfKey];
+      }
+    }
+    throw new Error("No citation found for PDF " + (thePDF.getPDFNumber()));
   },
 
   /**
@@ -2473,7 +2508,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
   @returns {String} the citation layer/comp name
    */
   nameFor: function(thePDF) {
-    return "10 - Citation";
+    return (thePDF.getPDFNumber()) + " - Citation";
   },
 
   /**
@@ -2528,7 +2563,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     bgSolid.position.setValue([citeComp.width, 20, 0]);
     textLayer.position.setValue([citeComp.width - 10, 30, 0]);
     textLayer.moveBefore(bgSolid);
-    return new NFComp(citeComp);
+    return citeComp;
   },
 
   /**
@@ -2550,7 +2585,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     }
     NFTools.log("Creating new citation layer for Group: " + (group.toString()), "NFCitationLayer");
     citeLayer = group.containingComp().insertComp({
-      comp: citationComp,
+      comp: new NFComp(citationComp),
       below: group.paperParent,
       time: group.paperParent.layer.inPoint
     });

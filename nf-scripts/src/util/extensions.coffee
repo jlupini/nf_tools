@@ -1,4 +1,39 @@
 ###*
+The Javascript String class
+@namespace String
+###
+
+###*
+Converts a string in csv format to an array
+@function splitCSV
+@memberof String
+@returns {Array} the array created from this string
+###
+String::splitCSV = (sep) ->
+  fullArr = []
+  splitByLine = @split("\n")
+  for line in splitByLine
+    foo = line.split(sep = sep or ',')
+    x = foo.length - 1
+    tl = undefined
+    while x >= 0
+      if foo[x].replace(/"\s+$/, '"').charAt(foo[x].length - 1) == '"'
+        if (tl = foo[x].replace(/^\s+"/, '"')).length > 1 and tl.charAt(0) == '"'
+          foo[x] = foo[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"')
+        else if x
+          foo.splice x - 1, 2, [
+            foo[x - 1]
+            foo[x]
+          ].join(sep)
+        else
+          foo = foo.shift().split(sep).concat(foo)
+      else
+        foo[x].replace /""/g, '"'
+      x--
+    fullArr.push foo
+  fullArr
+
+###*
 The After Effects LayerCollection Class
 @namespace LayerCollection
 ###

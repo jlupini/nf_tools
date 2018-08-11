@@ -105,6 +105,72 @@ NFTools = {
   },
 
   /**
+  Reads a file relative to the current AE project
+  @memberof NFTools
+  @param {String} filename - the path to the file as a string. No leading
+  slashes are necessary
+  @param {boolean} [fixLineBreaks=true] replace file line breaks with standard
+  js line breaks
+  @example fileString = readFile "citations.csv"
+  @returns {String} the file contents
+   */
+  readProjectFile: function(filename, fixLineBreaks) {
+    var e, error, file_contents, file_handle, start_folder;
+    if (fixLineBreaks == null) {
+      fixLineBreaks = true;
+    }
+    file_contents = void 0;
+    start_folder = new Folder(app.project.file.parent.fsName);
+    file_handle = new File(start_folder.fsName + '/' + filename);
+    if (!file_handle.exists) {
+      throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + start_folder.fsName + '\'.');
+    }
+    try {
+      file_handle.open('r');
+      file_contents = file_handle.read();
+    } catch (error) {
+      e = error;
+      throw new Error('I couldn\'t read the given file: ' + e);
+    } finally {
+      file_handle.close();
+    }
+    if (fixLineBreaks) {
+      return NFTools.fixLineBreaks(file_contents);
+    } else {
+      return file_contents;
+    }
+  },
+
+  /**
+  Checks to see if a file exists relative to the current AE project
+  @memberof NFTools
+  @param {String} filename - the path to the file as a string. No leading
+  slashes are necessary
+  @returns {boolean} Whether the file can be read or not
+   */
+  testProjectFile: function(filename) {
+    var e, error, file_contents, file_handle, start_folder;
+    file_contents = void 0;
+    start_folder = new Folder(app.project.file.parent.fsName);
+    file_handle = new File(start_folder.fsName + '/' + filename);
+    if (!file_handle.exists) {
+      return false;
+    }
+    try {
+      file_handle.open('r');
+      file_contents = file_handle.read();
+    } catch (error) {
+      e = error;
+      return false;
+    } finally {
+      file_handle.close();
+    }
+    if (file_contents != null) {
+      return true;
+    }
+  },
+
+  /**
   Reads a file and returns the contents as a string
   @memberof NFTools
   @param {String} filename - the path to the file as a string. No leading
@@ -223,5 +289,32 @@ NFTools = {
     }
     NFTools.clearFile("../log.txt");
     return null;
+  },
+
+  /**
+  Converts a String from a CSV file to an array of arrays
+  @memberof NFTools
+  @returns {Array} the array from the CSV
+   */
+  parseCSV: function(sep) {
+    var foo, tl, x;
+    foo = this.split(sep = sep || ',');
+    x = foo.length - 1;
+    tl = void 0;
+    while (x >= 0) {
+      if (foo[x].replace(/"\s+$/, '"').charAt(foo[x].length - 1) === '"') {
+        if ((tl = foo[x].replace(/^\s+"/, '"')).length > 1 && tl.charAt(0) === '"') {
+          foo[x] = foo[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"');
+        } else if (x) {
+          foo.splice(x - 1, 2, [foo[x - 1], foo[x]].join(sep));
+        } else {
+          foo = foo.shift().split(sep).concat(foo);
+        }
+      } else {
+        foo[x].replace(/""/g, '"');
+      }
+      x--;
+    }
+    return foo;
   }
 };
