@@ -811,6 +811,7 @@ NFLayer = (function(superClass) {
   @memberof NFLayer
   @param {Object} model
   @param {String} model.comment - the marker comment
+  @param {float} [model.duration=0] - the duration
   @param {float} model.time - the time to add the marker
   @throw Throws error if marker already exists at given time
   @returns {Property} The marker property
@@ -2196,7 +2197,7 @@ NFPaperLayerGroup = (function(superClass) {
    */
 
   NFPaperLayerGroup.prototype.bubbleUp = function(highlightsToBubble, time) {
-    this.log("Bubbling up highlights: " + highlightsToBubble);
+    this.log("Bubbling up highlights: " + (highlightsToBubble.toString()));
     if (highlightsToBubble instanceof NFHighlightLayer) {
       highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble]);
     }
@@ -2277,7 +2278,7 @@ NFPaperLayerGroup = (function(superClass) {
     if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
       throw new Error("\nInvalid highlight");
     }
-    this.log("Moving to highlight: " + model.highlight);
+    this.log("Moving to highlight: " + (model.highlight.toString()));
     model = {
       highlight: model.highlight,
       time: (ref = model.time) != null ? ref : this.containingComp().getTime(),
@@ -2416,11 +2417,50 @@ NFCitationLayer = (function(superClass) {
   /**
   Adds a citation visible marker at the given time
   @memberof NFCitationLayer
-  @param {float} time - the time to add the marker at
+  @param {float} [time=currTime] - the time to add the marker
+  @param {float} [duration=5] - the duration of the marker
   @returns {NFCitationLayer} self
    */
 
-  NFCitationLayer.prototype.showCitation = function(time) {
+  NFCitationLayer.prototype.show = function(time, duration) {
+    var citationMarkers, delta, endTime, i, idx, markers, newDuration, ref, thisEndTime, thisMarker, thisTime;
+    time = time || this.containingComp().getTime();
+    duration = duration || 5;
+    endTime = time + duration;
+    markers = this.markers();
+    citationMarkers = [];
+    if (markers.numKeys > 0) {
+      for (idx = i = 1, ref = markers.numKeys; 1 <= ref ? i <= ref : i >= ref; idx = 1 <= ref ? ++i : --i) {
+        thisMarker = markers.keyValue(idx);
+        thisTime = markers.keyTime(idx);
+        thisEndTime = thisTime + thisMarker.duration;
+        if (thisMarker.comment === "Citation") {
+          if ((thisTime <= time && time < thisEndTime)) {
+            newDuration = endTime - thisTime;
+            if (newDuration > thisMarker.duration) {
+              thisMarker.duration = newDuration;
+            }
+            return this;
+          }
+          if ((thisTime <= endTime && endTime < thisEndTime)) {
+            delta = thisTime - time;
+            newDuration = thisMarker.duration + delta;
+            thisMarker.remove();
+            this.addMarker({
+              time: time,
+              comment: "Citation",
+              duration: newDuration
+            });
+            return this;
+          }
+        }
+      }
+    }
+    this.addMarker({
+      time: time,
+      comment: "Citation",
+      duration: duration
+    });
     return this;
   };
 
@@ -2487,7 +2527,6 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
         throw new Error("Not enough columns");
       }
       citeObj = {};
-      $.bp();
       for (j = 0, len = citationArray.length; j < len; j++) {
         citeLine = citationArray[j];
         newKey = citeLine[startColumn];
@@ -2573,7 +2612,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
   @returns {NFCitationLayer} the new citation layer
    */
   newCitationLayer: function(group) {
-    var citationComp, citeLayer, compName, thePDF;
+    var citationComp, citeLayer, compName, sourceExpression, thePDF;
     if (!(group instanceof NFPaperLayerGroup)) {
       throw new Error("Missing group");
     }
@@ -2590,6 +2629,8 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
       time: group.paperParent.layer.inPoint
     });
     citeLayer.layer.collapseTransformation = true;
+    sourceExpression = NFTools.readExpression("citation-opacity-expression");
+    citeLayer.transform().property("Opacity").expression = sourceExpression;
     return citeLayer;
   }
 });
@@ -2829,7 +2870,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     if (!(((model != null ? model.group : void 0) != null) && (model.highlight != null))) {
       throw new Error("Missing parameters");
     }
-    this.log("Creating new control layer for highlight: " + model.highlight);
+    NFTools.log("Creating new control layer for highlight: " + (model.highlight.toString()));
     partComp = model.group.containingComp();
     controlLayer = partComp.addNull();
     controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight(model.group.getPDFNumber(), model.highlight);
@@ -4865,7 +4906,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     model = {
       highlight: model.highlight,
       page: model.page,
@@ -4895,7 +4936,10 @@ NFPartComp = (function(superClass) {
     containingPartComps = targetPDF.containingPartComps();
     targetPage = (ref5 = model.page) != null ? ref5 : model.highlight.getPageComp();
     preAnimationTime = this.getTime();
-    prevGroup = this.groupFromPDF(this.activePDF());
+    activePDF = this.activePDF();
+    if (activePDF != null) {
+      prevGroup = this.groupFromPDF(activePDF);
+    }
     if (containingPartComps.length === 0) {
       activePageLayer = this.activePage();
       if (model.skipTitle === false) {
@@ -4904,8 +4948,11 @@ NFPartComp = (function(superClass) {
           page: titlePage,
           animate: true
         });
-        prevGroup.trim(titlePageLayer.getInMarkerTime());
+        if (prevGroup != null) {
+          prevGroup.trim(titlePageLayer.getInMarkerTime());
+        }
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
+        group.getCitationLayer().show(this.getTime() + 0.5);
         if (model.highlight != null) {
           if (targetPage.is(titlePage)) {
             this.setTime(titlePageLayer.getInMarkerTime());
@@ -4949,6 +4996,8 @@ NFPartComp = (function(superClass) {
             fillPercentage: model.fillPercentage
           }
         });
+        group = new NFPaperLayerGroup(targetPageLayer.getPaperParentLayer());
+        group.getCitationLayer().show(this.getTime() + 0.5);
         prevGroup.trim(targetPageLayer.getInMarkerTime());
         if ((model.highlight != null) && !model.highlight.isBubbled()) {
           group.bubbleUp(model.highlight, this.getTime() + 0.25);
@@ -5048,7 +5097,10 @@ NFPartComp = (function(superClass) {
       } else {
         activePageLayer = this.activePage();
         targetGroup = this.groupFromPDF(targetPDF);
-        prevGroup = this.groupFromPDF(this.activePDF());
+        activePDF = this.activePDF();
+        if (activePDF != null) {
+          prevGroup = this.groupFromPDF(activePDF);
+        }
         alreadyInThisPart = targetGroup != null;
         targetPageLayer = this.insertPage({
           page: targetPage,
@@ -5059,18 +5111,25 @@ NFPartComp = (function(superClass) {
           }
         });
         targetGroup = this.groupFromPDF(targetPDF);
+        targetGroup.getCitationLayer().show(this.getTime() + 0.5);
         if (alreadyInThisPart) {
           targetGroup.gatherLayers(new NFLayerCollection([targetPageLayer]));
           if (targetPageLayer.index() < activePageLayer.index()) {
             targetPageLayer.slideIn();
-            prevGroup.trim(targetPageLayer.getInMarkerTime());
+            if (prevGroup != null) {
+              prevGroup.trim(targetPageLayer.getInMarkerTime());
+            }
           } else {
-            prevGroup.trim(targetPageLayer.layer.inPoint + 2.0);
+            if (prevGroup != null) {
+              prevGroup.trim(targetPageLayer.layer.inPoint + 2.0);
+            }
             activePageLayer.slideOut();
           }
         } else {
           targetPageLayer.slideIn();
-          prevGroup.trim(targetPageLayer.getInMarkerTime());
+          if (prevGroup != null) {
+            prevGroup.trim(targetPageLayer.getInMarkerTime());
+          }
         }
         if ((model.highlight != null) && !model.highlight.isBubbled()) {
           targetGroup.bubbleUp(model.highlight, this.getTime() + 0.25);

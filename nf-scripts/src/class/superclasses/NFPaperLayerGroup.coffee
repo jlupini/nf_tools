@@ -198,7 +198,7 @@ class NFPaperLayerGroup extends NFObject
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
   ###
   bubbleUp: (highlightsToBubble, time) ->
-    @log "Bubbling up highlights: #{highlightsToBubble}"
+    @log "Bubbling up highlights: #{highlightsToBubble.toString()}"
     # If given a single highlight, wrap it.
     if highlightsToBubble instanceof NFHighlightLayer
       highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble])
@@ -276,7 +276,7 @@ class NFPaperLayerGroup extends NFObject
   moveToHighlight: (model) ->
     throw new Error "\nInvalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
 
-    @log "Moving to highlight: #{model.highlight}"
+    @log "Moving to highlight: #{model.highlight.toString()}"
     model =
       highlight: model.highlight
       time: model.time ? @containingComp().getTime()

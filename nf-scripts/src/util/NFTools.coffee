@@ -201,8 +201,8 @@ NFTools =
   `expressions/` folder.
   @memberof NFTools
   @param {String} expName - The name of the script. No path or extension.
-  @param {Object} replacementDict - a dictionary of search/replace keys in the
-  file. Error thrown if one is not found
+  @param {Object} [replacementDict] - a dictionary of search/replace keys in the
+  file.
   @example fileString = readExpression "expressionfile"
   @throw Throws error if search value could not be found
   @throw Throws error if file cannot be found

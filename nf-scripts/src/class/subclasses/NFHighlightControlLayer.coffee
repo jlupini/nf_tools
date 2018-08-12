@@ -136,7 +136,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
   ###
   newHighlightControlLayer: (model) ->
     throw new Error "Missing parameters" unless model?.group? and model.highlight?
-    @log "Creating new control layer for highlight: #{model.highlight}"
+    NFTools.log "Creating new control layer for highlight: #{model.highlight.toString()}"
 
     # Create the control layer
     partComp = model.group.containingComp()

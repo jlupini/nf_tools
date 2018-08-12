@@ -16,12 +16,47 @@ class NFCitationLayer extends NFLayer
   ###*
   Adds a citation visible marker at the given time
   @memberof NFCitationLayer
-  @param {float} time - the time to add the marker at
+  @param {float} [time=currTime] - the time to add the marker
+  @param {float} [duration=5] - the duration of the marker
   @returns {NFCitationLayer} self
   ###
-  showCitation: (time) ->
-    # FIXME: Stub
-    @
+  show: (time, duration) ->
+    time = time or @containingComp().getTime()
+    duration = duration or 5
+    endTime = time + duration
+
+    markers = @markers()
+    citationMarkers = []
+    if markers.numKeys > 0
+      for idx in [1..markers.numKeys]
+        thisMarker = markers.keyValue idx
+        thisTime = markers.keyTime idx
+        thisEndTime = thisTime + thisMarker.duration
+        if thisMarker.comment is "Citation"
+          if thisTime <= time < thisEndTime
+            # We're trying to start inside an existing marker
+            # So just extend the end of the existing one.
+            newDuration = endTime - thisTime
+            thisMarker.duration = newDuration if newDuration > thisMarker.duration
+            return @
+          if thisTime <= endTime < thisEndTime
+            # We're trying to end this marker inside an existing one
+            # So just extend the start of the existing one back
+            delta = thisTime - time
+            newDuration = thisMarker.duration + delta
+            thisMarker.remove()
+            @addMarker
+              time: time
+              comment: "Citation"
+              duration: newDuration
+            return @
+
+
+    @addMarker
+      time: time
+      comment: "Citation"
+      duration: duration
+    return @
 
 
 NFCitationLayer = Object.assign NFCitationLayer,
@@ -75,7 +110,6 @@ NFCitationLayer = Object.assign NFCitationLayer,
       throw new Error "Not enough columns" unless citationArray[0].length >= startColumn
 
       citeObj = {}
-      $.bp()
       for citeLine in citationArray
         newKey = citeLine[startColumn]
         newVal = citeLine[startColumn + 1]
@@ -191,5 +225,8 @@ NFCitationLayer = Object.assign NFCitationLayer,
       below: group.paperParent
       time: group.paperParent.layer.inPoint
     citeLayer.layer.collapseTransformation = yes
+
+    sourceExpression = NFTools.readExpression "citation-opacity-expression"
+    citeLayer.transform().property("Opacity").expression = sourceExpression
 
     return citeLayer

@@ -300,6 +300,7 @@ class NFLayer extends NFObject
   @memberof NFLayer
   @param {Object} model
   @param {String} model.comment - the marker comment
+  @param {float} [model.duration=0] - the duration
   @param {float} model.time - the time to add the marker
   @throw Throws error if marker already exists at given time
   @returns {Property} The marker property

@@ -62,7 +62,8 @@ class NFPartComp extends NFComp
     containingPartComps = targetPDF.containingPartComps()
     targetPage = model.page ? model.highlight.getPageComp()
     preAnimationTime = @getTime()
-    prevGroup = @groupFromPDF(@activePDF())
+    activePDF = @activePDF()
+    prevGroup = @groupFromPDF activePDF if activePDF?
 
     # If we've NEVER SEEN THIS PDF before
     if containingPartComps.length is 0
@@ -77,9 +78,10 @@ class NFPartComp extends NFComp
           page: titlePage
           animate: yes
 
-        prevGroup.trim titlePageLayer.getInMarkerTime()
+        prevGroup.trim titlePageLayer.getInMarkerTime() if prevGroup?
 
         group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
+        group.getCitationLayer().show @getTime()+0.5
 
         # If the target is a highlight, keep working...
         if model.highlight?
@@ -126,6 +128,9 @@ class NFPartComp extends NFComp
           frameUp:
             highlight: model.highlight
             fillPercentage: model.fillPercentage
+
+        group = new NFPaperLayerGroup targetPageLayer.getPaperParentLayer()
+        group.getCitationLayer().show @getTime()+0.5
 
         # Trim the old layer to the end of the page turn
         prevGroup.trim targetPageLayer.getInMarkerTime()
@@ -248,7 +253,8 @@ class NFPartComp extends NFComp
         # Animate in the page ALREADY focused on the highlight or page
         activePageLayer = @activePage()
         targetGroup = @groupFromPDF targetPDF
-        prevGroup = @groupFromPDF @activePDF()
+        activePDF = @activePDF()
+        prevGroup = @groupFromPDF activePDF if activePDF?
         alreadyInThisPart = targetGroup?
 
         targetPageLayer = @insertPage
@@ -259,6 +265,7 @@ class NFPartComp extends NFComp
             fillPercentage: model.fillPercentage
 
         targetGroup = @groupFromPDF targetPDF
+        targetGroup.getCitationLayer().show @getTime()+0.5
 
         if alreadyInThisPart
           targetGroup.gatherLayers new NFLayerCollection [targetPageLayer]
@@ -267,13 +274,13 @@ class NFPartComp extends NFComp
           # Otherwise, slide the active layer out
           if targetPageLayer.index() < activePageLayer.index()
             targetPageLayer.slideIn()
-            prevGroup.trim targetPageLayer.getInMarkerTime()
+            prevGroup?.trim targetPageLayer.getInMarkerTime()
           else
-            prevGroup.trim targetPageLayer.layer.inPoint + 2.0
+            prevGroup?.trim targetPageLayer.layer.inPoint + 2.0
             activePageLayer.slideOut()
         else
           targetPageLayer.slideIn()
-          prevGroup.trim targetPageLayer.getInMarkerTime()
+          prevGroup?.trim targetPageLayer.getInMarkerTime()
 
         if model.highlight? and not model.highlight.isBubbled()
           targetGroup.bubbleUp model.highlight, @getTime() + 0.25
