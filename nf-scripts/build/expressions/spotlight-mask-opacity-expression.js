@@ -1,4 +1,4 @@
-var activeMarkersAtTime, controlLayer, duration, expValue, firstInBlock, inFunc, lastInBlock, notFirstOrLastInBlock, onValue, onlyInBlock, outFunc, positionInBlock, ref, spotlightMarkers, targetPDF, thisSpotlightMarker;
+var activeMarkersAtTime, controlLayer, duration, expValue, firstInBlock, inFunc, lastInBlock, nearestSpotlightMarker, notFirstOrLastInBlock, onValue, onlyInBlock, outFunc, positionInBlock, ref, spotlightMarkers, targetPDF;
 
 onValue = ON_VALUE;
 
@@ -55,16 +55,32 @@ activeMarkersAtTime = function() {
   return activeMarkers;
 };
 
-thisSpotlightMarker = function() {
-  var idx, j, ref, spotMarker, testMarker;
+nearestSpotlightMarker = function() {
+  var idx, j, min, nearestMarker, prevTimeToIn, prevTimeToOut, ref, testMarkIn, testMarkOut, testMarker, timeToIn, timeToOut;
+  nearestMarker = null;
   if (controlLayer.marker.numKeys > 0) {
     for (idx = j = 1, ref = controlLayer.marker.numKeys; 1 <= ref ? j <= ref : j >= ref; idx = 1 <= ref ? ++j : --j) {
       testMarker = controlLayer.marker.key(idx);
       if (testMarker.comment === "Spotlight") {
-        spotMarker = testMarker;
+        testMarkIn = inFunc(testMarker);
+        testMarkOut = outFunc(testMarker);
+        if ((testMarkIn <= time && time <= testMarkOut)) {
+          return testMarker;
+        } else if (nearestMarker != null) {
+          timeToIn = Math.abs(time - testMarkIn);
+          timeToOut = Math.abs(time - testMarkOut);
+          prevTimeToIn = Math.abs(time - inFunc(nearestMarker));
+          prevTimeToOut = Math.abs(time - outFunc(nearestMarker));
+          min = Math.min(timeToIn, timeToOut, prevTimeToIn, prevTimeToOut);
+          if (min === timeToIn || min === timeToOut) {
+            nearestMarker = testMarker;
+          }
+        } else {
+          nearestMarker = testMarker;
+        }
       }
     }
-    return spotMarker;
+    return nearestMarker;
   } else {
     return null;
   }
@@ -94,7 +110,7 @@ positionInBlock = function() {
     } else {
       return onlyInBlock;
     }
-    thisMarker = thisSpotlightMarker();
+    thisMarker = nearestSpotlightMarker();
     if (blockStartMarker.time === thisMarker.time) {
       return firstInBlock;
     } else if (blockEndMarker.time === thisMarker.time) {
@@ -107,7 +123,7 @@ positionInBlock = function() {
 
 expValue = function() {
   var blockChangeInMarker, blockChangeOutMarker, inTime, isntFirstOrOnly, isntLastOrOnly, j, len, outTime, posInBlk, progress, ref, ref1, somethingElseEndsDuringTheOpening, somethingElseStartsDuringTheClosing, spMark, spotMarker, timeIsWithinAllAnimation, timeIsWithinClosingAnimation, timeIsWithinOpeningAnimation;
-  spotMarker = thisSpotlightMarker();
+  spotMarker = nearestSpotlightMarker();
   if (spotMarker == null) {
     return null;
   }

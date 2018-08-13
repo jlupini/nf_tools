@@ -143,10 +143,12 @@ class NFPaperLayerGroup extends NFObject
     activeControlLayers = new NFLayerCollection()
 
     allControlLayers.forEach (layer) =>
-      marker = layer.spotlightMarker()
-      start = marker.time
-      end = marker.time + marker.value.duration
-      activeControlLayers.add layer if start <= time < end
+      spotMarkers = layer.spotlightMarkers()
+      for marker in spotMarkers
+        start = marker.time
+        end = marker.time + marker.value.duration
+        if start <= time < end
+          activeControlLayers.add layer unless activeControlLayers.containsLayer layer
 
     return activeControlLayers
 

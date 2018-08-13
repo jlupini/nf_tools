@@ -2144,13 +2144,24 @@ NFPaperLayerGroup = (function(superClass) {
     activeControlLayers = new NFLayerCollection();
     allControlLayers.forEach((function(_this) {
       return function(layer) {
-        var end, marker, start;
-        marker = layer.spotlightMarker();
-        start = marker.time;
-        end = marker.time + marker.value.duration;
-        if ((start <= time && time < end)) {
-          return activeControlLayers.add(layer);
+        var end, i, len, marker, results, spotMarkers, start;
+        spotMarkers = layer.spotlightMarkers();
+        results = [];
+        for (i = 0, len = spotMarkers.length; i < len; i++) {
+          marker = spotMarkers[i];
+          start = marker.time;
+          end = marker.time + marker.value.duration;
+          if ((start <= time && time < end)) {
+            if (!activeControlLayers.containsLayer(layer)) {
+              results.push(activeControlLayers.add(layer));
+            } else {
+              results.push(void 0);
+            }
+          } else {
+            results.push(void 0);
+          }
         }
+        return results;
       };
     })(this));
     return activeControlLayers;
@@ -2802,18 +2813,50 @@ NFHighlightControlLayer = (function(superClass) {
 
 
   /**
-  Returns the spotlight marker
+  Returns the spotlight markers
   @memberof NFHighlightControlLayer
-  @returns {Object} the object for the spotlight marker with 'time' and 'value' keys
+  @returns {Object[]} an array of markers, with each item being an object
+  containing 'time' and 'value' keys
    */
 
-  NFHighlightControlLayer.prototype.spotlightMarker = function() {
-    var markerObject;
-    markerObject = {
-      value: this.markers().keyValue("Spotlight"),
-      time: this.markers().keyTime("Spotlight")
+  NFHighlightControlLayer.prototype.spotlightMarkers = function() {
+    var i, idx, markerObject, markers, ref, spotMarkers, thisMarkerValue;
+    spotMarkers = [];
+    markers = this.markers();
+    for (idx = i = 1, ref = markers.numKeys; 1 <= ref ? i <= ref : i >= ref; idx = 1 <= ref ? ++i : --i) {
+      thisMarkerValue = markers.keyValue(idx);
+      if (thisMarkerValue.comment === "Spotlight") {
+        markerObject = {
+          value: this.markers().keyValue("Spotlight"),
+          time: this.markers().keyTime("Spotlight")
+        };
+        spotMarkers.push(markerObject);
+      }
+    }
+    return spotMarkers;
+  };
+
+
+  /**
+  Returns the spotlight marker
+  @memberof NFHighlightControlLayer
+  @param {Object} [model] - the model
+  @param {float} [model.time=currTime] - the marker time
+  @param {float} [model.duration=5] - the marker duration
+  @returns {NFHighlightControlLayer} self
+   */
+
+  NFHighlightControlLayer.prototype.addSpotlightMarker = function(model) {
+    var ref, ref1;
+    model = {
+      time: (ref = model != null ? model.time : void 0) != null ? ref : this.containingComp().getTime(),
+      duration: (ref1 = model != null ? model.duration : void 0) != null ? ref1 : 5
     };
-    return markerObject;
+    return this.addMarker({
+      comment: "Spotlight",
+      time: model.time,
+      duration: model.duration
+    });
   };
 
 
@@ -2827,8 +2870,22 @@ NFHighlightControlLayer = (function(superClass) {
    */
 
   NFHighlightControlLayer.prototype.setSpotlightMarkerInPoint = function(newInPoint) {
-    var newDuration, oldMarker, startDelta;
-    oldMarker = this.spotlightMarker();
+    var currDistance, i, len, newDuration, oldMarker, spotMarkers, startDelta, testDistance, testMarker;
+    spotMarkers = this.spotlightMarkers();
+    if (spotMarkers.length === 0) {
+      throw new Error("Can't set spotlight marker in point because there are no spotlight markers");
+    }
+    oldMarker = spotMarkers[0];
+    if (spotMarkers.length > 1) {
+      for (i = 0, len = spotMarkers.length; i < len; i++) {
+        testMarker = spotMarkers[i];
+        currDistance = Math.abs(oldMarker.time - newInPoint);
+        testDistance = Math.abs(testMarker.time - newInPoint);
+        if (testDistance < currDistance) {
+          oldMarker = testMarker;
+        }
+      }
+    }
     startDelta = newInPoint - oldMarker.time;
     newDuration = oldMarker.value.duration - startDelta;
     if (newDuration < 0) {
@@ -2854,8 +2911,22 @@ NFHighlightControlLayer = (function(superClass) {
    */
 
   NFHighlightControlLayer.prototype.setSpotlightMarkerOutPoint = function(newOutPoint) {
-    var currentOutPoint, delta, duration, newInPoint, oldMarker;
-    oldMarker = this.spotlightMarker();
+    var currDistance, currentOutPoint, delta, duration, i, len, newInPoint, oldMarker, spotMarkers, testDistance, testMarker;
+    spotMarkers = this.spotlightMarkers();
+    if (spotMarkers.length === 0) {
+      throw new Error("Can't set spotlight marker out point because there are no spotlight markers");
+    }
+    oldMarker = spotMarkers[0];
+    if (spotMarkers.length > 1) {
+      for (i = 0, len = spotMarkers.length; i < len; i++) {
+        testMarker = spotMarkers[i];
+        currDistance = Math.abs(oldMarker.time + oldMarker.value.duration - newOutPoint);
+        testDistance = Math.abs(testMarker.time + testMarker.value.duration - newOutPoint);
+        if (testDistance < currDistance) {
+          oldMarker = testMarker;
+        }
+      }
+    }
     if (newOutPoint < oldMarker.time) {
       newInPoint = newOutPoint;
       duration = 0;

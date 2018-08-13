@@ -255,7 +255,7 @@ NFTools = {
         now = new Date();
         timestamp = NFTools.timestamp();
         newEntry = "[" + timestamp + "] (" + sender + ") > " + message;
-        return fileText + "\n" + newEntry;
+        return fileText + "\r\n" + newEntry;
       };
     })(this));
     return null;
@@ -272,7 +272,7 @@ NFTools = {
     }
     NFTools.editFile("../log.txt", (function(_this) {
       return function(fileText) {
-        return fileText + "\n-----------------------------\n\n\n";
+        return fileText + "\r\n-----------------------------\r\n\r\n";
       };
     })(this));
     return null;

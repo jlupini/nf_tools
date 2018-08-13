@@ -18,15 +18,42 @@ class NFHighlightControlLayer extends NFLayer
     return "NFHighlightControlLayer: '#{@layer.name}'"
 
   ###*
+  Returns the spotlight markers
+  @memberof NFHighlightControlLayer
+  @returns {Object[]} an array of markers, with each item being an object
+  containing 'time' and 'value' keys
+  ###
+  spotlightMarkers: ->
+    spotMarkers = []
+    markers = @markers()
+    for idx in [1..markers.numKeys]
+      thisMarkerValue = markers.keyValue idx
+      if thisMarkerValue.comment is "Spotlight"
+        markerObject =
+          value: @markers().keyValue "Spotlight"
+          time: @markers().keyTime "Spotlight"
+        spotMarkers.push markerObject
+
+    return spotMarkers
+
+  ###*
   Returns the spotlight marker
   @memberof NFHighlightControlLayer
-  @returns {Object} the object for the spotlight marker with 'time' and 'value' keys
+  @param {Object} [model] - the model
+  @param {float} [model.time=currTime] - the marker time
+  @param {float} [model.duration=5] - the marker duration
+  @returns {NFHighlightControlLayer} self
   ###
-  spotlightMarker: ->
-    markerObject =
-      value: @markers().keyValue "Spotlight"
-      time: @markers().keyTime "Spotlight"
-    return markerObject
+  addSpotlightMarker: (model) ->
+    model =
+      time: model?.time ? @containingComp().getTime()
+      duration: model?.duration ? 5
+
+    # TODO: Deal with possiblility that we're creating intersecting markers...
+    @addMarker
+      comment: "Spotlight"
+      time: model.time
+      duration: model.duration
 
   ###*
   Sets the in point of the spotlight marker, keeping the out point where it is.
@@ -37,7 +64,18 @@ class NFHighlightControlLayer extends NFLayer
   @param {float} newInPoint - the new in point
   ###
   setSpotlightMarkerInPoint: (newInPoint) ->
-    oldMarker = @spotlightMarker()
+    spotMarkers = @spotlightMarkers()
+    if spotMarkers.length is 0
+      throw new Error "Can't set spotlight marker in point because there are no spotlight markers"
+
+    oldMarker = spotMarkers[0]
+    if spotMarkers.length > 1
+      # Get the one with the closest in point
+      for testMarker in spotMarkers
+        currDistance = Math.abs(oldMarker.time - newInPoint)
+        testDistance = Math.abs(testMarker.time - newInPoint)
+        oldMarker = testMarker if testDistance < currDistance
+
 
     startDelta = newInPoint - oldMarker.time
     newDuration = oldMarker.value.duration - startDelta
@@ -61,7 +99,17 @@ class NFHighlightControlLayer extends NFLayer
   @param {float} newOutPoint - the new out point
   ###
   setSpotlightMarkerOutPoint: (newOutPoint) ->
-    oldMarker = @spotlightMarker()
+    spotMarkers = @spotlightMarkers()
+    if spotMarkers.length is 0
+      throw new Error "Can't set spotlight marker out point because there are no spotlight markers"
+
+    oldMarker = spotMarkers[0]
+    if spotMarkers.length > 1
+      # Get the one with the closest out point
+      for testMarker in spotMarkers
+        currDistance = Math.abs(oldMarker.time + oldMarker.value.duration - newOutPoint)
+        testDistance = Math.abs(testMarker.time + testMarker.value.duration - newOutPoint)
+        oldMarker = testMarker if testDistance < currDistance
 
     if newOutPoint < oldMarker.time
       newInPoint = newOutPoint

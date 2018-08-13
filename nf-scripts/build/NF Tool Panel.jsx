@@ -72,9 +72,25 @@ toolRegistry = {
       }
     }
   },
-  misc: {
-    name: "Misc",
+  animation: {
+    name: "Animation",
     tools: {
+      addSpotlightMarker: {
+        name: "Add Spotlight Marker",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            if (theLayer instanceof NFHighlightControlLayer) {
+              return theLayer.addSpotlightMarker();
+            }
+          } else {
+            return alert("Error\nPlease select a single Highlight Control Layer and try again");
+          }
+        }
+      },
       disconnectBrokenHighlights: {
         name: "Disconnect Broken Highlights",
         callback: function() {
@@ -85,7 +101,7 @@ toolRegistry = {
               highlight.resetExpressionErrors();
               if (highlight.isBroken()) {
                 highlight.disconnect();
-                return $.write("Disconnected highlight: " + (highlight.getName()) + " in page: " + (highlight.getPageComp().comp.name) + "\n");
+                return NFTools.log("Disconnected highlight: " + (highlight.getName()) + " in page: " + (highlight.getPageComp().comp.name) + "\n", "NFToolPanel#disconnectBrokenHighlights");
               }
             };
           })(this));

@@ -39,13 +39,32 @@ activeMarkersAtTime = ->
     i++
   return activeMarkers
 
-# Gets the spotlight marker on this layer
-thisSpotlightMarker = ->
+# Gets the nearest spotlight marker on this layer
+nearestSpotlightMarker = ->
+  nearestMarker = null
   if controlLayer.marker.numKeys > 0
     for idx in [1..controlLayer.marker.numKeys]
       testMarker = controlLayer.marker.key(idx)
-      spotMarker = testMarker if testMarker.comment is "Spotlight"
-    return spotMarker
+      if testMarker.comment is "Spotlight"
+        # Return immediately if the time is actually inside this marker
+        testMarkIn = inFunc testMarker
+        testMarkOut = outFunc testMarker
+
+        if testMarkIn <= time <= testMarkOut
+          return testMarker
+        else if nearestMarker?
+          timeToIn = Math.abs(time - testMarkIn)
+          timeToOut = Math.abs(time - testMarkOut)
+          prevTimeToIn = Math.abs(time - inFunc(nearestMarker))
+          prevTimeToOut = Math.abs(time - outFunc(nearestMarker))
+
+          min = Math.min timeToIn, timeToOut, prevTimeToIn, prevTimeToOut
+          if min is timeToIn or min is timeToOut
+            nearestMarker = testMarker
+        else
+          nearestMarker = testMarker
+
+    return nearestMarker
   else
     return null
 
@@ -71,7 +90,7 @@ positionInBlock = ->
     else
       return onlyInBlock
 
-    thisMarker = thisSpotlightMarker()
+    thisMarker = nearestSpotlightMarker()
     if blockStartMarker.time is thisMarker.time
       return firstInBlock
     else if blockEndMarker.time is thisMarker.time
@@ -81,7 +100,7 @@ positionInBlock = ->
 
 # Gets null or the value the opacity should be at
 expValue = ->
-  spotMarker = thisSpotlightMarker()
+  spotMarker = nearestSpotlightMarker()
   return null unless spotMarker?
 
   posInBlk = positionInBlock()

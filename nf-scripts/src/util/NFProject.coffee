@@ -50,6 +50,26 @@ NFProject =
     return mainComp
 
   ###*
+  Returns the Active Comp
+  @memberof NFProject
+  @returns {CompItem | null} the active CompItem or null
+  ###
+  activeComp: ->
+    activeItem = app.project.activeItem
+    if activeItem instanceof CompItem
+      return new NFComp activeItem
+    else
+      return null
+
+  ###*
+  Returns an NFLayerCollection of selected layers in the active comp
+  @memberof NFProject
+  @returns {NFLayerCollection} - the selected layers
+  ###
+  selectedLayers: ->
+    return NFProject.activeComp().selectedLayers()
+
+  ###*
   Given a string with the name of an item to find and it's parent folder,
   returns the folderItem, or null of none is found.
   @memberof NFProject
