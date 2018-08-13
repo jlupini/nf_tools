@@ -2904,12 +2904,12 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     controlLayer = new NFHighlightControlLayer(controlLayer);
     citationLayer = model.group.getCitationLayer();
     existingControlLayers = model.group.getControlLayers();
-    if (citationLayer != null) {
-      controlLayer.moveAfter(citationLayer);
-    } else if (existingControlLayers.isEmpty()) {
-      controlLayer.moveAfter(model.group.paperParent);
-    } else {
+    if (!existingControlLayers.isEmpty()) {
       controlLayer.moveBefore(existingControlLayers.getTopmostLayer());
+    } else if (citationLayer != null) {
+      controlLayer.moveAfter(citationLayer);
+    } else {
+      controlLayer.moveAfter(model.group.paperParent);
     }
     controlLayer.layer.startTime = (ref = model.time) != null ? ref : partComp.getTime();
     controlLayer.layer.endTime = controlLayer.layer.startTime + 5;

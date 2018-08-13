@@ -146,12 +146,12 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
 
     citationLayer = model.group.getCitationLayer()
     existingControlLayers = model.group.getControlLayers()
-    if citationLayer?
-      controlLayer.moveAfter citationLayer
-    else if existingControlLayers.isEmpty()
-      controlLayer.moveAfter model.group.paperParent
-    else
+    if not existingControlLayers.isEmpty()
       controlLayer.moveBefore existingControlLayers.getTopmostLayer()
+    else if citationLayer?
+      controlLayer.moveAfter citationLayer
+    else
+      controlLayer.moveAfter model.group.paperParent
 
     controlLayer.layer.startTime = model.time ? partComp.getTime()
     controlLayer.layer.endTime = controlLayer.layer.startTime + 5
