@@ -230,6 +230,7 @@ class NFPageLayer extends NFLayer
       width: @layer.source.width
       height: @containingComp().comp.height
       padding: 0
+    @relativeRect rect
 
   ###*
   Returns the source rect of a given highlight relative to this layer's
@@ -599,12 +600,12 @@ class NFPageLayer extends NFLayer
     hasPositionKeyframes = positionProp.numKeys != 0
     hasScaleKeyframes = scaleProp.numKeys != 0
 
-    scaleFactor = @getScaleFactorToFrameUpHighlight model
+    scaleFactor = @getScaleFactorToFrameUp model
     initialScale = scaleProp.valueAtTime model.time, false
     targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor]
     if hasScaleKeyframes then scaleProp.setValueAtTime(model.time, targetScale) else scaleProp.setValue(targetScale)
 
-    positionDelta = @getPositionDeltaToFrameUpHighlight model
+    positionDelta = @getPositionDeltaToFrameUp model
     initialPosition = positionProp.valueAtTime model.time, false
     targetPosition = [initialPosition[0] + positionDelta[0], initialPosition[1] + positionDelta[1]]
     if hasPositionKeyframes then positionProp.setValueAtTime(model.time, targetPosition) else positionProp.setValue(targetPosition)
@@ -617,33 +618,42 @@ class NFPageLayer extends NFLayer
 
   ###*
   Returns the multiplier, or scale factor required to frame up the given
-  highlight in this layer's Containing comp. Basically, multiplying the scale
-  of this layer by the result of this number will make the highlight fit in
-  frame perfectly.
+  highlight or rect in this layer's Containing comp. Basically, multiplying the scale
+  of this layer by the result of this number will make the highlight or rect fit in
+  frame perfectly. Must provide either a highlight OR rect.
   @memberof NFPageLayer
   @returns {float} the scale factor
   @param {Object} model - the options
-  @param {NFHighlightLayer} model.highlight - The highlight to get the scale
+  @param {NFHighlightLayer} [model.highlight] - The highlight to get the scale
   factor for.
+  @param {rect} [model.rect] - the rect to get the scale factor for
   @param {float} [model.time=The current time] - The time to calculate at
   @param {float} [model.fillPercentage=85] - Percentage of the comp width the
   highlight should take up
   @param {float} [model.maxScale=115] - The maximum that a page layer will scale
-  @throws Throws error if not given a NFHighlightLayer or
+  @throws Throws error if not given a NFHighlightLayer or rect, or the
   given highlight is not on this page.
   ###
-  getScaleFactorToFrameUpHighlight: (model) ->
+  getScaleFactorToFrameUp: (model) ->
+    # Make sure either a rect or highlight is given
+    if model.highlight?
+       unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+         throw new Error "Invalid highlight"
+    else if not model.rect?
+      throw new Error "Must provide either a highlight OR rect"
+
     model =
-      highlight: model.highlight ? throw new Error "No highlight!"
+      highlight: model.highlight
+      rect: model.rect
       time: model.time ? @containingComp().getTime()
       fillPercentage: model.fillPercentage ? 85
       maxScale: model.maxScale ? 115
-    throw new Error "Invalid highlight" unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
 
-    highlightRect = @sourceRectForHighlight model.highlight, model.time
+
+    rect = model.rect ? @sourceRectForHighlight model.highlight, model.time
     compWidth = @containingComp().comp.width
-    targetHighlightWidth = model.fillPercentage / 100 * compWidth
-    scaleFactor = targetHighlightWidth / highlightRect.width
+    targetRectWidth = model.fillPercentage / 100 * compWidth
+    scaleFactor = targetRectWidth / rect.width
 
     # Adjust for max page scale
     absoluteScale = @getAbsoluteScale()
@@ -659,24 +669,31 @@ class NFPageLayer extends NFLayer
 
   ###*
   Returns a length-2 array with x and y 'nudge' values to make the given
-  highlight be centered in frame *at the current scale of the layer*.
+  highlight or rect be centered in frame *at the current scale of the layer*.
+  Must provide either a rect OR highlight.
   @memberof NFPageLayer
   @returns {float[]} the x and y nudge values
   @param {Object} model - The options
-  @param {NFHighlightLayer} model.highlight - The highlight to get the scale
+  @param {NFHighlightLayer} [model.highlight] - The highlight to get the scale
   factor for.
+  @param {rect} [model.rect] - the rect to get the scale factor for
   @param {float} [model.time=The current time] - The time to calculate at
-  @throws Throws error if not given a NFHighlightLayer or
+  @throws Throws error if not given a NFHighlightLayer or rect, or
   given highlight is not on this page.
   ###
-  getPositionDeltaToFrameUpHighlight: (model) ->
-    throw new Error "Invalid highlight" unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+  getPositionDeltaToFrameUp: (model) ->
+    # Make sure either a rect or highlight is given
+    if model.highlight?
+       unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+         throw new Error "Invalid highlight"
+    else if not model.rect?
+      throw new Error "Must provide either a highlight OR rect"
 
-    highlightRect = @sourceRectForHighlight model.highlight, model.time
+    rect = model.rect ? @sourceRectForHighlight model.highlight, model.time
 
-    highlightCenterPoint = [highlightRect.left + highlightRect.width / 2, highlightRect.top + highlightRect.height / 2]
+    rectCenterPoint = [rect.left + rect.width / 2, rect.top + rect.height / 2]
     compCenterPoint = [@containingComp().comp.width / 2, @containingComp().comp.height / 2]
-    delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]]
+    delta = [compCenterPoint[0] - rectCenterPoint[0], compCenterPoint[1] - rectCenterPoint[1]]
 
     # Adjust to prevent falling off the page
     rectAfterReposition = @sourceRect model.time

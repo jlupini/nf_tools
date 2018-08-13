@@ -87,11 +87,11 @@ class NFPartComp extends NFComp
         if model.highlight?
           # If the highlight we want is on the title page
           if targetPage.is titlePage
-            # Move the time to the in marker and run moveToHighlight
+            # Move the time to the in marker and run moveTo
             @setTime titlePageLayer.getInMarkerTime()
             group.bubbleUp model.highlight, @getTime() - 0.5
 
-            group.moveToHighlight
+            group.moveTo
               highlight: model.highlight
               duration: model.animationDuration
               maxScale: model.maxPageScale
@@ -114,7 +114,7 @@ class NFPartComp extends NFComp
             titlePageLayer.animatePageTurn()
 
             if model.highlight?
-              group.moveToHighlight
+              group.moveTo
                 highlight: model.highlight
                 duration: model.animationDuration
                 fillPercentage: model.fillPercentage
@@ -156,16 +156,15 @@ class NFPartComp extends NFComp
 
         # if the target page is the visible page
         if targetPage.is activePageLayer.getPageComp()
-          # RUN AS NORMAL
-          if model.highlight?
-            group.moveToHighlight
-              highlight: model.highlight
-              duration: model.animationDuration
-              fillPercentage: model.fillPercentage
-              maxScale: model.maxPageScale
-
-          # FIXME: There should be an ELSE here that allows clearing when already somewhere else on the title page
-          #        This will require adding a 'moveToRect' type function to NFPaperLayerGroup
+          # RUN AS NORMAL, but move to a the title rect if not given a highlight
+          $.bp()
+          group.moveTo
+            highlight: model.highlight ? null
+            rect: if model.highlight? then null else activePageLayer.sourceRectForFullTop()
+            layer: if model.highlight? then null else activePageLayer
+            duration: model.animationDuration
+            fillPercentage: if model.highlight? then model.fillPercentage else 100
+            maxScale: model.maxPageScale
 
           # Trim any active spotlights
           group.trimActiveSpotlights @getTime() + (model.animationDuration / 2)
@@ -205,7 +204,7 @@ class NFPartComp extends NFComp
 
               # Move the whole shabang to frame up the target highlight
               if model.highlight?
-                group.moveToHighlight
+                group.moveTo
                   highlight: model.highlight
                   duration: model.animationDuration
                   fillPercentage: model.fillPercentage
@@ -237,7 +236,7 @@ class NFPartComp extends NFComp
 
             # Move the whole shabang to frame up the target highlight
             if model.highlight?
-              group.moveToHighlight
+              group.moveTo
                 highlight: model.highlight
                 duration: model.animationDuration
                 fillPercentage: model.fillPercentage

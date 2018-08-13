@@ -73,7 +73,6 @@ class NFHighlightLayerCollection extends NFLayerCollection
   @throws Throw error if page is not an NFPageComp
   ###
   getHighlightsInPage: (page) ->
-    # FIXME: Pickup here this is what's broken and not working properly
     throw new Error "Can't getHighlightsInPage() when not given an NFPageComp" unless page instanceof NFPageComp
     highlightsInPage = new NFHighlightLayerCollection()
     for highlight in @layers

@@ -13,8 +13,7 @@ class NFPaperLayerGroup extends NFObject
     throw new Error "Not a valid paper parent" unless @paperParent instanceof NFPaperParentLayer
     @
   toString: ->
-    # FIXME: Write this function
-    return "NFPaperLayerGroup: #{@paperParent.layer.name}"
+    return "NFPaperLayerGroup: for PDF #{@getPDFNumber()}"
 
   ###*
   Gets all the NFLayers in the group
@@ -256,33 +255,50 @@ class NFPaperLayerGroup extends NFObject
 
   ###*
   Animates the parent layer starting at the given time such that a given
-  highlight is visible and centered in frame, via the page parent layer.
+  highlight or rect is visible and centered in frame, via the page parent layer.
   Always adds keyframes. Will NOT add page layers and will throw an
   error if the given highlight is not in this group already. use NFPartComp's
   animateTo() instead to perform all the page addition,
-  pageturns, etc.
+  pageturns, etc. IMPORTANT: You must provide either a highlight OR a layer and
+  rect.
   @memberof NFPaperLayerGroup
   @returns {NFPaperLayerGroup} self
   @param {Object} model - The options
-  @param {NFHighlightLayer} model.highlight - The highlight to move to
+  @param {NFHighlightLayer} [model.highlight] - The highlight to move to
+  @param {rect} [model.rect] - The rect on the given layer to move to
+  @param {NFPageLayer} [model.layer] - the layer the rect is on
   @param {float} [model.time=The current time] - The time to start the
   movement at
   @param {float} [model.duration=3.0] - The duration of the move
   @param {float} [model.maxScale=115] - The maximum a page will scale in this move
   @param {float} [model.fillPercentage=85] - the percentage of the width of the
   comp the highlight should fill
-  @throws Throws error if not given a NFHighlightLayer as model.highlight
+  @throws Throws error if not given a NFHighlightLayer as model.highlight OR
+  valid model.layer and model.rect values.
   ###
-  moveToHighlight: (model) ->
-    throw new Error "\nInvalid highlight" unless model?.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+  moveTo: (model) ->
+    if model?.highlight?
+      unless model.highlight instanceof NFHighlightLayer and @containsHighlight(model.highlight)
+        throw new Error "\nInvalid highlight"
+    else if model?.layer? and model.rect?
+      unless model.layer instanceof NFPageLayer and @getPages().containsLayer model.layer
+        throw new Error "Given Layer must be already in the group and an NFPageLayer"
+    else
+      throw new Error "Must provide either a highlight OR a layer and rect to move"
 
-    @log "Moving to highlight: #{model.highlight.toString()}"
     model =
       highlight: model.highlight
+      layer: model.layer
+      rect: model.rect
       time: model.time ? @containingComp().getTime()
       duration: model.duration ? 3.0
       maxScale: model.maxScale ? 115
       fillPercentage: model.fillPercentage ? 85
+
+    if model.highlight?
+      @log "Moving to highlight: #{model.highlight.toString()}"
+    else
+      @log "Moving to a rect in layer #{model.layer.toString()}"
 
     positionProp = @paperParent.transform().position
     scaleProp = @paperParent.transform().scale
@@ -294,16 +310,22 @@ class NFPaperLayerGroup extends NFObject
     originalParent = @paperParent.getParent()
     @paperParent.setParent null
 
-    # Move to the Highlight
-    possibleLayers = @getPages().layersWithHighlight model.highlight
-    activePageLayer = null
-    possibleLayers.forEach (theLayer) =>
-      activePageLayer = theLayer if theLayer.isActiveAtTime model.time
+    # Move to the Highlight or Rect
+
+    if model.highlight?
+      # Find out which layer contains the highlight at this time
+      possibleLayers = @getPages().layersWithHighlight model.highlight
+      activePageLayer = null
+      possibleLayers.forEach (theLayer) =>
+        activePageLayer = theLayer if theLayer.isActiveAtTime model.time
+    else
+      activePageLayer = model.layer
 
     keyframeTimes = [model.time, model.time + model.duration]
 
-    scaleFactor = activePageLayer.getScaleFactorToFrameUpHighlight
+    scaleFactor = activePageLayer.getScaleFactorToFrameUp
       highlight: model.highlight
+      rect: model.rect
       time: keyframeTimes[1]
       maxScale: model.maxScale
       fillPercentage: model.fillPercentage
@@ -313,8 +335,9 @@ class NFPaperLayerGroup extends NFObject
     keyframeScales = [scaleProp.valueAtTime(model.time, false), targetScale]
     scaleProp.setValuesAtTimes keyframeTimes, keyframeScales
 
-    positionDelta = activePageLayer.getPositionDeltaToFrameUpHighlight
+    positionDelta = activePageLayer.getPositionDeltaToFrameUp
       highlight: model.highlight
+      rect: model.rect
       time: keyframeTimes[1]
     initialPosition = positionProp.valueAtTime model.time, false
     targetPosition = [initialPosition[0] + positionDelta[0], initialPosition[1] + positionDelta[1]]

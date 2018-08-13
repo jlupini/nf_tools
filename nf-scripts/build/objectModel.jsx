@@ -1930,7 +1930,7 @@ NFPaperLayerGroup = (function(superClass) {
   }
 
   NFPaperLayerGroup.prototype.toString = function() {
-    return "NFPaperLayerGroup: " + this.paperParent.layer.name;
+    return "NFPaperLayerGroup: for PDF " + (this.getPDFNumber());
   };
 
 
@@ -2255,55 +2255,78 @@ NFPaperLayerGroup = (function(superClass) {
 
   /**
   Animates the parent layer starting at the given time such that a given
-  highlight is visible and centered in frame, via the page parent layer.
+  highlight or rect is visible and centered in frame, via the page parent layer.
   Always adds keyframes. Will NOT add page layers and will throw an
   error if the given highlight is not in this group already. use NFPartComp's
   animateTo() instead to perform all the page addition,
-  pageturns, etc.
+  pageturns, etc. IMPORTANT: You must provide either a highlight OR a layer and
+  rect.
   @memberof NFPaperLayerGroup
   @returns {NFPaperLayerGroup} self
   @param {Object} model - The options
-  @param {NFHighlightLayer} model.highlight - The highlight to move to
+  @param {NFHighlightLayer} [model.highlight] - The highlight to move to
+  @param {rect} [model.rect] - The rect on the given layer to move to
+  @param {NFPageLayer} [model.layer] - the layer the rect is on
   @param {float} [model.time=The current time] - The time to start the
   movement at
   @param {float} [model.duration=3.0] - The duration of the move
   @param {float} [model.maxScale=115] - The maximum a page will scale in this move
   @param {float} [model.fillPercentage=85] - the percentage of the width of the
   comp the highlight should fill
-  @throws Throws error if not given a NFHighlightLayer as model.highlight
+  @throws Throws error if not given a NFHighlightLayer as model.highlight OR
+  valid model.layer and model.rect values.
    */
 
-  NFPaperLayerGroup.prototype.moveToHighlight = function(model) {
+  NFPaperLayerGroup.prototype.moveTo = function(model) {
     var activePageLayer, initialPosition, initialScale, keyframePositions, keyframeScales, keyframeTimes, originalParent, originalTime, positionDelta, positionProp, possibleLayers, ref, ref1, ref2, ref3, scaleFactor, scaleProp, targetPosition, targetScale;
-    if (!((model != null ? model.highlight : void 0) instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
-      throw new Error("\nInvalid highlight");
+    if ((model != null ? model.highlight : void 0) != null) {
+      if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
+        throw new Error("\nInvalid highlight");
+      }
+    } else if (((model != null ? model.layer : void 0) != null) && (model.rect != null)) {
+      if (!(model.layer instanceof NFPageLayer && this.getPages().containsLayer(model.layer))) {
+        throw new Error("Given Layer must be already in the group and an NFPageLayer");
+      }
+    } else {
+      throw new Error("Must provide either a highlight OR a layer and rect to move");
     }
-    this.log("Moving to highlight: " + (model.highlight.toString()));
     model = {
       highlight: model.highlight,
+      layer: model.layer,
+      rect: model.rect,
       time: (ref = model.time) != null ? ref : this.containingComp().getTime(),
       duration: (ref1 = model.duration) != null ? ref1 : 3.0,
       maxScale: (ref2 = model.maxScale) != null ? ref2 : 115,
       fillPercentage: (ref3 = model.fillPercentage) != null ? ref3 : 85
     };
+    if (model.highlight != null) {
+      this.log("Moving to highlight: " + (model.highlight.toString()));
+    } else {
+      this.log("Moving to a rect in layer " + (model.layer.toString()));
+    }
     positionProp = this.paperParent.transform().position;
     scaleProp = this.paperParent.transform().scale;
     originalTime = this.containingComp().getTime();
     this.containingComp().setTime(model.time);
     originalParent = this.paperParent.getParent();
     this.paperParent.setParent(null);
-    possibleLayers = this.getPages().layersWithHighlight(model.highlight);
-    activePageLayer = null;
-    possibleLayers.forEach((function(_this) {
-      return function(theLayer) {
-        if (theLayer.isActiveAtTime(model.time)) {
-          return activePageLayer = theLayer;
-        }
-      };
-    })(this));
+    if (model.highlight != null) {
+      possibleLayers = this.getPages().layersWithHighlight(model.highlight);
+      activePageLayer = null;
+      possibleLayers.forEach((function(_this) {
+        return function(theLayer) {
+          if (theLayer.isActiveAtTime(model.time)) {
+            return activePageLayer = theLayer;
+          }
+        };
+      })(this));
+    } else {
+      activePageLayer = model.layer;
+    }
     keyframeTimes = [model.time, model.time + model.duration];
-    scaleFactor = activePageLayer.getScaleFactorToFrameUpHighlight({
+    scaleFactor = activePageLayer.getScaleFactorToFrameUp({
       highlight: model.highlight,
+      rect: model.rect,
       time: keyframeTimes[1],
       maxScale: model.maxScale,
       fillPercentage: model.fillPercentage
@@ -2312,8 +2335,9 @@ NFPaperLayerGroup = (function(superClass) {
     targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor];
     keyframeScales = [scaleProp.valueAtTime(model.time, false), targetScale];
     scaleProp.setValuesAtTimes(keyframeTimes, keyframeScales);
-    positionDelta = activePageLayer.getPositionDeltaToFrameUpHighlight({
+    positionDelta = activePageLayer.getPositionDeltaToFrameUp({
       highlight: model.highlight,
+      rect: model.rect,
       time: keyframeTimes[1]
     });
     initialPosition = positionProp.valueAtTime(model.time, false);
@@ -3833,13 +3857,14 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.sourceRectForFullTop = function() {
     var rect;
-    return rect = {
+    rect = {
       left: 0,
       top: 0,
       width: this.layer.source.width,
       height: this.containingComp().comp.height,
       padding: 0
     };
+    return this.relativeRect(rect);
   };
 
 
@@ -4310,7 +4335,7 @@ NFPageLayer = (function(superClass) {
     this.setParent(null);
     hasPositionKeyframes = positionProp.numKeys !== 0;
     hasScaleKeyframes = scaleProp.numKeys !== 0;
-    scaleFactor = this.getScaleFactorToFrameUpHighlight(model);
+    scaleFactor = this.getScaleFactorToFrameUp(model);
     initialScale = scaleProp.valueAtTime(model.time, false);
     targetScale = [initialScale[0] * scaleFactor, initialScale[1] * scaleFactor];
     if (hasScaleKeyframes) {
@@ -4318,7 +4343,7 @@ NFPageLayer = (function(superClass) {
     } else {
       scaleProp.setValue(targetScale);
     }
-    positionDelta = this.getPositionDeltaToFrameUpHighlight(model);
+    positionDelta = this.getPositionDeltaToFrameUp(model);
     initialPosition = positionProp.valueAtTime(model.time, false);
     targetPosition = [initialPosition[0] + positionDelta[0], initialPosition[1] + positionDelta[1]];
     if (hasPositionKeyframes) {
@@ -4334,43 +4359,43 @@ NFPageLayer = (function(superClass) {
 
   /**
   Returns the multiplier, or scale factor required to frame up the given
-  highlight in this layer's Containing comp. Basically, multiplying the scale
-  of this layer by the result of this number will make the highlight fit in
-  frame perfectly.
+  highlight or rect in this layer's Containing comp. Basically, multiplying the scale
+  of this layer by the result of this number will make the highlight or rect fit in
+  frame perfectly. Must provide either a highlight OR rect.
   @memberof NFPageLayer
   @returns {float} the scale factor
   @param {Object} model - the options
-  @param {NFHighlightLayer} model.highlight - The highlight to get the scale
+  @param {NFHighlightLayer} [model.highlight] - The highlight to get the scale
   factor for.
+  @param {rect} [model.rect] - the rect to get the scale factor for
   @param {float} [model.time=The current time] - The time to calculate at
   @param {float} [model.fillPercentage=85] - Percentage of the comp width the
   highlight should take up
   @param {float} [model.maxScale=115] - The maximum that a page layer will scale
-  @throws Throws error if not given a NFHighlightLayer or
+  @throws Throws error if not given a NFHighlightLayer or rect, or the
   given highlight is not on this page.
    */
 
-  NFPageLayer.prototype.getScaleFactorToFrameUpHighlight = function(model) {
-    var absoluteScale, adjustedScaleFactor, calculatedScale, compWidth, highlightRect, ref, ref1, ref2, ref3, scaleFactor, targetHighlightWidth;
-    model = {
-      highlight: (function() {
-        if ((ref = model.highlight) != null) {
-          return ref;
-        } else {
-          throw new Error("No highlight!");
-        }
-      })(),
-      time: (ref1 = model.time) != null ? ref1 : this.containingComp().getTime(),
-      fillPercentage: (ref2 = model.fillPercentage) != null ? ref2 : 85,
-      maxScale: (ref3 = model.maxScale) != null ? ref3 : 115
-    };
-    if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
-      throw new Error("Invalid highlight");
+  NFPageLayer.prototype.getScaleFactorToFrameUp = function(model) {
+    var absoluteScale, adjustedScaleFactor, calculatedScale, compWidth, rect, ref, ref1, ref2, ref3, scaleFactor, targetRectWidth;
+    if (model.highlight != null) {
+      if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
+        throw new Error("Invalid highlight");
+      }
+    } else if (model.rect == null) {
+      throw new Error("Must provide either a highlight OR rect");
     }
-    highlightRect = this.sourceRectForHighlight(model.highlight, model.time);
+    model = {
+      highlight: model.highlight,
+      rect: model.rect,
+      time: (ref = model.time) != null ? ref : this.containingComp().getTime(),
+      fillPercentage: (ref1 = model.fillPercentage) != null ? ref1 : 85,
+      maxScale: (ref2 = model.maxScale) != null ? ref2 : 115
+    };
+    rect = (ref3 = model.rect) != null ? ref3 : this.sourceRectForHighlight(model.highlight, model.time);
     compWidth = this.containingComp().comp.width;
-    targetHighlightWidth = model.fillPercentage / 100 * compWidth;
-    scaleFactor = targetHighlightWidth / highlightRect.width;
+    targetRectWidth = model.fillPercentage / 100 * compWidth;
+    scaleFactor = targetRectWidth / rect.width;
     absoluteScale = this.getAbsoluteScale();
     calculatedScale = scaleFactor * absoluteScale[0];
     if (calculatedScale > model.maxScale) {
@@ -4386,26 +4411,32 @@ NFPageLayer = (function(superClass) {
 
   /**
   Returns a length-2 array with x and y 'nudge' values to make the given
-  highlight be centered in frame *at the current scale of the layer*.
+  highlight or rect be centered in frame *at the current scale of the layer*.
+  Must provide either a rect OR highlight.
   @memberof NFPageLayer
   @returns {float[]} the x and y nudge values
   @param {Object} model - The options
-  @param {NFHighlightLayer} model.highlight - The highlight to get the scale
+  @param {NFHighlightLayer} [model.highlight] - The highlight to get the scale
   factor for.
+  @param {rect} [model.rect] - the rect to get the scale factor for
   @param {float} [model.time=The current time] - The time to calculate at
-  @throws Throws error if not given a NFHighlightLayer or
+  @throws Throws error if not given a NFHighlightLayer or rect, or
   given highlight is not on this page.
    */
 
-  NFPageLayer.prototype.getPositionDeltaToFrameUpHighlight = function(model) {
-    var compCenterPoint, delta, highlightCenterPoint, highlightRect, rectAfterReposition;
-    if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
-      throw new Error("Invalid highlight");
+  NFPageLayer.prototype.getPositionDeltaToFrameUp = function(model) {
+    var compCenterPoint, delta, rect, rectAfterReposition, rectCenterPoint, ref;
+    if (model.highlight != null) {
+      if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
+        throw new Error("Invalid highlight");
+      }
+    } else if (model.rect == null) {
+      throw new Error("Must provide either a highlight OR rect");
     }
-    highlightRect = this.sourceRectForHighlight(model.highlight, model.time);
-    highlightCenterPoint = [highlightRect.left + highlightRect.width / 2, highlightRect.top + highlightRect.height / 2];
+    rect = (ref = model.rect) != null ? ref : this.sourceRectForHighlight(model.highlight, model.time);
+    rectCenterPoint = [rect.left + rect.width / 2, rect.top + rect.height / 2];
     compCenterPoint = [this.containingComp().comp.width / 2, this.containingComp().comp.height / 2];
-    delta = [compCenterPoint[0] - highlightCenterPoint[0], compCenterPoint[1] - highlightCenterPoint[1]];
+    delta = [compCenterPoint[0] - rectCenterPoint[0], compCenterPoint[1] - rectCenterPoint[1]];
     rectAfterReposition = this.sourceRect(model.time);
     rectAfterReposition.left += delta[0];
     rectAfterReposition.top += delta[1];
@@ -4906,7 +4937,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
     model = {
       highlight: model.highlight,
       page: model.page,
@@ -4957,7 +4988,7 @@ NFPartComp = (function(superClass) {
           if (targetPage.is(titlePage)) {
             this.setTime(titlePageLayer.getInMarkerTime());
             group.bubbleUp(model.highlight, this.getTime() - 0.5);
-            group.moveToHighlight({
+            group.moveTo({
               highlight: model.highlight,
               duration: model.animationDuration,
               maxScale: model.maxPageScale,
@@ -4978,7 +5009,7 @@ NFPartComp = (function(superClass) {
             }
             titlePageLayer.animatePageTurn();
             if (model.highlight != null) {
-              group.moveToHighlight({
+              group.moveTo({
                 highlight: model.highlight,
                 duration: model.animationDuration,
                 fillPercentage: model.fillPercentage,
@@ -5019,14 +5050,15 @@ NFPartComp = (function(superClass) {
         activePageLayer = this.activePage();
         group = new NFPaperLayerGroup(activePageLayer.getPaperParentLayer());
         if (targetPage.is(activePageLayer.getPageComp())) {
-          if (model.highlight != null) {
-            group.moveToHighlight({
-              highlight: model.highlight,
-              duration: model.animationDuration,
-              fillPercentage: model.fillPercentage,
-              maxScale: model.maxPageScale
-            });
-          }
+          $.bp();
+          group.moveTo({
+            highlight: (ref7 = model.highlight) != null ? ref7 : null,
+            rect: model.highlight != null ? null : activePageLayer.sourceRectForFullTop(),
+            layer: model.highlight != null ? null : activePageLayer,
+            duration: model.animationDuration,
+            fillPercentage: model.highlight != null ? model.fillPercentage : 100,
+            maxScale: model.maxPageScale
+          });
           group.trimActiveSpotlights(this.getTime() + (model.animationDuration / 2));
           if ((model.highlight != null) && !model.highlight.isBubbled()) {
             group.bubbleUp(model.highlight, this.getTime() + (model.animationDuration / 2));
@@ -5054,7 +5086,7 @@ NFPartComp = (function(superClass) {
               duration: pageTurnDuration
             });
             if (model.highlight != null) {
-              group.moveToHighlight({
+              group.moveTo({
                 highlight: model.highlight,
                 duration: model.animationDuration,
                 fillPercentage: model.fillPercentage
@@ -5081,7 +5113,7 @@ NFPartComp = (function(superClass) {
               duration: 2.0
             });
             if (model.highlight != null) {
-              group.moveToHighlight({
+              group.moveTo({
                 highlight: model.highlight,
                 duration: model.animationDuration,
                 fillPercentage: model.fillPercentage
