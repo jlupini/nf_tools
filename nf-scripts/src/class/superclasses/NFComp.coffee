@@ -18,12 +18,25 @@ class NFComp extends NFObject
     else
       throw new Error "Cannot create an NFComp without a valid CompItem or NFComp"
     @comp = item
-    # FIXME: These should NOT be properties since they should never be changed here
-    @name = @comp?.name
-    @id = @comp?.id
     @
   toString: ->
     return "NFComp: '#{@name}'"
+
+  ###*
+  Gets the comp's name
+  @memberof NFComp
+  @returns {String} The comp's name
+  ###
+  getName: ->
+    return @comp.name
+
+  ###*
+  Gets the comp's unique ID
+  @memberof NFComp
+  @returns {String} The comp's ID
+  ###
+  getID: ->
+    return @comp.id
 
   ###*
   Checks to see if two NFComps have the same ID
@@ -34,7 +47,7 @@ class NFComp extends NFObject
   ###
   is: (testComp) ->
     throw new Error "Can't compare an NFComp to a different type of object" unless testComp instanceof NFComp
-    return @id is testComp.id
+    return @getID() is testComp.getID()
 
   ###*
   Gets the selected layers in this comp

@@ -233,7 +233,7 @@ NFTools =
       timestamp = NFTools.timestamp()
 
       newEntry = "[#{timestamp}] (#{sender}) > #{message}"
-      return "#{fileText}\n#{newEntry}"
+      return "#{fileText}\r\n#{newEntry}"
 
     null
 
@@ -245,7 +245,7 @@ NFTools =
   breakLog: ->
     return null unless NFTools.logging
     NFTools.editFile "../log.txt", (fileText) =>
-      return fileText + "\n-----------------------------\n\n\n"
+      return fileText + "\r\n-----------------------------\r\n\r\n"
     null
 
   ###*

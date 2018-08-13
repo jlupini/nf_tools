@@ -9,10 +9,10 @@ Creates a new NFPageComp from a given CompItem
 class NFPageComp extends NFComp
   constructor: (comp) ->
     NFComp.call(this, comp)
-    throw new Error "Can't create an NFPageComp from a non-page comp" unless @name.indexOf("NFPage") >= 0
+    throw new Error "Can't create an NFPageComp from a non-page comp" unless @getName().indexOf("NFPage") >= 0
     @
   toString: ->
-    return "NFPageComp: '#{@name}'"
+    return "NFPageComp: '#{@getName()}'"
 
   ###*
   Returns the PDF number as a String
@@ -21,8 +21,8 @@ class NFPageComp extends NFComp
   @returns {string} the PDF number
   ###
   getPDFNumber: ->
-    endIdx = @name.indexOf("_")
-    return @name.substr(0, endIdx) if endIdx > 0
+    endIdx = @getName().indexOf("_")
+    return @getName().substr(0, endIdx) if endIdx > 0
     throw new Error "Could not get the PDF Number from this NFPageComp"
 
   ###*
@@ -33,9 +33,9 @@ class NFPageComp extends NFComp
   ###
   getPageNumber: ->
     # Assuming every page number is two digits long
-    searchIndex = @name.indexOf "pg"
-    endIdx = @name.indexOf " NFPage"
-    return @name.substr(searchIndex + 2, endIdx) if searchIndex > 0
+    searchIndex = @getName().indexOf "pg"
+    endIdx = @getName().indexOf " NFPage"
+    return @getName().substr(searchIndex + 2, endIdx) if searchIndex > 0
     throw new Error "Could not get the Page Number from this NFPageComp"
 
   ###*
@@ -52,7 +52,7 @@ class NFPageComp extends NFComp
   @returns {String} the page base name
   ###
   getPageBaseName: ->
-    return @name.substr(0, @name.indexOf(' '))
+    return @getName().substr(0, @getName().indexOf(' '))
 
   ###*
   Gets the Highlight layers in this item

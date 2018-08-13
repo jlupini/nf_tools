@@ -31,7 +31,7 @@ class NFSpotlightLayer extends NFLayer
     # Get the expression for the mask shape
     expression = NFTools.readExpression "spotlight-mask-expression",
       TARGET_PAGE: highlight.getPageComp().getPageBaseName()
-      COMP_NAME: highlight.getPageComp().name
+      COMP_NAME: highlight.getPageComp().getName()
       HIGHLIGHT_LAYER_NAME: highlight.getName()
       HIGHLIGHT_CONTROL_LAYER_NAME: highlight.getControlLayer().getName()
       HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME: highlight.getName()

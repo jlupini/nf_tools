@@ -115,9 +115,9 @@ class NFLayerCollection extends NFObject
   ###
   inSameComp: ->
     return true if @isEmpty()
-    testID = @layers[0].containingComp().id
+    testID = @layers[0].containingComp().getID()
     for layer in @layers
-      return false if layer.containingComp().id isnt testID
+      return false if layer.containingComp().getID() isnt testID
     return true
 
   ###*

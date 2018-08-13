@@ -10,11 +10,11 @@ Creates a new NFPartComp and sets its comp property.
 class NFPartComp extends NFComp
   constructor: (comp) ->
     NFComp.call(this, comp)
-    throw new Error "Can't create an NFPartComp from a non-part comp" unless @name.indexOf("Part") >= 0
+    throw new Error "Can't create an NFPartComp from a non-part comp" unless @getName().indexOf("Part") >= 0
     @
 
   toString: ->
-    return "NFPartComp: '#{@name}'"
+    return "NFPartComp: '#{@getName()}'"
 
   ###*
   Animates to a given highlight or page, with options. Will throw an error if
@@ -327,6 +327,7 @@ class NFPartComp extends NFComp
       pageLayer.initTransforms().init()
       group = new NFPaperLayerGroup pageLayer.assignPaperParentLayer()
       group.assignCitationLayer()
+      group.extend()
 
 
     if model.frameUp? and model.frameUp.highlight?

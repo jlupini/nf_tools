@@ -218,7 +218,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
     # Make a new comp if one doesn't exist for this PDF
     citationComp = NFCitationLayer.newCitationComp thePDF unless citationComp?
 
-    NFTools.log "Creating new citation layer for Group: #{group.toString()}", "NFCitationLayer"
+    NFTools.log "Creating new citation layer for Group: #{group.toString()}", "static NFCitationLayer"
     # Add the Layer
     citeLayer = group.containingComp().insertComp
       comp: new NFComp citationComp

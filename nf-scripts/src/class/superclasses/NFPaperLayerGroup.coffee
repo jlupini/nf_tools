@@ -13,7 +13,7 @@ class NFPaperLayerGroup extends NFObject
     throw new Error "Not a valid paper parent" unless @paperParent instanceof NFPaperParentLayer
     @
   toString: ->
-    return "NFPaperLayerGroup: for PDF #{@getPDFNumber()}"
+    return "NFPaperLayerGroup: PDF #{@getPDFNumber()} in #{@containingComp().getName()}"
 
   ###*
   Gets all the NFLayers in the group
@@ -169,7 +169,8 @@ class NFPaperLayerGroup extends NFObject
 
   ###*
   Trims all layers in this group to the given time. Call #extend to restore
-  layers to a given time. Spotlights will end just before the group does
+  citation and spotlight master layers to a given time. Spotlights will end just
+  before the group does.
   @memberof NFPaperLayerGroup
   @param {float} [time=currTime] - the time to check at, or the current time by
   default
@@ -182,6 +183,23 @@ class NFPaperLayerGroup extends NFObject
     @trimActiveSpotlights time - 0.75
     @getChildren().forEach (layer) =>
       layer.layer.outPoint = time if layer.layer.outPoint > time
+    @getCitationLayer()?.layer.outPoint = time
+    @getSpotlight()?.layer.outPoint = time
+    @
+
+  ###*
+  Extends the all-important citation and spotlight master layers to allow for
+  more pages or elements to be added to a group. Call this after calling #trim
+  at some point in the past.
+  @memberof NFPaperLayerGroup
+  @returns {NFPaperLayerGroup} self
+  ###
+  extend: ->
+    @log "Extending group"
+
+    compDuration = @containingComp().comp.duration
+    @getCitationLayer()?.layer.outPoint = compDuration
+    @getSpotlight()?.layer.outPoint = compDuration
     @
 
   ###*

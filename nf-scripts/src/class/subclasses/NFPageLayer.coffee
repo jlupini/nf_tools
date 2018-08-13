@@ -360,10 +360,14 @@ class NFPageLayer extends NFLayer
   @param {boolean} [model.in=yes] - If page should slide in. No means out
   ###
   slide: (model) ->
-    @log "Sliding myself"
     model ?= []
     model.fromEdge ?= NFComp.AUTO
     model.in ?= yes
+
+    if model.in
+      @log "Sliding in at time: #{@containingComp().getTime()}"
+    else
+      @log("Sliding out at time: #{@containingComp().getTime()}")
 
     # If .fromEdge is AUTO, figure out which edge to use.
     if model.fromEdge is NFComp.AUTO

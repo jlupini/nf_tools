@@ -72,7 +72,7 @@ NFComp = (function(superClass) {
   extend(NFComp, superClass);
 
   function NFComp(comp) {
-    var item, ref, ref1;
+    var item;
     NFObject.call(this);
     if (comp instanceof CompItem) {
       item = comp;
@@ -82,13 +82,33 @@ NFComp = (function(superClass) {
       throw new Error("Cannot create an NFComp without a valid CompItem or NFComp");
     }
     this.comp = item;
-    this.name = (ref = this.comp) != null ? ref.name : void 0;
-    this.id = (ref1 = this.comp) != null ? ref1.id : void 0;
     this;
   }
 
   NFComp.prototype.toString = function() {
     return "NFComp: '" + this.name + "'";
+  };
+
+
+  /**
+  Gets the comp's name
+  @memberof NFComp
+  @returns {String} The comp's name
+   */
+
+  NFComp.prototype.getName = function() {
+    return this.comp.name;
+  };
+
+
+  /**
+  Gets the comp's unique ID
+  @memberof NFComp
+  @returns {String} The comp's ID
+   */
+
+  NFComp.prototype.getID = function() {
+    return this.comp.id;
   };
 
 
@@ -104,7 +124,7 @@ NFComp = (function(superClass) {
     if (!(testComp instanceof NFComp)) {
       throw new Error("Can't compare an NFComp to a different type of object");
     }
-    return this.id === testComp.id;
+    return this.getID() === testComp.getID();
   };
 
 
@@ -1429,11 +1449,11 @@ NFLayerCollection = (function(superClass) {
     if (this.isEmpty()) {
       return true;
     }
-    testID = this.layers[0].containingComp().id;
+    testID = this.layers[0].containingComp().getID();
     ref = this.layers;
     for (j = 0, len = ref.length; j < len; j++) {
       layer = ref[j];
-      if (layer.containingComp().id !== testID) {
+      if (layer.containingComp().getID() !== testID) {
         return false;
       }
     }
@@ -1930,7 +1950,7 @@ NFPaperLayerGroup = (function(superClass) {
   }
 
   NFPaperLayerGroup.prototype.toString = function() {
-    return "NFPaperLayerGroup: for PDF " + (this.getPDFNumber());
+    return "NFPaperLayerGroup: PDF " + (this.getPDFNumber()) + " in " + (this.containingComp().getName());
   };
 
 
@@ -2163,7 +2183,8 @@ NFPaperLayerGroup = (function(superClass) {
 
   /**
   Trims all layers in this group to the given time. Call #extend to restore
-  layers to a given time. Spotlights will end just before the group does
+  citation and spotlight master layers to a given time. Spotlights will end just
+  before the group does.
   @memberof NFPaperLayerGroup
   @param {float} [time=currTime] - the time to check at, or the current time by
   default
@@ -2171,6 +2192,7 @@ NFPaperLayerGroup = (function(superClass) {
    */
 
   NFPaperLayerGroup.prototype.trim = function(time) {
+    var ref, ref1;
     this.log("Trimming group at time: " + time);
     time = time != null ? time : this.containingComp().getTime();
     this.trimActiveSpotlights(time - 0.75);
@@ -2181,6 +2203,34 @@ NFPaperLayerGroup = (function(superClass) {
         }
       };
     })(this));
+    if ((ref = this.getCitationLayer()) != null) {
+      ref.layer.outPoint = time;
+    }
+    if ((ref1 = this.getSpotlight()) != null) {
+      ref1.layer.outPoint = time;
+    }
+    return this;
+  };
+
+
+  /**
+  Extends the all-important citation and spotlight master layers to allow for
+  more pages or elements to be added to a group. Call this after calling #trim
+  at some point in the past.
+  @memberof NFPaperLayerGroup
+  @returns {NFPaperLayerGroup} self
+   */
+
+  NFPaperLayerGroup.prototype.extend = function() {
+    var compDuration, ref, ref1;
+    this.log("Extending group");
+    compDuration = this.containingComp().comp.duration;
+    if ((ref = this.getCitationLayer()) != null) {
+      ref.layer.outPoint = compDuration;
+    }
+    if ((ref1 = this.getSpotlight()) != null) {
+      ref1.layer.outPoint = compDuration;
+    }
     return this;
   };
 
@@ -2649,7 +2699,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     if (citationComp == null) {
       citationComp = NFCitationLayer.newCitationComp(thePDF);
     }
-    NFTools.log("Creating new citation layer for Group: " + (group.toString()), "NFCitationLayer");
+    NFTools.log("Creating new citation layer for Group: " + (group.toString()), "static NFCitationLayer");
     citeLayer = group.containingComp().insertComp({
       comp: new NFComp(citationComp),
       below: group.paperParent,
@@ -3430,14 +3480,14 @@ NFPageComp = (function(superClass) {
 
   function NFPageComp(comp) {
     NFComp.call(this, comp);
-    if (!(this.name.indexOf("NFPage") >= 0)) {
+    if (!(this.getName().indexOf("NFPage") >= 0)) {
       throw new Error("Can't create an NFPageComp from a non-page comp");
     }
     this;
   }
 
   NFPageComp.prototype.toString = function() {
-    return "NFPageComp: '" + this.name + "'";
+    return "NFPageComp: '" + (this.getName()) + "'";
   };
 
 
@@ -3450,9 +3500,9 @@ NFPageComp = (function(superClass) {
 
   NFPageComp.prototype.getPDFNumber = function() {
     var endIdx;
-    endIdx = this.name.indexOf("_");
+    endIdx = this.getName().indexOf("_");
     if (endIdx > 0) {
-      return this.name.substr(0, endIdx);
+      return this.getName().substr(0, endIdx);
     }
     throw new Error("Could not get the PDF Number from this NFPageComp");
   };
@@ -3467,10 +3517,10 @@ NFPageComp = (function(superClass) {
 
   NFPageComp.prototype.getPageNumber = function() {
     var endIdx, searchIndex;
-    searchIndex = this.name.indexOf("pg");
-    endIdx = this.name.indexOf(" NFPage");
+    searchIndex = this.getName().indexOf("pg");
+    endIdx = this.getName().indexOf(" NFPage");
     if (searchIndex > 0) {
-      return this.name.substr(searchIndex + 2, endIdx);
+      return this.getName().substr(searchIndex + 2, endIdx);
     }
     throw new Error("Could not get the Page Number from this NFPageComp");
   };
@@ -3494,7 +3544,7 @@ NFPageComp = (function(superClass) {
    */
 
   NFPageComp.prototype.getPageBaseName = function() {
-    return this.name.substr(0, this.name.indexOf(' '));
+    return this.getName().substr(0, this.getName().indexOf(' '));
   };
 
 
@@ -4052,7 +4102,6 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.slide = function(model) {
     var animatingX, animatingY, compCenter, endEquation, endValue, layerCenter, positionProperty, slider, startEquation, startOffset, startValue, xVal, yVal, zVal;
-    this.log("Sliding myself");
     if (model == null) {
       model = [];
     }
@@ -4061,6 +4110,11 @@ NFPageLayer = (function(superClass) {
     }
     if (model["in"] == null) {
       model["in"] = true;
+    }
+    if (model["in"]) {
+      this.log("Sliding in at time: " + (this.containingComp().getTime()));
+    } else {
+      this.log("Sliding out at time: " + (this.containingComp().getTime()));
     }
     if (model.fromEdge === NFComp.AUTO) {
       layerCenter = this.relativeCenterPoint();
@@ -4909,14 +4963,14 @@ NFPartComp = (function(superClass) {
 
   function NFPartComp(comp) {
     NFComp.call(this, comp);
-    if (!(this.name.indexOf("Part") >= 0)) {
+    if (!(this.getName().indexOf("Part") >= 0)) {
       throw new Error("Can't create an NFPartComp from a non-part comp");
     }
     this;
   }
 
   NFPartComp.prototype.toString = function() {
-    return "NFPartComp: '" + this.name + "'";
+    return "NFPartComp: '" + (this.getName()) + "'";
   };
 
 
@@ -5223,6 +5277,7 @@ NFPartComp = (function(superClass) {
       pageLayer.initTransforms().init();
       group = new NFPaperLayerGroup(pageLayer.assignPaperParentLayer());
       group.assignCitationLayer();
+      group.extend();
     }
     if ((model.frameUp != null) && (model.frameUp.highlight != null)) {
       pageLayer.frameUpHighlight(model.frameUp);
@@ -5409,7 +5464,7 @@ NFSpotlightLayer = (function(superClass) {
     }
     expression = NFTools.readExpression("spotlight-mask-expression", {
       TARGET_PAGE: highlight.getPageComp().getPageBaseName(),
-      COMP_NAME: highlight.getPageComp().name,
+      COMP_NAME: highlight.getPageComp().getName(),
       HIGHLIGHT_LAYER_NAME: highlight.getName(),
       HIGHLIGHT_CONTROL_LAYER_NAME: highlight.getControlLayer().getName(),
       HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME: highlight.getName()
