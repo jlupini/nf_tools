@@ -181,7 +181,7 @@ class NFPaperLayerGroup extends NFObject
 
     @trimActiveSpotlights time - 0.75
     @getChildren().forEach (layer) =>
-      layer.layer.outPoint = time
+      layer.layer.outPoint = time if layer.layer.outPoint > time
     @
 
   ###*
@@ -379,8 +379,9 @@ class NFPaperLayerGroup extends NFObject
     # For the layers in this collection above the group
     while layersAboveGroup.count() > 0
       controlLayers = @getControlLayers()
+      citationLayer = @getCitationLayer()
       if controlLayers.isEmpty()
-        layerAbove = @paperParent
+        layerAbove = citationLayer ? @paperParent
       else
         layerAbove = controlLayers.getBottommostLayer()
 

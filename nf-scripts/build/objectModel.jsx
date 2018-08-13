@@ -2176,7 +2176,9 @@ NFPaperLayerGroup = (function(superClass) {
     this.trimActiveSpotlights(time - 0.75);
     this.getChildren().forEach((function(_this) {
       return function(layer) {
-        return layer.layer.outPoint = time;
+        if (layer.layer.outPoint > time) {
+          return layer.layer.outPoint = time;
+        }
       };
     })(this));
     return this;
@@ -2368,7 +2370,7 @@ NFPaperLayerGroup = (function(superClass) {
    */
 
   NFPaperLayerGroup.prototype.gatherLayers = function(layersToGather, shouldParent) {
-    var bottomLayer, childLayers, controlLayers, layerAbove, layersAboveGroup, layersBelowGroup, topLayer;
+    var bottomLayer, childLayers, citationLayer, controlLayers, layerAbove, layersAboveGroup, layersBelowGroup, topLayer;
     if (shouldParent == null) {
       shouldParent = true;
     }
@@ -2388,8 +2390,9 @@ NFPaperLayerGroup = (function(superClass) {
     })(this));
     while (layersAboveGroup.count() > 0) {
       controlLayers = this.getControlLayers();
+      citationLayer = this.getCitationLayer();
       if (controlLayers.isEmpty()) {
-        layerAbove = this.paperParent;
+        layerAbove = citationLayer != null ? citationLayer : this.paperParent;
       } else {
         layerAbove = controlLayers.getBottommostLayer();
       }
@@ -2890,7 +2893,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
   @returns {NFHighlightControlLayer} the new control layer
    */
   newHighlightControlLayer: function(model) {
-    var controlEffect, controlLayer, effects, existingControlLayers, highlighterEffect, partComp, ref;
+    var citationLayer, controlEffect, controlLayer, effects, existingControlLayers, highlighterEffect, partComp, ref;
     if (!(((model != null ? model.group : void 0) != null) && (model.highlight != null))) {
       throw new Error("Missing parameters");
     }
@@ -2899,8 +2902,11 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     controlLayer = partComp.addNull();
     controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight(model.group.getPDFNumber(), model.highlight);
     controlLayer = new NFHighlightControlLayer(controlLayer);
+    citationLayer = model.group.getCitationLayer();
     existingControlLayers = model.group.getControlLayers();
-    if (existingControlLayers.isEmpty()) {
+    if (citationLayer != null) {
+      controlLayer.moveAfter(citationLayer);
+    } else if (existingControlLayers.isEmpty()) {
       controlLayer.moveAfter(model.group.paperParent);
     } else {
       controlLayer.moveBefore(existingControlLayers.getTopmostLayer());
@@ -5050,7 +5056,6 @@ NFPartComp = (function(superClass) {
         activePageLayer = this.activePage();
         group = new NFPaperLayerGroup(activePageLayer.getPaperParentLayer());
         if (targetPage.is(activePageLayer.getPageComp())) {
-          $.bp();
           group.moveTo({
             highlight: (ref7 = model.highlight) != null ? ref7 : null,
             rect: model.highlight != null ? null : activePageLayer.sourceRectForFullTop(),
@@ -5092,7 +5097,7 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage
               });
             }
-            group.trim(this.getTime() - 0.5 + 2.0);
+            activePageLayer.layer.outPoint = this.getTime() - 0.5 + 2.0;
             if ((model.highlight != null) && !model.highlight.isBubbled()) {
               group.bubbleUp(model.highlight, this.getTime() + 0.5);
               model.highlight.getControlLayer().setSpotlightMarkerInPoint(this.getTime() + 0.5);

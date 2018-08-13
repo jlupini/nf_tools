@@ -157,7 +157,6 @@ class NFPartComp extends NFComp
         # if the target page is the visible page
         if targetPage.is activePageLayer.getPageComp()
           # RUN AS NORMAL, but move to a the title rect if not given a highlight
-          $.bp()
           group.moveTo
             highlight: model.highlight ? null
             rect: if model.highlight? then null else activePageLayer.sourceRectForFullTop()
@@ -210,7 +209,7 @@ class NFPartComp extends NFComp
                   fillPercentage: model.fillPercentage
 
               # Trim the old layer to the end of the page turn
-              group.trim @getTime() - 0.5 + 2.0
+              activePageLayer.layer.outPoint = @getTime() - 0.5 + 2.0
 
               if model.highlight? and not model.highlight.isBubbled()
                 group.bubbleUp model.highlight, @getTime() + 0.5

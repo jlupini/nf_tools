@@ -144,8 +144,11 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
     controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight model.group.getPDFNumber(), model.highlight
     controlLayer = new NFHighlightControlLayer controlLayer
 
+    citationLayer = model.group.getCitationLayer()
     existingControlLayers = model.group.getControlLayers()
-    if existingControlLayers.isEmpty()
+    if citationLayer?
+      controlLayer.moveAfter citationLayer
+    else if existingControlLayers.isEmpty()
       controlLayer.moveAfter model.group.paperParent
     else
       controlLayer.moveBefore existingControlLayers.getTopmostLayer()
