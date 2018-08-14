@@ -193,12 +193,16 @@ NFProject =
         skipTitle: flags.skipTitle
 
     else if instruction.type is NFLayoutType.INSTRUCTION
-      if instruction.instruction is NFLayoutInstruction.SHOW_TITLE
-        mainComp.animateTo
-          page: targetPDF.getTitlePage()
-      else
-        # FIXME: FINISH BUILDING this
-        @
+      switch instruction.instruction
+        when NFLayoutInstruction.SHOW_TITLE
+          mainComp.animateTo
+            page: targetPDF.getTitlePage()
+        when NFLayoutInstruction.ICON_SEQUENCE, NFLayoutInstruction.GAUSSY, NFLayoutInstruction.FIGURE, NFLayoutInstruction.TABLE
+          # FIXME: FINISH BUILDING this
+        else throw new Error "There isn't a case for this instruction"
+      @
+    else
+      throw new Error "Instruction not found"
       @
 
     @

@@ -78,6 +78,8 @@ class NFLayer extends NFObject
     return NFCitationLayer.isCitationLayer(@layer)
   isPageLayer: ->
     return NFPageLayer.isPageLayer(@layer)
+  isGaussyLayer: ->
+    return NFGaussyLayer.isGaussyLayer(@layer)
 
   ###*
   Returns a new layer of a specialized type for the contents of this layer
@@ -98,6 +100,8 @@ class NFLayer extends NFObject
       return new NFSpotlightLayer @layer
     else if @isCitationLayer()
       return new NFCitationLayer @layer
+    else if @isGaussyLayer()
+      return new NFGaussyLayer @layer
     else
       return @
 

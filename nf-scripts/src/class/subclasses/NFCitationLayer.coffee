@@ -225,6 +225,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
       below: group.paperParent
       time: group.paperParent.layer.inPoint
     citeLayer.layer.collapseTransformation = yes
+    citeLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint
 
     sourceExpression = NFTools.readExpression "citation-opacity-expression"
     citeLayer.transform().property("Opacity").expression = sourceExpression

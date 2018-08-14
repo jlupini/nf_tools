@@ -204,29 +204,27 @@ class NFPaperLayerGroup extends NFObject
     @getSpotlight()?.layer.outPoint = compDuration
     @
 
+
   ###*
-  Bubbles up given highlights or highlight to this comp by creating an
-  NFHighlightControlLayer.
+  Formerly called "bubbleUp", this function now adds an NFHighlightControlLayer
+  for a given highlight or collection of highlights. Always adds spotlight
+  controls, but will not add controls for or bubble up highlight properties
+  unless the highlight is not already linked to another control layer.
   @memberof NFPaperLayerGroup
   @returns {NFPaperLayerGroup} self
-  @param {NFHighlightLayer | NFHighlightLayerCollection} highlightsToBubble - the highlights to bubble up
+  @param {NFHighlightLayer | NFHighlightLayerCollection} highlightsToControl - the highlights to control
   @param {float} [time] - the time to create the control layer at
-  @throws Throw error if any highlight choices are connected and not broken,
-  so you should have disconnected them first
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
   ###
-  bubbleUp: (highlightsToBubble, time) ->
-    @log "Bubbling up highlights: #{highlightsToBubble.toString()}"
+  addControlLayer: (highlightsToControl, time) ->
+    @log "Adding control layer for highlights: #{highlightsToControl.toString()}"
     # If given a single highlight, wrap it.
-    if highlightsToBubble instanceof NFHighlightLayer
-      highlightsToBubble = new NFHighlightLayerCollection([highlightsToBubble])
+    if highlightsToControl instanceof NFHighlightLayer
+      highlightsToControl = new NFHighlightLayerCollection([highlightsToControl])
 
-    unless highlightsToBubble.isEmpty()
-      highlightsToBubble.forEach (highlight) =>
-
-        unless highlight.canBubbleUp()
-          throw new Error "Cannot bubble highlight if already connected and not broken. Disconnect first"
+    unless highlightsToControl.isEmpty()
+      highlightsToControl.forEach (highlight) =>
 
         # Make sure the highlight is in a page in the group
         highlightIsInGroup = no
@@ -245,32 +243,68 @@ class NFPaperLayerGroup extends NFObject
           highlight: highlight
           time: time ? null
 
-        highlighterEffect = controlLayer.highlighterEffect()
+        if highlight.canBubbleUp()
+          @log "Bubbling up highlight: #{highlight.toString()}"
+          highlighterEffect = controlLayer.highlighterEffect()
+          # Iterate through the properties and connect each one
+          for highlighterProperty in NFHighlightLayer.highlighterProperties
+            sourceValue = sourceEffect.property(highlighterProperty).value
+            highlighterEffect.property(highlighterProperty).setValue(sourceValue)
 
-        # Iterate through the properties and connect each one
-        for highlighterProperty in NFHighlightLayer.highlighterProperties
-          sourceValue = sourceEffect.property(highlighterProperty).value
-          highlighterEffect.property(highlighterProperty).setValue(sourceValue)
+            # Opacity needs a special expression since it's tied to the position
+            # of the control layer
+            if highlighterProperty is "Opacity"
+              propExpressionName = "highlight-opacity-expression"
+            else
+              propExpressionName = "highlight-property-expression"
 
-          # Opacity needs a special expression since it's tied to the position
-          # of the control layer
-          if highlighterProperty is "Opacity"
-            propExpressionName = "highlight-opacity-expression"
-          else
-            propExpressionName = "highlight-property-expression"
+            sourceExpression = NFTools.readExpression propExpressionName,
+              TARGET_COMP_NAME: targetComp.comp.name
+              CONTROL_LAYER_NAME: controlLayer.layer.name
+              PAGE_BASE_NAME: highlight.getPageComp().getPageBaseName()
+              HIGHLIGHT_NAME: highlight.getName()
+              HIGHLIGHTER_PROPERTY: highlighterProperty
 
-          sourceExpression = NFTools.readExpression propExpressionName,
-            TARGET_COMP_NAME: targetComp.comp.name
-            CONTROL_LAYER_NAME: controlLayer.layer.name
-            PAGE_BASE_NAME: highlight.getPageComp().getPageBaseName()
-            HIGHLIGHT_NAME: highlight.getName()
-            HIGHLIGHTER_PROPERTY: highlighterProperty
-
-          sourceEffect.property(highlighterProperty).expression = sourceExpression
+            sourceEffect.property(highlighterProperty).expression = sourceExpression
 
         # Add a spotlight layer if one doesn't exist, and track the new highlight
         spotlightLayer = @getSpotlight() ? @addSpotlight(highlight)
         spotlightLayer.trackHighlight highlight
+    @
+
+  ###*
+  Assigns the given highlight or highlights one or more control layers. Either
+  connects to existing ones or creates new control layers if needed. Unbubbled
+  highlights will be bubbled up.
+  @memberof NFPaperLayerGroup
+  @returns {NFPaperLayerGroup} self
+  @param {NFHighlightLayer | NFHighlightLayerCollection} highlights - the highlights to control
+  @param {float} [time=currTime] - the time to create the control layer(s) at, if new
+  layers are to be created
+  @throws Throw error if the given highlight is not in this page
+  @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
+  ###
+  assignControlLayer: (highlights, time) ->
+    throw new Error "Empty highlight parameter" unless highlights?
+
+    # If given a single highlight, wrap it.
+    if highlights instanceof NFHighlightLayer
+      highlights = new NFHighlightLayerCollection([highlights])
+
+    unless highlights.isEmpty()
+
+      existingControlLayers = @getControlLayers()
+      highlights.forEach (highlight) =>
+
+        # Is this highlight already connected to a control layer here?
+        controlName = NFHighlightControlLayer.nameForPDFNumberAndHighlight @getPDFNumber(), highlight
+        matchedLayer = @containingComp().layerWithName controlName
+        if not matchedLayer?
+          @addControlLayer highlight, time
+        else
+          # Already connected, so let's just add a spotlight marker to it
+          matchedLayer.addSpotlightMarker
+            time: time
     @
 
   ###*
@@ -331,7 +365,6 @@ class NFPaperLayerGroup extends NFObject
     @paperParent.setParent null
 
     # Move to the Highlight or Rect
-
     if model.highlight?
       # Find out which layer contains the highlight at this time
       possibleLayers = @getPages().layersWithHighlight model.highlight

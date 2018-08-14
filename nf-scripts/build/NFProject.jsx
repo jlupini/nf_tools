@@ -233,13 +233,23 @@ NFProject = {
         skipTitle: flags.skipTitle
       });
     } else if (instruction.type === NFLayoutType.INSTRUCTION) {
-      if (instruction.instruction === NFLayoutInstruction.SHOW_TITLE) {
-        mainComp.animateTo({
-          page: targetPDF.getTitlePage()
-        });
-      } else {
-        this;
+      switch (instruction.instruction) {
+        case NFLayoutInstruction.SHOW_TITLE:
+          mainComp.animateTo({
+            page: targetPDF.getTitlePage()
+          });
+          break;
+        case NFLayoutInstruction.ICON_SEQUENCE:
+        case NFLayoutInstruction.GAUSSY:
+        case NFLayoutInstruction.FIGURE:
+        case NFLayoutInstruction.TABLE:
+          break;
+        default:
+          throw new Error("There isn't a case for this instruction");
       }
+      this;
+    } else {
+      throw new Error("Instruction not found");
       this;
     }
     return this;

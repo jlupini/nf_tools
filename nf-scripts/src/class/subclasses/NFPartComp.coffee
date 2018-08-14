@@ -89,7 +89,7 @@ class NFPartComp extends NFComp
           if targetPage.is titlePage
             # Move the time to the in marker and run moveTo
             @setTime titlePageLayer.getInMarkerTime()
-            group.bubbleUp model.highlight, @getTime() - 0.5
+            group.assignControlLayer model.highlight, @getTime() - 0.5
 
             group.moveTo
               highlight: model.highlight
@@ -108,8 +108,8 @@ class NFPartComp extends NFComp
                 highlight: model.highlight
                 fillPercentage: model.fillPercentage * 0.7
 
-            if model.highlight? and not model.highlight.isBubbled()
-              group.bubbleUp model.highlight, titlePageLayer.getInMarkerTime() + 0.5
+            if model.highlight?
+              group.assignControlLayer model.highlight, titlePageLayer.getInMarkerTime() + 0.5
 
             titlePageLayer.animatePageTurn()
 
@@ -135,8 +135,8 @@ class NFPartComp extends NFComp
         # Trim the old layer to the end of the page turn
         prevGroup.trim targetPageLayer.getInMarkerTime()
 
-        if model.highlight? and not model.highlight.isBubbled()
-          group.bubbleUp model.highlight, @getTime() + 0.25
+        if model.highlight?
+          group.assignControlLayer model.highlight, @getTime() + 0.25
 
     # else (this pdf is in a part comp somewhere)
     else
@@ -150,7 +150,7 @@ class NFPartComp extends NFComp
               throw new Error "Can't animate to page or highlight because animations exist in the FUTURE on the target PDF"
 
       # If it's the active PDF now
-      if @activePDF().is targetPDF
+      if @activePDF()?.is targetPDF
         activePageLayer = @activePage()
         group = new NFPaperLayerGroup activePageLayer.getPaperParentLayer()
 
@@ -168,8 +168,8 @@ class NFPartComp extends NFComp
           # Trim any active spotlights
           group.trimActiveSpotlights @getTime() + (model.animationDuration / 2)
 
-          if model.highlight? and not model.highlight.isBubbled()
-            group.bubbleUp model.highlight, @getTime() + (model.animationDuration / 2)
+          if model.highlight?
+            group.assignControlLayer model.highlight, @getTime() + (model.animationDuration / 2)
             model.highlight.getControlLayer().setSpotlightMarkerInPoint @getTime() + (model.animationDuration / 2)
 
 
@@ -211,8 +211,10 @@ class NFPartComp extends NFComp
               # Trim the old layer to the end of the page turn
               activePageLayer.layer.outPoint = @getTime() - 0.5 + 2.0
 
-              if model.highlight? and not model.highlight.isBubbled()
-                group.bubbleUp model.highlight, @getTime() + 0.5
+              group.trimActiveSpotlights @getTime() + 0.5
+
+              if model.highlight?
+                group.assignControlLayer model.highlight, @getTime() + 0.5
                 model.highlight.getControlLayer().setSpotlightMarkerInPoint @getTime() + 0.5
 
           # else (we haven't seen it in this part or it was below)
@@ -242,8 +244,8 @@ class NFPartComp extends NFComp
 
             group.trimActiveSpotlights @getTime() + 0.5
 
-            if model.highlight? and not model.highlight.isBubbled()
-              group.bubbleUp model.highlight, @getTime() + 0.5
+            if model.highlight?
+              group.assignControlLayer model.highlight, @getTime() + 0.5
               model.highlight.getControlLayer().setSpotlightMarkerInPoint @getTime() + 0.5
 
       # else (not the active PDF)
@@ -280,8 +282,8 @@ class NFPartComp extends NFComp
           targetPageLayer.slideIn()
           prevGroup?.trim targetPageLayer.getInMarkerTime()
 
-        if model.highlight? and not model.highlight.isBubbled()
-          targetGroup.bubbleUp model.highlight, @getTime() + 0.25
+        if model.highlight?
+          targetGroup.assignControlLayer model.highlight, @getTime() + 0.25
 
 
     @setTime preAnimationTime

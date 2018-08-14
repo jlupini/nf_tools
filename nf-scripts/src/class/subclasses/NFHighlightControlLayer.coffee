@@ -158,6 +158,8 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
   ###*
   Returns the name for a control layer for a given PDF Number and highlight
   @memberof NFHighlightControlLayer
+  @param {String} num - the PDF Number
+  @param {NFHighlightLayer} highlight - the highlight
   @returns {String} the appropriate name
   ###
   nameForPDFNumberAndHighlight: (num, highlight) ->
@@ -207,14 +209,15 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
 
     effects = controlLayer.effects()
 
-    # Add the highlighter effect
-    highlighterEffect = effects.addProperty "AV_Highlighter"
-    highlighterEffect.name = model.highlight.layer.name
+    unless model.highlight.isBubbled()
+      # Add the highlighter effect
+      highlighterEffect = effects.addProperty "AV_Highlighter"
+      highlighterEffect.name = model.highlight.layer.name
 
-    # Add the control effect
-    controlEffect = effects.addProperty "AV_Highlight_Control"
-    controlEffect.name = "Highlight Control"
-    controlEffect.property("Endless").setValue true
+      # Add the control effect
+      controlEffect = effects.addProperty "AV_Highlight_Control"
+      controlEffect.name = "Highlight Control"
+      controlEffect.property("Endless").setValue true
 
     # Add the spotlight markers
     controlLayer.addMarker

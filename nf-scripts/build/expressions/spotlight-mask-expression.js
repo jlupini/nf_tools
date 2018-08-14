@@ -4,7 +4,7 @@ targetPage = 'TARGET_PAGE';
 
 highlightLayer = comp('COMP_NAME').layer('HIGHLIGHT_LAYER_NAME');
 
-controlLayerEffect = thisComp.layer('HIGHLIGHT_CONTROL_LAYER_NAME').effect('HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME');
+controlLayerEffect = highlightLayer.effect('AV_Highlighter');
 
 activeBabby = null;
 

@@ -1,6 +1,6 @@
-targetPage = 'TARGET_PAGE' #'20_pg03'
-highlightLayer = comp('COMP_NAME').layer('HIGHLIGHT_LAYER_NAME') #comp('20_pg03 NFPage').layer('Orange')
-controlLayerEffect = thisComp.layer('HIGHLIGHT_CONTROL_LAYER_NAME').effect('HIGHLIGHT_CONTROL_HIGHLIGHT_EFFECT_NAME') #thisComp.layer('20 - Orange Highlight Control').effect('Orange')
+targetPage = 'TARGET_PAGE'
+highlightLayer = comp('COMP_NAME').layer('HIGHLIGHT_LAYER_NAME')
+controlLayerEffect = highlightLayer.effect('AV_Highlighter')
 
 # Get our matching page layer
 activeBabby = null

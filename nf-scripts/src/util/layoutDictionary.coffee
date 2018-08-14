@@ -7,6 +7,9 @@ NFLayoutInstruction =
 	DO_NOTHING: 101
 	SHOW_TITLE: 102
 	ICON_SEQUENCE: 103
+	GAUSSY: 104
+	FIGURE: 105
+	TABLE: 106
 
 NFLayoutFlagDict =
 	skipTitle:
