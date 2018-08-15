@@ -334,7 +334,8 @@ class NFPageLayer extends NFLayer
         paperLayerGroup = new NFPaperLayerGroup(paperParentLayer)
         paperLayerGroup.gatherLayers @
     else
-      paperParentLayer = new NFPaperParentLayer(@nullify()).setName()
+      nullLayer = @nullify [1, 0, 0.7]
+      paperParentLayer = new NFPaperParentLayer(nullLayer).setName()
       paperParentLayer.setZoomer()
 
     return paperParentLayer

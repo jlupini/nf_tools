@@ -322,6 +322,37 @@ NFComp = (function(superClass) {
 
 
   /**
+  Creates and returns a new solid layer in this comp
+  @memberof NFComp
+  @param {Object} model
+  @param {float[]} model.color - the solid color. Three-value array of floats
+  from 0.0-1.0 in the form [R, G, B]
+  @param {String} [model.name="New Solid"] - the solid name.
+  @param {float} [model.width=compWidth] - the width
+  @param {float} [model.height=compHeight] - the height
+  @returns {NFLayer} The newly created solid layer
+   */
+
+  NFComp.prototype.addSolid = function(model) {
+    var ref, ref1, ref2, ref3, solidAVLayer;
+    model = {
+      color: (function() {
+        if ((ref = model.color) != null) {
+          return ref;
+        } else {
+          throw new Error("Solids need a color");
+        }
+      })(),
+      name: (ref1 = model.name) != null ? ref1 : "New Solid",
+      width: (ref2 = model.width) != null ? ref2 : this.comp.width,
+      height: (ref3 = model.height) != null ? ref3 : this.comp.height
+    };
+    solidAVLayer = this.comp.layers.addSolid(model.color, model.name, model.width, model.height, 1);
+    return NFLayer.getSpecializedLayerFromAVLayer(solidAVLayer);
+  };
+
+
+  /**
   Inserts a layer into the comp at a given index at the current time. Returns
   the new layer
   @memberof NFComp
@@ -688,12 +719,23 @@ NFLayer = (function(superClass) {
   /**
   Creates a new null parent to this layer, positioned above it. Will override previous parenting.
   @memberof NFLayer
+  @param {float[]} [color] - an optional color. If a value is provided here,
+  a solid will be made instead of a null. Three numbers from 0-1
   @returns {NFLayer} the new null NFLayer
    */
 
-  NFLayer.prototype.nullify = function() {
+  NFLayer.prototype.nullify = function(color) {
     var newNull;
-    newNull = this.containingComp().addNull();
+    if (color != null) {
+      newNull = this.containingComp().addSolid({
+        color: color,
+        width: 10,
+        height: 10
+      });
+      newNull.layer.enabled = false;
+    } else {
+      newNull = this.containingComp().addNull();
+    }
     this.setParent(newNull);
     newNull.moveBefore(this);
     return newNull;
@@ -2840,6 +2882,69 @@ NFGaussyLayer = Object.assign(NFGaussyLayer, {
    */
   isGaussyLayer: function(theLayer) {
     return theLayer.name.indexOf("Gaussy") >= 0;
+  },
+
+  /**
+  Creates a new NFGaussyLayer above the spotlight on the given group
+  @memberof NFGaussyLayer
+  @param {Object} model
+  @param {NFLayer} model.group - the group on which to create the gaussy layer
+  @param {float} [model.time=currTime] - the time to start the effect at
+  @param {float} [model.duration=5.0] - the length of the effect
+  @returns {NFGaussyLayer} the new gaussy layer
+   */
+  newGaussyLayer: function(model) {
+    var effects, gaussianBlur, gaussyAVLayer, gaussyEffect, gaussyLayer, hueSatEffect, masterLightness, masterSaturation, newName, ref, ref1, ref2, sourceExpression;
+    model = {
+      group: (function() {
+        if ((ref = model.group) != null) {
+          return ref;
+        } else {
+          throw new Error("Gaussy layers need a target group");
+        }
+      })(),
+      time: (ref1 = model.time) != null ? ref1 : model.group.containingComp().getTime(),
+      duration: (ref2 = model.duration) != null ? ref2 : 5
+    };
+    NFTools.log("Creating new Gaussy layer on " + (model.group.toString()), "static NFGaussyLayer");
+    newName = NFGaussyLayer.nameFor(model.group);
+    gaussyLayer = model.group.containingComp().addSolid({
+      color: [0.45, 0.93, 0.89],
+      name: newName
+    });
+    gaussyAVLayer = gaussyLayer.layer;
+    gaussyAVLayer.adjustmentLayer = true;
+    gaussyLayer.moveBefore(model.group.getSpotlight());
+    gaussyAVLayer.startTime = model.time;
+    gaussyAVLayer.outPoint = model.time + model.duration;
+    effects = gaussyLayer.effects();
+    gaussyEffect = effects.addProperty("AV_Gaussy");
+    gaussyEffect.property("Duration").setValue(60);
+    gaussianBlur = effects.addProperty('Gaussian Blur');
+    gaussianBlur.property('Repeat Edge Pixels').setValue(true);
+    sourceExpression = NFTools.readExpression("gaussy-blur-expression");
+    gaussyLayer.effect('Gaussian Blur').property('Blurriness').expression = sourceExpression;
+    hueSatEffect = effects.addProperty("ADBE Color Balance (HLS)");
+    masterSaturation = hueSatEffect.property("Saturation");
+    masterLightness = hueSatEffect.property("Lightness");
+    masterSaturation.expression = NFTools.readExpression("gaussy-saturation-expression");
+    masterLightness.expression = NFTools.readExpression("gaussy-lightness-expression");
+    return gaussyLayer;
+  },
+
+  /**
+  Returns the name a new gaussy layer should have. Gaussy layers affect all
+  layers below them, so they're not named based on the layer they target.
+  Instead, they're just named sequentially within the comp they reside in.
+  @memberof NFGaussyLayer
+  @param {NFPaperLayerGroup} group - the group
+  @returns {String} the citation layer/comp name
+   */
+  nameFor: function(group) {
+    var comp, existingGaussies;
+    comp = group.containingComp();
+    existingGaussies = comp.searchLayers("Gaussy");
+    return "Gaussy - #" + (existingGaussies.count() + 1);
   }
 });
 
@@ -3064,7 +3169,8 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
   @returns {boolean} whether the AV layer is a valid highlight layer
    */
   isHighlightControlLayer: function(theLayer) {
-    return theLayer.nullLayer && theLayer.name.indexOf("Highlight Control") >= 0;
+    var ref;
+    return ((ref = theLayer.source) != null ? ref.mainSource : void 0) instanceof SolidSource && theLayer.name.indexOf("Highlight Control") >= 0;
   },
 
   /**
@@ -3084,9 +3190,13 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     }
     NFTools.log("Creating new control layer for highlight: " + (model.highlight.toString()));
     partComp = model.group.containingComp();
-    controlLayer = partComp.addNull();
-    controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight(model.group.getPDFNumber(), model.highlight);
-    controlLayer = new NFHighlightControlLayer(controlLayer);
+    controlLayer = partComp.addSolid({
+      color: [1, 1, 0],
+      name: NFHighlightControlLayer.nameForPDFNumberAndHighlight(model.group.getPDFNumber(), model.highlight),
+      width: 10,
+      height: 10
+    });
+    controlLayer.layer.enabled = false;
     citationLayer = model.group.getCitationLayer();
     existingControlLayers = model.group.getControlLayers();
     if (!existingControlLayers.isEmpty()) {
@@ -4192,7 +4302,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.assignPaperParentLayer = function(shouldMove) {
-    var paperLayerGroup, paperParentLayer;
+    var nullLayer, paperLayerGroup, paperParentLayer;
     if (shouldMove == null) {
       shouldMove = false;
     }
@@ -4204,7 +4314,8 @@ NFPageLayer = (function(superClass) {
         paperLayerGroup.gatherLayers(this);
       }
     } else {
-      paperParentLayer = new NFPaperParentLayer(this.nullify()).setName();
+      nullLayer = this.nullify([1, 0, 0.7]);
+      paperParentLayer = new NFPaperParentLayer(nullLayer).setName();
       paperParentLayer.setZoomer();
     }
     return paperParentLayer;
@@ -5024,9 +5135,10 @@ NFPaperParentLayer = (function(superClass) {
   extend(NFPaperParentLayer, superClass);
 
   function NFPaperParentLayer(layer) {
+    var ref;
     NFLayer.call(this, layer);
-    if (!this.layer.nullLayer) {
-      throw new Error("Can only create a NFPaperParentLayer from a null layer");
+    if (!(((ref = this.layer.source) != null ? ref.mainSource : void 0) instanceof SolidSource)) {
+      throw new Error("Can only create a NFPaperParentLayer from a solid layer");
     }
     this;
   }
@@ -5067,7 +5179,8 @@ NFPaperParentLayer = Object.assign(NFPaperParentLayer, {
   @returns {boolean} whether or not the layer is a valid paper parent
    */
   isPaperParentLayer: function(layer) {
-    return layer.nullLayer && layer.name.indexOf('PDF') >= 0;
+    var ref;
+    return ((ref = layer.source) != null ? ref.mainSource : void 0) instanceof SolidSource && layer.name.indexOf('PDF') >= 0;
   },
 
   /**
@@ -5440,6 +5553,37 @@ NFPartComp = (function(superClass) {
 
 
   /**
+  Adds a new gaussy layer to the comp, above the currently active layer.
+  @memberof NFPartComp
+  @param {Object} model
+  @param {String} [model.placeholder] - the placeholder text to show over the layer
+  @param {float} [model.time=currTime] - the start time of the gaussy layer
+  @param {float} [model.duration=5.0] - the length of the gaussy layer
+  @returns {NFPartComp} self
+   */
+
+  NFPartComp.prototype.addGaussy = function(model) {
+    var activeGroup, activePDF, ref, ref1;
+    model = {
+      time: (ref = model.time) != null ? ref : this.getTime(),
+      duration: (ref1 = model.duration) != null ? ref1 : 5.0
+    };
+    activePDF = this.activePDF();
+    if (activePDF != null) {
+      activeGroup = this.groupFromPDF(activePDF);
+      NFGaussyLayer.newGaussyLayer({
+        group: activeGroup,
+        time: model.time,
+        duration: model.duration
+      });
+    } else {
+      throw new Error("No active group to create a gaussy layer on top of");
+    }
+    return this;
+  };
+
+
+  /**
   Gets the zoomer layer
   @memberof NFPartComp
   @override
@@ -5679,7 +5823,7 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
   @returns {NFSpotlightLayer} the new spotlight layer
    */
   newSpotlightLayer: function(group) {
-    var controlLayers, existingSpot, expression, newMask, newSolidAVLayer, props, spotlightLayer;
+    var controlLayers, existingSpot, expression, newMask, spotlightLayer;
     if (!(group instanceof NFPaperLayerGroup)) {
       throw new Error("group must be an NFPaperLayerGroup");
     }
@@ -5687,15 +5831,10 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
     if (existingSpot != null) {
       return existingSpot;
     }
-    props = {
+    spotlightLayer = group.containingComp().addSolid({
       color: [0.0078, 0, 0.1216],
-      name: NFSpotlightLayer.nameForPDFNumber(group.getPDFNumber()),
-      width: group.containingComp().comp.width,
-      height: group.containingComp().comp.height,
-      pixelAspect: 1
-    };
-    newSolidAVLayer = group.containingComp().comp.layers.addSolid(props.color, props.name, props.width, props.height, props.pixelAspect);
-    spotlightLayer = new NFSpotlightLayer(newSolidAVLayer);
+      name: NFSpotlightLayer.nameForPDFNumber(group.getPDFNumber())
+    });
     controlLayers = group.getControlLayers();
     if (controlLayers.isEmpty()) {
       spotlightLayer.moveAfter(group.paperParent);

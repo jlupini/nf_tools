@@ -172,7 +172,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
   @returns {boolean} whether the AV layer is a valid highlight layer
   ###
   isHighlightControlLayer: (theLayer) ->
-    return theLayer.nullLayer and theLayer.name.indexOf("Highlight Control") >= 0
+    return theLayer.source?.mainSource instanceof SolidSource and theLayer.name.indexOf("Highlight Control") >= 0
 
   ###*
   Creates a new NFHighlightControlLayer for the given page, at the given time,
@@ -190,9 +190,12 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
 
     # Create the control layer
     partComp = model.group.containingComp()
-    controlLayer = partComp.addNull()
-    controlLayer.layer.name = NFHighlightControlLayer.nameForPDFNumberAndHighlight model.group.getPDFNumber(), model.highlight
-    controlLayer = new NFHighlightControlLayer controlLayer
+    controlLayer = partComp.addSolid
+      color: [1, 1, 0]
+      name: NFHighlightControlLayer.nameForPDFNumberAndHighlight model.group.getPDFNumber(), model.highlight
+      width: 10
+      height: 10
+    controlLayer.layer.enabled = no
 
     citationLayer = model.group.getCitationLayer()
     existingControlLayers = model.group.getControlLayers()

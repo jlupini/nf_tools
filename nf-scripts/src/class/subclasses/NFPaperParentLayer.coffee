@@ -10,7 +10,7 @@ Creates a new NFPaperParentLayer from a given null AVLayer
 class NFPaperParentLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
-    throw new Error "Can only create a NFPaperParentLayer from a null layer" unless @layer.nullLayer
+    throw new Error "Can only create a NFPaperParentLayer from a solid layer" unless @layer.source?.mainSource instanceof SolidSource
     @
   # MARK: Instance Methods
   toString: ->
@@ -38,7 +38,7 @@ NFPaperParentLayer = Object.assign NFPaperParentLayer,
   @returns {boolean} whether or not the layer is a valid paper parent
   ###
   isPaperParentLayer: (layer) ->
-    return layer.nullLayer and layer.name.indexOf('PDF') >= 0
+    return layer.source?.mainSource instanceof SolidSource and layer.name.indexOf('PDF') >= 0
 
   ###*
   Class Method. Returns the name string for the paper parent for a given layer

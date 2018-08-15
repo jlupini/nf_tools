@@ -180,6 +180,26 @@ class NFComp extends NFObject
     return new NFLayer @comp.layers.addNull()
 
   ###*
+  Creates and returns a new solid layer in this comp
+  @memberof NFComp
+  @param {Object} model
+  @param {float[]} model.color - the solid color. Three-value array of floats
+  from 0.0-1.0 in the form [R, G, B]
+  @param {String} [model.name="New Solid"] - the solid name.
+  @param {float} [model.width=compWidth] - the width
+  @param {float} [model.height=compHeight] - the height
+  @returns {NFLayer} The newly created solid layer
+  ###
+  addSolid: (model) ->
+    model =
+      color: model.color ? throw new Error "Solids need a color"
+      name: model.name ? "New Solid"
+      width: model.width ? @comp.width
+      height: model.height ? @comp.height
+    solidAVLayer = @comp.layers.addSolid(model.color, model.name, model.width, model.height, 1)
+    return NFLayer.getSpecializedLayerFromAVLayer solidAVLayer
+
+  ###*
   Inserts a layer into the comp at a given index at the current time. Returns
   the new layer
   @memberof NFComp

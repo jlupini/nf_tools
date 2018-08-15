@@ -106,16 +106,9 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
     existingSpot = group.getSpotlight()
     return existingSpot if existingSpot?
 
-    props =
+    spotlightLayer = group.containingComp().addSolid
       color: [0.0078, 0, 0.1216]
       name: NFSpotlightLayer.nameForPDFNumber group.getPDFNumber()
-      width: group.containingComp().comp.width
-      height: group.containingComp().comp.height
-      pixelAspect: 1
-
-    newSolidAVLayer = group.containingComp().comp.layers.addSolid props.color, props.name, props.width, props.height, props.pixelAspect
-
-    spotlightLayer = new NFSpotlightLayer newSolidAVLayer
 
     controlLayers = group.getControlLayers()
     if controlLayers.isEmpty()

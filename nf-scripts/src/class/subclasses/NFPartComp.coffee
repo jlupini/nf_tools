@@ -351,6 +351,37 @@ class NFPartComp extends NFComp
     return pageLayer
 
   ###*
+  Adds a new gaussy layer to the comp, above the currently active layer.
+  @memberof NFPartComp
+  @param {Object} model
+  @param {String} [model.placeholder] - the placeholder text to show over the layer
+  @param {float} [model.time=currTime] - the start time of the gaussy layer
+  @param {float} [model.duration=5.0] - the length of the gaussy layer
+  @returns {NFPartComp} self
+  ###
+  addGaussy: (model) ->
+    model =
+      time: model.time ? @getTime()
+      duration: model.duration ? 5.0
+
+    activePDF = @activePDF()
+    if activePDF?
+      activeGroup = @groupFromPDF activePDF
+      NFGaussyLayer.newGaussyLayer
+        group: activeGroup
+        time: model.time
+        duration: model.duration
+      # FIXME: Pickup here and start dealing with:
+      # 1) End times of gaussy layer (ugh) - maybe just make them go forever if
+      # no duration is provided...
+      # 2) cleaning up spotlights underneath them
+      # FIXME: Do something with the placeholder text
+    else
+      throw new Error "No active group to create a gaussy layer on top of"
+
+    @
+
+  ###*
   Gets the zoomer layer
   @memberof NFPartComp
   @override

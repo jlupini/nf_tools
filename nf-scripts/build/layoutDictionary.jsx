@@ -81,6 +81,7 @@ NFLayoutInstructionDict = {
   },
   doNothing: {
     code: ['do nothing', 'nothing'],
+    priority: 4,
     display: "Do Nothing",
     type: NFLayoutType.INSTRUCTION,
     instruction: NFLayoutInstruction.DO_NOTHING
@@ -97,5 +98,26 @@ NFLayoutInstructionDict = {
     display: "Icon Sequence Placeholder",
     type: NFLayoutType.INSTRUCTION,
     instruction: NFLayoutInstruction.ICON_SEQUENCE
+  },
+  gaussy: {
+    code: ['gaussy', 'blur'],
+    display: "Gaussy Placeholder",
+    priority: 3,
+    type: NFLayoutType.INSTRUCTION,
+    instruction: NFLayoutInstruction.GAUSSY
+  },
+  figure: {
+    code: ['figure', 'fig', 'graph', 'chart', 'f'],
+    display: "Figure Placeholder",
+    priority: 2,
+    type: NFLayoutType.INSTRUCTION,
+    instruction: NFLayoutInstruction.FIGURE
+  },
+  table: {
+    code: ['table', 'tab', 't'],
+    display: "Table Placeholder",
+    priority: 2,
+    type: NFLayoutType.INSTRUCTION,
+    instruction: NFLayoutInstruction.TABLE
   }
 };

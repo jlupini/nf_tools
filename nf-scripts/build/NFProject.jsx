@@ -163,6 +163,7 @@ NFProject = {
    */
   followInstruction: function(input) {
     var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, highlight, instruction, instructionString, j, k, key, len, len1, mainComp, option, ref, ref1, targetPDF, targetPDFNumber, titlePage;
+    NFTools.log("Parsing input: '" + input + "'", "Parser");
     mainComp = this.activeComp();
     if (!(mainComp instanceof NFPartComp)) {
       throw new Error("Can only run instruction on a part comp");
@@ -173,6 +174,7 @@ NFProject = {
     }
     if (targetPDFNumber != null) {
       instructionString = input.slice(targetPDFNumber.length);
+      NFTools.log("Target PDF Number found: '" + targetPDFNumber + "'", "Parser");
     } else {
       instructionString = input;
     }
@@ -189,22 +191,24 @@ NFProject = {
         if (instructionString.indexOf(code) >= 0) {
           flags[key] = flagOption;
           instructionString = instructionString.replace(code, "").trim();
+          NFTools.log("Flag found: '" + flagOption + "'", "Parser");
         }
       }
     }
     instruction = null;
     if (instructionString !== "") {
+      NFTools.log("Instruction string remaining is: '" + instructionString + "'", "Parser");
       for (key in NFLayoutInstructionDict) {
         option = NFLayoutInstructionDict[key];
         ref1 = option.code;
         for (k = 0, len1 = ref1.length; k < len1; k++) {
           code = ref1[k];
-          if (instructionString.indexOf(code) >= 0) {
+          if (instructionString === code) {
             if (instruction != null) {
               if ((option.priority != null) && (instruction.priority != null) && option.priority < instruction.priority) {
                 instruction = option;
               } else if (((option.priority != null) && (instruction.priority != null)) || ((option.priority == null) && (instruction.priority == null))) {
-                throw new Error("instruction matched two instruction options (" + instruction.display + " and " + option.display + ") with the same priority. Check layoutDictionary.");
+                throw new Error("instruction matched two instruction options (" + instruction.display + " and " + option.display + ") with the same priority. Fix layoutDictionary.");
               } else if (option.priority != null) {
                 instruction = option;
               }
@@ -218,7 +222,11 @@ NFProject = {
         throw new Error("No instruction matches instruction string");
       }
     }
+    if (instruction != null) {
+      NFTools.log("Instruction found: '" + instruction.display + "'", "Parser");
+    }
     if ((targetPDF != null) && (instruction == null)) {
+      NFTools.log("PDF found but no instruction - animating to title page", "Parser");
       titlePage = targetPDF.getTitlePage();
       mainComp.animateTo({
         page: titlePage
@@ -228,6 +236,7 @@ NFProject = {
       if (highlight == null) {
         throw new Error("Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'");
       }
+      NFTools.log("Animating to " + instruction.display, "Parser");
       mainComp.animateTo({
         highlight: highlight,
         skipTitle: flags.skipTitle
@@ -235,6 +244,7 @@ NFProject = {
     } else if (instruction.type === NFLayoutType.INSTRUCTION) {
       switch (instruction.instruction) {
         case NFLayoutInstruction.SHOW_TITLE:
+          NFTools.log("Following Instruction: " + instruction.display, "Parser");
           mainComp.animateTo({
             page: targetPDF.getTitlePage()
           });
@@ -243,6 +253,10 @@ NFProject = {
         case NFLayoutInstruction.GAUSSY:
         case NFLayoutInstruction.FIGURE:
         case NFLayoutInstruction.TABLE:
+          NFTools.log("Following Instruction: " + instruction.display, "Parser");
+          mainComp.addGaussy({
+            placeholder: instruction.display
+          });
           break;
         default:
           throw new Error("There isn't a case for this instruction");

@@ -130,6 +130,7 @@ NFProject =
   ###
   followInstruction: (input) ->
 
+    NFTools.log "Parsing input: '#{input}'", "Parser"
     # Get a PDF Number from the input, if any
     mainComp = @activeComp()
     throw new Error "Can only run instruction on a part comp" unless mainComp instanceof NFPartComp
@@ -137,6 +138,7 @@ NFProject =
     targetPDFNumber = targetPDFNumber[1] if targetPDFNumber?
     if targetPDFNumber?
       instructionString = input.slice(targetPDFNumber.length)
+      NFTools.log "Target PDF Number found: '#{targetPDFNumber}'", "Parser"
     else
       instructionString = input
 
@@ -154,31 +156,39 @@ NFProject =
         if instructionString.indexOf(code) >= 0
           flags[key] = flagOption
           instructionString = instructionString.replace(code, "").trim()
+          NFTools.log "Flag found: '#{flagOption}'", "Parser"
+
 
     instruction = null
     # Look for an instruction
     if instructionString isnt ""
+      NFTools.log "Instruction string remaining is: '#{instructionString}'", "Parser"
       for key of NFLayoutInstructionDict
         option = NFLayoutInstructionDict[key]
         for code in option.code
-          if instructionString.indexOf(code) >= 0
+          if instructionString is code
             if instruction?
               # If there's already an instruction found found, get the highest priority one
               if option.priority? and instruction.priority? and option.priority < instruction.priority
                 instruction = option
               else if (option.priority? and instruction.priority?) or (not option.priority? and not instruction.priority?)
-                throw new Error "instruction matched two instruction options (#{instruction.display} and #{option.display}) with the same priority. Check layoutDictionary."
+                throw new Error "instruction matched two instruction options (#{instruction.display} and #{option.display}) with the same priority. Fix layoutDictionary."
               else if option.priority?
                 instruction = option
             else
               instruction = option
+
       throw new Error "No instruction matches instruction string" unless instruction?
+
+    if instruction?
+      NFTools.log "Instruction found: '#{instruction.display}'", "Parser"
 
     # OK, now we have four key pieces of information: the instruction, flags, the current PDF and the active PDF
 
     # If we have a PDF to go to but no instruction, assume we should bring in
     # the title page
     if targetPDF? and not instruction?
+      NFTools.log "PDF found but no instruction - animating to title page", "Parser"
       titlePage = targetPDF.getTitlePage()
       mainComp.animateTo
         page: titlePage
@@ -188,6 +198,7 @@ NFProject =
       highlight = targetPDF.findHighlight instruction.look
       throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
+      NFTools.log "Animating to #{instruction.display}", "Parser"
       mainComp.animateTo
         highlight: highlight
         skipTitle: flags.skipTitle
@@ -195,10 +206,13 @@ NFProject =
     else if instruction.type is NFLayoutType.INSTRUCTION
       switch instruction.instruction
         when NFLayoutInstruction.SHOW_TITLE
+          NFTools.log "Following Instruction: #{instruction.display}", "Parser"
           mainComp.animateTo
             page: targetPDF.getTitlePage()
         when NFLayoutInstruction.ICON_SEQUENCE, NFLayoutInstruction.GAUSSY, NFLayoutInstruction.FIGURE, NFLayoutInstruction.TABLE
-          # FIXME: FINISH BUILDING this
+          NFTools.log "Following Instruction: #{instruction.display}", "Parser"
+          mainComp.addGaussy
+            placeholder: instruction.display
         else throw new Error "There isn't a case for this instruction"
       @
     else

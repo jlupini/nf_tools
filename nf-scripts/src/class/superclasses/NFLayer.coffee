@@ -196,10 +196,19 @@ class NFLayer extends NFObject
   ###*
   Creates a new null parent to this layer, positioned above it. Will override previous parenting.
   @memberof NFLayer
+  @param {float[]} [color] - an optional color. If a value is provided here,
+  a solid will be made instead of a null. Three numbers from 0-1
   @returns {NFLayer} the new null NFLayer
   ###
-  nullify: ->
-    newNull = @containingComp().addNull()
+  nullify: (color) ->
+    if color?
+      newNull = @containingComp().addSolid
+        color: color
+        width: 10
+        height: 10
+      newNull.layer.enabled = no
+    else
+      newNull = @containingComp().addNull()
     @setParent newNull
     newNull.moveBefore @
     return newNull
