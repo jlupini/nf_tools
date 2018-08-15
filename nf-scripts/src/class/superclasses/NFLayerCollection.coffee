@@ -172,6 +172,19 @@ class NFLayerCollection extends NFObject
     throw new Error "Couldn't find layer to remove"
 
   ###*
+  Returns a new NFLayerCollection of layers in this collection with names that
+  include a search string
+  @memberof NFLayerCollection
+  @returns {NFLayerCollection} the collection of matching layers
+  ###
+  searchLayers: (searchString) ->
+    return null if @isEmpty()
+    matchingLayers = new NFLayerCollection
+    for layer in @layers
+      matchingLayers.add layer if layer.getName().indexOf(searchString) >= 0
+    return matchingLayers
+
+  ###*
   Gets the topmost NFLayer in this collection
   @memberof NFLayerCollection
   @returns {NFLayer | null} the topmost layer or null if empty

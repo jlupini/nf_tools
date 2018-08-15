@@ -1579,6 +1579,30 @@ NFLayerCollection = (function(superClass) {
 
 
   /**
+  Returns a new NFLayerCollection of layers in this collection with names that
+  include a search string
+  @memberof NFLayerCollection
+  @returns {NFLayerCollection} the collection of matching layers
+   */
+
+  NFLayerCollection.prototype.searchLayers = function(searchString) {
+    var j, layer, len, matchingLayers, ref;
+    if (this.isEmpty()) {
+      return null;
+    }
+    matchingLayers = new NFLayerCollection;
+    ref = this.layers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      layer = ref[j];
+      if (layer.getName().indexOf(searchString) >= 0) {
+        matchingLayers.add(layer);
+      }
+    }
+    return matchingLayers;
+  };
+
+
+  /**
   Gets the topmost NFLayer in this collection
   @memberof NFLayerCollection
   @returns {NFLayer | null} the topmost layer or null if empty
@@ -2453,9 +2477,9 @@ NFPaperLayerGroup = (function(superClass) {
       fillPercentage: (ref3 = model.fillPercentage) != null ? ref3 : 85
     };
     if (model.highlight != null) {
-      this.log("Moving to highlight: " + (model.highlight.toString()));
+      this.log("Moving to highlight: " + (model.highlight.toString()) + " at time " + model.time);
     } else {
-      this.log("Moving to a rect in layer " + (model.layer.toString()));
+      this.log("Moving to a rect in layer " + (model.layer.toString()) + " at time " + model.time);
     }
     positionProp = this.paperParent.transform().position;
     scaleProp = this.paperParent.transform().scale;
@@ -5247,7 +5271,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer;
+    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer, trimTime;
     model = {
       highlight: model.highlight,
       page: model.page,
@@ -5289,9 +5313,11 @@ NFPartComp = (function(superClass) {
           page: titlePage,
           animate: true
         });
+        trimTime = titlePageLayer.getInMarkerTime();
         if (prevGroup != null) {
-          prevGroup.trim(titlePageLayer.getInMarkerTime());
+          prevGroup.trim(trimTime);
         }
+        this.hideGaussy(trimTime + 1);
         group = new NFPaperLayerGroup(titlePageLayer.getPaperParentLayer());
         group.getCitationLayer().show(this.getTime() + 0.5);
         if (model.highlight != null) {
@@ -5339,7 +5365,9 @@ NFPartComp = (function(superClass) {
         });
         group = new NFPaperLayerGroup(targetPageLayer.getPaperParentLayer());
         group.getCitationLayer().show(this.getTime() + 0.5);
-        prevGroup.trim(targetPageLayer.getInMarkerTime());
+        trimTime = targetPageLayer.getInMarkerTime();
+        prevGroup.trim(trimTime);
+        this.hideGaussy(trimTime + 1);
         if (model.highlight != null) {
           group.assignControlLayer(model.highlight, this.getTime() + 0.25);
         }
@@ -5369,6 +5397,7 @@ NFPartComp = (function(superClass) {
             maxScale: model.maxPageScale
           });
           group.trimActiveSpotlights(this.getTime() + (model.animationDuration / 2));
+          this.hideGaussy(this.getTime());
           if (model.highlight != null) {
             group.assignControlLayer(model.highlight, this.getTime() + (model.animationDuration / 2));
             model.highlight.getControlLayer().setSpotlightMarkerInPoint(this.getTime() + (model.animationDuration / 2));
@@ -5403,6 +5432,7 @@ NFPartComp = (function(superClass) {
             }
             activePageLayer.layer.outPoint = this.getTime() - 0.5 + 2.0;
             group.trimActiveSpotlights(this.getTime() + 0.5);
+            this.hideGaussy(this.getTime());
             if (model.highlight != null) {
               group.assignControlLayer(model.highlight, this.getTime() + 0.5);
               model.highlight.getControlLayer().setSpotlightMarkerInPoint(this.getTime() + 0.5);
@@ -5430,6 +5460,7 @@ NFPartComp = (function(superClass) {
               });
             }
             group.trimActiveSpotlights(this.getTime() + 0.5);
+            this.hideGaussy(this.getTime());
             if (model.highlight != null) {
               group.assignControlLayer(model.highlight, this.getTime() + 0.5);
               model.highlight.getControlLayer().setSpotlightMarkerInPoint(this.getTime() + 0.5);
@@ -5458,20 +5489,26 @@ NFPartComp = (function(superClass) {
           targetGroup.gatherLayers(new NFLayerCollection([targetPageLayer]));
           if (targetPageLayer.index() < activePageLayer.index()) {
             targetPageLayer.slideIn();
+            trimTime = targetPageLayer.getInMarkerTime();
             if (prevGroup != null) {
-              prevGroup.trim(targetPageLayer.getInMarkerTime());
+              prevGroup.trim(trimTime);
             }
+            this.hideGaussy(trimTime + 1);
           } else {
+            trimTime = targetPageLayer.layer.inPoint + 2.0;
             if (prevGroup != null) {
-              prevGroup.trim(targetPageLayer.layer.inPoint + 2.0);
+              prevGroup.trim(trimTime);
             }
+            this.hideGaussy(this.getTime());
             activePageLayer.slideOut();
           }
         } else {
           targetPageLayer.slideIn();
+          trimTime = targetPageLayer.getInMarkerTime();
           if (prevGroup != null) {
-            prevGroup.trim(targetPageLayer.getInMarkerTime());
+            prevGroup.trim(trimTime);
           }
+          this.hideGaussy(trimTime + 1);
         }
         if (model.highlight != null) {
           targetGroup.assignControlLayer(model.highlight, this.getTime() + 0.25);
@@ -5553,33 +5590,74 @@ NFPartComp = (function(superClass) {
 
 
   /**
-  Adds a new gaussy layer to the comp, above the currently active layer.
+  Adds a new gaussy layer to the comp, above the currently active group.
   @memberof NFPartComp
   @param {Object} model
   @param {String} [model.placeholder] - the placeholder text to show over the layer
   @param {float} [model.time=currTime] - the start time of the gaussy layer
-  @param {float} [model.duration=5.0] - the length of the gaussy layer
+  @param {float} [model.duration] - the length of the gaussy layer. If not given
+  a duration, the layer will continue indefinitely.
   @returns {NFPartComp} self
    */
 
   NFPartComp.prototype.addGaussy = function(model) {
     var activeGroup, activePDF, ref, ref1;
-    model = {
-      time: (ref = model.time) != null ? ref : this.getTime(),
-      duration: (ref1 = model.duration) != null ? ref1 : 5.0
-    };
+    model.time = (ref = model.time) != null ? ref : this.getTime();
+    model.duration = (ref1 = model.duration) != null ? ref1 : this.comp.duration - model.time;
     activePDF = this.activePDF();
     if (activePDF != null) {
       activeGroup = this.groupFromPDF(activePDF);
+      this.log("Adding a gaussy layer at time: " + model.time);
       NFGaussyLayer.newGaussyLayer({
         group: activeGroup,
         time: model.time,
         duration: model.duration
       });
+      activeGroup.trimActiveSpotlights(model.time + 0.5);
     } else {
       throw new Error("No active group to create a gaussy layer on top of");
     }
     return this;
+  };
+
+
+  /**
+  Hides the active gaussy layer, if one exists.
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the end time of the gaussy layer
+  @returns {NFPartComp} self
+   */
+
+  NFPartComp.prototype.hideGaussy = function(time) {
+    var activeGaussies;
+    time = time != null ? time : this.getTime();
+    activeGaussies = this.activeLayers(time).searchLayers("Gaussy");
+    activeGaussies.forEach((function(_this) {
+      return function(gaussy) {
+        _this.log("Hiding gaussy layer at time: " + time);
+        return gaussy.layer.outPoint = time;
+      };
+    })(this));
+    return this;
+  };
+
+
+  /**
+  Returns whether or not there's an active gaussy layer at the given time
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the time to check
+  @returns {Boolean} if there is a gaussy active at the current time
+   */
+
+  NFPartComp.prototype.gaussyActive = function(time) {
+    var activeGaussies;
+    time = time != null ? time : this.getTime();
+    activeGaussies = this.activeLayers(time).searchLayers("Gaussy");
+    if (activeGaussies.isEmpty()) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
 

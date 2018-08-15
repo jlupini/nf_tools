@@ -350,9 +350,9 @@ class NFPaperLayerGroup extends NFObject
       fillPercentage: model.fillPercentage ? 85
 
     if model.highlight?
-      @log "Moving to highlight: #{model.highlight.toString()}"
+      @log "Moving to highlight: #{model.highlight.toString()} at time #{model.time}"
     else
-      @log "Moving to a rect in layer #{model.layer.toString()}"
+      @log "Moving to a rect in layer #{model.layer.toString()} at time #{model.time}"
 
     positionProp = @paperParent.transform().position
     scaleProp = @paperParent.transform().scale

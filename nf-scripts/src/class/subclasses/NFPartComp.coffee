@@ -78,7 +78,9 @@ class NFPartComp extends NFComp
           page: titlePage
           animate: yes
 
-        prevGroup.trim titlePageLayer.getInMarkerTime() if prevGroup?
+        trimTime = titlePageLayer.getInMarkerTime()
+        prevGroup.trim trimTime if prevGroup?
+        @hideGaussy trimTime + 1
 
         group = new NFPaperLayerGroup titlePageLayer.getPaperParentLayer()
         group.getCitationLayer().show @getTime()+0.5
@@ -133,7 +135,9 @@ class NFPartComp extends NFComp
         group.getCitationLayer().show @getTime()+0.5
 
         # Trim the old layer to the end of the page turn
-        prevGroup.trim targetPageLayer.getInMarkerTime()
+        trimTime = targetPageLayer.getInMarkerTime()
+        prevGroup.trim trimTime
+        @hideGaussy trimTime + 1
 
         if model.highlight?
           group.assignControlLayer model.highlight, @getTime() + 0.25
@@ -166,7 +170,10 @@ class NFPartComp extends NFComp
             maxScale: model.maxPageScale
 
           # Trim any active spotlights
+
           group.trimActiveSpotlights @getTime() + (model.animationDuration / 2)
+          # FIXME: This should be El Sneako!
+          @hideGaussy @getTime()
 
           if model.highlight?
             group.assignControlLayer model.highlight, @getTime() + (model.animationDuration / 2)
@@ -212,6 +219,8 @@ class NFPartComp extends NFComp
               activePageLayer.layer.outPoint = @getTime() - 0.5 + 2.0
 
               group.trimActiveSpotlights @getTime() + 0.5
+              # FIXME: This should be El Sneako!
+              @hideGaussy @getTime()
 
               if model.highlight?
                 group.assignControlLayer model.highlight, @getTime() + 0.5
@@ -243,6 +252,8 @@ class NFPartComp extends NFComp
                 fillPercentage: model.fillPercentage
 
             group.trimActiveSpotlights @getTime() + 0.5
+            # FIXME: This should be El Sneako!
+            @hideGaussy @getTime()
 
             if model.highlight?
               group.assignControlLayer model.highlight, @getTime() + 0.5
@@ -274,13 +285,19 @@ class NFPartComp extends NFComp
           # Otherwise, slide the active layer out
           if targetPageLayer.index() < activePageLayer.index()
             targetPageLayer.slideIn()
-            prevGroup?.trim targetPageLayer.getInMarkerTime()
+            trimTime = targetPageLayer.getInMarkerTime()
+            prevGroup?.trim trimTime
+            @hideGaussy trimTime + 1
           else
-            prevGroup?.trim targetPageLayer.layer.inPoint + 2.0
+            trimTime = targetPageLayer.layer.inPoint + 2.0
+            prevGroup?.trim trimTime
+            @hideGaussy @getTime()
             activePageLayer.slideOut()
         else
           targetPageLayer.slideIn()
-          prevGroup?.trim targetPageLayer.getInMarkerTime()
+          trimTime = targetPageLayer.getInMarkerTime()
+          prevGroup?.trim trimTime
+          @hideGaussy trimTime + 1
 
         if model.highlight?
           targetGroup.assignControlLayer model.highlight, @getTime() + 0.25
@@ -351,35 +368,64 @@ class NFPartComp extends NFComp
     return pageLayer
 
   ###*
-  Adds a new gaussy layer to the comp, above the currently active layer.
+  Adds a new gaussy layer to the comp, above the currently active group.
   @memberof NFPartComp
   @param {Object} model
   @param {String} [model.placeholder] - the placeholder text to show over the layer
   @param {float} [model.time=currTime] - the start time of the gaussy layer
-  @param {float} [model.duration=5.0] - the length of the gaussy layer
+  @param {float} [model.duration] - the length of the gaussy layer. If not given
+  a duration, the layer will continue indefinitely.
   @returns {NFPartComp} self
   ###
   addGaussy: (model) ->
-    model =
-      time: model.time ? @getTime()
-      duration: model.duration ? 5.0
+    model.time = model.time ? @getTime()
+    model.duration = model.duration ? @comp.duration - model.time
 
     activePDF = @activePDF()
     if activePDF?
       activeGroup = @groupFromPDF activePDF
+      @log "Adding a gaussy layer at time: #{model.time}"
       NFGaussyLayer.newGaussyLayer
         group: activeGroup
         time: model.time
         duration: model.duration
-      # FIXME: Pickup here and start dealing with:
-      # 1) End times of gaussy layer (ugh) - maybe just make them go forever if
-      # no duration is provided...
-      # 2) cleaning up spotlights underneath them
+
+      activeGroup.trimActiveSpotlights model.time + 0.5
       # FIXME: Do something with the placeholder text
     else
       throw new Error "No active group to create a gaussy layer on top of"
 
     @
+
+  ###*
+  Hides the active gaussy layer, if one exists.
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the end time of the gaussy layer
+  @returns {NFPartComp} self
+  ###
+  hideGaussy: (time) ->
+    time = time ? @getTime()
+    activeGaussies = @activeLayers(time).searchLayers "Gaussy"
+    activeGaussies.forEach (gaussy) =>
+      @log "Hiding gaussy layer at time: #{time}"
+      gaussy.layer.outPoint = time
+
+    @
+
+  ###*
+  Returns whether or not there's an active gaussy layer at the given time
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the time to check
+  @returns {Boolean} if there is a gaussy active at the current time
+  ###
+  gaussyActive: (time) ->
+    time = time ? @getTime()
+
+    activeGaussies = @activeLayers(time).searchLayers "Gaussy"
+    if activeGaussies.isEmpty()
+      return false
+    else
+      return true
 
   ###*
   Gets the zoomer layer
