@@ -1,5 +1,6 @@
 NFLayoutType =
 	HIGHLIGHT: 100
+	EXPAND: 150
 	INSTRUCTION: 200
 	FLAG: 300
 
@@ -15,6 +16,13 @@ NFLayoutFlagDict =
 	skipTitle:
 		code: ['no q', 'noq', 'no q just citation', 'no q just citation bar']
 		display: "Skip Paper Title Page"
+	expandUp:
+		code: ['up']
+		display: "Expand Up"
+	expand:
+		code: ['expand']
+		display: "Expand"
+
 
 NFLayoutInstructionDict =
 	yellowUnderlineHighlight:
@@ -64,6 +72,17 @@ NFLayoutInstructionDict =
 		look: "Grey"
 		display: "Grey Highlight"
 		type: NFLayoutType.HIGHLIGHT
+
+	expand:
+		code: ['expand']
+		look: "Expand"
+		display: "Expand"
+		type: NFLayoutType.EXPAND
+	expandUp:
+		code: ['expandup', 'expand up']
+		display: "Expand Up"
+		look: "Expand Up"
+		type: NFLayoutType.EXPAND
 
 	doNothing:
 		code: ['do nothing', 'nothing']

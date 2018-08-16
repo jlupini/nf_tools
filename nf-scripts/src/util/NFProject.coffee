@@ -156,12 +156,20 @@ NFProject =
         if instructionString.indexOf(code) >= 0
           flags[key] = flagOption
           instructionString = instructionString.replace(code, "").trim()
-          NFTools.log "Flag found: '#{flagOption}'", "Parser"
+          NFTools.log "Flag found: '#{flagOption.display}'", "Parser"
 
-
-    instruction = null
-    # Look for an instruction
-    if instructionString isnt ""
+    # If we've only got expand/expandup flags and there's nothing else left,
+    # we can assume those should be instructions instead.
+    if instructionString is ""
+      if flags.expand?
+        NFTools.log "No instruction remaining. Converting Flag '#{flags.expand.display}' to Instruction", "Parser"
+        instruction = NFLayoutInstructionDict.expand
+        delete flags.expand
+      else
+        throw new Error "No instructionString remaining after parsing flags and PDF"
+    else
+      # Look for an instruction
+      instruction = null
       NFTools.log "Instruction string remaining is: '#{instructionString}'", "Parser"
       for key of NFLayoutInstructionDict
         option = NFLayoutInstructionDict[key]
@@ -178,12 +186,14 @@ NFProject =
             else
               instruction = option
 
-      throw new Error "No instruction matches instruction string" unless instruction?
-
-    if instruction?
-      NFTools.log "Instruction found: '#{instruction.display}'", "Parser"
+      if instruction?
+        NFTools.log "Instruction found: '#{instruction.display}'", "Parser"
+      else
+        throw new Error "No instruction matches instruction string"
 
     # OK, now we have four key pieces of information: the instruction, flags, the current PDF and the active PDF
+
+    # FIXME: Pickup here and deal with the various expand flags and instructions that could have arrived...
 
     # If we have a PDF to go to but no instruction, assume we should bring in
     # the title page

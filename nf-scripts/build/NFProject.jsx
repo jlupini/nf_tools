@@ -191,12 +191,20 @@ NFProject = {
         if (instructionString.indexOf(code) >= 0) {
           flags[key] = flagOption;
           instructionString = instructionString.replace(code, "").trim();
-          NFTools.log("Flag found: '" + flagOption + "'", "Parser");
+          NFTools.log("Flag found: '" + flagOption.display + "'", "Parser");
         }
       }
     }
-    instruction = null;
-    if (instructionString !== "") {
+    if (instructionString === "") {
+      if (flags.expand != null) {
+        NFTools.log("No instruction remaining. Converting Flag '" + flags.expand.display + "' to Instruction", "Parser");
+        instruction = NFLayoutInstructionDict.expand;
+        delete flags.expand;
+      } else {
+        throw new Error("No instructionString remaining after parsing flags and PDF");
+      }
+    } else {
+      instruction = null;
       NFTools.log("Instruction string remaining is: '" + instructionString + "'", "Parser");
       for (key in NFLayoutInstructionDict) {
         option = NFLayoutInstructionDict[key];
@@ -218,12 +226,11 @@ NFProject = {
           }
         }
       }
-      if (instruction == null) {
+      if (instruction != null) {
+        NFTools.log("Instruction found: '" + instruction.display + "'", "Parser");
+      } else {
         throw new Error("No instruction matches instruction string");
       }
-    }
-    if (instruction != null) {
-      NFTools.log("Instruction found: '" + instruction.display + "'", "Parser");
     }
     if ((targetPDF != null) && (instruction == null)) {
       NFTools.log("PDF found but no instruction - animating to title page", "Parser");
