@@ -83,7 +83,7 @@ getOnClickFunction = function(name, sourceRect, w, multiple, choices) {
 createSpotlightLayer = function(sourceHighlightName, sourceHighlightRect) {
   var childSpan, children, dummyMask, effects, j, len1, newShape, ref, spanLayer, spanMask, spanMaskPath, spanSolidProperties, spotlightControl, spotlightLayer, spotlightLayerMask, spotlightLayerMaskName, spotlightMaskShape, spotlightName, spotlightSolidProperties, targetLayer;
   targetLayer = _.mainComp.selectedLayers[0];
-  if (targetLayer instanceof ShapeLayer || targetLayer.nullLayer || (targetLayer.source instanceof FootageItem && targetLayer.source.mainSource instanceof SolidSource)) {
+  if (targetLayer instanceof ShapeLayer || targetLayer.nullLayer || (targetLayer.source instanceof FootageItem && targetLayer.isSolid())) {
     alert("Error\nPlease select the correct source layer\nDid you draw the mask on the existing spotlight layer by mistake?");
   }
   spotlightName = spotlightNameForLayer(targetLayer);

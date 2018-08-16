@@ -78,7 +78,7 @@ NFLayoutInstructionDict =
 		priority: 1
 		instruction: NFLayoutInstruction.SHOW_TITLE
 	iconSequence:
-		code: ['icons', 'icon sequence']
+		code: ['icons', 'icon sequence', 'animation', 'icon']
 		display: "Icon Sequence Placeholder"
 		type: NFLayoutType.INSTRUCTION
 		instruction: NFLayoutInstruction.ICON_SEQUENCE

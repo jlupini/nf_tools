@@ -155,6 +155,18 @@ The After Effects Layer Class
 ###
 
 ###*
+Returns whether or not the layer is a solid
+@memberof Layer
+@function isSolid
+@returns {boolean} if the layer is a solid
+###
+Layer::isSolid = ->
+  @source?.mainSource instanceof SolidSource
+AVLayer::isSolid = ShapeLayer::isSolid = TextLayer::isSolid = Layer::isSolid
+
+
+
+###*
 Returns whether or not a given Layer is an AVLayer or one of its subclasses. This is because Layer objects don't play nice with `instanceof`
 @memberof Layer
 @function isAVLayer

@@ -196,6 +196,21 @@ The After Effects Layer Class
 
 
 /**
+Returns whether or not the layer is a solid
+@memberof Layer
+@function isSolid
+@returns {boolean} if the layer is a solid
+ */
+
+Layer.prototype.isSolid = function() {
+  var ref;
+  return ((ref = this.source) != null ? ref.mainSource : void 0) instanceof SolidSource;
+};
+
+AVLayer.prototype.isSolid = ShapeLayer.prototype.isSolid = TextLayer.prototype.isSolid = Layer.prototype.isSolid;
+
+
+/**
 Returns whether or not a given Layer is an AVLayer or one of its subclasses. This is because Layer objects don't play nice with `instanceof`
 @memberof Layer
 @function isAVLayer

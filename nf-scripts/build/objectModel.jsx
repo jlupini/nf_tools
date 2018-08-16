@@ -353,6 +353,97 @@ NFComp = (function(superClass) {
 
 
   /**
+  Creates and returns a new text layer in this comp
+  @memberof NFComp
+  @param {Object} model
+  @param {String} [model.text=""]
+  @param {float} [model.time=currTime] - the start time of the layer
+  @param {float} [model.duration=remainderOfComp] - the duration of the layer
+  @param {NFLayer} [model.below] - the layer to put this layer below
+  @param {NFLayer} [model.above] - the layer to put this layer above
+  @param {int} [model.at=0] - the index to put this layer
+  @param {boolean} [model.applyFill=yes]
+  @param {boolean} [model.applyStroke=no]
+  @param {float} [model.fontSize=24]
+  @param {float[]} [model.fillColor=[0,0,0]]
+  @param {ParagraphJustification} [model.justification=ParagraphJustification.LEFT_JUSTIFY]
+  @param {String} [model.font="Avenir Next"]
+  @returns {NFLayer} The newly created text layer
+   */
+
+  NFComp.prototype.addTextLayer = function(model) {
+    var index, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, textAVLayer, textDoc, textDocProp, tooManyIndices;
+    if (model.time == null) {
+      model.time = this.getTime();
+    }
+    model = {
+      time: model.time,
+      duration: (ref = model.duration) != null ? ref : this.comp.duration - model.time,
+      below: model.below,
+      above: model.above,
+      at: model.at,
+      applyFill: (ref1 = model.applyFill) != null ? ref1 : true,
+      applyStroke: (ref2 = model.applyStroke) != null ? ref2 : false,
+      fontSize: (ref3 = model.fontSize) != null ? ref3 : 24,
+      text: (ref4 = model.text) != null ? ref4 : "",
+      fillColor: (ref5 = model.fillColor) != null ? ref5 : [0, 0, 0],
+      justification: (ref6 = model.justification) != null ? ref6 : ParagraphJustification.LEFT_JUSTIFY,
+      font: (ref7 = model.font) != null ? ref7 : 'Avenir Next'
+    };
+    if ((model.above != null) && !model.above instanceof NFLayer) {
+      throw new Error("model.above must be an NFLayer");
+    }
+    if ((model.below != null) && !model.below instanceof NFLayer) {
+      throw new Error("model.below must be an NFLayer");
+    }
+    index = 0;
+    tooManyIndices = false;
+    if ((model.above != null) && model.above instanceof NFLayer) {
+      if ((model.below != null) || (model.at != null)) {
+        tooManyIndices = true;
+      }
+      if (model.above.containingComp().is(this)) {
+        index = model.above.index() - 1;
+      } else {
+        throw new Error("Cannot insert layer above a layer not in this comp");
+      }
+    } else if ((model.below != null) && model.below instanceof NFLayer) {
+      if ((model.above != null) || (model.at != null)) {
+        tooManyIndices = true;
+      }
+      if (model.below.containingComp().is(this)) {
+        index = model.below.index();
+      } else {
+        throw new Error("Cannot insert layer below a layer not in this comp");
+      }
+    } else if (model.at != null) {
+      if ((model.above != null) || (model.below != null)) {
+        tooManyIndices = true;
+      }
+      index = model.at;
+    }
+    if (tooManyIndices) {
+      throw new Error("Can only provide one of .above, .below, or .at when inserting page");
+    }
+    textAVLayer = this.comp.layers.addText(new TextDocument(model.text));
+    textDocProp = textAVLayer.property("ADBE Text Properties").property("ADBE Text Document");
+    textDoc = textDocProp.value;
+    textDoc.applyFill = model.applyFill;
+    textDoc.fillColor = model.fillColor;
+    textDoc.applyStroke = model.applyStroke;
+    textDoc.font = model.font;
+    textDoc.fontSize = model.fontSize;
+    textDoc.justification = model.justification;
+    textDocProp.setValue(textDoc);
+    if (index !== 0) {
+      textAVLayer.moveBefore(this.comp.layers[index + 2]);
+    }
+    textAVLayer.startTime = model.time;
+    return new NFLayer(textAVLayer);
+  };
+
+
+  /**
   Inserts a layer into the comp at a given index at the current time. Returns
   the new layer
   @memberof NFComp
@@ -3193,8 +3284,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
   @returns {boolean} whether the AV layer is a valid highlight layer
    */
   isHighlightControlLayer: function(theLayer) {
-    var ref;
-    return ((ref = theLayer.source) != null ? ref.mainSource : void 0) instanceof SolidSource && theLayer.name.indexOf("Highlight Control") >= 0;
+    return theLayer.isSolid() && theLayer.name.indexOf("Highlight Control") >= 0;
   },
 
   /**
@@ -5159,9 +5249,8 @@ NFPaperParentLayer = (function(superClass) {
   extend(NFPaperParentLayer, superClass);
 
   function NFPaperParentLayer(layer) {
-    var ref;
     NFLayer.call(this, layer);
-    if (!(((ref = this.layer.source) != null ? ref.mainSource : void 0) instanceof SolidSource)) {
+    if (!this.layer.isSolid()) {
       throw new Error("Can only create a NFPaperParentLayer from a solid layer");
     }
     this;
@@ -5203,8 +5292,7 @@ NFPaperParentLayer = Object.assign(NFPaperParentLayer, {
   @returns {boolean} whether or not the layer is a valid paper parent
    */
   isPaperParentLayer: function(layer) {
-    var ref;
-    return ((ref = layer.source) != null ? ref.mainSource : void 0) instanceof SolidSource && layer.name.indexOf('PDF') >= 0;
+    return layer.isSolid() && layer.name.indexOf('PDF') >= 0;
   },
 
   /**
@@ -5590,7 +5678,9 @@ NFPartComp = (function(superClass) {
 
 
   /**
-  Adds a new gaussy layer to the comp, above the currently active group.
+  Adds a new gaussy layer to the comp, above the currently active group. If a
+  gaussy is already active, replace the placeholder text with the new one at
+  the given time.
   @memberof NFPartComp
   @param {Object} model
   @param {String} [model.placeholder] - the placeholder text to show over the layer
@@ -5601,19 +5691,49 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.addGaussy = function(model) {
-    var activeGroup, activePDF, ref, ref1;
+    var activeGaussy, activeGroup, activePDF, belowTarget, children, gaussy, placeholder, ref, ref1;
     model.time = (ref = model.time) != null ? ref : this.getTime();
     model.duration = (ref1 = model.duration) != null ? ref1 : this.comp.duration - model.time;
     activePDF = this.activePDF();
     if (activePDF != null) {
       activeGroup = this.groupFromPDF(activePDF);
-      this.log("Adding a gaussy layer at time: " + model.time);
-      NFGaussyLayer.newGaussyLayer({
-        group: activeGroup,
-        time: model.time,
-        duration: model.duration
-      });
-      activeGroup.trimActiveSpotlights(model.time + 0.5);
+      activeGaussy = this.activeGaussy(model.time);
+      if (activeGaussy != null) {
+        children = activeGaussy.getChildren();
+        belowTarget = null;
+        if (!children.isEmpty()) {
+          children.forEach((function(_this) {
+            return function(testChild) {
+              if (testChild.layer instanceof TextLayer) {
+                testChild.layer.outPoint = model.time;
+                return belowTarget = testChild;
+              }
+            };
+          })(this));
+        }
+        belowTarget = belowTarget != null ? belowTarget : activeGaussy;
+      } else {
+        this.log("Adding a gaussy layer at time: " + model.time);
+        gaussy = NFGaussyLayer.newGaussyLayer({
+          group: activeGroup,
+          time: model.time,
+          duration: model.duration
+        });
+        activeGroup.trimActiveSpotlights(model.time + 0.5);
+      }
+      if (model.placeholder != null) {
+        placeholder = this.addTextLayer({
+          text: model.placeholder,
+          time: model.time,
+          duration: model.duration,
+          fillColor: [1, 0, 0],
+          above: belowTarget != null ? belowTarget : gaussy,
+          justification: ParagraphJustification.CENTER_JUSTIFY,
+          fontSize: 100
+        });
+        placeholder.setParent(activeGaussy != null ? activeGaussy : gaussy);
+        placeholder.layer.name = "FIXME: " + model.placeholder;
+      }
     } else {
       throw new Error("No active group to create a gaussy layer on top of");
     }
@@ -5633,9 +5753,20 @@ NFPartComp = (function(superClass) {
     time = time != null ? time : this.getTime();
     activeGaussies = this.activeLayers(time).searchLayers("Gaussy");
     activeGaussies.forEach((function(_this) {
-      return function(gaussy) {
-        _this.log("Hiding gaussy layer at time: " + time);
-        return gaussy.layer.outPoint = time;
+      return function(testLayer) {
+        var children;
+        if (testLayer.layer.isSolid()) {
+          _this.log("Hiding gaussy layer at time: " + time);
+          testLayer.layer.outPoint = time;
+          children = testLayer.getChildren();
+          if (!children.isEmpty()) {
+            return children.forEach(function(child) {
+              if (!(child.layer.outPoint < time)) {
+                return child.layer.outPoint = time;
+              }
+            });
+          }
+        }
       };
     })(this));
     return this;
@@ -5650,13 +5781,33 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.gaussyActive = function(time) {
-    var activeGaussies;
+    return this.activeGaussy(time) != null;
+  };
+
+
+  /**
+  Returns an active gaussy if one exists, or null. DIFFERENT FROM #gaussyActive
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the time to check
+  @returns {NFGaussyLayer | null} the active gaussy at the given time, or null
+   */
+
+  NFPartComp.prototype.activeGaussy = function(time) {
+    var gaussyFound, searchResults;
     time = time != null ? time : this.getTime();
-    activeGaussies = this.activeLayers(time).searchLayers("Gaussy");
-    if (activeGaussies.isEmpty()) {
-      return false;
+    searchResults = this.activeLayers(time).searchLayers("Gaussy");
+    if (searchResults.isEmpty()) {
+      return null;
     } else {
-      return true;
+      gaussyFound = null;
+      searchResults.forEach((function(_this) {
+        return function(testLayer) {
+          if (testLayer.layer.isSolid()) {
+            return gaussyFound = testLayer;
+          }
+        };
+      })(this));
+      return gaussyFound;
     }
   };
 
@@ -5881,8 +6032,7 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
   @returns {boolean} whether the AV layer is a valid spotlight layer
    */
   isSpotlightLayer: function(theLayer) {
-    var ref;
-    return theLayer.isAVLayer() && ((ref = theLayer.source) != null ? ref.mainSource : void 0) instanceof SolidSource;
+    return theLayer.isAVLayer() && theLayer.isSolid();
   },
 
   /**

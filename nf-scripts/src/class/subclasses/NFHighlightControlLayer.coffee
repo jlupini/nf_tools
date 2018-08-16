@@ -172,7 +172,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
   @returns {boolean} whether the AV layer is a valid highlight layer
   ###
   isHighlightControlLayer: (theLayer) ->
-    return theLayer.source?.mainSource instanceof SolidSource and theLayer.name.indexOf("Highlight Control") >= 0
+    return theLayer.isSolid() and theLayer.name.indexOf("Highlight Control") >= 0
 
   ###*
   Creates a new NFHighlightControlLayer for the given page, at the given time,

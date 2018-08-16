@@ -65,7 +65,7 @@ getOnClickFunction = (name, sourceRect, w, multiple = false, choices = null) ->
 
 createSpotlightLayer = (sourceHighlightName, sourceHighlightRect) ->
   targetLayer = _.mainComp.selectedLayers[0]
-  if targetLayer instanceof ShapeLayer or targetLayer.nullLayer or (targetLayer.source instanceof FootageItem and targetLayer.source.mainSource instanceof SolidSource)
+  if targetLayer instanceof ShapeLayer or targetLayer.nullLayer or (targetLayer.source instanceof FootageItem and targetLayer.isSolid())
     alert "Error\nPlease select the correct source layer\nDid you draw the mask on the existing spotlight layer by mistake?"
   spotlightName = spotlightNameForLayer(targetLayer)
   spotlightLayer = _.mainComp.layers.byName(spotlightName)

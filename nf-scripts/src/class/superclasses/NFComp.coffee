@@ -200,6 +200,81 @@ class NFComp extends NFObject
     return NFLayer.getSpecializedLayerFromAVLayer solidAVLayer
 
   ###*
+  Creates and returns a new text layer in this comp
+  @memberof NFComp
+  @param {Object} model
+  @param {String} [model.text=""]
+  @param {float} [model.time=currTime] - the start time of the layer
+  @param {float} [model.duration=remainderOfComp] - the duration of the layer
+  @param {NFLayer} [model.below] - the layer to put this layer below
+  @param {NFLayer} [model.above] - the layer to put this layer above
+  @param {int} [model.at=0] - the index to put this layer
+  @param {boolean} [model.applyFill=yes]
+  @param {boolean} [model.applyStroke=no]
+  @param {float} [model.fontSize=24]
+  @param {float[]} [model.fillColor=[0,0,0]]
+  @param {ParagraphJustification} [model.justification=ParagraphJustification.LEFT_JUSTIFY]
+  @param {String} [model.font="Avenir Next"]
+  @returns {NFLayer} The newly created text layer
+  ###
+  addTextLayer: (model) ->
+    model.time ?= @getTime()
+    model =
+      time: model.time
+      duration: model.duration ? @comp.duration - model.time
+      below: model.below
+      above: model.above
+      at: model.at
+      applyFill: model.applyFill ? yes
+      applyStroke: model.applyStroke ? no
+      fontSize: model.fontSize ? 24
+      text: model.text ? ""
+      fillColor: model.fillColor ? [0,0,0]
+      justification: model.justification ? ParagraphJustification.LEFT_JUSTIFY
+      font: model.font ? 'Avenir Next'
+
+    throw new Error "model.above must be an NFLayer" if model.above? and not model.above instanceof NFLayer
+    throw new Error "model.below must be an NFLayer" if model.below? and not model.below instanceof NFLayer
+    index = 0
+    tooManyIndices = no
+    if model.above? and model.above instanceof NFLayer
+      tooManyIndices = yes if model.below? or model.at?
+      if model.above.containingComp().is @
+        index = model.above.index() - 1
+      else
+        throw new Error "Cannot insert layer above a layer not in this comp"
+    else if model.below? and model.below instanceof NFLayer
+      tooManyIndices = yes if model.above? or model.at?
+      if model.below.containingComp().is @
+        index = model.below.index()
+      else
+        throw new Error "Cannot insert layer below a layer not in this comp"
+    else if model.at?
+      tooManyIndices = yes if model.above? or model.below?
+      index = model.at
+    throw new Error "Can only provide one of .above, .below, or .at when inserting page" if tooManyIndices
+
+
+    textAVLayer = @comp.layers.addText new TextDocument model.text
+    textDocProp = textAVLayer.property("ADBE Text Properties").property("ADBE Text Document")
+    textDoc = textDocProp.value
+
+    textDoc.applyFill = model.applyFill
+    textDoc.fillColor = model.fillColor
+    textDoc.applyStroke = model.applyStroke
+    textDoc.font = model.font
+    textDoc.fontSize = model.fontSize
+    textDoc.justification = model.justification
+
+    textDocProp.setValue textDoc
+
+    textAVLayer.moveBefore @comp.layers[index+2] unless index is 0
+    textAVLayer.startTime = model.time
+
+
+    return new NFLayer textAVLayer
+
+  ###*
   Inserts a layer into the comp at a given index at the current time. Returns
   the new layer
   @memberof NFComp

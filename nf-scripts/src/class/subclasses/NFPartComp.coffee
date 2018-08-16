@@ -368,7 +368,9 @@ class NFPartComp extends NFComp
     return pageLayer
 
   ###*
-  Adds a new gaussy layer to the comp, above the currently active group.
+  Adds a new gaussy layer to the comp, above the currently active group. If a
+  gaussy is already active, replace the placeholder text with the new one at
+  the given time.
   @memberof NFPartComp
   @param {Object} model
   @param {String} [model.placeholder] - the placeholder text to show over the layer
@@ -384,14 +386,41 @@ class NFPartComp extends NFComp
     activePDF = @activePDF()
     if activePDF?
       activeGroup = @groupFromPDF activePDF
-      @log "Adding a gaussy layer at time: #{model.time}"
-      NFGaussyLayer.newGaussyLayer
-        group: activeGroup
-        time: model.time
-        duration: model.duration
 
-      activeGroup.trimActiveSpotlights model.time + 0.5
-      # FIXME: Do something with the placeholder text
+      activeGaussy = @activeGaussy model.time
+      if activeGaussy?
+        # If there's already an active one, switch the placeholder if possible.
+        children = activeGaussy.getChildren()
+        belowTarget = null
+        unless children.isEmpty()
+          children.forEach (testChild) =>
+            if testChild.layer instanceof TextLayer
+              testChild.layer.outPoint = model.time
+              belowTarget = testChild
+        belowTarget = belowTarget ? activeGaussy
+
+
+      else
+        @log "Adding a gaussy layer at time: #{model.time}"
+        gaussy = NFGaussyLayer.newGaussyLayer
+          group: activeGroup
+          time: model.time
+          duration: model.duration
+
+        activeGroup.trimActiveSpotlights model.time + 0.5
+
+      if model.placeholder?
+        placeholder = @addTextLayer
+          text: model.placeholder
+          time: model.time
+          duration: model.duration
+          fillColor: [1,0,0]
+          above: belowTarget ? gaussy
+          justification: ParagraphJustification.CENTER_JUSTIFY
+          fontSize: 100
+        placeholder.setParent activeGaussy ? gaussy
+        placeholder.layer.name = "FIXME: #{model.placeholder}"
+
     else
       throw new Error "No active group to create a gaussy layer on top of"
 
@@ -406,9 +435,14 @@ class NFPartComp extends NFComp
   hideGaussy: (time) ->
     time = time ? @getTime()
     activeGaussies = @activeLayers(time).searchLayers "Gaussy"
-    activeGaussies.forEach (gaussy) =>
-      @log "Hiding gaussy layer at time: #{time}"
-      gaussy.layer.outPoint = time
+    activeGaussies.forEach (testLayer) =>
+      if testLayer.layer.isSolid()
+        @log "Hiding gaussy layer at time: #{time}"
+        testLayer.layer.outPoint = time
+        children = testLayer.getChildren()
+        unless children.isEmpty()
+          children.forEach (child) =>
+            child.layer.outPoint = time unless child.layer.outPoint < time
 
     @
 
@@ -419,13 +453,25 @@ class NFPartComp extends NFComp
   @returns {Boolean} if there is a gaussy active at the current time
   ###
   gaussyActive: (time) ->
+    return @activeGaussy(time)?
+
+  ###*
+  Returns an active gaussy if one exists, or null. DIFFERENT FROM #gaussyActive
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the time to check
+  @returns {NFGaussyLayer | null} the active gaussy at the given time, or null
+  ###
+  activeGaussy: (time) ->
     time = time ? @getTime()
 
-    activeGaussies = @activeLayers(time).searchLayers "Gaussy"
-    if activeGaussies.isEmpty()
-      return false
+    searchResults = @activeLayers(time).searchLayers "Gaussy"
+    if searchResults.isEmpty()
+      return null
     else
-      return true
+      gaussyFound = null
+      searchResults.forEach (testLayer) =>
+        gaussyFound = testLayer if testLayer.layer.isSolid()
+      return gaussyFound
 
   ###*
   Gets the zoomer layer
