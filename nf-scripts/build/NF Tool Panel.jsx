@@ -24,6 +24,12 @@ toolRegistry = {
           }
           return results;
         }
+      },
+      importInstructions: {
+        name: "Import Script",
+        callback: function() {
+          return NFProject.importScript();
+        }
       }
     }
   },

@@ -259,29 +259,70 @@ NFTools =
     null
 
   ###*
-  Converts a String from a CSV file to an array of arrays
+  Returns the similarity value of two strings, relative to their length.
+  This number is effectively the percentage of characters that would need to
+  change to make them the same
   @memberof NFTools
-  @returns {Array} the array from the CSV
+  @param {String} str1
+  @param {String} str2
+  @returns {int} the result
   ###
-  parseCSV: (sep) ->
+  similarity: (str1, str2) ->
+    unless typeof str1 is 'string' and typeof str2 is 'string'
+      throw new Error "Can't compare similarity of non-strings"
+    n = Math.max(str1.length, str2.length)
+    return NFTools.levenshtein(str1, str2) / n
 
-    # splitted = text.split ','
-    # return splitted
-    foo = @split(sep = sep or ',')
-    x = foo.length - 1
-    tl = undefined
-    while x >= 0
-      if foo[x].replace(/"\s+$/, '"').charAt(foo[x].length - 1) == '"'
-        if (tl = foo[x].replace(/^\s+"/, '"')).length > 1 and tl.charAt(0) == '"'
-          foo[x] = foo[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"')
-        else if x
-          foo.splice x - 1, 2, [
-            foo[x - 1]
-            foo[x]
-          ].join(sep)
+
+  ###*
+  Returns the levenshtein value of two strings, aka how different they are. The
+  higher the number, the bigger the difference.
+  @memberof NFTools
+  @param {String} str1
+  @param {String} str2
+  @returns {int} the result
+  ###
+  levenshtein: (str1, str2) ->
+    cost = new Array
+    n = str1.length
+    m = str2.length
+
+    minimum = (a, b, c) ->
+      min = a
+      if b < min
+        min = b
+      if c < min
+        min = c
+      min
+
+    if n == 0
+      return
+    if m == 0
+      return
+    i = 0
+    while i <= n
+      cost[i] = new Array
+      i++
+    i = 0
+    while i <= n
+      cost[i][0] = i
+      i++
+    j = 0
+    while j <= m
+      cost[0][j] = j
+      j++
+    i = 1
+    while i <= n
+      x = str1.charAt(i - 1)
+      j = 1
+      while j <= m
+        y = str2.charAt(j - 1)
+        if x == y
+          cost[i][j] = cost[i - 1][j - 1]
         else
-          foo = foo.shift().split(sep).concat(foo)
-      else
-        foo[x].replace /""/g, '"'
-      x--
-    foo
+          cost[i][j] = 1 + minimum(cost[i - 1][j - 1], cost[i][j - 1], cost[i - 1][j])
+        j++
+      #endfor
+      i++
+    #endfor
+    cost[n][m]

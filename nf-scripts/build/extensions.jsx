@@ -1,8 +1,70 @@
 
 /**
+The Javascript Array class
+@namespace Array
+ */
+
+/**
+Gets the index of a value in the array
+@function indexOf
+@memberof Array
+@param {Any} searchElement - the element to look for
+@param {int} fromIndex - the start index to search at
+@returns {int} the index found, or -1 if not found
+ */
+Array.prototype.indexOf = function(searchElement, fromIndex) {
+  var k, len, n, o;
+  k = void 0;
+  if (this === null) {
+    throw new TypeError('"this" is null or not defined');
+  }
+  o = Object(this);
+  len = o.length >>> 0;
+  if (len === 0) {
+    return -1;
+  }
+  n = fromIndex | 0;
+  if (n >= len) {
+    return -1;
+  }
+  k = Math.max(n >= 0 ? n : len - Math.abs(n));
+  while (k < len) {
+    if (k in o && o[k] === searchElement) {
+      return k;
+    }
+    k++;
+  }
+  return -1;
+};
+
+
+/**
+Stuffs a given value into undefined indecies in the array. Returns a new array.
+@function stuff
+@memberof Array
+@param {Any} item - what to put in the empty indecies
+@returns {Array} the resulting array
+ */
+
+Array.prototype.stuff = function(item) {
+  var idx, j, ref, stuffedArr;
+  stuffedArr = [];
+  for (idx = j = 0, ref = this.length - 1; 0 <= ref ? j <= ref : j >= ref; idx = 0 <= ref ? ++j : --j) {
+    if (this[idx] === void 0 || "") {
+      stuffedArr[idx] = item;
+    } else {
+      stuffedArr[idx] = this[idx];
+    }
+  }
+  return stuffedArr;
+};
+
+
+/**
 The Javascript String class
 @namespace String
  */
+
 
 /**
 Converts a string in csv format to an array
@@ -10,11 +72,12 @@ Converts a string in csv format to an array
 @memberof String
 @returns {Array} the array created from this string
  */
+
 String.prototype.splitCSV = function(sep) {
-  var foo, fullArr, j, len, line, splitByLine, tl, x;
+  var foo, fullArr, j, len1, line, splitByLine, tl, x;
   fullArr = [];
   splitByLine = this.split("\n");
-  for (j = 0, len = splitByLine.length; j < len; j++) {
+  for (j = 0, len1 = splitByLine.length; j < len1; j++) {
     line = splitByLine[j];
     foo = line.split(sep = sep || ',');
     x = foo.length - 1;
@@ -105,10 +168,10 @@ of weights the same length as the number of dimensions of the property.
  */
 
 Property.prototype.easyEaseKeyTimes = function(model) {
-  var j, keyIndicies, keyTime, len, ref;
+  var j, keyIndicies, keyTime, len1, ref;
   keyIndicies = [];
   ref = model.keyTimes;
-  for (j = 0, len = ref.length; j < len; j++) {
+  for (j = 0, len1 = ref.length; j < len1; j++) {
     keyTime = ref[j];
     keyIndicies.push(this.nearestKeyIndex(keyTime));
   }

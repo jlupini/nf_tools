@@ -1,5 +1,4 @@
 `#include "runtimeLibraries.jsx"`
-
 _ = {}
 panelTest = this
 
@@ -19,6 +18,11 @@ toolRegistry =
           for i in [1..precompFolder.numItems]
             item = precompFolder.item i
             item.name = item.name.replace '.pdf', ' NFPage'
+
+      importInstructions:
+        name: "Import Script"
+        callback: ->
+          NFProject.importScript()
 
   render:
 

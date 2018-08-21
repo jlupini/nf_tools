@@ -156,6 +156,124 @@ NFProject = {
   },
 
   /**
+  Imports the script (script.txt) and the instructions (instructions.csv) files.
+  Adds the guide layers for both to each part comp.
+  @memberof NFProject
+  @throws Throw error if script.txt or instructions.csv are not in the project
+  directory or cannot be read.
+  @returns {null} nothin'
+   */
+  importScript: function() {
+    var assumedLineTimecodes, assumedSentence, dirtyScriptArray, element, endIdx, growCount, growThreshold, i, instructionArray, instructionFile, instructionString, j, len, lineObj, parsedLines, rangeString, ref, scriptFile, scriptLines, scriptString, simValues, splitElement, startIdx, tc, testChar, testLine, testLineIdx, theWord, trimmed, word;
+    scriptFile = "script.txt";
+    instructionFile = "instructions.csv";
+    if (!NFTools.testProjectFile(scriptFile)) {
+      throw new Error("Cannot read " + scriptFile);
+    }
+    if (!NFTools.testProjectFile(instructionFile)) {
+      throw new Error("Cannot read " + instructionFile);
+    }
+    scriptString = NFTools.readProjectFile(scriptFile);
+    testChar = "\xA9";
+    dirtyScriptArray = scriptString.split(testChar);
+    scriptLines = [];
+    for (j = 0, len = dirtyScriptArray.length; j < len; j++) {
+      element = dirtyScriptArray[j];
+      if (element !== "") {
+        trimmed = element.trim();
+        splitElement = trimmed.split(/\[(.*?)\]/g);
+        lineObj = {
+          instruction: splitElement[1].trim().slice(1, -1),
+          text: ((ref = splitElement[2]) != null ? ref.trim() : void 0) || ""
+        };
+        scriptLines.push(lineObj);
+      }
+    }
+    instructionString = NFTools.readProjectFile(instructionFile);
+    instructionArray = instructionString.splitCSV();
+    testLineIdx = 0;
+    testLine = "";
+    rangeString = "";
+    startIdx = 0;
+    endIdx = 0;
+    growCount = 0;
+    growThreshold = 3;
+    simValues = [];
+    parsedLines = [];
+    i = 1;
+    NFTools.log("Comparing lines...", "Importer");
+    while (testLineIdx !== scriptLines.length) {
+      if (testLineIdx === scriptLines.length - 1) {
+        assumedLineTimecodes = instructionArray.slice(i);
+        assumedSentence = ((function() {
+          var k, len1, results;
+          results = [];
+          for (k = 0, len1 = assumedLineTimecodes.length; k < len1; k++) {
+            theWord = assumedLineTimecodes[k];
+            results.push(theWord[1] + " ");
+          }
+          return results;
+        })()).join("");
+        NFTools.log("Last line - grabbing whatever's left: '" + assumedSentence + "'", "Importer");
+        parsedLines.push({
+          instruction: testLine.instruction,
+          text: testLine.text,
+          timecodes: assumedLineTimecodes
+        });
+        break;
+      }
+      if (testLine.text !== scriptLines[testLineIdx].text) {
+        testLine = scriptLines[testLineIdx];
+        NFTools.log("Test Line:   '" + testLine.text + "'", "Importer");
+      }
+      tc = instructionArray[i][0];
+      word = instructionArray[i][1].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").toLowerCase();
+      if (rangeString === "") {
+        startIdx = i;
+        rangeString = word;
+      } else {
+        rangeString += " " + word;
+      }
+      simValues[i] = NFTools.similarity(rangeString, testLine.text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").toLowerCase());
+      if (simValues[i] > simValues[i - 1]) {
+        growCount++;
+      } else {
+        growCount = 0;
+      }
+      if (growCount >= growThreshold) {
+        simValues = simValues.stuff(1);
+        endIdx = simValues.indexOf(Math.min.apply(Math, simValues));
+        assumedLineTimecodes = instructionArray.slice(startIdx, endIdx + 1);
+        assumedSentence = ((function() {
+          var k, len1, results;
+          results = [];
+          for (k = 0, len1 = assumedLineTimecodes.length; k < len1; k++) {
+            theWord = assumedLineTimecodes[k];
+            results.push(theWord[1] + " ");
+          }
+          return results;
+        })()).join("");
+        NFTools.log("Best result: '" + assumedSentence + "'", "Importer");
+        parsedLines.push({
+          instruction: testLine.instruction,
+          text: testLine.text,
+          timecodes: assumedLineTimecodes
+        });
+        simValues = [];
+        rangeString = "";
+        growCount = 0;
+        i = endIdx;
+        testLineIdx++;
+        NFTools.log("MOVING ON...", "Importer");
+      }
+      i++;
+    }
+    NFTools.log("Done Importing!", "Importer");
+    $.bp();
+    return null;
+  },
+
+  /**
   Follow an instruction string (ie. "41g")
   @memberof NFProject
   @param {string} itemName - the string to search for
@@ -238,40 +356,49 @@ NFProject = {
       mainComp.animateTo({
         page: titlePage
       });
-    } else if (instruction.type === NFLayoutType.HIGHLIGHT) {
-      highlight = targetPDF.findHighlight(instruction.look);
-      if (highlight == null) {
-        throw new Error("Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'");
-      }
-      NFTools.log("Animating to " + instruction.display, "Parser");
-      mainComp.animateTo({
-        highlight: highlight,
-        skipTitle: flags.skipTitle
-      });
-    } else if (instruction.type === NFLayoutType.INSTRUCTION) {
-      switch (instruction.instruction) {
-        case NFLayoutInstruction.SHOW_TITLE:
-          NFTools.log("Following Instruction: " + instruction.display, "Parser");
+    } else {
+      switch (instruction.type) {
+        case NFLayoutType.HIGHLIGHT:
+          highlight = targetPDF.findHighlight(instruction.look);
+          if (highlight == null) {
+            throw new Error("Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'");
+          }
+          NFTools.log("Animating to " + instruction.display, "Parser");
           mainComp.animateTo({
-            page: targetPDF.getTitlePage()
+            highlight: highlight,
+            skipTitle: flags.skipTitle,
+            expand: flags.expand,
+            expandUp: flags.expandUp
           });
           break;
-        case NFLayoutInstruction.ICON_SEQUENCE:
-        case NFLayoutInstruction.GAUSSY:
-        case NFLayoutInstruction.FIGURE:
-        case NFLayoutInstruction.TABLE:
-          NFTools.log("Following Instruction: " + instruction.display, "Parser");
-          mainComp.addGaussy({
-            placeholder: instruction.display
-          });
+        case NFLayoutType.EXPAND:
+          NFTools.log("Animating to " + instruction.display, "Parser");
+          break;
+        case NFLayoutType.INSTRUCTION:
+          switch (instruction.instruction) {
+            case NFLayoutInstruction.SHOW_TITLE:
+              NFTools.log("Following Instruction: " + instruction.display, "Parser");
+              mainComp.animateTo({
+                page: targetPDF.getTitlePage()
+              });
+              break;
+            case NFLayoutInstruction.ICON_SEQUENCE:
+            case NFLayoutInstruction.GAUSSY:
+            case NFLayoutInstruction.FIGURE:
+            case NFLayoutInstruction.TABLE:
+              NFTools.log("Following Instruction: " + instruction.display, "Parser");
+              mainComp.addGaussy({
+                placeholder: instruction.display
+              });
+              break;
+            default:
+              throw new Error("There isn't a case for this instruction");
+          }
+          this;
           break;
         default:
-          throw new Error("There isn't a case for this instruction");
+          throw new Error("Instruction not found");
       }
-      this;
-    } else {
-      throw new Error("Instruction not found");
-      this;
     }
     return this;
   }

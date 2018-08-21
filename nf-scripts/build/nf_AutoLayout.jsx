@@ -20,15 +20,10 @@ _ = {
 app.beginUndoGroup(_.undoGroupName);
 
 main = function() {
-  var comp, input;
+  var comp;
   NFTools.log("Asking for input");
   comp = _.mainComp;
-  input = prompt('Enter the instruction (without brackets):', '', 'AutoLayout');
-  NFTools.log("Following Instruction");
-  if (!((input != null) && input !== "")) {
-    return false;
-  }
-  NFProject.followInstruction(input);
+  NFProject.importScript();
   NFTools.log("Done following instruction");
   NFTools.breakLog();
   return true;

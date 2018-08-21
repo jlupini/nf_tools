@@ -123,6 +123,122 @@ NFProject =
     return allHighlights
 
   ###*
+  Imports the script (script.txt) and the instructions (instructions.csv) files.
+  Adds the guide layers for both to each part comp.
+  @memberof NFProject
+  @throws Throw error if script.txt or instructions.csv are not in the project
+  directory or cannot be read.
+  @returns {null} nothin'
+  ###
+  importScript: ->
+    scriptFile = "script.txt"
+    instructionFile = "instructions.csv"
+
+    # Test both files
+    throw new Error "Cannot read #{scriptFile}" unless NFTools.testProjectFile scriptFile
+    throw new Error "Cannot read #{instructionFile}" unless NFTools.testProjectFile instructionFile
+
+    # Let's import the script first, and break it into lines
+    scriptString = NFTools.readProjectFile scriptFile
+    testChar = "\xA9" # The copyright symbol
+    dirtyScriptArray = scriptString.split(testChar)
+    scriptLines = []
+    # Clean empty elements and Trim newlines
+    for element in dirtyScriptArray
+      #scriptArray.push element.trim()
+      if element isnt ""
+        trimmed = element.trim()
+        splitElement = trimmed.split(/\[(.*?)\]/g)
+        lineObj =
+          instruction: splitElement[1].trim().slice(1, -1)
+          text: splitElement[2]?.trim() or ""
+        scriptLines.push lineObj
+
+    # Now let's import the instructions with timecodes
+    instructionString = NFTools.readProjectFile instructionFile
+    instructionArray = instructionString.splitCSV()
+
+    # Match up lines with ranges of words from the instruction array
+    testLineIdx = 0
+    testLine = ""
+    rangeString = ""
+    startIdx = 0
+    endIdx = 0
+    growCount = 0
+    growThreshold = 3
+    simValues = []
+    parsedLines = []
+    i = 1
+    # FIXME: Deal with the possibility of the first testLine being empty texted
+    NFTools.log "Comparing lines...", "Importer"
+    while testLineIdx isnt scriptLines.length
+      # If we're on the last line, save some time by just grabbing whatever's left
+      if testLineIdx is scriptLines.length - 1
+        assumedLineTimecodes = instructionArray.slice i
+        assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("")
+        NFTools.log "Last line - grabbing whatever's left: '#{assumedSentence}'", "Importer"
+        parsedLines.push
+          instruction: testLine.instruction
+          text: testLine.text
+          timecodes: assumedLineTimecodes
+        break
+
+      # Grab the testLine
+      if testLine.text isnt scriptLines[testLineIdx].text
+        testLine = scriptLines[testLineIdx]
+        NFTools.log "Test Line:   '#{testLine.text}'", "Importer"
+
+      # We start at 1 because the first line is headers.
+      tc = instructionArray[i][0]
+      word = instructionArray[i][1].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
+
+      # Adjust the indecies and add to the rangeString (stripped of whitespace in lowercase) ^
+      if rangeString is ""
+        startIdx = i
+        rangeString = word
+      else
+        rangeString += " #{word}"
+
+      # Check the similarity value
+      simValues[i] = NFTools.similarity rangeString, testLine.text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
+      # Increment the growCount if the sim value is growing
+      if simValues[i] > simValues[i-1] then growCount++ else growCount = 0
+
+      # If the growCount has reached the threshold, assume that we're now
+      # getting further away from the right range.
+      if growCount >= growThreshold
+        # First, stuff the simValues with '1' so we can perform basic math on it *facepalm*
+        simValues = simValues.stuff 1
+        # Get the index of the smallest value we hit
+        endIdx = simValues.indexOf Math.min.apply(Math, simValues)
+        # Make a new array of the range for what we think is this line
+        assumedLineTimecodes = instructionArray.slice startIdx, endIdx + 1
+        assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("")
+        NFTools.log "Best result: '#{assumedSentence}'", "Importer"
+        parsedLines.push
+          instruction: testLine.instruction
+          text: testLine.text
+          timecodes: assumedLineTimecodes
+
+        # Reset the rangeString and simValues
+        simValues = []
+        rangeString = ""
+        growCount = 0
+        # Move the iterator back to the last word we grabbed (because it's about to increment anyway)
+        i = endIdx
+        # Grab the next testLine
+        testLineIdx++
+        NFTools.log "MOVING ON...", "Importer"
+
+      i++
+
+    NFTools.log "Done Importing!", "Importer"
+    $.bp()
+
+
+    return null
+
+  ###*
   Follow an instruction string (ie. "41g")
   @memberof NFProject
   @param {string} itemName - the string to search for
@@ -204,29 +320,34 @@ NFProject =
         page: titlePage
 
     # if the instruction is a highlight, let's call animateTo
-    else if instruction.type is NFLayoutType.HIGHLIGHT
-      highlight = targetPDF.findHighlight instruction.look
-      throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
+    else switch instruction.type
+      when NFLayoutType.HIGHLIGHT
+        highlight = targetPDF.findHighlight instruction.look
+        throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
-      NFTools.log "Animating to #{instruction.display}", "Parser"
-      mainComp.animateTo
-        highlight: highlight
-        skipTitle: flags.skipTitle
+        NFTools.log "Animating to #{instruction.display}", "Parser"
+        mainComp.animateTo
+          highlight: highlight
+          skipTitle: flags.skipTitle
+          expand: flags.expand
+          expandUp: flags.expandUp
 
-    else if instruction.type is NFLayoutType.INSTRUCTION
-      switch instruction.instruction
-        when NFLayoutInstruction.SHOW_TITLE
-          NFTools.log "Following Instruction: #{instruction.display}", "Parser"
-          mainComp.animateTo
-            page: targetPDF.getTitlePage()
-        when NFLayoutInstruction.ICON_SEQUENCE, NFLayoutInstruction.GAUSSY, NFLayoutInstruction.FIGURE, NFLayoutInstruction.TABLE
-          NFTools.log "Following Instruction: #{instruction.display}", "Parser"
-          mainComp.addGaussy
-            placeholder: instruction.display
-        else throw new Error "There isn't a case for this instruction"
-      @
-    else
-      throw new Error "Instruction not found"
-      @
+      when NFLayoutType.EXPAND
+        NFTools.log "Animating to #{instruction.display}", "Parser"
+        # FIXME: Need to build this out so that the relevant expand highlight
+        # can be determined and checked from the previous instructions
 
+      when NFLayoutType.INSTRUCTION
+        switch instruction.instruction
+          when NFLayoutInstruction.SHOW_TITLE
+            NFTools.log "Following Instruction: #{instruction.display}", "Parser"
+            mainComp.animateTo
+              page: targetPDF.getTitlePage()
+          when NFLayoutInstruction.ICON_SEQUENCE, NFLayoutInstruction.GAUSSY, NFLayoutInstruction.FIGURE, NFLayoutInstruction.TABLE
+            NFTools.log "Following Instruction: #{instruction.display}", "Parser"
+            mainComp.addGaussy
+              placeholder: instruction.display
+          else throw new Error "There isn't a case for this instruction"
+        @
+      else throw new Error "Instruction not found"
     @

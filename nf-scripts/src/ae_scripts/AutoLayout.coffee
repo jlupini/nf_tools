@@ -15,17 +15,15 @@ main = ->
 	NFTools.log "Asking for input"
 	comp = _.mainComp
 
-	input = prompt 'Enter the instruction (without brackets):', '', 'AutoLayout'
+	NFProject.importScript()
 
-	NFTools.log "Following Instruction"
-
-	return false unless input? and input isnt ""
-
-	NFProject.followInstruction input
-	# try
-	# 	NFProject.followInstruction input
-	# catch e
-	# 	return alert "Error:\n#{e.message}"
+	# input = prompt 'Enter the instruction (without brackets):', '', 'AutoLayout'
+	#
+	# NFTools.log "Following Instruction"
+	#
+	# return false unless input? and input isnt ""
+	#
+	# NFProject.followInstruction input
 
 	NFTools.log "Done following instruction"
 	NFTools.breakLog()

@@ -1,4 +1,52 @@
 ###*
+The Javascript Array class
+@namespace Array
+###
+
+###*
+Gets the index of a value in the array
+@function indexOf
+@memberof Array
+@param {Any} searchElement - the element to look for
+@param {int} fromIndex - the start index to search at
+@returns {int} the index found, or -1 if not found
+###
+Array::indexOf = (searchElement, fromIndex) ->
+  k = undefined
+  if this == null
+    throw new TypeError('"this" is null or not defined')
+  o = Object(this)
+  len = o.length >>> 0
+  if len == 0
+    return -1
+  n = fromIndex | 0
+  if n >= len
+    return -1
+  k = Math.max(if n >= 0 then n else len - Math.abs(n))
+  while k < len
+    if k of o and o[k] == searchElement
+      return k
+    k++
+  -1
+
+###*
+Stuffs a given value into undefined indecies in the array. Returns a new array.
+@function stuff
+@memberof Array
+@param {Any} item - what to put in the empty indecies
+@returns {Array} the resulting array
+###
+Array::stuff = (item) ->
+  stuffedArr = []
+  for idx in [0..@length-1]
+    if this[idx] is undefined or ""
+      stuffedArr[idx] = item
+    else
+      stuffedArr[idx] = this[idx]
+  stuffedArr
+
+
+###*
 The Javascript String class
 @namespace String
 ###

@@ -292,29 +292,83 @@ NFTools = {
   },
 
   /**
-  Converts a String from a CSV file to an array of arrays
+  Returns the similarity value of two strings, relative to their length.
+  This number is effectively the percentage of characters that would need to
+  change to make them the same
   @memberof NFTools
-  @returns {Array} the array from the CSV
+  @param {String} str1
+  @param {String} str2
+  @returns {int} the result
    */
-  parseCSV: function(sep) {
-    var foo, tl, x;
-    foo = this.split(sep = sep || ',');
-    x = foo.length - 1;
-    tl = void 0;
-    while (x >= 0) {
-      if (foo[x].replace(/"\s+$/, '"').charAt(foo[x].length - 1) === '"') {
-        if ((tl = foo[x].replace(/^\s+"/, '"')).length > 1 && tl.charAt(0) === '"') {
-          foo[x] = foo[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"');
-        } else if (x) {
-          foo.splice(x - 1, 2, [foo[x - 1], foo[x]].join(sep));
-        } else {
-          foo = foo.shift().split(sep).concat(foo);
-        }
-      } else {
-        foo[x].replace(/""/g, '"');
-      }
-      x--;
+  similarity: function(str1, str2) {
+    var n;
+    if (!(typeof str1 === 'string' && typeof str2 === 'string')) {
+      throw new Error("Can't compare similarity of non-strings");
     }
-    return foo;
+    n = Math.max(str1.length, str2.length);
+    return NFTools.levenshtein(str1, str2) / n;
+  },
+
+  /**
+  Returns the levenshtein value of two strings, aka how different they are. The
+  higher the number, the bigger the difference.
+  @memberof NFTools
+  @param {String} str1
+  @param {String} str2
+  @returns {int} the result
+   */
+  levenshtein: function(str1, str2) {
+    var cost, i, j, m, minimum, n, x, y;
+    cost = new Array;
+    n = str1.length;
+    m = str2.length;
+    minimum = function(a, b, c) {
+      var min;
+      min = a;
+      if (b < min) {
+        min = b;
+      }
+      if (c < min) {
+        min = c;
+      }
+      return min;
+    };
+    if (n === 0) {
+      return;
+    }
+    if (m === 0) {
+      return;
+    }
+    i = 0;
+    while (i <= n) {
+      cost[i] = new Array;
+      i++;
+    }
+    i = 0;
+    while (i <= n) {
+      cost[i][0] = i;
+      i++;
+    }
+    j = 0;
+    while (j <= m) {
+      cost[0][j] = j;
+      j++;
+    }
+    i = 1;
+    while (i <= n) {
+      x = str1.charAt(i - 1);
+      j = 1;
+      while (j <= m) {
+        y = str2.charAt(j - 1);
+        if (x === y) {
+          cost[i][j] = cost[i - 1][j - 1];
+        } else {
+          cost[i][j] = 1 + minimum(cost[i - 1][j - 1], cost[i][j - 1], cost[i - 1][j]);
+        }
+        j++;
+      }
+      i++;
+    }
+    return cost[n][m];
   }
 };
