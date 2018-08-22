@@ -52,7 +52,7 @@ class NFLayoutInstruction extends NFObject
   @returns {Object} the instruction (from NFLayoutInstructionDict)
   ###
   getInstruction: ->
-    if @instruction.instruction is NFLayoutBehavior.UNRECOGNIZED and @flags.expand?
+    if @instruction.behavior is NFLayoutBehavior.UNRECOGNIZED and @flags.expand?
       # We have an expand but not the highlight - go back and find it
       return @getHighlight()
     else return @instruction

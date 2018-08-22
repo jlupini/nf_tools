@@ -28,12 +28,12 @@ NFLayoutFlagDict =
 NFLayoutInstructionNotFound =
 	display: "Unrecognized"
 	type: NFLayoutType.INSTRUCTION
-	instruction: NFLayoutBehavior.UNRECOGNIZED
+	behavior: NFLayoutBehavior.UNRECOGNIZED
 
 NFLayoutInstructionNone =
 	display: "No Instruction"
 	type: NFLayoutType.INSTRUCTION
-	instruction: NFLayoutBehavior.NONE
+	behavior: NFLayoutBehavior.NONE
 
 NFLayoutInstructionDict =
 	yellowUnderlineHighlight:
@@ -89,35 +89,35 @@ NFLayoutInstructionDict =
 		priority: 4
 		display: "Do Nothing"
 		type: NFLayoutType.INSTRUCTION
-		instruction: NFLayoutBehavior.DO_NOTHING
+		behavior: NFLayoutBehavior.DO_NOTHING
 	showTitle:
 		code: ['title', 'show title', 'clear']
 		display: "Show title"
 		type: NFLayoutType.INSTRUCTION
 		priority: 1
-		instruction: NFLayoutBehavior.SHOW_TITLE
+		behavior: NFLayoutBehavior.SHOW_TITLE
 	iconSequence:
 		code: ['icons', 'icon sequence', 'animation', 'icon']
 		display: "Icon Sequence Placeholder"
 		type: NFLayoutType.INSTRUCTION
-		instruction: NFLayoutBehavior.ICON_SEQUENCE
+		behavior: NFLayoutBehavior.ICON_SEQUENCE
 	gaussy:
 		code: ['gaussy', 'blur']
 		display: "Gaussy Placeholder"
 		priority: 3
 		type: NFLayoutType.INSTRUCTION
-		instruction: NFLayoutBehavior.GAUSSY
+		behavior: NFLayoutBehavior.GAUSSY
 	figure:
 		code: ['figure', 'fig', 'graph', 'chart', 'f']
 		regex: /(^f\d+)/i
 		display: "Figure Placeholder"
 		priority: 2
 		type: NFLayoutType.INSTRUCTION
-		instruction: NFLayoutBehavior.FIGURE
+		behavior: NFLayoutBehavior.FIGURE
 	table:
 		code: ['table', 'tab', 't']
 		regex: /(^t\d+)/i
 		display: "Table Placeholder"
 		priority: 2
 		type: NFLayoutType.INSTRUCTION
-		instruction: NFLayoutBehavior.TABLE
+		behavior: NFLayoutBehavior.TABLE

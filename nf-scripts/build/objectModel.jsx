@@ -1936,7 +1936,7 @@ NFLayoutInstruction = (function(superClass) {
    */
 
   NFLayoutInstruction.prototype.getInstruction = function() {
-    if (this.instruction.instruction === NFLayoutBehavior.UNRECOGNIZED && (this.flags.expand != null)) {
+    if (this.instruction.behavior === NFLayoutBehavior.UNRECOGNIZED && (this.flags.expand != null)) {
       return this.getHighlight();
     } else {
       return this.instruction;

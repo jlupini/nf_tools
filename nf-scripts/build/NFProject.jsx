@@ -523,7 +523,7 @@ NFProject = {
           NFTools.log("Animating to " + instruction.display, "Parser");
           break;
         case NFLayoutType.INSTRUCTION:
-          switch (instruction.instruction) {
+          switch (instruction.behavior) {
             case NFLayoutBehavior.SHOW_TITLE:
               NFTools.log("Following Instruction: " + instruction.display, "Parser");
               mainComp.animateTo({

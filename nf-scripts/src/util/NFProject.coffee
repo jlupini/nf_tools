@@ -257,7 +257,7 @@ NFProject =
       # # Do the autolayout
       # # If we have a PDF to go to but no instruction, assume we should bring in
       # # the title page
-      # if targetPDF? and layoutInstruction.instruction.instruction is NFLayoutBehavior.NONE?
+      # if targetPDF? and layoutInstruction.instruction.behavior is NFLayoutBehavior.NONE?
       #   NFTools.log "PDF found but no instruction - animating to title page", "Parser"
       #   titlePage = targetPDF.getTitlePage()
       #   mainComp.animateTo
@@ -511,7 +511,7 @@ NFProject =
         # can be determined and checked from the previous instructions
 
       when NFLayoutType.INSTRUCTION
-        switch instruction.instruction
+        switch instruction.behavior
           when NFLayoutBehavior.SHOW_TITLE
             NFTools.log "Following Instruction: #{instruction.display}", "Parser"
             mainComp.animateTo
