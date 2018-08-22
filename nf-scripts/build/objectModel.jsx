@@ -1849,6 +1849,99 @@ NFLayerCollection = (function(superClass) {
 
 
 /**
+Creates a new NFLayoutInstruction
+@class NFLayoutInstruction
+@classdesc An object that represents a parsed instruction to do a certain thing
+at a certain time.
+@param {Object} model
+@property {float} time - the time of the instruction
+@property {String} raw - the original instruction string from the script
+@property {String} pdf - the pdf number. Use #getPDF instead!
+@property {Object} flags - an object of NFLayoutFlagDict objects
+@property {Object} instruction - an NFLayoutInstructionDict object
+@property {String} line - the script line that goes along with this instruction
+@propery {boolean} validated - Whether or not the instruction has been validated
+@property {boolean} valid - If the instruction is valid
+@property {String} validationMessage - Message with validation result.
+due to the instructions before or after this one
+@property {NFLayoutInstruction} next - the next instruction
+@property {NFLayoutInstruction} prev - the previous instruction
+ */
+var NFLayoutInstruction,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+NFLayoutInstruction = (function(superClass) {
+  extend(NFLayoutInstruction, superClass);
+
+  function NFLayoutInstruction(model) {
+    NFObject.call(this);
+    this.time = model.time;
+    this.raw = model.raw;
+    this.pdf = model.pdf;
+    this.flags = model.flags;
+    this.instruction = model.instruction;
+    this.line = model.line;
+    this.validated = false;
+    this.next = model.next;
+    this.prev = model.prev;
+  }
+
+  NFLayoutInstruction.prototype.toString = function() {
+    return "NFLayoutInstruction: '" + this.instruction.display + "' @ " + this.time + " in PDF " + this.pdf;
+  };
+
+
+  /**
+  Gets the pdf, looking recursively back through previous instructions until
+  one is found
+  @memberof NFLayoutInstruction
+  @returns {string} the PDF number
+   */
+
+  NFLayoutInstruction.prototype.getPDF = function() {
+    return this.pdf || this.prev.getPDF();
+  };
+
+
+  /**
+  Gets the instruction. If an expand flag exists and the instruction is
+  unrecognized, looks backwards until a highlight is found.
+  @memberof NFLayoutInstruction
+  @returns {Object} the instruction (from NFLayoutInstructionDict)
+   */
+
+  NFLayoutInstruction.prototype.getInstruction = function() {
+    if (this.instruction.instruction === NFLayoutBehavior.UNRECOGNIZED && (this.flags.expand != null)) {
+      return this.getHighlight();
+    } else {
+      return this.instruction;
+    }
+  };
+
+
+  /**
+  Internal use only. Returns the most recent highlight instruction
+  @memberof NFLayoutInstruction
+  @returns {Object} the highlight instruction (from NFLayoutInstructionDict)
+   */
+
+  NFLayoutInstruction.prototype.getHighlight = function() {
+    if (this.prev != null) {
+      if (this.instruction.type !== NFLayoutType.HIGHLIGHT) {
+        return this.prev.getHighlight();
+      }
+    } else {
+      throw new Error("Could not get highlight for instruction!");
+    }
+  };
+
+  return NFLayoutInstruction;
+
+})(NFObject);
+
+
+/**
 Creates a new NFPDF from a given array of pages
 @class NFPDF
 @classdesc NF Wrapper object for a group of NFPageComps

@@ -330,38 +330,22 @@ NFTools = {
   `flags`, `instruction`, `time`, `line`, and `assumptions`.
   @memberof NFProject
   @param {Object[]} parsedLines - the parsedLines object to parse
-  @returns {Object[]} the instruction object array
+  @returns {NFLayoutInstruction[]} the instruction object array
    */
   parseInstructions: function(parsedLines) {
-    var key, l, lastHighlight, lastPDF, len1, len2, line, logString, o, pad, parsed, parsedInstructions;
+    var key, l, layoutInstruction, len1, len2, line, logString, o, pad, parsed, parsedInstructions, prevInstruction;
     parsedInstructions = [];
-    lastHighlight = null;
-    lastPDF = null;
+    prevInstruction = null;
     for (l = 0, len1 = parsedLines.length; l < len1; l++) {
       line = parsedLines[l];
-      parsed = NFTools.parseInstructionString(line.instruction);
-      parsed.time = line.timecodes[0][0];
-      parsed.line = line.text;
-      parsed.assumptions = [];
-      if ((parsed.flags.expand != null) && parsed.instruction.instruction === NFLayoutBehavior.UNRECOGNIZED) {
-        if (lastHighlight != null) {
-          parsed.instruction = lastHighlight;
-          parsed.assumptions.push('highlight');
-        }
+      layoutInstruction = NFTools.parseInstructionString(line.instruction);
+      layoutInstruction.time = line.timecodes[0][0];
+      layoutInstruction.line = line.text;
+      if (prevInstruction != null) {
+        layoutInstruction.prev = prevInstruction;
+        prevInstruction.next = layoutInstruction;
       }
-      if ((parsed.pdf == null) && parsed.instruction.instruction !== NFLayoutBehavior.UNRECOGNIZED) {
-        if (lastPDF != null) {
-          parsed.pdf = lastPDF;
-          parsed.assumptions.push('pdf');
-        }
-      }
-      if (parsed.pdf) {
-        lastPDF = parsed.pdf;
-      }
-      if (parsed.instruction.type === NFLayoutType.HIGHLIGHT) {
-        lastHighlight = parsed.instruction;
-      }
-      parsedInstructions.push(parsed);
+      parsedInstructions.push(layoutInstruction);
     }
     NFTools.log("Finished parsing instructions. Result:", "parseInstructions");
     for (o = 0, len2 = parsedInstructions.length; o < len2; o++) {
@@ -399,7 +383,7 @@ NFTools = {
   end.
   @memberof NFProject
   @param {string} input - the input to parse
-  @returns {Object} the instruction object with keys 'raw', 'pdf', 'flags', 'instruction'
+  @returns {NFLayoutInstruction} the instruction object
    */
   parseInstructionString: function(input) {
     var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, o, option, parsedObject, ref, ref1, targetPDFNumber;
@@ -459,12 +443,12 @@ NFTools = {
       instruction = NFLayoutInstructionNotFound;
       NFTools.logLine();
     }
-    return parsedObject = {
+    return parsedObject = new NFLayoutInstruction({
       raw: input,
       pdf: targetPDFNumber,
       flags: flags,
-      instruction: instruction || {}
-    };
+      instruction: instruction
+    });
   },
 
   /**

@@ -181,9 +181,8 @@ NFProject = {
   @returns {null} nothin'
    */
   importScript: function() {
-    var allParts, instructionLayer, j, k, len, len1, line, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldUseCache, shouldValidate, validationResult;
+    var allParts, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldUseCache, shouldValidate, validationResult;
     alert("About to import and combine the script and instructions.\nThis can take a few minutes, so check 'log.txt' to stay updated as it runs.");
-    lineWrap = "...\n";
     shouldUseCache = false;
     if (((ref = app.tmp) != null ? ref.parsedLines : void 0) != null) {
       shouldUseCache = confirm("Cached script/instruction data found. Use the cached data? Select NO if you've changed the script.txt or instructions.csv files since the last import.", false, "Cached Data");
@@ -192,7 +191,9 @@ NFProject = {
     app.tmp = {
       parsedLines: parsedLines
     };
+    parsedInstructions = NFTools.parseInstructions(parsedLines);
     allParts = NFProject.allPartComps();
+    lineWrap = "...\n";
     for (j = 0, len = allParts.length; j < len; j++) {
       part = allParts[j];
       lineLayer = part.addSolid({
@@ -207,21 +208,20 @@ NFProject = {
       instructionLayer.moveBefore(lineLayer);
       lineLayer.layer.guideLayer = instructionLayer.layer.guideLayer = true;
       lineLayer.layer.enabled = instructionLayer.layer.enabled = false;
-      for (k = 0, len1 = parsedLines.length; k < len1; k++) {
-        line = parsedLines[k];
-        lineText = line.text.length > 15 ? line.text.insertAt(15, lineWrap) : line.text;
-        lineInstruction = line.instruction.length > 15 ? line.instruction.insertAt(15, lineWrap) : line.instruction;
+      for (k = 0, len1 = parsedInstructions.length; k < len1; k++) {
+        ins = parsedInstructions[k];
+        lineText = ins.line.length > 15 ? ins.line.insertAt(15, lineWrap) : ins.line;
+        lineInstruction = ins.raw.length > 15 ? ins.raw.insertAt(15, lineWrap) : ins.raw;
         lineLayer.addMarker({
-          time: line.timecodes[0][0],
+          time: ins.time,
           comment: lineText
         });
         instructionLayer.addMarker({
-          time: line.timecodes[0][0],
+          time: ins.time,
           comment: lineInstruction
         });
       }
     }
-    parsedInstructions = NFTools.parseInstructions(parsedLines);
     shouldValidate = confirm("Import complete! Would you like to validate before beginning layout?", false, 'Validation');
     validationResult = NFProject.validateInstructions(parsedInstructions);
     return null;
@@ -233,6 +233,7 @@ NFProject = {
   @memberof NFProject
    */
   validateInstructions: function(instructions) {
+    $.bp();
     return this;
   },
 

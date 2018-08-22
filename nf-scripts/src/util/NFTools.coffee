@@ -287,36 +287,39 @@ NFTools =
   `flags`, `instruction`, `time`, `line`, and `assumptions`.
   @memberof NFProject
   @param {Object[]} parsedLines - the parsedLines object to parse
-  @returns {Object[]} the instruction object array
+  @returns {NFLayoutInstruction[]} the instruction object array
   ###
   parseInstructions: (parsedLines) ->
     parsedInstructions = []
-    lastHighlight = null
-    lastPDF = null
+    # lastHighlight = null
+    # lastPDF = null
+    prevInstruction = null
     for line in parsedLines
 
       # Build the object
-      parsed = NFTools.parseInstructionString line.instruction
-      parsed.time = line.timecodes[0][0]
-      parsed.line = line.text
-      parsed.assumptions = []
+      layoutInstruction = NFTools.parseInstructionString line.instruction
+      layoutInstruction.time = line.timecodes[0][0]
+      layoutInstruction.line = line.text
+      if prevInstruction?
+        layoutInstruction.prev = prevInstruction
+        prevInstruction.next = layoutInstruction
+      # parsed.assumptions = []
+      # # Add missing highlights or PDFs
+      # if parsed.flags.expand? and parsed.instruction.instruction is NFLayoutBehavior.UNRECOGNIZED
+      #   # Add the last highlight, and an assumption marker
+      #   if lastHighlight?
+      #     parsed.instruction = lastHighlight
+      #     parsed.assumptions.push 'highlight'
+      # if not parsed.pdf? and parsed.instruction.instruction isnt NFLayoutBehavior.UNRECOGNIZED
+      #   # Adds the last PDF, and an assumption marker
+      #   if lastPDF?
+      #     parsed.pdf = lastPDF
+      #     parsed.assumptions.push 'pdf'
+      #
+      # lastPDF = parsed.pdf if parsed.pdf
+      # lastHighlight = parsed.instruction if parsed.instruction.type is NFLayoutType.HIGHLIGHT
 
-      # Add missing highlights or PDFs
-      if parsed.flags.expand? and parsed.instruction.instruction is NFLayoutBehavior.UNRECOGNIZED
-        # Add the last highlight, and an assumption marker
-        if lastHighlight?
-          parsed.instruction = lastHighlight
-          parsed.assumptions.push 'highlight'
-      if not parsed.pdf? and parsed.instruction.instruction isnt NFLayoutBehavior.UNRECOGNIZED
-        # Adds the last PDF, and an assumption marker
-        if lastPDF?
-          parsed.pdf = lastPDF
-          parsed.assumptions.push 'pdf'
-
-      lastPDF = parsed.pdf if parsed.pdf
-      lastHighlight = parsed.instruction if parsed.instruction.type is NFLayoutType.HIGHLIGHT
-
-      parsedInstructions.push parsed
+      parsedInstructions.push layoutInstruction
 
     # Log that shit
     NFTools.log "Finished parsing instructions. Result:", "parseInstructions"
@@ -348,7 +351,7 @@ NFTools =
   end.
   @memberof NFProject
   @param {string} input - the input to parse
-  @returns {Object} the instruction object with keys 'raw', 'pdf', 'flags', 'instruction'
+  @returns {NFLayoutInstruction} the instruction object
   ###
   parseInstructionString: (input) ->
 
@@ -403,11 +406,11 @@ NFTools =
 
     # OK, now we have three key pieces of information: the instruction, flags, the PDF
     # Put together the object we're returning
-    parsedObject =
+    parsedObject = new NFLayoutInstruction
       raw: input
       pdf: targetPDFNumber
       flags: flags
-      instruction: instruction or {}
+      instruction: instruction
 
   ###*
   Imports the script (script.txt) and the instructions (instructions.csv) files.

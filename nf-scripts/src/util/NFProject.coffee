@@ -147,8 +147,6 @@ NFProject =
     alert "About to import and combine the script and instructions.\nThis can
            take a few minutes, so check 'log.txt' to stay updated as it runs."
 
-    lineWrap = "...\n"
-
     shouldUseCache = no
     if app.tmp?.parsedLines?
       shouldUseCache = confirm "Cached script/instruction data found. Use the
@@ -159,8 +157,11 @@ NFProject =
     app.tmp =
       parsedLines: parsedLines
 
+    parsedInstructions = NFTools.parseInstructions parsedLines
+
     # Add the line and instruction markers to part comps
     allParts = NFProject.allPartComps()
+    lineWrap = "...\n"
     for part in allParts
 
       lineLayer = part.addSolid
@@ -176,18 +177,16 @@ NFProject =
       lineLayer.layer.guideLayer = instructionLayer.layer.guideLayer = yes
       lineLayer.layer.enabled = instructionLayer.layer.enabled = no
 
-      for line in parsedLines
-        lineText = if line.text.length > 15 then line.text.insertAt(15, lineWrap) else line.text
-        lineInstruction = if line.instruction.length > 15 then line.instruction.insertAt(15, lineWrap) else line.instruction
+      for ins in parsedInstructions
+        lineText = if ins.line.length > 15 then ins.line.insertAt(15, lineWrap) else ins.line
+        lineInstruction = if ins.raw.length > 15 then ins.raw.insertAt(15, lineWrap) else ins.raw
 
         lineLayer.addMarker
-          time: line.timecodes[0][0]
+          time: ins.time
           comment: lineText
         instructionLayer.addMarker
-          time: line.timecodes[0][0]
+          time: ins.time
           comment: lineInstruction
-
-    parsedInstructions = NFTools.parseInstructions parsedLines
 
     shouldValidate = confirm "Import complete! Would you like to validate before
                               beginning layout?", false, 'Validation'
@@ -202,6 +201,7 @@ NFProject =
   @memberof NFProject
   ###
   validateInstructions: (instructions) ->
+    $.bp()
     @
 
   ###*
