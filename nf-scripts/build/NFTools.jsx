@@ -9,6 +9,22 @@ NFTools = {
   logging: true,
 
   /**
+  Returns if a given object is empty
+  @memberof NFTools
+  @param {object} obj - the object to test
+  @returns {boolean} the result
+   */
+  isEmpty: function(obj) {
+    var prop;
+    for (prop in obj) {
+      if (obj.hasOwnProperty(prop)) {
+        return false;
+      }
+    }
+    return JSON.stringify(obj) === JSON.stringify({});
+  },
+
+  /**
   Returns the current time (of world, not comp)
   @memberof NFTools
   @returns {time} the time
@@ -262,6 +278,23 @@ NFTools = {
   },
 
   /**
+  Adds a line break to the log
+  @memberof NFTools
+  @returns {null} null
+   */
+  logLine: function() {
+    if (!NFTools.logging) {
+      return null;
+    }
+    NFTools.editFile("../log.txt", (function(_this) {
+      return function(fileText) {
+        return fileText + "\r\n";
+      };
+    })(this));
+    return null;
+  },
+
+  /**
   Adds a section break to log.txt
   @memberof NFTools
   @returns {null} null
@@ -289,6 +322,276 @@ NFTools = {
     }
     NFTools.clearFile("../log.txt");
     return null;
+  },
+
+  /**
+  Parse each instruction in the parsedLines object and return an array of
+  parsed instruction objects. Properties on each object are: `raw`, `pdf`,
+  `flags`, `instruction`, `time`, `line`, and `assumptions`.
+  @memberof NFProject
+  @param {Object[]} parsedLines - the parsedLines object to parse
+  @returns {Object[]} the instruction object array
+   */
+  parseInstructions: function(parsedLines) {
+    var key, l, lastHighlight, lastPDF, len1, len2, line, logString, o, pad, parsed, parsedInstructions;
+    parsedInstructions = [];
+    lastHighlight = null;
+    lastPDF = null;
+    for (l = 0, len1 = parsedLines.length; l < len1; l++) {
+      line = parsedLines[l];
+      parsed = NFTools.parseInstructionString(line.instruction);
+      parsed.time = line.timecodes[0][0];
+      parsed.line = line.text;
+      parsed.assumptions = [];
+      if ((parsed.flags.expand != null) && parsed.instruction.instruction === NFLayoutBehavior.UNRECOGNIZED) {
+        if (lastHighlight != null) {
+          parsed.instruction = lastHighlight;
+          parsed.assumptions.push('highlight');
+        }
+      }
+      if ((parsed.pdf == null) && parsed.instruction.instruction !== NFLayoutBehavior.UNRECOGNIZED) {
+        if (lastPDF != null) {
+          parsed.pdf = lastPDF;
+          parsed.assumptions.push('pdf');
+        }
+      }
+      if (parsed.pdf) {
+        lastPDF = parsed.pdf;
+      }
+      if (parsed.instruction.type === NFLayoutType.HIGHLIGHT) {
+        lastHighlight = parsed.instruction;
+      }
+      parsedInstructions.push(parsed);
+    }
+    NFTools.log("Finished parsing instructions. Result:", "parseInstructions");
+    for (o = 0, len2 = parsedInstructions.length; o < len2; o++) {
+      parsed = parsedInstructions[o];
+      pad = function(str, len) {
+        if (str.length < len) {
+          return str + new Array(len - str.length).join(" ");
+        } else {
+          return str;
+        }
+      };
+      logString = "At " + (pad(parsed.time, 6)) + " ";
+      if (parsed.pdf != null) {
+        logString += "in PDF " + (pad(parsed.pdf, 4)) + " ";
+      } else {
+        logString += "           ";
+      }
+      logString += "instruction    " + (pad(parsed.instruction.display, 20)) + " ";
+      if (!NFTools.isEmpty(parsed.flags)) {
+        logString += "with flags: ";
+      }
+      for (key in parsed.flags) {
+        logString += "'" + parsed.flags[key].display + "', ";
+      }
+      logString += "from raw input '" + parsed.raw + "'";
+      NFTools.log(logString, "parseInstructions");
+    }
+    NFTools.logLine();
+    return parsedInstructions;
+  },
+
+  /**
+  Parse an instruction string (ie. "41g"). The basic methodology here is to
+  remove each peice one by one as they're recognized and see what's left at the
+  end.
+  @memberof NFProject
+  @param {string} input - the input to parse
+  @returns {Object} the instruction object with keys 'raw', 'pdf', 'flags', 'instruction'
+   */
+  parseInstructionString: function(input) {
+    var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, o, option, parsedObject, ref, ref1, targetPDFNumber;
+    NFTools.log("Parsing instruction: '" + input + "'", "parseInstructionString");
+    targetPDFNumber = /(^\d+)/i.exec(input);
+    if (targetPDFNumber != null) {
+      targetPDFNumber = targetPDFNumber[1];
+    }
+    if (targetPDFNumber != null) {
+      instructionString = input.slice(targetPDFNumber.length);
+      NFTools.log("Target PDF Number found: '" + targetPDFNumber + "'", "parseInstructionString");
+    } else {
+      instructionString = input;
+    }
+    flags = {};
+    for (key in NFLayoutFlagDict) {
+      flagOption = NFLayoutFlagDict[key];
+      ref = flagOption.code;
+      for (l = 0, len1 = ref.length; l < len1; l++) {
+        code = ref[l];
+        if (instructionString.indexOf(code) >= 0) {
+          flags[key] = flagOption;
+          instructionString = instructionString.replace(code, "").trim();
+          NFTools.log("Flag found: '" + flagOption.display + "'", "parseInstructionString");
+        }
+      }
+    }
+    if (instructionString !== "") {
+      instruction = null;
+      NFTools.log("Instruction string remaining: '" + instructionString + "'", "parseInstructionString");
+      for (key in NFLayoutInstructionDict) {
+        option = NFLayoutInstructionDict[key];
+        ref1 = option.code;
+        for (o = 0, len2 = ref1.length; o < len2; o++) {
+          code = ref1[o];
+          if (instructionString === code) {
+            if (instruction != null) {
+              if ((option.priority != null) && (instruction.priority != null) && option.priority < instruction.priority) {
+                instruction = option;
+              } else if (((option.priority != null) && (instruction.priority != null)) || ((option.priority == null) && (instruction.priority == null))) {
+                throw new Error("instruction matched two instruction options (" + instruction.display + " and " + option.display + ") with the same priority. Fix layoutDictionary.");
+              } else if (option.priority != null) {
+                instruction = option;
+              }
+            } else {
+              instruction = option;
+            }
+          }
+        }
+      }
+      if (instruction != null) {
+        NFTools.log("Instruction found: '" + instruction.display + "'", "parseInstructionString");
+      }
+    }
+    if (instruction == null) {
+      NFTools.log("No Instruction found.", "parseInstructionString");
+      instruction = NFLayoutInstructionNotFound;
+      NFTools.logLine();
+    }
+    return parsedObject = {
+      raw: input,
+      pdf: targetPDFNumber,
+      flags: flags,
+      instruction: instruction || {}
+    };
+  },
+
+  /**
+  Imports the script (script.txt) and the instructions (instructions.csv) files.
+  Compares the two of them to combine.
+  @memberof NFTools
+  @returns {Object[]} an Array of line objects with 'instruction', 'text', and
+  'timecodes' keys
+   */
+  readAndCombineScriptAndInstructions: function() {
+    var assumedLineTimecodes, assumedSentence, cleanLine, dirtyScriptArray, element, endIdx, growCount, growThreshold, i, instructionArray, instructionFile, instructionString, l, len1, lineObj, parsedLines, rangeString, ref, removeLineBreaks, scriptFile, scriptLines, scriptString, simValues, splitElement, startIdx, tc, testChar, testLine, testLineIdx, testLineText, theWord, trimmed, word;
+    cleanLine = function(line) {
+      var cleaned;
+      cleaned = line.toLowerCase();
+      cleaned = cleaned.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
+      return removeLineBreaks(cleaned);
+    };
+    removeLineBreaks = function(line) {
+      return line.replace(/(\r\n\t|\n|\r\t)/gm, " ");
+    };
+    scriptFile = "script.txt";
+    instructionFile = "instructions.csv";
+    if (!NFTools.testProjectFile(scriptFile)) {
+      throw new Error("Cannot read " + scriptFile);
+    }
+    if (!NFTools.testProjectFile(instructionFile)) {
+      throw new Error("Cannot read " + instructionFile);
+    }
+    scriptString = NFTools.readProjectFile(scriptFile);
+    testChar = "\xA9";
+    dirtyScriptArray = scriptString.split(testChar);
+    scriptLines = [];
+    for (l = 0, len1 = dirtyScriptArray.length; l < len1; l++) {
+      element = dirtyScriptArray[l];
+      if (element !== "") {
+        trimmed = element.trim();
+        splitElement = trimmed.split(/\[(.*?)\]/g);
+        lineObj = {
+          instruction: splitElement[1].trim().slice(1, -1),
+          text: ((ref = splitElement[2]) != null ? ref.trim() : void 0) || ""
+        };
+        scriptLines.push(lineObj);
+      }
+    }
+    instructionString = NFTools.readProjectFile(instructionFile);
+    instructionArray = instructionString.splitCSV();
+    testLineIdx = 0;
+    testLine = "";
+    rangeString = "";
+    startIdx = 0;
+    endIdx = 0;
+    growCount = 0;
+    growThreshold = 3;
+    simValues = [];
+    parsedLines = [];
+    i = 1;
+    NFTools.log("Comparing lines...", "Importer");
+    while (testLineIdx !== scriptLines.length) {
+      if (testLineIdx === scriptLines.length - 1) {
+        assumedLineTimecodes = instructionArray.slice(i);
+        assumedSentence = ((function() {
+          var len2, o, results;
+          results = [];
+          for (o = 0, len2 = assumedLineTimecodes.length; o < len2; o++) {
+            theWord = assumedLineTimecodes[o];
+            results.push(theWord[1] + " ");
+          }
+          return results;
+        })()).join("").trim();
+        NFTools.log("Last line - grabbing whatever's left: '" + (cleanLine(assumedSentence)) + "'", "Importer");
+        parsedLines.push({
+          instruction: testLine.instruction,
+          text: removeLineBreaks(testLine.text),
+          timecodes: assumedLineTimecodes
+        });
+        break;
+      }
+      if (testLine.text !== scriptLines[testLineIdx].text) {
+        testLine = scriptLines[testLineIdx];
+        testLineText = cleanLine(testLine.text);
+        NFTools.log("Test Line:   '" + testLineText + "'", "Importer");
+      }
+      tc = instructionArray[i][0];
+      word = instructionArray[i][1];
+      if (rangeString === "") {
+        startIdx = i;
+        rangeString = word;
+      } else {
+        rangeString += " " + word;
+      }
+      rangeString = cleanLine(rangeString);
+      simValues[i] = NFTools.similarity(rangeString, testLineText);
+      if (simValues[i] > simValues[i - 1]) {
+        growCount++;
+      } else {
+        growCount = 0;
+      }
+      if (growCount >= growThreshold) {
+        simValues = simValues.stuff(1);
+        endIdx = simValues.indexOf(Math.min.apply(Math, simValues));
+        assumedLineTimecodes = instructionArray.slice(startIdx, endIdx + 1);
+        assumedSentence = ((function() {
+          var len2, o, results;
+          results = [];
+          for (o = 0, len2 = assumedLineTimecodes.length; o < len2; o++) {
+            theWord = assumedLineTimecodes[o];
+            results.push(theWord[1] + " ");
+          }
+          return results;
+        })()).join("").trim();
+        NFTools.log("Best result: '" + (cleanLine(assumedSentence)) + "'", "Importer");
+        parsedLines.push({
+          instruction: testLine.instruction,
+          text: removeLineBreaks(testLine.text),
+          timecodes: assumedLineTimecodes
+        });
+        simValues = [];
+        rangeString = "";
+        growCount = 0;
+        i = endIdx;
+        testLineIdx++;
+      }
+      i++;
+    }
+    NFTools.log("Done Importing!", "Importer");
+    NFTools.logLine();
+    return parsedLines;
   },
 
   /**

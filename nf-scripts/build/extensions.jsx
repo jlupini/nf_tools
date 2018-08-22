@@ -103,6 +103,20 @@ String.prototype.splitCSV = function(sep) {
 
 
 /**
+Inserts a string at an index in the string
+@function insertAt
+@memberof String
+@param {int} index
+@param {String} string - the string to insert
+@returns {String} self
+ */
+
+String.prototype.insertAt = function(index, string) {
+  return this.substr(0, index) + string + this.substr(index);
+};
+
+
+/**
 The After Effects LayerCollection Class
 @namespace LayerCollection
  */

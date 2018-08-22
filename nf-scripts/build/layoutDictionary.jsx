@@ -1,4 +1,4 @@
-var NFLayoutFlagDict, NFLayoutInstruction, NFLayoutInstructionDict, NFLayoutType;
+var NFLayoutBehavior, NFLayoutFlagDict, NFLayoutInstructionDict, NFLayoutInstructionNotFound, NFLayoutType;
 
 NFLayoutType = {
   HIGHLIGHT: 100,
@@ -7,7 +7,8 @@ NFLayoutType = {
   FLAG: 300
 };
 
-NFLayoutInstruction = {
+NFLayoutBehavior = {
+  UNRECOGNIZED: 99,
   DO_NOTHING: 101,
   SHOW_TITLE: 102,
   ICON_SEQUENCE: 103,
@@ -31,6 +32,12 @@ NFLayoutFlagDict = {
   }
 };
 
+NFLayoutInstructionNotFound = {
+  display: "Unrecognized",
+  type: NFLayoutType.INSTRUCTION,
+  instruction: NFLayoutBehavior.UNRECOGNIZED
+};
+
 NFLayoutInstructionDict = {
   yellowUnderlineHighlight: {
     code: ['yunderline'],
@@ -47,98 +54,86 @@ NFLayoutInstructionDict = {
     type: NFLayoutType.HIGHLIGHT
   },
   greenHighlight: {
-    code: ['g'],
+    code: ['g', 'gq'],
     look: "Green",
     display: "Green Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
   orangeHighlight: {
-    code: ['o'],
+    code: ['o', 'oq'],
     look: "Orange",
     display: "Orange Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
   yellowHighlight: {
-    code: ['y'],
+    code: ['y', 'yq'],
     look: "Yellow",
     display: "Yellow Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
   pinkHighlight: {
-    code: ['i'],
+    code: ['i', 'iq'],
     look: "Pink",
     display: "Pink Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
   purpleHighlight: {
-    code: ['u'],
+    code: ['u', 'uq'],
     look: "Purple",
     display: "Purple Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
   blueHighlight: {
-    code: ['b'],
+    code: ['b', 'bq'],
     look: "Blue",
     display: "Blue Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
   greyHighlight: {
-    code: ['r'],
+    code: ['r', 'rq'],
     look: "Grey",
     display: "Grey Highlight",
     type: NFLayoutType.HIGHLIGHT
-  },
-  expand: {
-    code: ['expand'],
-    look: "Expand",
-    display: "Expand",
-    type: NFLayoutType.EXPAND
-  },
-  expandUp: {
-    code: ['expandup', 'expand up'],
-    display: "Expand Up",
-    look: "Expand Up",
-    type: NFLayoutType.EXPAND
   },
   doNothing: {
     code: ['do nothing', 'nothing'],
     priority: 4,
     display: "Do Nothing",
     type: NFLayoutType.INSTRUCTION,
-    instruction: NFLayoutInstruction.DO_NOTHING
+    instruction: NFLayoutBehavior.DO_NOTHING
   },
   showTitle: {
     code: ['title', 'show title', 'clear'],
     display: "Show title",
     type: NFLayoutType.INSTRUCTION,
     priority: 1,
-    instruction: NFLayoutInstruction.SHOW_TITLE
+    instruction: NFLayoutBehavior.SHOW_TITLE
   },
   iconSequence: {
     code: ['icons', 'icon sequence', 'animation', 'icon'],
     display: "Icon Sequence Placeholder",
     type: NFLayoutType.INSTRUCTION,
-    instruction: NFLayoutInstruction.ICON_SEQUENCE
+    instruction: NFLayoutBehavior.ICON_SEQUENCE
   },
   gaussy: {
     code: ['gaussy', 'blur'],
     display: "Gaussy Placeholder",
     priority: 3,
     type: NFLayoutType.INSTRUCTION,
-    instruction: NFLayoutInstruction.GAUSSY
+    instruction: NFLayoutBehavior.GAUSSY
   },
   figure: {
     code: ['figure', 'fig', 'graph', 'chart', 'f'],
     display: "Figure Placeholder",
     priority: 2,
     type: NFLayoutType.INSTRUCTION,
-    instruction: NFLayoutInstruction.FIGURE
+    instruction: NFLayoutBehavior.FIGURE
   },
   table: {
     code: ['table', 'tab', 't'],
     display: "Table Placeholder",
     priority: 2,
     type: NFLayoutType.INSTRUCTION,
-    instruction: NFLayoutInstruction.TABLE
+    instruction: NFLayoutBehavior.TABLE
   }
 };

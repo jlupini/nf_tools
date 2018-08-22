@@ -41,13 +41,26 @@ NFProject =
   ###*
   Returns the MainComp
   @memberof NFProject
-  @returns {CompItem} the MainComp
+  @returns {NFComp} the MainComp
   ###
   mainComp: ->
     foundItems = NFProject.searchItems "MainComp"
     mainComp = foundItems[0]
     throw new Error "Cannot find MainComp! Did you change the name?" unless mainComp?
-    return mainComp
+    return new NFComp mainComp
+
+  ###*
+  Returns an array of all part comps in the project
+  @memberof NFProject
+  @returns {NFPartComp[]} An array of part comps
+  ###
+  allPartComps: ->
+    folder = NFProject.findItem "Parts"
+    items = NFProject.searchItems("Part", folder)
+    parts = []
+    for item in items
+      parts.push new NFPartComp item
+    return parts
 
   ###*
   Returns the Active Comp
@@ -131,112 +144,65 @@ NFProject =
   @returns {null} nothin'
   ###
   importScript: ->
-    scriptFile = "script.txt"
-    instructionFile = "instructions.csv"
+    alert "About to import and combine the script and instructions.\nThis can
+           take a few minutes, so check 'log.txt' to stay updated as it runs."
 
-    # Test both files
-    throw new Error "Cannot read #{scriptFile}" unless NFTools.testProjectFile scriptFile
-    throw new Error "Cannot read #{instructionFile}" unless NFTools.testProjectFile instructionFile
+    lineWrap = "...\n"
 
-    # Let's import the script first, and break it into lines
-    scriptString = NFTools.readProjectFile scriptFile
-    testChar = "\xA9" # The copyright symbol
-    dirtyScriptArray = scriptString.split(testChar)
-    scriptLines = []
-    # Clean empty elements and Trim newlines
-    for element in dirtyScriptArray
-      #scriptArray.push element.trim()
-      if element isnt ""
-        trimmed = element.trim()
-        splitElement = trimmed.split(/\[(.*?)\]/g)
-        lineObj =
-          instruction: splitElement[1].trim().slice(1, -1)
-          text: splitElement[2]?.trim() or ""
-        scriptLines.push lineObj
+    shouldUseCache = no
+    if app.tmp?.parsedLines?
+      shouldUseCache = confirm "Cached script/instruction data found. Use the
+                                cached data? Select NO if you've changed the
+                                script.txt or instructions.csv files since
+                                the last import.", false, "Cached Data"
+    parsedLines = if shouldUseCache then app.tmp.parsedLines else NFTools.readAndCombineScriptAndInstructions()
+    app.tmp =
+      parsedLines: parsedLines
 
-    # Now let's import the instructions with timecodes
-    instructionString = NFTools.readProjectFile instructionFile
-    instructionArray = instructionString.splitCSV()
+    # Add the line and instruction markers to part comps
+    allParts = NFProject.allPartComps()
+    for part in allParts
 
-    # Match up lines with ranges of words from the instruction array
-    testLineIdx = 0
-    testLine = ""
-    rangeString = ""
-    startIdx = 0
-    endIdx = 0
-    growCount = 0
-    growThreshold = 3
-    simValues = []
-    parsedLines = []
-    i = 1
-    # FIXME: Deal with the possibility of the first testLine being empty texted
-    NFTools.log "Comparing lines...", "Importer"
-    while testLineIdx isnt scriptLines.length
-      # If we're on the last line, save some time by just grabbing whatever's left
-      if testLineIdx is scriptLines.length - 1
-        assumedLineTimecodes = instructionArray.slice i
-        assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("")
-        NFTools.log "Last line - grabbing whatever's left: '#{assumedSentence}'", "Importer"
-        parsedLines.push
-          instruction: testLine.instruction
-          text: testLine.text
-          timecodes: assumedLineTimecodes
-        break
+      lineLayer = part.addSolid
+        color: [0,1,0.2]
+        name: "Lines"
+      lineLayer.moveBefore part.allLayers().getBottommostLayer()
 
-      # Grab the testLine
-      if testLine.text isnt scriptLines[testLineIdx].text
-        testLine = scriptLines[testLineIdx]
-        NFTools.log "Test Line:   '#{testLine.text}'", "Importer"
+      instructionLayer = part.addSolid
+        color: [0,0.8, 0.4]
+        name: "Instructions"
+      instructionLayer.moveBefore lineLayer
 
-      # We start at 1 because the first line is headers.
-      tc = instructionArray[i][0]
-      word = instructionArray[i][1].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
+      lineLayer.layer.guideLayer = instructionLayer.layer.guideLayer = yes
+      lineLayer.layer.enabled = instructionLayer.layer.enabled = no
 
-      # Adjust the indecies and add to the rangeString (stripped of whitespace in lowercase) ^
-      if rangeString is ""
-        startIdx = i
-        rangeString = word
-      else
-        rangeString += " #{word}"
+      for line in parsedLines
+        lineText = if line.text.length > 15 then line.text.insertAt(15, lineWrap) else line.text
+        lineInstruction = if line.instruction.length > 15 then line.instruction.insertAt(15, lineWrap) else line.instruction
 
-      # Check the similarity value
-      simValues[i] = NFTools.similarity rangeString, testLine.text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
-      # Increment the growCount if the sim value is growing
-      if simValues[i] > simValues[i-1] then growCount++ else growCount = 0
+        lineLayer.addMarker
+          time: line.timecodes[0][0]
+          comment: lineText
+        instructionLayer.addMarker
+          time: line.timecodes[0][0]
+          comment: lineInstruction
 
-      # If the growCount has reached the threshold, assume that we're now
-      # getting further away from the right range.
-      if growCount >= growThreshold
-        # First, stuff the simValues with '1' so we can perform basic math on it *facepalm*
-        simValues = simValues.stuff 1
-        # Get the index of the smallest value we hit
-        endIdx = simValues.indexOf Math.min.apply(Math, simValues)
-        # Make a new array of the range for what we think is this line
-        assumedLineTimecodes = instructionArray.slice startIdx, endIdx + 1
-        assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("")
-        NFTools.log "Best result: '#{assumedSentence}'", "Importer"
-        parsedLines.push
-          instruction: testLine.instruction
-          text: testLine.text
-          timecodes: assumedLineTimecodes
+    parsedInstructions = NFTools.parseInstructions parsedLines
 
-        # Reset the rangeString and simValues
-        simValues = []
-        rangeString = ""
-        growCount = 0
-        # Move the iterator back to the last word we grabbed (because it's about to increment anyway)
-        i = endIdx
-        # Grab the next testLine
-        testLineIdx++
-        NFTools.log "MOVING ON...", "Importer"
+    shouldValidate = confirm "Import complete! Would you like to validate before
+                              beginning layout?", false, 'Validation'
 
-      i++
-
-    NFTools.log "Done Importing!", "Importer"
-    $.bp()
-
+    validationResult = NFProject.validateInstructions parsedInstructions
 
     return null
+
+  ###*
+  Checks the instructions against the project to make sure there aren't any
+  missing highlights/expands, etc.
+  @memberof NFProject
+  ###
+  validateInstructions: (instructions) ->
+    @
 
   ###*
   Follow an instruction string (ie. "41g")
@@ -339,11 +305,11 @@ NFProject =
 
       when NFLayoutType.INSTRUCTION
         switch instruction.instruction
-          when NFLayoutInstruction.SHOW_TITLE
+          when NFLayoutBehavior.SHOW_TITLE
             NFTools.log "Following Instruction: #{instruction.display}", "Parser"
             mainComp.animateTo
               page: targetPDF.getTitlePage()
-          when NFLayoutInstruction.ICON_SEQUENCE, NFLayoutInstruction.GAUSSY, NFLayoutInstruction.FIGURE, NFLayoutInstruction.TABLE
+          when NFLayoutBehavior.ICON_SEQUENCE, NFLayoutBehavior.GAUSSY, NFLayoutBehavior.FIGURE, NFLayoutBehavior.TABLE
             NFTools.log "Following Instruction: #{instruction.display}", "Parser"
             mainComp.addGaussy
               placeholder: instruction.display

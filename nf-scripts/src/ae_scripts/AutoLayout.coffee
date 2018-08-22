@@ -1,19 +1,11 @@
-d = new Date()
-n = d.getTime()
-$.write "\n\nSTARTING\n----------------\nInitializing Libraries!\n"
 `#include "runtimeLibraries.jsx"`
-$.write "Setting up Script: +#{NFTools.now()-n}ms\n"
 
 NF = app.NF
-_ =
-	mainComp: NFProject.activeComp()
-	undoGroupName: 'AutoLayout'
-
-app.beginUndoGroup _.undoGroupName
+app.beginUndoGroup 'AutoLayout'
 
 main = ->
+	NFTools.clearLog()
 	NFTools.log "Asking for input"
-	comp = _.mainComp
 
 	NFProject.importScript()
 

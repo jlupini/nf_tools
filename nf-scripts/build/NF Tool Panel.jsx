@@ -43,7 +43,7 @@ toolRegistry = {
           if (app.availableGPUAccelTypes.indexOf(GpuAccelType.SOFTWARE >= 0)) {
             app.project.gpuAccelType = GpuAccelType.SOFTWARE;
           }
-          mainComp = NFProject.mainComp();
+          mainComp = NFProject.mainComp().comp;
           mainComp.motionBlur = true;
           return mainComp.resolutionFactor = [1, 1];
         }
@@ -57,7 +57,7 @@ toolRegistry = {
           } else if (app.availableGPUAccelTypes.indexOf(GpuAccelType.CUDA >= 0)) {
             app.project.gpuAccelType = GpuAccelType.CUDA;
           }
-          mainComp = NFProject.mainComp();
+          mainComp = NFProject.mainComp().comp;
           mainComp.motionBlur = true;
           return mainComp.resolutionFactor = [1, 1];
         }
@@ -71,7 +71,7 @@ toolRegistry = {
           } else if (app.availableGPUAccelTypes.indexOf(GpuAccelType.CUDA >= 0)) {
             app.project.gpuAccelType = GpuAccelType.CUDA;
           }
-          mainComp = NFProject.mainComp();
+          mainComp = NFProject.mainComp().comp;
           mainComp.motionBlur = false;
           return mainComp.resolutionFactor = [2, 2];
         }

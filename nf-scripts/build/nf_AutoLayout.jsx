@@ -1,28 +1,13 @@
-var NF, _, d, main, n;
-
-d = new Date();
-
-n = d.getTime();
-
-$.write("\n\nSTARTING\n----------------\nInitializing Libraries!\n");
-
 #include "runtimeLibraries.jsx";
-
-$.write("Setting up Script: +" + (NFTools.now() - n) + "ms\n");
+var NF, main;
 
 NF = app.NF;
 
-_ = {
-  mainComp: NFProject.activeComp(),
-  undoGroupName: 'AutoLayout'
-};
-
-app.beginUndoGroup(_.undoGroupName);
+app.beginUndoGroup('AutoLayout');
 
 main = function() {
-  var comp;
+  NFTools.clearLog();
   NFTools.log("Asking for input");
-  comp = _.mainComp;
   NFProject.importScript();
   NFTools.log("Done following instruction");
   NFTools.breakLog();

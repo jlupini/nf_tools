@@ -8,6 +8,18 @@ NFTools =
   logging: yes
 
   ###*
+  Returns if a given object is empty
+  @memberof NFTools
+  @param {object} obj - the object to test
+  @returns {boolean} the result
+  ###
+  isEmpty: (obj) ->
+    for prop of obj
+      if obj.hasOwnProperty(prop)
+        return false
+    return JSON.stringify(obj) == JSON.stringify({})
+
+  ###*
   Returns the current time (of world, not comp)
   @memberof NFTools
   @returns {time} the time
@@ -238,6 +250,17 @@ NFTools =
     null
 
   ###*
+  Adds a line break to the log
+  @memberof NFTools
+  @returns {null} null
+  ###
+  logLine: ->
+    return null unless NFTools.logging
+    NFTools.editFile "../log.txt", (fileText) =>
+      return fileText + "\r\n"
+    null
+
+  ###*
   Adds a section break to log.txt
   @memberof NFTools
   @returns {null} null
@@ -257,6 +280,257 @@ NFTools =
     return null unless NFTools.logging
     NFTools.clearFile "../log.txt"
     null
+
+  ###*
+  Parse each instruction in the parsedLines object and return an array of
+  parsed instruction objects. Properties on each object are: `raw`, `pdf`,
+  `flags`, `instruction`, `time`, `line`, and `assumptions`.
+  @memberof NFProject
+  @param {Object[]} parsedLines - the parsedLines object to parse
+  @returns {Object[]} the instruction object array
+  ###
+  parseInstructions: (parsedLines) ->
+    parsedInstructions = []
+    lastHighlight = null
+    lastPDF = null
+    for line in parsedLines
+
+      # Build the object
+      parsed = NFTools.parseInstructionString line.instruction
+      parsed.time = line.timecodes[0][0]
+      parsed.line = line.text
+      parsed.assumptions = []
+
+      # Add missing highlights or PDFs
+      if parsed.flags.expand? and parsed.instruction.instruction is NFLayoutBehavior.UNRECOGNIZED
+        # Add the last highlight, and an assumption marker
+        if lastHighlight?
+          parsed.instruction = lastHighlight
+          parsed.assumptions.push 'highlight'
+      if not parsed.pdf? and parsed.instruction.instruction isnt NFLayoutBehavior.UNRECOGNIZED
+        # Adds the last PDF, and an assumption marker
+        if lastPDF?
+          parsed.pdf = lastPDF
+          parsed.assumptions.push 'pdf'
+
+      lastPDF = parsed.pdf if parsed.pdf
+      lastHighlight = parsed.instruction if parsed.instruction.type is NFLayoutType.HIGHLIGHT
+
+      parsedInstructions.push parsed
+
+    # Log that shit
+    NFTools.log "Finished parsing instructions. Result:", "parseInstructions"
+    for parsed in parsedInstructions
+      pad = (str, len) ->
+        if str.length < len
+          return str + new Array(len - str.length).join(" ")
+        else return str
+      logString = "At #{pad parsed.time, 6} "
+      if parsed.pdf?
+        logString += "in PDF #{pad parsed.pdf, 4} "
+      else
+        logString += "           "
+      logString += "instruction    #{pad parsed.instruction.display, 20} "
+      unless NFTools.isEmpty parsed.flags
+        logString += "with flags: "
+      for key of parsed.flags
+        logString += "'#{parsed.flags[key].display}', "
+      logString += "from raw input '#{parsed.raw}'"
+      NFTools.log logString, "parseInstructions"
+    NFTools.logLine()
+
+    parsedInstructions
+
+
+  ###*
+  Parse an instruction string (ie. "41g"). The basic methodology here is to
+  remove each peice one by one as they're recognized and see what's left at the
+  end.
+  @memberof NFProject
+  @param {string} input - the input to parse
+  @returns {Object} the instruction object with keys 'raw', 'pdf', 'flags', 'instruction'
+  ###
+  parseInstructionString: (input) ->
+
+    NFTools.log "Parsing instruction: '#{input}'", "parseInstructionString"
+    # Get a PDF Number from the input, if any
+    targetPDFNumber = /(^\d+)/i.exec(input)
+    targetPDFNumber = targetPDFNumber[1] if targetPDFNumber?
+    if targetPDFNumber?
+      instructionString = input.slice(targetPDFNumber.length)
+      NFTools.log "Target PDF Number found: '#{targetPDFNumber}'", "parseInstructionString"
+    else
+      instructionString = input
+
+    flags = {}
+    # Look for any flags and remove them for later
+    for key of NFLayoutFlagDict
+      flagOption = NFLayoutFlagDict[key]
+      for code in flagOption.code
+        if instructionString.indexOf(code) >= 0
+          flags[key] = flagOption
+          instructionString = instructionString.replace(code, "").trim()
+          NFTools.log "Flag found: '#{flagOption.display}'", "parseInstructionString"
+
+
+    if instructionString isnt ""
+      # Look for an instruction
+      instruction = null
+      NFTools.log "Instruction string remaining: '#{instructionString}'", "parseInstructionString"
+      for key of NFLayoutInstructionDict
+        option = NFLayoutInstructionDict[key]
+        for code in option.code
+          if instructionString is code
+            if instruction?
+              # If there's already an instruction found found, get the highest priority one
+              if option.priority? and instruction.priority? and option.priority < instruction.priority
+                instruction = option
+              else if (option.priority? and instruction.priority?) or (not option.priority? and not instruction.priority?)
+                throw new Error "instruction matched two instruction options (#{instruction.display} and #{option.display}) with the same priority. Fix layoutDictionary."
+              else if option.priority?
+                instruction = option
+            else
+              instruction = option
+
+      if instruction?
+        NFTools.log "Instruction found: '#{instruction.display}'", "parseInstructionString"
+
+    unless instruction?
+      NFTools.log "No Instruction found.", "parseInstructionString"
+      instruction = NFLayoutInstructionNotFound
+
+      NFTools.logLine()
+
+    # OK, now we have three key pieces of information: the instruction, flags, the PDF
+    # Put together the object we're returning
+    parsedObject =
+      raw: input
+      pdf: targetPDFNumber
+      flags: flags
+      instruction: instruction or {}
+
+  ###*
+  Imports the script (script.txt) and the instructions (instructions.csv) files.
+  Compares the two of them to combine.
+  @memberof NFTools
+  @returns {Object[]} an Array of line objects with 'instruction', 'text', and
+  'timecodes' keys
+  ###
+  readAndCombineScriptAndInstructions: ->
+
+    # Removes punctuation, line breaks, and converts to lower case
+    cleanLine = (line) ->
+      cleaned = line.toLowerCase()
+      cleaned = cleaned.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ")
+      removeLineBreaks cleaned
+
+    removeLineBreaks = (line) ->
+      return line.replace(/(\r\n\t|\n|\r\t)/gm," ")
+
+    scriptFile = "script.txt"
+    instructionFile = "instructions.csv"
+
+    # Test both files
+    throw new Error "Cannot read #{scriptFile}" unless NFTools.testProjectFile scriptFile
+    throw new Error "Cannot read #{instructionFile}" unless NFTools.testProjectFile instructionFile
+
+    # Let's import the script first, and break it into lines
+    scriptString = NFTools.readProjectFile scriptFile
+    testChar = "\xA9" # The copyright symbol
+    dirtyScriptArray = scriptString.split(testChar)
+    scriptLines = []
+    # Clean empty elements and Trim newlines
+    for element in dirtyScriptArray
+      #scriptArray.push element.trim()
+      if element isnt ""
+        trimmed = element.trim()
+        splitElement = trimmed.split(/\[(.*?)\]/g)
+        lineObj =
+          instruction: splitElement[1].trim().slice(1, -1)
+          text: splitElement[2]?.trim() or ""
+        scriptLines.push lineObj
+
+    # Now let's import the instructions with timecodes
+    instructionString = NFTools.readProjectFile instructionFile
+    instructionArray = instructionString.splitCSV()
+
+    # Match up lines with ranges of words from the instruction array
+    testLineIdx = 0
+    testLine = ""
+    rangeString = ""
+    startIdx = 0
+    endIdx = 0
+    growCount = 0
+    growThreshold = 3
+    simValues = []
+    parsedLines = []
+    i = 1
+    # FIXME: Deal with the possibility of the first testLine being empty texted
+    NFTools.log "Comparing lines...", "Importer"
+    while testLineIdx isnt scriptLines.length
+      # If we're on the last line, save some time by just grabbing whatever's left
+      if testLineIdx is scriptLines.length - 1
+        assumedLineTimecodes = instructionArray.slice i
+        assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
+        NFTools.log "Last line - grabbing whatever's left: '#{cleanLine assumedSentence}'", "Importer"
+        parsedLines.push
+          instruction: testLine.instruction
+          text: removeLineBreaks testLine.text
+          timecodes: assumedLineTimecodes
+        break
+
+      # Grab the testLine
+      if testLine.text isnt scriptLines[testLineIdx].text
+        testLine = scriptLines[testLineIdx]
+        testLineText = cleanLine testLine.text
+        NFTools.log "Test Line:   '#{testLineText}'", "Importer"
+
+      # We start at 1 because the first line is headers.
+      tc = instructionArray[i][0]
+      word = instructionArray[i][1]
+
+      # Adjust the indecies and add to the rangeString (stripped of whitespace in lowercase) ^
+      if rangeString is ""
+        startIdx = i
+        rangeString = word
+      else
+        rangeString += " #{word}"
+      rangeString = cleanLine rangeString
+
+      # Check the similarity value
+      simValues[i] = NFTools.similarity rangeString, testLineText
+      # Increment the growCount if the sim value is growing
+      if simValues[i] > simValues[i-1] then growCount++ else growCount = 0
+
+      # If the growCount has reached the threshold, assume that we're now
+      # getting further away from the right range.
+      if growCount >= growThreshold
+        # First, stuff the simValues with '1' so we can perform basic math on it *facepalm*
+        simValues = simValues.stuff 1
+        # Get the index of the smallest value we hit
+        endIdx = simValues.indexOf Math.min.apply(Math, simValues)
+        # Make a new array of the range for what we think is this line
+        assumedLineTimecodes = instructionArray.slice startIdx, endIdx + 1
+        assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
+        NFTools.log "Best result: '#{cleanLine assumedSentence}'", "Importer"
+        parsedLines.push
+          instruction: testLine.instruction
+          text: removeLineBreaks testLine.text
+          timecodes: assumedLineTimecodes
+
+        # Reset the rangeString and simValues
+        simValues = []
+        rangeString = ""
+        growCount = 0
+        # Move the iterator back to the last word we grabbed (because it's about to increment anyway)
+        i = endIdx
+        # Grab the next testLine
+        testLineIdx++
+      i++
+
+    NFTools.log "Done Importing!", "Importer"
+    NFTools.logLine()
+    return parsedLines
 
   ###*
   Returns the similarity value of two strings, relative to their length.

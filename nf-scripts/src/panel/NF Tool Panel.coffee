@@ -37,7 +37,7 @@ toolRegistry =
             app.project.gpuAccelType = GpuAccelType.SOFTWARE
 
           # Set Motion Blur on/resolution full
-          mainComp = NFProject.mainComp()
+          mainComp = NFProject.mainComp().comp
           mainComp.motionBlur = on
           mainComp.resolutionFactor = [1,1]
 
@@ -51,7 +51,7 @@ toolRegistry =
             app.project.gpuAccelType = GpuAccelType.CUDA
 
           # Set Motion Blur on/resolution full
-          mainComp = NFProject.mainComp()
+          mainComp = NFProject.mainComp().comp
           mainComp.motionBlur = on
           mainComp.resolutionFactor = [1,1]
 
@@ -65,7 +65,7 @@ toolRegistry =
             app.project.gpuAccelType = GpuAccelType.CUDA
 
           # Set Motion Blur off/resolution half
-          mainComp = NFProject.mainComp()
+          mainComp = NFProject.mainComp().comp
           mainComp.motionBlur = off
           mainComp.resolutionFactor = [2,2]
 

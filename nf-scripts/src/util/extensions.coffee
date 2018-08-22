@@ -82,6 +82,17 @@ String::splitCSV = (sep) ->
   fullArr
 
 ###*
+Inserts a string at an index in the string
+@function insertAt
+@memberof String
+@param {int} index
+@param {String} string - the string to insert
+@returns {String} self
+###
+String::insertAt = (index, string) ->
+  @substr(0, index) + string + @substr(index)
+
+###*
 The After Effects LayerCollection Class
 @namespace LayerCollection
 ###

@@ -252,7 +252,7 @@ class NFComp extends NFObject
     else if model.at?
       tooManyIndices = yes if model.above? or model.below?
       index = model.at
-    throw new Error "Can only provide one of .above, .below, or .at when inserting page" if tooManyIndices
+    throw new Error "Can only provide one of .above, .below, or .at when inserting text layer" if tooManyIndices
 
 
     textAVLayer = @comp.layers.addText new TextDocument model.text
@@ -341,7 +341,7 @@ NFComp = Object.assign NFComp,
     try
       return new NFPartComp comp
 
-    return new NFComp
+    return new NFComp comp
 
   TOP: 100
   LEFT: 200

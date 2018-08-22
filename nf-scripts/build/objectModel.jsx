@@ -423,7 +423,7 @@ NFComp = (function(superClass) {
       index = model.at;
     }
     if (tooManyIndices) {
-      throw new Error("Can only provide one of .above, .below, or .at when inserting page");
+      throw new Error("Can only provide one of .above, .below, or .at when inserting text layer");
     }
     textAVLayer = this.comp.layers.addText(new TextDocument(model.text));
     textDocProp = textAVLayer.property("ADBE Text Properties").property("ADBE Text Document");
@@ -528,7 +528,7 @@ NFComp = Object.assign(NFComp, {
     try {
       return new NFPartComp(comp);
     } catch (undefined) {}
-    return new NFComp;
+    return new NFComp(comp);
   },
   TOP: 100,
   LEFT: 200,

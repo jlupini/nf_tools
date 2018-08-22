@@ -52,7 +52,7 @@ NFProject = {
   /**
   Returns the MainComp
   @memberof NFProject
-  @returns {CompItem} the MainComp
+  @returns {NFComp} the MainComp
    */
   mainComp: function() {
     var foundItems, mainComp;
@@ -61,7 +61,24 @@ NFProject = {
     if (mainComp == null) {
       throw new Error("Cannot find MainComp! Did you change the name?");
     }
-    return mainComp;
+    return new NFComp(mainComp);
+  },
+
+  /**
+  Returns an array of all part comps in the project
+  @memberof NFProject
+  @returns {NFPartComp[]} An array of part comps
+   */
+  allPartComps: function() {
+    var folder, item, items, j, len, parts;
+    folder = NFProject.findItem("Parts");
+    items = NFProject.searchItems("Part", folder);
+    parts = [];
+    for (j = 0, len = items.length; j < len; j++) {
+      item = items[j];
+      parts.push(new NFPartComp(item));
+    }
+    return parts;
   },
 
   /**
@@ -164,113 +181,59 @@ NFProject = {
   @returns {null} nothin'
    */
   importScript: function() {
-    var assumedLineTimecodes, assumedSentence, dirtyScriptArray, element, endIdx, growCount, growThreshold, i, instructionArray, instructionFile, instructionString, j, len, lineObj, parsedLines, rangeString, ref, scriptFile, scriptLines, scriptString, simValues, splitElement, startIdx, tc, testChar, testLine, testLineIdx, theWord, trimmed, word;
-    scriptFile = "script.txt";
-    instructionFile = "instructions.csv";
-    if (!NFTools.testProjectFile(scriptFile)) {
-      throw new Error("Cannot read " + scriptFile);
+    var allParts, instructionLayer, j, k, len, len1, line, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldUseCache, shouldValidate, validationResult;
+    alert("About to import and combine the script and instructions.\nThis can take a few minutes, so check 'log.txt' to stay updated as it runs.");
+    lineWrap = "...\n";
+    shouldUseCache = false;
+    if (((ref = app.tmp) != null ? ref.parsedLines : void 0) != null) {
+      shouldUseCache = confirm("Cached script/instruction data found. Use the cached data? Select NO if you've changed the script.txt or instructions.csv files since the last import.", false, "Cached Data");
     }
-    if (!NFTools.testProjectFile(instructionFile)) {
-      throw new Error("Cannot read " + instructionFile);
-    }
-    scriptString = NFTools.readProjectFile(scriptFile);
-    testChar = "\xA9";
-    dirtyScriptArray = scriptString.split(testChar);
-    scriptLines = [];
-    for (j = 0, len = dirtyScriptArray.length; j < len; j++) {
-      element = dirtyScriptArray[j];
-      if (element !== "") {
-        trimmed = element.trim();
-        splitElement = trimmed.split(/\[(.*?)\]/g);
-        lineObj = {
-          instruction: splitElement[1].trim().slice(1, -1),
-          text: ((ref = splitElement[2]) != null ? ref.trim() : void 0) || ""
-        };
-        scriptLines.push(lineObj);
-      }
-    }
-    instructionString = NFTools.readProjectFile(instructionFile);
-    instructionArray = instructionString.splitCSV();
-    testLineIdx = 0;
-    testLine = "";
-    rangeString = "";
-    startIdx = 0;
-    endIdx = 0;
-    growCount = 0;
-    growThreshold = 3;
-    simValues = [];
-    parsedLines = [];
-    i = 1;
-    NFTools.log("Comparing lines...", "Importer");
-    while (testLineIdx !== scriptLines.length) {
-      if (testLineIdx === scriptLines.length - 1) {
-        assumedLineTimecodes = instructionArray.slice(i);
-        assumedSentence = ((function() {
-          var k, len1, results;
-          results = [];
-          for (k = 0, len1 = assumedLineTimecodes.length; k < len1; k++) {
-            theWord = assumedLineTimecodes[k];
-            results.push(theWord[1] + " ");
-          }
-          return results;
-        })()).join("");
-        NFTools.log("Last line - grabbing whatever's left: '" + assumedSentence + "'", "Importer");
-        parsedLines.push({
-          instruction: testLine.instruction,
-          text: testLine.text,
-          timecodes: assumedLineTimecodes
+    parsedLines = shouldUseCache ? app.tmp.parsedLines : NFTools.readAndCombineScriptAndInstructions();
+    app.tmp = {
+      parsedLines: parsedLines
+    };
+    allParts = NFProject.allPartComps();
+    for (j = 0, len = allParts.length; j < len; j++) {
+      part = allParts[j];
+      lineLayer = part.addSolid({
+        color: [0, 1, 0.2],
+        name: "Lines"
+      });
+      lineLayer.moveBefore(part.allLayers().getBottommostLayer());
+      instructionLayer = part.addSolid({
+        color: [0, 0.8, 0.4],
+        name: "Instructions"
+      });
+      instructionLayer.moveBefore(lineLayer);
+      lineLayer.layer.guideLayer = instructionLayer.layer.guideLayer = true;
+      lineLayer.layer.enabled = instructionLayer.layer.enabled = false;
+      for (k = 0, len1 = parsedLines.length; k < len1; k++) {
+        line = parsedLines[k];
+        lineText = line.text.length > 15 ? line.text.insertAt(15, lineWrap) : line.text;
+        lineInstruction = line.instruction.length > 15 ? line.instruction.insertAt(15, lineWrap) : line.instruction;
+        lineLayer.addMarker({
+          time: line.timecodes[0][0],
+          comment: lineText
         });
-        break;
-      }
-      if (testLine.text !== scriptLines[testLineIdx].text) {
-        testLine = scriptLines[testLineIdx];
-        NFTools.log("Test Line:   '" + testLine.text + "'", "Importer");
-      }
-      tc = instructionArray[i][0];
-      word = instructionArray[i][1].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").toLowerCase();
-      if (rangeString === "") {
-        startIdx = i;
-        rangeString = word;
-      } else {
-        rangeString += " " + word;
-      }
-      simValues[i] = NFTools.similarity(rangeString, testLine.text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").toLowerCase());
-      if (simValues[i] > simValues[i - 1]) {
-        growCount++;
-      } else {
-        growCount = 0;
-      }
-      if (growCount >= growThreshold) {
-        simValues = simValues.stuff(1);
-        endIdx = simValues.indexOf(Math.min.apply(Math, simValues));
-        assumedLineTimecodes = instructionArray.slice(startIdx, endIdx + 1);
-        assumedSentence = ((function() {
-          var k, len1, results;
-          results = [];
-          for (k = 0, len1 = assumedLineTimecodes.length; k < len1; k++) {
-            theWord = assumedLineTimecodes[k];
-            results.push(theWord[1] + " ");
-          }
-          return results;
-        })()).join("");
-        NFTools.log("Best result: '" + assumedSentence + "'", "Importer");
-        parsedLines.push({
-          instruction: testLine.instruction,
-          text: testLine.text,
-          timecodes: assumedLineTimecodes
+        instructionLayer.addMarker({
+          time: line.timecodes[0][0],
+          comment: lineInstruction
         });
-        simValues = [];
-        rangeString = "";
-        growCount = 0;
-        i = endIdx;
-        testLineIdx++;
-        NFTools.log("MOVING ON...", "Importer");
       }
-      i++;
     }
-    NFTools.log("Done Importing!", "Importer");
-    $.bp();
+    parsedInstructions = NFTools.parseInstructions(parsedLines);
+    shouldValidate = confirm("Import complete! Would you like to validate before beginning layout?", false, 'Validation');
+    validationResult = NFProject.validateInstructions(parsedInstructions);
     return null;
+  },
+
+  /**
+  Checks the instructions against the project to make sure there aren't any
+  missing highlights/expands, etc.
+  @memberof NFProject
+   */
+  validateInstructions: function(instructions) {
+    return this;
   },
 
   /**
@@ -376,16 +339,16 @@ NFProject = {
           break;
         case NFLayoutType.INSTRUCTION:
           switch (instruction.instruction) {
-            case NFLayoutInstruction.SHOW_TITLE:
+            case NFLayoutBehavior.SHOW_TITLE:
               NFTools.log("Following Instruction: " + instruction.display, "Parser");
               mainComp.animateTo({
                 page: targetPDF.getTitlePage()
               });
               break;
-            case NFLayoutInstruction.ICON_SEQUENCE:
-            case NFLayoutInstruction.GAUSSY:
-            case NFLayoutInstruction.FIGURE:
-            case NFLayoutInstruction.TABLE:
+            case NFLayoutBehavior.ICON_SEQUENCE:
+            case NFLayoutBehavior.GAUSSY:
+            case NFLayoutBehavior.FIGURE:
+            case NFLayoutBehavior.TABLE:
               NFTools.log("Following Instruction: " + instruction.display, "Parser");
               mainComp.addGaussy({
                 placeholder: instruction.display
