@@ -85,7 +85,7 @@ presentUI = ->
 			highlightCheckboxes[highlight.getName()] = highlightPanel.add "checkbox {text: '#{displayName}'}"
 			highlightCheckboxes[highlight.getName()].value = not highlight.isBubbled()
 			# Disable the checkbox if it's already bubbled up to the given layer
-			highlightCheckboxes[highlight.getName()].enabled = not highlightAlreadyConnectedToThisLayer
+			# highlightCheckboxes[highlight.getName()].enabled = not highlightAlreadyConnectedToThisLayer
 
 		buttonGroup = initTab.add('group', undefined)
 		okButton = buttonGroup.add('button', undefined, 'Continue')

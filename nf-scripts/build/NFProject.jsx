@@ -187,7 +187,15 @@ NFProject = {
     if (((ref = app.tmp) != null ? ref.parsedLines : void 0) != null) {
       shouldUseCache = confirm("Cached script/instruction data found. Use the cached data? Select NO if you've changed the script.txt or instructions.csv files since the last import.", false, "Cached Data");
     }
-    parsedLines = shouldUseCache ? app.tmp.parsedLines : NFTools.readAndCombineScriptAndInstructions();
+    if (shouldUseCache) {
+      NFTools.log("Loading cached script/instructions...", "importScript");
+      NFTools.logLine();
+      parsedLines = app.tmp.parsedLines;
+    } else {
+      NFTools.log("Importing from files...", "importScript");
+      NFTools.logLine();
+      parsedLines = NFTools.readAndCombineScriptAndInstructions();
+    }
     app.tmp = {
       parsedLines: parsedLines
     };
@@ -248,7 +256,7 @@ NFProject = {
   @returns {String} A message to display to the user
    */
   autoLayout: function(layoutInstructions) {
-    var allParts, existingPages, j, len, part;
+    var activePDF, activePDFNumber, allParts, alreadyOnTargetPaper, existingPages, j, k, lastPart, layoutInstruction, len, len1, part, targetPDF, thisPart;
     allParts = NFProject.allPartComps();
     existingPages = false;
     for (j = 0, len = allParts.length; j < len; j++) {
@@ -264,7 +272,53 @@ NFProject = {
     if (existingPages) {
       return "Aborting AutoLayout!\nIt looks like there are already pages in one or more part comps. Clean up and try again.";
     }
+    NFTools.log("Beginning layout!", "autoLayout");
+    lastPart = null;
+    for (k = 0, len1 = layoutInstructions.length; k < len1; k++) {
+      layoutInstruction = layoutInstructions[k];
+      thisPart = NFProject.partForTime(layoutInstruction.time);
+      if ((lastPart != null) && !thisPart.is(lastPart)) {
+        NFTools.log("New part - Trimming previous one.", "autoLayout");
+        thisPart.trimTo(layoutInstruction.time + 10);
+      }
+      NFTools.log("Laying out instruction [" + layoutInstruction.raw + "] in " + (thisPart.getName()), "autoLayout");
+      activePDF = thisPart.activePDF();
+      activePDFNumber = activePDF != null ? activePDF.getPDFNumber() : void 0;
+      alreadyOnTargetPaper = layoutInstruction.pdf != null ? activePDFNumber === layoutInstruction.pdf : true;
+      targetPDF = alreadyOnTargetPaper ? activePDF : NFPDF.fromPDFNumber(layoutInstruction.pdf);
+      lastPart = thisPart;
+    }
     return "AutoLayout Complete";
+  },
+
+  /**
+  Returns the part comp that contains a given time
+  @memberof NFProject
+  @param {float} time - the time to find the part for
+  @returns {NFPartComp} The matching NFPartComp
+   */
+  partForTime: function(time) {
+    var audioLayer, audioMarkers, i, j, mainComp, markerTime, matchingPart, partName, ref;
+    mainComp = NFProject.mainComp();
+    audioLayer = mainComp.audioLayers().getBottommostLayer();
+    audioMarkers = audioLayer.markers();
+    partName = "Part";
+    for (i = j = 1, ref = audioMarkers.numKeys; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+      markerTime = audioMarkers.keyTime(i);
+      if (time < markerTime) {
+        partName += i;
+        break;
+      }
+    }
+    matchingPart = null;
+    NFProject.allPartComps().forEach((function(_this) {
+      return function(partComp) {
+        if (partComp.getName() === partName) {
+          return matchingPart = partComp;
+        }
+      };
+    })(this));
+    return matchingPart;
   },
 
   /**

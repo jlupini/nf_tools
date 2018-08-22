@@ -336,6 +336,8 @@ NFTools = {
     var key, l, layoutInstruction, len1, len2, line, logString, o, pad, parsed, parsedInstructions, prevInstruction;
     parsedInstructions = [];
     prevInstruction = null;
+    NFTools.log("Parsing instructions...", "parseInstructions");
+    NFTools.logLine();
     for (l = 0, len1 = parsedLines.length; l < len1; l++) {
       line = parsedLines[l];
       layoutInstruction = NFTools.parseInstructionString(line.instruction);
@@ -390,7 +392,7 @@ NFTools = {
   @returns {NFLayoutInstruction} the instruction object
    */
   parseInstructionString: function(input) {
-    var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, o, option, parsedObject, ref, ref1, targetPDFNumber;
+    var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, o, option, parsedObject, ref, ref1, regexResult, targetPDFNumber;
     NFTools.log("Parsing instruction: '" + input + "'", "parseInstructionString");
     targetPDFNumber = /(^\d+)/i.exec(input);
     if (targetPDFNumber != null) {
@@ -437,6 +439,12 @@ NFTools = {
             }
           }
         }
+        if ((instruction == null) && (option.regex != null)) {
+          regexResult = option.regex.exec(instructionString);
+          if (regexResult != null) {
+            instruction = option;
+          }
+        }
       }
       if (instruction != null) {
         NFTools.log("Instruction found: '" + instruction.display + "'", "parseInstructionString");
@@ -444,7 +452,11 @@ NFTools = {
     }
     if (instruction == null) {
       NFTools.log("No Instruction found.", "parseInstructionString");
-      instruction = NFLayoutInstructionNotFound;
+      if (instructionString === "") {
+        instruction = NFLayoutInstructionNone;
+      } else {
+        instruction = NFLayoutInstructionNotFound;
+      }
       NFTools.logLine();
     }
     return parsedObject = new NFLayoutInstruction({
@@ -509,7 +521,7 @@ NFTools = {
     simValues = [];
     parsedLines = [];
     i = 1;
-    NFTools.log("Comparing lines...", "Importer");
+    NFTools.log("Comparing lines...", "readAndCombineScriptAndInstructions");
     while (testLineIdx !== scriptLines.length) {
       if (testLineIdx === scriptLines.length - 1) {
         assumedLineTimecodes = instructionArray.slice(i);
@@ -522,7 +534,7 @@ NFTools = {
           }
           return results;
         })()).join("").trim();
-        NFTools.log("Last line - grabbing whatever's left: '" + (cleanLine(assumedSentence)) + "'", "Importer");
+        NFTools.log("Last line - grabbing whatever's left: '" + (cleanLine(assumedSentence)) + "'", "readAndCombineScriptAndInstructions");
         parsedLines.push({
           instruction: testLine.instruction,
           text: removeLineBreaks(testLine.text),
@@ -533,7 +545,7 @@ NFTools = {
       if (testLine.text !== scriptLines[testLineIdx].text) {
         testLine = scriptLines[testLineIdx];
         testLineText = cleanLine(testLine.text);
-        NFTools.log("Test Line:   '" + testLineText + "'", "Importer");
+        NFTools.log("Test Line:   '" + testLineText + "'", "readAndCombineScriptAndInstructions");
       }
       tc = instructionArray[i][0];
       word = instructionArray[i][1];
@@ -563,7 +575,7 @@ NFTools = {
           }
           return results;
         })()).join("").trim();
-        NFTools.log("Best result: '" + (cleanLine(assumedSentence)) + "'", "Importer");
+        NFTools.log("Best result: '" + (cleanLine(assumedSentence)) + "'", "readAndCombineScriptAndInstructions");
         parsedLines.push({
           instruction: testLine.instruction,
           text: removeLineBreaks(testLine.text),
@@ -577,7 +589,7 @@ NFTools = {
       }
       i++;
     }
-    NFTools.log("Done Importing!", "Importer");
+    NFTools.log("Done Importing!", "readAndCombineScriptAndInstructions");
     NFTools.logLine();
     return parsedLines;
   },

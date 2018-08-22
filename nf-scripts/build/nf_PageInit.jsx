@@ -85,8 +85,7 @@ presentUI = function() {
           displayName += " (BROKEN)";
         }
         highlightCheckboxes[highlight.getName()] = highlightPanel.add("checkbox {text: '" + displayName + "'}");
-        highlightCheckboxes[highlight.getName()].value = !highlight.isBubbled();
-        return highlightCheckboxes[highlight.getName()].enabled = !highlightAlreadyConnectedToThisLayer;
+        return highlightCheckboxes[highlight.getName()].value = !highlight.isBubbled();
       };
     })(this));
     buttonGroup = initTab.add('group', void 0);

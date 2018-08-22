@@ -66,6 +66,17 @@ class NFComp extends NFObject
     return new NFLayerCollection @comp.layers
 
   ###*
+  Gets all the audio layers in this comp
+  @memberof NFComp
+  @returns {NFLayerCollection} collection of the audio layers in the comp
+  ###
+  audioLayers: ->
+    audioLayers = new NFLayerCollection
+    @allLayers().forEach (layer) =>
+      audioLayers.add layer if layer.layer.hasAudio and not layer.layer.hasVideo
+    return audioLayers
+
+  ###*
   Gets the selected pages in this comp
   @memberof NFComp
   @returns {NFPageLayerCollection} collection of the selected NFPageLayers in the comp

@@ -292,6 +292,8 @@ NFTools =
   parseInstructions: (parsedLines) ->
     parsedInstructions = []
     prevInstruction = null
+    NFTools.log "Parsing instructions...", "parseInstructions"
+    NFTools.logLine()
     for line in parsedLines
 
       # Build the object
@@ -378,13 +380,23 @@ NFTools =
                 instruction = option
             else
               instruction = option
+        if not instruction? and option.regex?
+          # Check for a regex if no instruction was found
+          regexResult = option.regex.exec instructionString
+          if regexResult?
+            instruction = option
+
+
 
       if instruction?
         NFTools.log "Instruction found: '#{instruction.display}'", "parseInstructionString"
 
     unless instruction?
       NFTools.log "No Instruction found.", "parseInstructionString"
-      instruction = NFLayoutInstructionNotFound
+      if instructionString is ""
+        instruction = NFLayoutInstructionNone
+      else
+        instruction = NFLayoutInstructionNotFound
 
       NFTools.logLine()
 
@@ -453,13 +465,13 @@ NFTools =
     parsedLines = []
     i = 1
     # FIXME: Deal with the possibility of the first testLine being empty texted
-    NFTools.log "Comparing lines...", "Importer"
+    NFTools.log "Comparing lines...", "readAndCombineScriptAndInstructions"
     while testLineIdx isnt scriptLines.length
       # If we're on the last line, save some time by just grabbing whatever's left
       if testLineIdx is scriptLines.length - 1
         assumedLineTimecodes = instructionArray.slice i
         assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
-        NFTools.log "Last line - grabbing whatever's left: '#{cleanLine assumedSentence}'", "Importer"
+        NFTools.log "Last line - grabbing whatever's left: '#{cleanLine assumedSentence}'", "readAndCombineScriptAndInstructions"
         parsedLines.push
           instruction: testLine.instruction
           text: removeLineBreaks testLine.text
@@ -470,7 +482,7 @@ NFTools =
       if testLine.text isnt scriptLines[testLineIdx].text
         testLine = scriptLines[testLineIdx]
         testLineText = cleanLine testLine.text
-        NFTools.log "Test Line:   '#{testLineText}'", "Importer"
+        NFTools.log "Test Line:   '#{testLineText}'", "readAndCombineScriptAndInstructions"
 
       # We start at 1 because the first line is headers.
       tc = instructionArray[i][0]
@@ -499,7 +511,7 @@ NFTools =
         # Make a new array of the range for what we think is this line
         assumedLineTimecodes = instructionArray.slice startIdx, endIdx + 1
         assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
-        NFTools.log "Best result: '#{cleanLine assumedSentence}'", "Importer"
+        NFTools.log "Best result: '#{cleanLine assumedSentence}'", "readAndCombineScriptAndInstructions"
         parsedLines.push
           instruction: testLine.instruction
           text: removeLineBreaks testLine.text
@@ -515,7 +527,7 @@ NFTools =
         testLineIdx++
       i++
 
-    NFTools.log "Done Importing!", "Importer"
+    NFTools.log "Done Importing!", "readAndCombineScriptAndInstructions"
     NFTools.logLine()
     return parsedLines
 

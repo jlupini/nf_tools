@@ -5,6 +5,7 @@ NFLayoutType =
 	FLAG: 300
 
 NFLayoutBehavior =
+	NONE: 88
 	UNRECOGNIZED: 99
 	DO_NOTHING: 101
 	SHOW_TITLE: 102
@@ -28,6 +29,11 @@ NFLayoutInstructionNotFound =
 	display: "Unrecognized"
 	type: NFLayoutType.INSTRUCTION
 	instruction: NFLayoutBehavior.UNRECOGNIZED
+
+NFLayoutInstructionNone =
+	display: "No Instruction"
+	type: NFLayoutType.INSTRUCTION
+	instruction: NFLayoutBehavior.NONE
 
 NFLayoutInstructionDict =
 	yellowUnderlineHighlight:
@@ -103,12 +109,14 @@ NFLayoutInstructionDict =
 		instruction: NFLayoutBehavior.GAUSSY
 	figure:
 		code: ['figure', 'fig', 'graph', 'chart', 'f']
+		regex: /(^f\d+)/i
 		display: "Figure Placeholder"
 		priority: 2
 		type: NFLayoutType.INSTRUCTION
 		instruction: NFLayoutBehavior.FIGURE
 	table:
 		code: ['table', 'tab', 't']
+		regex: /(^t\d+)/i
 		display: "Table Placeholder"
 		priority: 2
 		type: NFLayoutType.INSTRUCTION

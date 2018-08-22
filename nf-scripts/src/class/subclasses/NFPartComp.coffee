@@ -456,6 +456,16 @@ class NFPartComp extends NFComp
     return @activeGaussy(time)?
 
   ###*
+  Trims all the animation layers in this comp to the given time
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the time to check
+  @returns {Boolean} if there is a gaussy active at the current time
+  ###
+  trimTo: (time) ->
+    @activeLayers(time).forEach (layer) =>
+      layer.outPoint = time
+
+  ###*
   Returns an active gaussy if one exists, or null. DIFFERENT FROM #gaussyActive
   @memberof NFPartComp
   @param {float} [time=currTime] - the time to check

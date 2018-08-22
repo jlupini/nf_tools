@@ -153,7 +153,14 @@ NFProject =
                                 cached data? Select NO if you've changed the
                                 script.txt or instructions.csv files since
                                 the last import.", false, "Cached Data"
-    parsedLines = if shouldUseCache then app.tmp.parsedLines else NFTools.readAndCombineScriptAndInstructions()
+    if shouldUseCache
+      NFTools.log "Loading cached script/instructions...", "importScript"
+      NFTools.logLine()
+      parsedLines = app.tmp.parsedLines
+    else
+      NFTools.log "Importing from files...", "importScript"
+      NFTools.logLine()
+      parsedLines = NFTools.readAndCombineScriptAndInstructions()
     app.tmp =
       parsedLines: parsedLines
 
@@ -227,7 +234,97 @@ NFProject =
       return "Aborting AutoLayout!\nIt looks like there are already pages in
               one or more part comps. Clean up and try again."
 
+    NFTools.log "Beginning layout!", "autoLayout"
+    lastPart = null
+    for layoutInstruction in layoutInstructions
+      # Figure out which part to work in.
+      thisPart = NFProject.partForTime layoutInstruction.time
+      # Trim the previous part if we're in a new one
+      if lastPart? and not thisPart.is lastPart
+        NFTools.log "New part - Trimming previous one.", "autoLayout"
+        thisPart.trimTo layoutInstruction.time + 10
+
+
+      NFTools.log "Laying out instruction [#{layoutInstruction.raw}] in #{thisPart.getName()}", "autoLayout"
+
+
+      # Get some information about which PDF we're on and which one we need
+      activePDF = thisPart.activePDF()
+      activePDFNumber = activePDF?.getPDFNumber()
+      alreadyOnTargetPaper = if layoutInstruction.pdf? then activePDFNumber is layoutInstruction.pdf else true
+      targetPDF = if alreadyOnTargetPaper then activePDF else NFPDF.fromPDFNumber(layoutInstruction.pdf)
+
+      # # Do the autolayout
+      # # If we have a PDF to go to but no instruction, assume we should bring in
+      # # the title page
+      # if targetPDF? and layoutInstruction.instruction.instruction is NFLayoutBehavior.NONE?
+      #   NFTools.log "PDF found but no instruction - animating to title page", "Parser"
+      #   titlePage = targetPDF.getTitlePage()
+      #   mainComp.animateTo
+      #     page: titlePage
+      #
+      # # if the instruction is a highlight, let's call animateTo
+      # else switch instruction.type
+      #   when NFLayoutType.HIGHLIGHT
+      #     highlight = targetPDF.findHighlight instruction.look
+      #     throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
+      #
+      #     NFTools.log "Animating to #{instruction.display}", "Parser"
+      #     mainComp.animateTo
+      #       highlight: highlight
+      #       skipTitle: flags.skipTitle
+      #       expand: flags.expand
+      #       expandUp: flags.expandUp
+      #
+      #   when NFLayoutType.EXPAND
+      #     NFTools.log "Animating to #{instruction.display}", "Parser"
+      #     # FIXME: Need to build this out so that the relevant expand highlight
+      #     # can be determined and checked from the previous instructions
+      #
+      #   when NFLayoutType.INSTRUCTION
+      #     switch instruction.instruction
+      #       when NFLayoutBehavior.SHOW_TITLE
+      #         NFTools.log "Following Instruction: #{instruction.display}", "Parser"
+      #         mainComp.animateTo
+      #           page: targetPDF.getTitlePage()
+      #       when NFLayoutBehavior.ICON_SEQUENCE, NFLayoutBehavior.GAUSSY, NFLayoutBehavior.FIGURE, NFLayoutBehavior.TABLE
+      #         NFTools.log "Following Instruction: #{instruction.display}", "Parser"
+      #         mainComp.addGaussy
+      #           placeholder: instruction.display
+      #       else throw new Error "There isn't a case for this instruction"
+      #     @
+      #   else throw new Error "Instruction not found"
+
+
+
+
+      lastPart = thisPart
+
+
     return "AutoLayout Complete"
+
+
+  ###*
+  Returns the part comp that contains a given time
+  @memberof NFProject
+  @param {float} time - the time to find the part for
+  @returns {NFPartComp} The matching NFPartComp
+  ###
+  partForTime: (time) ->
+    mainComp = NFProject.mainComp()
+    audioLayer = mainComp.audioLayers().getBottommostLayer()
+    audioMarkers = audioLayer.markers()
+    partName = "Part"
+    for i in [1..audioMarkers.numKeys]
+      markerTime = audioMarkers.keyTime i
+      if time < markerTime
+        partName += i
+        break
+    matchingPart = null
+    NFProject.allPartComps().forEach (partComp) =>
+      matchingPart = partComp if partComp.getName() is partName
+    return matchingPart
+
 
   ###*
   Checks the instructions against the project to make sure there aren't any

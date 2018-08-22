@@ -151,6 +151,26 @@ NFComp = (function(superClass) {
 
 
   /**
+  Gets all the audio layers in this comp
+  @memberof NFComp
+  @returns {NFLayerCollection} collection of the audio layers in the comp
+   */
+
+  NFComp.prototype.audioLayers = function() {
+    var audioLayers;
+    audioLayers = new NFLayerCollection;
+    this.allLayers().forEach((function(_this) {
+      return function(layer) {
+        if (layer.layer.hasAudio && !layer.layer.hasVideo) {
+          return audioLayers.add(layer);
+        }
+      };
+    })(this));
+    return audioLayers;
+  };
+
+
+  /**
   Gets the selected pages in this comp
   @memberof NFComp
   @returns {NFPageLayerCollection} collection of the selected NFPageLayers in the comp
@@ -5878,6 +5898,22 @@ NFPartComp = (function(superClass) {
 
   NFPartComp.prototype.gaussyActive = function(time) {
     return this.activeGaussy(time) != null;
+  };
+
+
+  /**
+  Trims all the animation layers in this comp to the given time
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the time to check
+  @returns {Boolean} if there is a gaussy active at the current time
+   */
+
+  NFPartComp.prototype.trimTo = function(time) {
+    return this.activeLayers(time).forEach((function(_this) {
+      return function(layer) {
+        return layer.outPoint = time;
+      };
+    })(this));
   };
 
 

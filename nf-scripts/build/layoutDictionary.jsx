@@ -1,4 +1,4 @@
-var NFLayoutBehavior, NFLayoutFlagDict, NFLayoutInstructionDict, NFLayoutInstructionNotFound, NFLayoutType;
+var NFLayoutBehavior, NFLayoutFlagDict, NFLayoutInstructionDict, NFLayoutInstructionNone, NFLayoutInstructionNotFound, NFLayoutType;
 
 NFLayoutType = {
   HIGHLIGHT: 100,
@@ -8,6 +8,7 @@ NFLayoutType = {
 };
 
 NFLayoutBehavior = {
+  NONE: 88,
   UNRECOGNIZED: 99,
   DO_NOTHING: 101,
   SHOW_TITLE: 102,
@@ -36,6 +37,12 @@ NFLayoutInstructionNotFound = {
   display: "Unrecognized",
   type: NFLayoutType.INSTRUCTION,
   instruction: NFLayoutBehavior.UNRECOGNIZED
+};
+
+NFLayoutInstructionNone = {
+  display: "No Instruction",
+  type: NFLayoutType.INSTRUCTION,
+  instruction: NFLayoutBehavior.NONE
 };
 
 NFLayoutInstructionDict = {
@@ -124,6 +131,7 @@ NFLayoutInstructionDict = {
   },
   figure: {
     code: ['figure', 'fig', 'graph', 'chart', 'f'],
+    regex: /(^f\d+)/i,
     display: "Figure Placeholder",
     priority: 2,
     type: NFLayoutType.INSTRUCTION,
@@ -131,6 +139,7 @@ NFLayoutInstructionDict = {
   },
   table: {
     code: ['table', 'tab', 't'],
+    regex: /(^t\d+)/i,
     display: "Table Placeholder",
     priority: 2,
     type: NFLayoutType.INSTRUCTION,
