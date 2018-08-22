@@ -345,8 +345,12 @@ NFTools = {
         layoutInstruction.prev = prevInstruction;
         prevInstruction.next = layoutInstruction;
       }
-      parsedInstructions.push(layoutInstruction);
+      if (prevInstruction != null) {
+        parsedInstructions.push(prevInstruction);
+      }
+      prevInstruction = layoutInstruction;
     }
+    parsedInstructions.push(prevInstruction);
     NFTools.log("Finished parsing instructions. Result:", "parseInstructions");
     for (o = 0, len2 = parsedInstructions.length; o < len2; o++) {
       parsed = parsedInstructions[o];

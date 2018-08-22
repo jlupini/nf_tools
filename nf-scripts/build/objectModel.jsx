@@ -1860,12 +1860,14 @@ at a certain time.
 @property {Object} flags - an object of NFLayoutFlagDict objects
 @property {Object} instruction - an NFLayoutInstructionDict object
 @property {String} line - the script line that goes along with this instruction
-@propery {boolean} validated - Whether or not the instruction has been validated
+@property {boolean} validated - Whether or not the instruction has been validated
 @property {boolean} valid - If the instruction is valid
 @property {String} validationMessage - Message with validation result.
 due to the instructions before or after this one
 @property {NFLayoutInstruction} next - the next instruction
 @property {NFLayoutInstruction} prev - the previous instruction
+@property {int} expandNumber - which expand this is.
+@property {int} expandUpNumber - which expandUp this is.
  */
 var NFLayoutInstruction,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1885,6 +1887,8 @@ NFLayoutInstruction = (function(superClass) {
     this.validated = false;
     this.next = model.next;
     this.prev = model.prev;
+    this.expandNumber = 0;
+    this.expandUpNumber = 0;
   }
 
   NFLayoutInstruction.prototype.toString = function() {
@@ -1927,10 +1931,10 @@ NFLayoutInstruction = (function(superClass) {
    */
 
   NFLayoutInstruction.prototype.getHighlight = function() {
-    if (this.prev != null) {
-      if (this.instruction.type !== NFLayoutType.HIGHLIGHT) {
-        return this.prev.getHighlight();
-      }
+    if (this.instruction.type === NFLayoutType.HIGHLIGHT) {
+      return this.instruction;
+    } else if (this.prev != null) {
+      return this.prev.getHighlight();
     } else {
       throw new Error("Could not get highlight for instruction!");
     }
@@ -2153,11 +2157,10 @@ NFPDF = Object.assign(NFPDF, {
   },
 
   /**
-  Gets a new PDF object from a given PDF Number string
+  Gets a new PDF object from a given PDF Number string, or null if not found
   @memberof NFPDF
   @param {string} theNumber - the PDF Number
-  @returns {NFPDF} the new NFPDF
-  @throws throws error if cannot find the pages for the given number
+  @returns {NFPDF | null} the new NFPDF
    */
   fromPDFNumber: function(theNumber) {
     var filteredItems, folder, i, item, items, len, searchString;
@@ -2174,7 +2177,7 @@ NFPDF = Object.assign(NFPDF, {
       }
     }
     if (filteredItems.length === 0) {
-      throw new Error("Cannot find PDF pages for the given number: '" + theNumber + "'");
+      return null;
     }
     return new NFPDF(filteredItems);
   }

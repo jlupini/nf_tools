@@ -10,12 +10,14 @@ at a certain time.
 @property {Object} flags - an object of NFLayoutFlagDict objects
 @property {Object} instruction - an NFLayoutInstructionDict object
 @property {String} line - the script line that goes along with this instruction
-@propery {boolean} validated - Whether or not the instruction has been validated
+@property {boolean} validated - Whether or not the instruction has been validated
 @property {boolean} valid - If the instruction is valid
 @property {String} validationMessage - Message with validation result.
 due to the instructions before or after this one
 @property {NFLayoutInstruction} next - the next instruction
 @property {NFLayoutInstruction} prev - the previous instruction
+@property {int} expandNumber - which expand this is.
+@property {int} expandUpNumber - which expandUp this is.
 ###
 class NFLayoutInstruction extends NFObject
   constructor: (model) ->
@@ -29,6 +31,8 @@ class NFLayoutInstruction extends NFObject
     @validated = no
     @next = model.next
     @prev = model.prev
+    @expandNumber = 0
+    @expandUpNumber = 0
   toString: ->
     return "NFLayoutInstruction: '#{@instruction.display}' @ #{@time} in PDF #{@pdf}"
 
@@ -59,6 +63,8 @@ class NFLayoutInstruction extends NFObject
   @returns {Object} the highlight instruction (from NFLayoutInstructionDict)
   ###
   getHighlight: ->
-    if @prev?
-      return @prev.getHighlight() if @instruction.type isnt NFLayoutType.HIGHLIGHT
+    if @instruction.type is NFLayoutType.HIGHLIGHT
+      return @instruction
+    else if @prev?
+      return @prev.getHighlight()
     else return throw new Error "Could not get highlight for instruction!"

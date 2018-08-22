@@ -181,7 +181,7 @@ NFProject = {
   @returns {null} nothin'
    */
   importScript: function() {
-    var allParts, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldUseCache, shouldValidate, validationResult;
+    var allParts, autoLayoutStatus, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldContinue, shouldUseCache, validationResult;
     alert("About to import and combine the script and instructions.\nThis can take a few minutes, so check 'log.txt' to stay updated as it runs.");
     shouldUseCache = false;
     if (((ref = app.tmp) != null ? ref.parsedLines : void 0) != null) {
@@ -222,23 +222,153 @@ NFProject = {
         });
       }
     }
-    shouldValidate = confirm("Import complete! Would you like to validate before beginning layout?", false, 'Validation');
+    shouldContinue = confirm("Import complete! Continue to Validation?", false, 'Validation');
+    if (!shouldContinue) {
+      return null;
+    }
     validationResult = NFProject.validateInstructions(parsedInstructions);
+    if (!validationResult.valid) {
+      alert("Validation failed!\nCheck log for details. I've cached the import data, so as long as you just need to fix things in the AE project, you won't need to wait for all the script matching next time. However, if you modify anything in the instructions.csv or script.txt files, you'll need to re-import.");
+      return null;
+    } else {
+      shouldContinue = confirm("Validation successful!\nWould you like to run AutoLayout now? It takes a while and you won't be able to stop the process once it begins.", false, 'AutoLayout');
+    }
+    if (!shouldContinue) {
+      return null;
+    }
+    autoLayoutStatus = NFProject.autoLayout(validationResult.layoutInstructions);
+    alert(autoLayoutStatus);
     return null;
+  },
+
+  /**
+  Takes a set of validated layoutInstructions and lays out the whole project.
+  @memberof NFProject
+  @param {NFLayoutInstruction[]} layoutInstructions
+  @returns {String} A message to display to the user
+   */
+  autoLayout: function(layoutInstructions) {
+    var allParts, existingPages, j, len, part;
+    allParts = NFProject.allPartComps();
+    existingPages = false;
+    for (j = 0, len = allParts.length; j < len; j++) {
+      part = allParts[j];
+      part.allLayers().forEach((function(_this) {
+        return function(layer) {
+          if (layer instanceof NFPageLayer) {
+            return existingPages = true;
+          }
+        };
+      })(this));
+    }
+    if (existingPages) {
+      return "Aborting AutoLayout!\nIt looks like there are already pages in one or more part comps. Clean up and try again.";
+    }
+    return "AutoLayout Complete";
   },
 
   /**
   Checks the instructions against the project to make sure there aren't any
   missing highlights/expands, etc.
   @memberof NFProject
+  @param {NFLayoutInstruction[]} layoutInstructions
+  @returns {Object} An object with the validated 'layoutInstructions' and
+  a boolean value 'valid' to indicate success or failure
    */
-  validateInstructions: function(instructions) {
-    $.bp();
-    return this;
+  validateInstructions: function(layoutInstructions) {
+    var anyInvalid, exp, expands, highlight, highlightLook, ins, j, k, l, len, len1, len2, lookString, matchedExpands, returnObj, sameInstruction, samePDF, targetPDF, validatedInstructions;
+    NFTools.log("Validating Instructions...", "validateInstructions");
+    validatedInstructions = [];
+    anyInvalid = false;
+    expands = [];
+    for (j = 0, len = layoutInstructions.length; j < len; j++) {
+      ins = layoutInstructions[j];
+      ins.valid = true;
+      ins.validationMessage = "";
+      if (ins.pdf != null) {
+        targetPDF = NFPDF.fromPDFNumber(ins.pdf);
+        if (targetPDF == null) {
+          ins.valid = false;
+          ins.validationMessage += "Missing PDF: '" + ins.pdf + "'. ";
+        }
+      } else {
+        targetPDF = null;
+      }
+      if (ins.getInstruction().type === NFLayoutType.HIGHLIGHT) {
+        if (targetPDF == null) {
+          targetPDF = NFPDF.fromPDFNumber(ins.getPDF());
+        }
+        highlightLook = ins.getInstruction().look;
+        if (ins.flags.expand != null) {
+          if (ins.flags.expandUp != null) {
+            matchedExpands = [];
+            for (k = 0, len1 = expands.length; k < len1; k++) {
+              exp = expands[k];
+              sameInstruction = exp.getInstruction().look === highlightLook;
+              samePDF = exp.getPDF() === ins.getPDF();
+              if (sameInstruction && samePDF && (exp.flags.expandUp != null)) {
+                matchedExpands.push(exp);
+              }
+            }
+            ins.expandUpNumber = matchedExpands.length + 1;
+            if (ins.expandUpNumber === 1) {
+              lookString = highlightLook + " Expand Up";
+            } else {
+              lookString = highlightLook + " Expand Up " + ins.expandUpNumber;
+            }
+            highlight = targetPDF != null ? targetPDF.findHighlight(lookString) : void 0;
+          } else {
+            matchedExpands = [];
+            for (l = 0, len2 = expands.length; l < len2; l++) {
+              exp = expands[l];
+              sameInstruction = exp.getInstruction().look === highlightLook;
+              samePDF = exp.getPDF() === ins.getPDF();
+              if (sameInstruction && samePDF && (exp.flags.expandUp == null)) {
+                matchedExpands.push(exp);
+              }
+            }
+            ins.expandNumber = matchedExpands.length + 1;
+            if (ins.expandNumber === 1) {
+              lookString = highlightLook + " Expand";
+            } else {
+              lookString = highlightLook + " Expand " + ins.expandNumber;
+            }
+            highlight = targetPDF != null ? targetPDF.findHighlight(lookString) : void 0;
+          }
+          expands.push(ins);
+          if (highlight == null) {
+            ins.valid = false;
+            ins.validationMessage += "Missing expand '" + lookString + "' in PDF " + (ins.getPDF());
+          }
+        } else {
+          highlight = targetPDF != null ? targetPDF.findHighlight(ins.instruction.look) : void 0;
+          if (highlight == null) {
+            ins.valid = false;
+            ins.validationMessage += "Missing highlight '" + ins.instruction.look + "' in PDF " + (ins.getPDF());
+          }
+        }
+      }
+      if (ins.valid === false) {
+        anyInvalid = true;
+        NFTools.log("Invalid Instruction [" + ins.raw + "]. Reasons: " + ins.validationMessage, "validateInstructions");
+      }
+      ins.validated = true;
+      validatedInstructions.push(ins);
+    }
+    if (anyInvalid) {
+      NFTools.log("Validation completed with errors!", "validateInstructions");
+    } else {
+      NFTools.log("Validation completed with no errors!", "validateInstructions");
+    }
+    NFTools.logLine();
+    return returnObj = {
+      layoutInstructions: validatedInstructions,
+      valid: !anyInvalid
+    };
   },
 
   /**
-  Follow an instruction string (ie. "41g")
+  Follow a single instruction string (ie. "41g")
   @memberof NFProject
   @param {string} itemName - the string to search for
   @returns {Item | null} the found item or null

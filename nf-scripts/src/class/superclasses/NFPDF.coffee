@@ -145,11 +145,10 @@ NFPDF = Object.assign NFPDF,
     return NFPDF.fromPDFNumber group.getPDFNumber()
 
   ###*
-  Gets a new PDF object from a given PDF Number string
+  Gets a new PDF object from a given PDF Number string, or null if not found
   @memberof NFPDF
   @param {string} theNumber - the PDF Number
-  @returns {NFPDF} the new NFPDF
-  @throws throws error if cannot find the pages for the given number
+  @returns {NFPDF | null} the new NFPDF
   ###
   fromPDFNumber: (theNumber) ->
     searchString = theNumber + "_"
@@ -164,6 +163,6 @@ NFPDF = Object.assign NFPDF,
         filteredItems.push item if item.name.startsWith searchString
 
     if filteredItems.length is 0
-      throw new Error "Cannot find PDF pages for the given number: '#{theNumber}'"
+      return null
 
     return new NFPDF(filteredItems)

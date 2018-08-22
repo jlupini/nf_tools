@@ -291,8 +291,6 @@ NFTools =
   ###
   parseInstructions: (parsedLines) ->
     parsedInstructions = []
-    # lastHighlight = null
-    # lastPDF = null
     prevInstruction = null
     for line in parsedLines
 
@@ -303,23 +301,9 @@ NFTools =
       if prevInstruction?
         layoutInstruction.prev = prevInstruction
         prevInstruction.next = layoutInstruction
-      # parsed.assumptions = []
-      # # Add missing highlights or PDFs
-      # if parsed.flags.expand? and parsed.instruction.instruction is NFLayoutBehavior.UNRECOGNIZED
-      #   # Add the last highlight, and an assumption marker
-      #   if lastHighlight?
-      #     parsed.instruction = lastHighlight
-      #     parsed.assumptions.push 'highlight'
-      # if not parsed.pdf? and parsed.instruction.instruction isnt NFLayoutBehavior.UNRECOGNIZED
-      #   # Adds the last PDF, and an assumption marker
-      #   if lastPDF?
-      #     parsed.pdf = lastPDF
-      #     parsed.assumptions.push 'pdf'
-      #
-      # lastPDF = parsed.pdf if parsed.pdf
-      # lastHighlight = parsed.instruction if parsed.instruction.type is NFLayoutType.HIGHLIGHT
-
-      parsedInstructions.push layoutInstruction
+      parsedInstructions.push prevInstruction if prevInstruction?
+      prevInstruction = layoutInstruction
+    parsedInstructions.push prevInstruction
 
     # Log that shit
     NFTools.log "Finished parsing instructions. Result:", "parseInstructions"
