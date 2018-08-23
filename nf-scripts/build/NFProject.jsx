@@ -173,10 +173,10 @@ NFProject = {
   },
 
   /**
-  Imports the script (script.txt) and the instructions (instructions.csv) files.
+  Imports the script (script.txt) and the instructions (transcript.csv) files.
   Adds the guide layers for both to each part comp.
   @memberof NFProject
-  @throws Throw error if script.txt or instructions.csv are not in the project
+  @throws Throw error if script.txt or transcript.csv are not in the project
   directory or cannot be read.
   @returns {null} nothin'
    */
@@ -185,7 +185,7 @@ NFProject = {
     alert("About to import and combine the script and instructions.\nThis can take a few minutes, so check 'log.txt' to stay updated as it runs.");
     shouldUseCache = false;
     if (((ref = app.tmp) != null ? ref.parsedLines : void 0) != null) {
-      shouldUseCache = confirm("Cached script/instruction data found. Use the cached data? Select NO if you've changed the script.txt or instructions.csv files since the last import.", false, "Cached Data");
+      shouldUseCache = confirm("Cached script/instruction data found. Use the cached data? Select NO if you've changed the script.txt or transcript.csv files since the last import.", false, "Cached Data");
     }
     if (shouldUseCache) {
       NFTools.log("Loading cached script/instructions...", "importScript");
@@ -236,7 +236,7 @@ NFProject = {
     }
     validationResult = NFProject.validateInstructions(parsedInstructions);
     if (!validationResult.valid) {
-      alert("Validation failed!\nCheck log for details. I've cached the import data, so as long as you just need to fix things in the AE project, you won't need to wait for all the script matching next time. However, if you modify anything in the instructions.csv or script.txt files, you'll need to re-import.");
+      alert("Validation failed!\nCheck log for details. I've cached the import data, so as long as you just need to fix things in the AE project, you won't need to wait for all the script matching next time. However, if you modify anything in the transcript.csv or script.txt files, you'll need to re-import.");
       return null;
     } else {
       shouldContinue = confirm("Validation successful!\nWould you like to run AutoLayout now? It takes a while and you won't be able to stop the process once it begins.", false, 'AutoLayout');

@@ -136,10 +136,10 @@ NFProject =
     return allHighlights
 
   ###*
-  Imports the script (script.txt) and the instructions (instructions.csv) files.
+  Imports the script (script.txt) and the instructions (transcript.csv) files.
   Adds the guide layers for both to each part comp.
   @memberof NFProject
-  @throws Throw error if script.txt or instructions.csv are not in the project
+  @throws Throw error if script.txt or transcript.csv are not in the project
   directory or cannot be read.
   @returns {null} nothin'
   ###
@@ -151,7 +151,7 @@ NFProject =
     if app.tmp?.parsedLines?
       shouldUseCache = confirm "Cached script/instruction data found. Use the
                                 cached data? Select NO if you've changed the
-                                script.txt or instructions.csv files since
+                                script.txt or transcript.csv files since
                                 the last import.", false, "Cached Data"
     if shouldUseCache
       NFTools.log "Loading cached script/instructions...", "importScript"
@@ -205,7 +205,7 @@ NFProject =
              the import data, so as long as you just need to fix things
              in the AE project, you won't need to wait for all the script
              matching next time. However, if you modify anything in the
-             instructions.csv or script.txt files, you'll need to re-import."
+             transcript.csv or script.txt files, you'll need to re-import."
       return null
     else
       shouldContinue = confirm "Validation successful!\nWould you like to run

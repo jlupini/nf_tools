@@ -357,6 +357,7 @@ NFTools = {
     for (o = 0, len2 = parsedInstructions.length; o < len2; o++) {
       parsed = parsedInstructions[o];
       pad = function(str, len) {
+        str = str.toString();
         if (str.length < len) {
           return str + new Array(len - str.length).join(" ");
         } else {
@@ -468,14 +469,14 @@ NFTools = {
   },
 
   /**
-  Imports the script (script.txt) and the instructions (instructions.csv) files.
+  Imports the script (script.txt) and the instructions (transcript.csv) files.
   Compares the two of them to combine.
   @memberof NFTools
   @returns {Object[]} an Array of line objects with 'instruction', 'text', and
   'timecodes' keys
    */
   readAndCombineScriptAndInstructions: function() {
-    var assumedLineTimecodes, assumedSentence, cleanLine, dirtyScriptArray, element, endIdx, growCount, growThreshold, i, instructionArray, instructionFile, instructionString, l, len1, lineObj, parsedLines, rangeString, ref, removeLineBreaks, scriptFile, scriptLines, scriptString, simValues, splitElement, startIdx, tc, testChar, testLine, testLineIdx, testLineText, theWord, trimmed, word;
+    var assumedLineTimecodes, assumedSentence, avg, cleanLine, compareRange, customTC, dirtyScriptArray, element, endIdx, getMinSim, growCount, growThreshold, i, instructionArray, instructionFile, instructionString, l, len1, len2, lineObj, minSim, minSims, o, parsedLines, prevTC, rangeString, ref, removeLineBreaks, scriptFile, scriptLines, scriptString, sim, simValues, splitElement, startIdx, sum, tc, testChar, testLine, testLineIdx, testLineText, theWord, toPercent, trimmed, val, word;
     cleanLine = function(line) {
       var cleaned;
       cleaned = line.toLowerCase();
@@ -485,8 +486,15 @@ NFTools = {
     removeLineBreaks = function(line) {
       return line.replace(/(\r\n\t|\n|\r\t)/gm, " ");
     };
+    getMinSim = function(vals) {
+      vals = vals.stuff(1);
+      return Math.min.apply(Math, vals);
+    };
+    toPercent = function(ratio) {
+      return Math.round((1 - ratio) * 100) + "%";
+    };
     scriptFile = "script.txt";
-    instructionFile = "instructions.csv";
+    instructionFile = "transcript.csv";
     if (!NFTools.testProjectFile(scriptFile)) {
       throw new Error("Cannot read " + scriptFile);
     }
@@ -511,6 +519,26 @@ NFTools = {
     }
     instructionString = NFTools.readProjectFile(instructionFile);
     instructionArray = instructionString.splitCSV();
+    compareRange = function(model) {
+      var lineSentence, retObj, testSentence, testTimecodes, theWord;
+      testTimecodes = instructionArray.slice(model.from, model.to + 1);
+      testSentence = cleanLine(((function() {
+        var len2, o, results;
+        results = [];
+        for (o = 0, len2 = testTimecodes.length; o < len2; o++) {
+          theWord = testTimecodes[o];
+          results.push(theWord[1] + " ");
+        }
+        return results;
+      })()).join("").trim());
+      lineSentence = cleanLine(scriptLines[model.line].text);
+      return retObj = {
+        match: NFTools.similarity(testSentence, lineSentence),
+        line: model.line,
+        from: model.from,
+        to: model.to
+      };
+    };
     testLineIdx = 0;
     testLine = "";
     rangeString = "";
@@ -518,6 +546,7 @@ NFTools = {
     endIdx = 0;
     growCount = 0;
     growThreshold = 3;
+    minSims = [];
     simValues = [];
     parsedLines = [];
     i = 1;
@@ -534,7 +563,11 @@ NFTools = {
           }
           return results;
         })()).join("").trim();
-        NFTools.log("Last line - grabbing whatever's left: '" + (cleanLine(assumedSentence)) + "'", "readAndCombineScriptAndInstructions");
+        sim = NFTools.similarity(cleanLine(assumedSentence), testLineText);
+        minSims.push(sim);
+        NFTools.log("Last line - grabbing whatever's left: '" + (cleanLine(assumedSentence)) + "' at " + assumedLineTimecodes[0][0], "readAndCombineScriptAndInstructions");
+        NFTools.log("Match: " + (toPercent(sim)), "readAndCombineScriptAndInstructions");
+        NFTools.logLine();
         parsedLines.push({
           instruction: testLine.instruction,
           text: removeLineBreaks(testLine.text),
@@ -549,46 +582,71 @@ NFTools = {
       }
       tc = instructionArray[i][0];
       word = instructionArray[i][1];
-      if (rangeString === "") {
-        startIdx = i;
-        rangeString = word;
-      } else {
-        rangeString += " " + word;
-      }
-      rangeString = cleanLine(rangeString);
-      simValues[i] = NFTools.similarity(rangeString, testLineText);
-      if (simValues[i] > simValues[i - 1]) {
-        growCount++;
-      } else {
-        growCount = 0;
-      }
-      if (growCount >= growThreshold) {
-        simValues = simValues.stuff(1);
-        endIdx = simValues.indexOf(Math.min.apply(Math, simValues));
-        assumedLineTimecodes = instructionArray.slice(startIdx, endIdx + 1);
-        assumedSentence = ((function() {
-          var len2, o, results;
-          results = [];
-          for (o = 0, len2 = assumedLineTimecodes.length; o < len2; o++) {
-            theWord = assumedLineTimecodes[o];
-            results.push(theWord[1] + " ");
-          }
-          return results;
-        })()).join("").trim();
-        NFTools.log("Best result: '" + (cleanLine(assumedSentence)) + "'", "readAndCombineScriptAndInstructions");
+      if (testLineText === "") {
+        prevTC = i === 1 ? 0 : instructionArray[i - 1][0];
+        customTC = (parseFloat(tc) + parseFloat(prevTC)) / 2;
+        assumedLineTimecodes = [[customTC, '', '']];
         parsedLines.push({
           instruction: testLine.instruction,
-          text: removeLineBreaks(testLine.text),
+          text: "",
           timecodes: assumedLineTimecodes
         });
-        simValues = [];
-        rangeString = "";
-        growCount = 0;
-        i = endIdx;
+        NFTools.log("Empty test line at " + assumedLineTimecodes[0][0] + " - moving on", "readAndCombineScriptAndInstructions");
+        NFTools.logLine();
         testLineIdx++;
+      } else {
+        if (rangeString === "") {
+          startIdx = i;
+          rangeString = word;
+        } else {
+          rangeString += " " + word;
+        }
+        rangeString = cleanLine(rangeString);
+        simValues[i] = NFTools.similarity(rangeString, testLineText);
+        if (simValues[i] > simValues[i - 1]) {
+          growCount++;
+        } else {
+          growCount = 0;
+        }
+        if (growCount >= growThreshold) {
+          minSim = getMinSim(simValues);
+          minSims.push(minSim);
+          endIdx = simValues.indexOf(minSim);
+          assumedLineTimecodes = instructionArray.slice(startIdx, endIdx + 1);
+          assumedSentence = ((function() {
+            var len2, o, results;
+            results = [];
+            for (o = 0, len2 = assumedLineTimecodes.length; o < len2; o++) {
+              theWord = assumedLineTimecodes[o];
+              results.push(theWord[1] + " ");
+            }
+            return results;
+          })()).join("").trim();
+          NFTools.log("Best result: '" + (cleanLine(assumedSentence)) + "' at " + assumedLineTimecodes[0][0], "readAndCombineScriptAndInstructions");
+          NFTools.log("Match: " + (toPercent(minSim)), "readAndCombineScriptAndInstructions");
+          NFTools.logLine();
+          parsedLines.push({
+            instruction: testLine.instruction,
+            text: removeLineBreaks(testLine.text),
+            timecodes: assumedLineTimecodes
+          });
+          simValues = [];
+          rangeString = "";
+          growCount = 0;
+          i = endIdx;
+          testLineIdx++;
+        }
+        i++;
       }
-      i++;
     }
+    sum = 0;
+    for (o = 0, len2 = minSims.length; o < len2; o++) {
+      val = minSims[o];
+      sum += val;
+    }
+    avg = sum / minSims.length;
+    NFTools.log("Average match: " + (toPercent(avg)), "readAndCombineScriptAndInstructions");
+    NFTools.logLine();
     NFTools.log("Done Importing!", "readAndCombineScriptAndInstructions");
     NFTools.logLine();
     return parsedLines;

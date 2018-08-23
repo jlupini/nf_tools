@@ -311,6 +311,7 @@ NFTools =
     NFTools.log "Finished parsing instructions. Result:", "parseInstructions"
     for parsed in parsedInstructions
       pad = (str, len) ->
+        str = str.toString()
         if str.length < len
           return str + new Array(len - str.length).join(" ")
         else return str
@@ -409,7 +410,7 @@ NFTools =
       instruction: instruction
 
   ###*
-  Imports the script (script.txt) and the instructions (instructions.csv) files.
+  Imports the script (script.txt) and the instructions (transcript.csv) files.
   Compares the two of them to combine.
   @memberof NFTools
   @returns {Object[]} an Array of line objects with 'instruction', 'text', and
@@ -422,12 +423,16 @@ NFTools =
       cleaned = line.toLowerCase()
       cleaned = cleaned.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ")
       removeLineBreaks cleaned
-
     removeLineBreaks = (line) ->
       return line.replace(/(\r\n\t|\n|\r\t)/gm," ")
+    getMinSim = (vals) ->
+      vals = vals.stuff 1
+      return Math.min.apply(Math, vals)
+    toPercent = (ratio) ->
+      return Math.round((1 - ratio) * 100) + "%"
 
     scriptFile = "script.txt"
-    instructionFile = "instructions.csv"
+    instructionFile = "transcript.csv"
 
     # Test both files
     throw new Error "Cannot read #{scriptFile}" unless NFTools.testProjectFile scriptFile
@@ -453,6 +458,22 @@ NFTools =
     instructionString = NFTools.readProjectFile instructionFile
     instructionArray = instructionString.splitCSV()
 
+    # Takes the line index, and a instruction range, and returns the similarity value
+    compareRange = (model) ->
+      # model =
+      #   model.line
+      #   model.from
+      #   model.to
+      testTimecodes = instructionArray.slice model.from, model.to + 1
+      testSentence = cleanLine (("#{theWord[1]} " for theWord in testTimecodes).join("").trim())
+      lineSentence = cleanLine scriptLines[model.line].text
+      return retObj =
+        match: NFTools.similarity testSentence, lineSentence
+        line: model.line
+        from: model.from
+        to: model.to
+
+
     # Match up lines with ranges of words from the instruction array
     testLineIdx = 0
     testLine = ""
@@ -461,6 +482,7 @@ NFTools =
     endIdx = 0
     growCount = 0
     growThreshold = 3
+    minSims = []
     simValues = []
     parsedLines = []
     i = 1
@@ -471,7 +493,11 @@ NFTools =
       if testLineIdx is scriptLines.length - 1
         assumedLineTimecodes = instructionArray.slice i
         assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
-        NFTools.log "Last line - grabbing whatever's left: '#{cleanLine assumedSentence}'", "readAndCombineScriptAndInstructions"
+        sim = NFTools.similarity cleanLine(assumedSentence), testLineText
+        minSims.push sim
+        NFTools.log "Last line - grabbing whatever's left: '#{cleanLine assumedSentence}' at #{assumedLineTimecodes[0][0]}", "readAndCombineScriptAndInstructions"
+        NFTools.log "Match: #{toPercent sim}", "readAndCombineScriptAndInstructions"
+        NFTools.logLine()
         parsedLines.push
           instruction: testLine.instruction
           text: removeLineBreaks testLine.text
@@ -484,48 +510,72 @@ NFTools =
         testLineText = cleanLine testLine.text
         NFTools.log "Test Line:   '#{testLineText}'", "readAndCombineScriptAndInstructions"
 
+
       # We start at 1 because the first line is headers.
       tc = instructionArray[i][0]
       word = instructionArray[i][1]
 
-      # Adjust the indecies and add to the rangeString (stripped of whitespace in lowercase) ^
-      if rangeString is ""
-        startIdx = i
-        rangeString = word
-      else
-        rangeString += " #{word}"
-      rangeString = cleanLine rangeString
-
-      # Check the similarity value
-      simValues[i] = NFTools.similarity rangeString, testLineText
-      # Increment the growCount if the sim value is growing
-      if simValues[i] > simValues[i-1] then growCount++ else growCount = 0
-
-      # If the growCount has reached the threshold, assume that we're now
-      # getting further away from the right range.
-      if growCount >= growThreshold
-        # First, stuff the simValues with '1' so we can perform basic math on it *facepalm*
-        simValues = simValues.stuff 1
-        # Get the index of the smallest value we hit
-        endIdx = simValues.indexOf Math.min.apply(Math, simValues)
-        # Make a new array of the range for what we think is this line
-        assumedLineTimecodes = instructionArray.slice startIdx, endIdx + 1
-        assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
-        NFTools.log "Best result: '#{cleanLine assumedSentence}'", "readAndCombineScriptAndInstructions"
+      # If we have an empty testLine, push a timecode halfway between this and the next one.
+      if testLineText is ""
+        # Make a fake timecode halfway betweeen the one we're looking at now
+        # and the previous one.
+        prevTC = if i is 1 then 0 else instructionArray[i-1][0]
+        customTC = (parseFloat(tc) + parseFloat(prevTC)) / 2
+        assumedLineTimecodes = [[customTC, '', '']]
         parsedLines.push
           instruction: testLine.instruction
-          text: removeLineBreaks testLine.text
+          text: ""
           timecodes: assumedLineTimecodes
-
-        # Reset the rangeString and simValues
-        simValues = []
-        rangeString = ""
-        growCount = 0
-        # Move the iterator back to the last word we grabbed (because it's about to increment anyway)
-        i = endIdx
-        # Grab the next testLine
+        NFTools.log "Empty test line at #{assumedLineTimecodes[0][0]} - moving on", "readAndCombineScriptAndInstructions"
+        NFTools.logLine()
         testLineIdx++
-      i++
+      else
+        # Adjust the indecies and add to the rangeString (stripped of whitespace in lowercase) ^
+        if rangeString is ""
+          startIdx = i
+          rangeString = word
+        else
+          rangeString += " #{word}"
+        rangeString = cleanLine rangeString
+
+        # Check the similarity value
+        simValues[i] = NFTools.similarity rangeString, testLineText
+        # Increment the growCount if the sim value is growing
+        if simValues[i] > simValues[i-1] then growCount++ else growCount = 0
+
+        # If the growCount has reached the threshold, assume that we're now
+        # getting further away from the right range.
+        if growCount >= growThreshold
+          minSim = getMinSim simValues
+          minSims.push minSim
+          endIdx = simValues.indexOf minSim
+          # Make a new array of the range for what we think is this line
+          assumedLineTimecodes = instructionArray.slice startIdx, endIdx + 1
+          assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
+          NFTools.log "Best result: '#{cleanLine assumedSentence}' at #{assumedLineTimecodes[0][0]}", "readAndCombineScriptAndInstructions"
+          NFTools.log "Match: #{toPercent minSim}", "readAndCombineScriptAndInstructions"
+          NFTools.logLine()
+          parsedLines.push
+            instruction: testLine.instruction
+            text: removeLineBreaks testLine.text
+            timecodes: assumedLineTimecodes
+
+          # Reset the rangeString and simValues
+          simValues = []
+          rangeString = ""
+          growCount = 0
+          # Move the iterator back to the last word we grabbed (because it's about to increment anyway)
+          i = endIdx
+          # Grab the next testLine
+          testLineIdx++
+        i++
+
+    # Get the average match ratio score
+    sum = 0
+    sum += val for val in minSims
+    avg = sum / minSims.length
+    NFTools.log "Average match: #{toPercent avg}", "readAndCombineScriptAndInstructions"
+    NFTools.logLine()
 
     NFTools.log "Done Importing!", "readAndCombineScriptAndInstructions"
     NFTools.logLine()
