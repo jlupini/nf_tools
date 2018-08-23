@@ -25,6 +25,7 @@ class NFPartComp extends NFComp
   @param {Object} model - the model object
   @param {NFHighlightLayer} [model.highlight] - the highlight to animate to
   @param {NFPageComp} [model.page] - the page to animate to
+  @param {time} [model.time=currTime] - the time to do the animation at
   @param {float} [model.animationDuration=3] - the length of the move and scale
   @param {float} [model.pageTurnDuration=2] - the length of the pageturn
   @param {float} [model.maxPageScale=115] - the maximum a page will scale
@@ -41,6 +42,7 @@ class NFPartComp extends NFComp
     model =
       highlight: model.highlight
       page: model.page
+      time: model.time
       animationDuration: model.animationDuration ? 3
       pageTurnDuration: model.pageTurnDuration ? 2
       maxPageScale: model.maxPageScale ? 115
@@ -62,6 +64,7 @@ class NFPartComp extends NFComp
     containingPartComps = targetPDF.containingPartComps()
     targetPage = model.page ? model.highlight.getPageComp()
     preAnimationTime = @getTime()
+    @setTime model.time if model.time?
     activePDF = @activePDF()
     prevGroup = @groupFromPDF activePDF if activePDF?
 
@@ -148,10 +151,13 @@ class NFPartComp extends NFComp
       targetGroup = @groupFromPDF targetPDF
       if targetGroup?
         posProp = targetGroup.paperParent.transform().position
-        if posProp.numKeys > 0
-          for i in [1..posProp.numKeys]
-            if posProp.keyTime(i) > @getTime()
-              throw new Error "Can't animate to page or highlight because animations exist in the FUTURE on the target PDF"
+        latestKeyTime = posProp.keyTime posProp.numKeys if posProp.numKeys > 0
+        if latestKeyTime?
+          if latestKeyTime > @getTime() + 2.0
+            throw new Error "Can't animate to page or highlight because animations exist in the FUTURE on the target PDF"
+          else if latestKeyTime > @getTime()
+            @log "WARNING: This instruction is too close to the previous one, so we're bumping it forward up to two seconds."
+            @setTime latestKeyTime + 0.1
 
       # If it's the active PDF now
       if @activePDF()?.is targetPDF
@@ -169,8 +175,8 @@ class NFPartComp extends NFComp
             fillPercentage: if model.highlight? then model.fillPercentage else 100
             maxScale: model.maxPageScale
 
-          # Trim any active spotlights
-
+          # Trim any active spotlights and placeholders
+          group.trimActivePlaceholder @getTime()
           group.trimActiveSpotlights @getTime() + (model.animationDuration / 2)
           # FIXME: This should be El Sneako!
           @hideGaussy @getTime()
@@ -218,6 +224,7 @@ class NFPartComp extends NFComp
               # Trim the old layer to the end of the page turn
               activePageLayer.layer.outPoint = @getTime() - 0.5 + 2.0
 
+              group.trimActivePlaceholder @getTime()
               group.trimActiveSpotlights @getTime() + 0.5
               # FIXME: This should be El Sneako!
               @hideGaussy @getTime()
@@ -251,6 +258,7 @@ class NFPartComp extends NFComp
                 duration: model.animationDuration
                 fillPercentage: model.fillPercentage
 
+            group.trimActivePlaceholder @getTime()
             group.trimActiveSpotlights @getTime() + 0.5
             # FIXME: This should be El Sneako!
             @hideGaussy @getTime()
@@ -368,6 +376,46 @@ class NFPartComp extends NFComp
     return pageLayer
 
   ###*
+  Adds a new placeholder layer to the comp, above the currently active group. If a
+  placeholder is already active, replace the placeholder text with the new one at
+  the given time.
+  @memberof NFPartComp
+  @param {Object} model
+  @param {String} [model.text] - the placeholder text to show over the layer
+  @param {float} [model.time=currTime] - the start time of the placeholder layer
+  @param {float} [model.duration] - the length of the placeholder layer. If not
+  given a duration, the layer will continue indefinitely.
+  @returns {NFPartComp} self
+  ###
+  addPlaceholder: (model) ->
+    model.time = model.time ? @getTime()
+    model.duration = model.duration ? @comp.duration - model.time
+
+    activePDF = @activePDF model.time
+    if activePDF?
+      activeGroup = @groupFromPDF activePDF
+      activeGroup.trimActivePlaceholder model.time
+
+      placeholder = @addTextLayer
+        text: model.text
+        time: model.time
+        duration: model.duration
+        fillColor: [0,0.6,0.9]
+        strokeWidth: 10
+        strokeColor: [0,0,0]
+        applyStroke: yes
+        below: activeGroup.getCitationLayer()
+        justification: ParagraphJustification.CENTER_JUSTIFY
+        fontSize: 70
+      placeholder.transform().property("Position").setValue [960, 980]
+      placeholder.layer.name = "INSTRUCTION: #{model.text}"
+
+    else
+      throw new Error "No active group to create a placeholder layer on top of"
+
+    @
+
+  ###*
   Adds a new gaussy layer to the comp, above the currently active group. If a
   gaussy is already active, replace the placeholder text with the new one at
   the given time.
@@ -383,7 +431,7 @@ class NFPartComp extends NFComp
     model.time = model.time ? @getTime()
     model.duration = model.duration ? @comp.duration - model.time
 
-    activePDF = @activePDF()
+    activePDF = @activePDF model.time
     if activePDF?
       activeGroup = @groupFromPDF activePDF
 
@@ -483,6 +531,22 @@ class NFPartComp extends NFComp
         gaussyFound = testLayer if testLayer.layer.isSolid()
       return gaussyFound
 
+
+  ###*
+  Returns an active placeholder if one exists, or null.
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the time to check
+  @returns {NFLayer} the active placeholder layer at the given time, or null
+  ###
+  activePlaceholder: (time) ->
+    time = time ? @getTime()
+
+    foundPlaceholder = null
+    @activeLayers(time).forEach (activeLayer) =>
+      if activeLayer.getName().indexOf("INSTRUCTION:") >= 0
+        foundPlaceholder = activeLayer
+    return foundPlaceholder
+
   ###*
   Gets the zoomer layer
   @memberof NFPartComp
@@ -520,11 +584,11 @@ class NFPartComp extends NFComp
       @setTime(time)
 
     activePage = null
-    activeLayers = @activeLayers()
+    activeLayers = @activeLayers time
     until activeLayers.isEmpty()
       topLayer = activeLayers.getTopmostLayer()
       if topLayer instanceof NFPageLayer
-        if topLayer.pageTurnStatus() isnt NFPageLayer.PAGETURN_FLIPPED_UP and topLayer.property("Transform").property("Opacity").value is 100
+        if topLayer.pageTurnStatus(time) isnt NFPageLayer.PAGETURN_FLIPPED_UP and topLayer.property("Transform").property("Opacity").value is 100
           activePage = topLayer
           break
 

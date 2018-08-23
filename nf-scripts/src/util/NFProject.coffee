@@ -238,62 +238,70 @@ NFProject =
     lastPart = null
     for layoutInstruction in layoutInstructions
       # Figure out which part to work in.
-      thisPart = NFProject.partForTime layoutInstruction.time
+      instructionTime = parseFloat layoutInstruction.time
+      thisPart = NFProject.partForTime instructionTime
       # Trim the previous part if we're in a new one
       if lastPart? and not thisPart.is lastPart
+        NFTools.logLine()
         NFTools.log "New part - Trimming previous one.", "autoLayout"
-        thisPart.trimTo layoutInstruction.time + 10
+        thisPart.trimTo instructionTime + 10
 
-
+      NFTools.logLine()
+      NFTools.logLine()
       NFTools.log "Laying out instruction [#{layoutInstruction.raw}] in #{thisPart.getName()}", "autoLayout"
 
+      # if the instruction is a highlight, let's call animateTo
+      switch layoutInstruction.instruction.type
+        when NFLayoutType.HIGHLIGHT, NFLayoutType.EXPAND
+          # For highlights and expands we need a target PDF, so use this method instead of layoutInstruction.pdf
+          targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
+          lookString = layoutInstruction.expandLookString ? layoutInstruction.instruction.look
+          highlight = targetPDF.findHighlight lookString
+          throw new Error "Can't find highlight with name '#{lookString}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
-      # Get some information about which PDF we're on and which one we need
-      activePDF = thisPart.activePDF()
-      activePDFNumber = activePDF?.getPDFNumber()
-      alreadyOnTargetPaper = if layoutInstruction.pdf? then activePDFNumber is layoutInstruction.pdf else true
-      targetPDF = if alreadyOnTargetPaper then activePDF else NFPDF.fromPDFNumber(layoutInstruction.pdf)
+          NFTools.log "Animating to highlight '#{lookString}'", "autoLayout"
+          thisPart.animateTo
+            highlight: highlight
+            time: instructionTime
+            skipTitle: layoutInstruction.flags.skipTitle
+            expand: layoutInstruction.flags.expand
+            expandUp: layoutInstruction.flags.expandUp
+        when NFLayoutType.INSTRUCTION
+          targetPDF = NFPDF.fromPDFNumber layoutInstruction.pdf # Use only explicit PDFs here
+          switch layoutInstruction.instruction.behavior
+            when NFLayoutBehavior.SHOW_TITLE
+              NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
+              thisPart.animateTo
+                time: instructionTime
+                page: targetPDF.getTitlePage()
+            when NFLayoutBehavior.ICON_SEQUENCE, NFLayoutBehavior.GAUSSY, NFLayoutBehavior.FIGURE, NFLayoutBehavior.TABLE
+              NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
+              thisPart.addGaussy
+                placeholder: "[#{layoutInstruction.raw}]"
+                time: instructionTime
+            when NFLayoutBehavior.UNRECOGNIZED
+              if targetPDF?
+                NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
+                titlePage = targetPDF.getTitlePage()
+                thisPart.animateTo
+                  time: instructionTime
+                  page: titlePage
+              NFTools.log "Adding placeholder for [#{layoutInstruction.raw}]", "autoLayout"
+              thisPart.addPlaceholder
+                text: "[#{layoutInstruction.raw}]"
+                time: instructionTime
+            when NFLayoutBehavior.NONE
+              if targetPDF?
+                NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
+                titlePage = targetPDF.getTitlePage()
+                thisPart.animateTo
+                  time: instructionTime
+                  page: titlePage
 
-      # # Do the autolayout
-      # # If we have a PDF to go to but no instruction, assume we should bring in
-      # # the title page
-      # if targetPDF? and layoutInstruction.instruction.behavior is NFLayoutBehavior.NONE?
-      #   NFTools.log "PDF found but no instruction - animating to title page", "Parser"
-      #   titlePage = targetPDF.getTitlePage()
-      #   mainComp.animateTo
-      #     page: titlePage
-      #
-      # # if the instruction is a highlight, let's call animateTo
-      # else switch instruction.type
-      #   when NFLayoutType.HIGHLIGHT
-      #     highlight = targetPDF.findHighlight instruction.look
-      #     throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
-      #
-      #     NFTools.log "Animating to #{instruction.display}", "Parser"
-      #     mainComp.animateTo
-      #       highlight: highlight
-      #       skipTitle: flags.skipTitle
-      #       expand: flags.expand
-      #       expandUp: flags.expandUp
-      #
-      #   when NFLayoutType.EXPAND
-      #     NFTools.log "Animating to #{instruction.display}", "Parser"
-      #     # FIXME: Need to build this out so that the relevant expand highlight
-      #     # can be determined and checked from the previous instructions
-      #
-      #   when NFLayoutType.INSTRUCTION
-      #     switch instruction.instruction
-      #       when NFLayoutBehavior.SHOW_TITLE
-      #         NFTools.log "Following Instruction: #{instruction.display}", "Parser"
-      #         mainComp.animateTo
-      #           page: targetPDF.getTitlePage()
-      #       when NFLayoutBehavior.ICON_SEQUENCE, NFLayoutBehavior.GAUSSY, NFLayoutBehavior.FIGURE, NFLayoutBehavior.TABLE
-      #         NFTools.log "Following Instruction: #{instruction.display}", "Parser"
-      #         mainComp.addGaussy
-      #           placeholder: instruction.display
-      #       else throw new Error "There isn't a case for this instruction"
-      #     @
-      #   else throw new Error "Instruction not found"
+            else
+              throw new Error "There isn't a case for this instruction"
+        else
+          throw new Error "Instruction not found"
 
 
 
@@ -362,7 +370,7 @@ NFProject =
             matchedExpands = []
             for exp in expands
               # If we've encountered an expand with the same PDF and highlight
-              sameInstruction = exp.getInstruction().look is highlightLook
+              sameInstruction = exp.getHighlight().look is highlightLook
               samePDF = exp.getPDF() is ins.getPDF()
               matchedExpands.push exp if sameInstruction and samePDF and exp.flags.expandUp?
             ins.expandUpNumber = matchedExpands.length + 1
@@ -376,7 +384,7 @@ NFProject =
             matchedExpands = []
             for exp in expands
               # If we've encountered an expand with the same PDF and highlight
-              sameInstruction = exp.getInstruction().look is highlightLook
+              sameInstruction = exp.getHighlight().look is highlightLook
               samePDF = exp.getPDF() is ins.getPDF()
               matchedExpands.push exp if sameInstruction and samePDF and not exp.flags.expandUp?
             ins.expandNumber = matchedExpands.length + 1
@@ -386,6 +394,8 @@ NFProject =
               lookString = "#{highlightLook} Expand #{ins.expandNumber}"
             highlight = targetPDF?.findHighlight lookString
           expands.push ins
+          ins.expandLookString = lookString
+          ins.instruction = NFLayoutInstructionExpand if ins.instruction.behavior is NFLayoutBehavior.NONE
           if not highlight?
             ins.valid = no
             ins.validationMessage += "Missing expand '#{lookString}' in PDF #{ins.getPDF()}"

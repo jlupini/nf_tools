@@ -30,6 +30,10 @@ NFLayoutInstructionNotFound =
 	type: NFLayoutType.INSTRUCTION
 	behavior: NFLayoutBehavior.UNRECOGNIZED
 
+NFLayoutInstructionExpand =
+	display: "Expand"
+	type: NFLayoutType.EXPAND
+
 NFLayoutInstructionNone =
 	display: "No Instruction"
 	type: NFLayoutType.INSTRUCTION

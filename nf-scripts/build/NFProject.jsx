@@ -256,7 +256,7 @@ NFProject = {
   @returns {String} A message to display to the user
    */
   autoLayout: function(layoutInstructions) {
-    var activePDF, activePDFNumber, allParts, alreadyOnTargetPaper, existingPages, j, k, lastPart, layoutInstruction, len, len1, part, targetPDF, thisPart;
+    var allParts, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, targetPDF, thisPart, titlePage;
     allParts = NFProject.allPartComps();
     existingPages = false;
     for (j = 0, len = allParts.length; j < len; j++) {
@@ -276,16 +276,86 @@ NFProject = {
     lastPart = null;
     for (k = 0, len1 = layoutInstructions.length; k < len1; k++) {
       layoutInstruction = layoutInstructions[k];
-      thisPart = NFProject.partForTime(layoutInstruction.time);
+      instructionTime = parseFloat(layoutInstruction.time);
+      thisPart = NFProject.partForTime(instructionTime);
       if ((lastPart != null) && !thisPart.is(lastPart)) {
+        NFTools.logLine();
         NFTools.log("New part - Trimming previous one.", "autoLayout");
-        thisPart.trimTo(layoutInstruction.time + 10);
+        thisPart.trimTo(instructionTime + 10);
       }
+      NFTools.logLine();
+      NFTools.logLine();
       NFTools.log("Laying out instruction [" + layoutInstruction.raw + "] in " + (thisPart.getName()), "autoLayout");
-      activePDF = thisPart.activePDF();
-      activePDFNumber = activePDF != null ? activePDF.getPDFNumber() : void 0;
-      alreadyOnTargetPaper = layoutInstruction.pdf != null ? activePDFNumber === layoutInstruction.pdf : true;
-      targetPDF = alreadyOnTargetPaper ? activePDF : NFPDF.fromPDFNumber(layoutInstruction.pdf);
+      switch (layoutInstruction.instruction.type) {
+        case NFLayoutType.HIGHLIGHT:
+        case NFLayoutType.EXPAND:
+          targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
+          lookString = (ref = layoutInstruction.expandLookString) != null ? ref : layoutInstruction.instruction.look;
+          highlight = targetPDF.findHighlight(lookString);
+          if (highlight == null) {
+            throw new Error("Can't find highlight with name '" + lookString + "' in PDF '" + (targetPDF.toString()) + "'");
+          }
+          NFTools.log("Animating to highlight '" + lookString + "'", "autoLayout");
+          thisPart.animateTo({
+            highlight: highlight,
+            time: instructionTime,
+            skipTitle: layoutInstruction.flags.skipTitle,
+            expand: layoutInstruction.flags.expand,
+            expandUp: layoutInstruction.flags.expandUp
+          });
+          break;
+        case NFLayoutType.INSTRUCTION:
+          targetPDF = NFPDF.fromPDFNumber(layoutInstruction.pdf);
+          switch (layoutInstruction.instruction.behavior) {
+            case NFLayoutBehavior.SHOW_TITLE:
+              NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
+              thisPart.animateTo({
+                time: instructionTime,
+                page: targetPDF.getTitlePage()
+              });
+              break;
+            case NFLayoutBehavior.ICON_SEQUENCE:
+            case NFLayoutBehavior.GAUSSY:
+            case NFLayoutBehavior.FIGURE:
+            case NFLayoutBehavior.TABLE:
+              NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
+              thisPart.addGaussy({
+                placeholder: "[" + layoutInstruction.raw + "]",
+                time: instructionTime
+              });
+              break;
+            case NFLayoutBehavior.UNRECOGNIZED:
+              if (targetPDF != null) {
+                NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
+                titlePage = targetPDF.getTitlePage();
+                thisPart.animateTo({
+                  time: instructionTime,
+                  page: titlePage
+                });
+              }
+              NFTools.log("Adding placeholder for [" + layoutInstruction.raw + "]", "autoLayout");
+              thisPart.addPlaceholder({
+                text: "[" + layoutInstruction.raw + "]",
+                time: instructionTime
+              });
+              break;
+            case NFLayoutBehavior.NONE:
+              if (targetPDF != null) {
+                NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
+                titlePage = targetPDF.getTitlePage();
+                thisPart.animateTo({
+                  time: instructionTime,
+                  page: titlePage
+                });
+              }
+              break;
+            default:
+              throw new Error("There isn't a case for this instruction");
+          }
+          break;
+        default:
+          throw new Error("Instruction not found");
+      }
       lastPart = thisPart;
     }
     return "AutoLayout Complete";
@@ -358,7 +428,7 @@ NFProject = {
             matchedExpands = [];
             for (k = 0, len1 = expands.length; k < len1; k++) {
               exp = expands[k];
-              sameInstruction = exp.getInstruction().look === highlightLook;
+              sameInstruction = exp.getHighlight().look === highlightLook;
               samePDF = exp.getPDF() === ins.getPDF();
               if (sameInstruction && samePDF && (exp.flags.expandUp != null)) {
                 matchedExpands.push(exp);
@@ -375,7 +445,7 @@ NFProject = {
             matchedExpands = [];
             for (l = 0, len2 = expands.length; l < len2; l++) {
               exp = expands[l];
-              sameInstruction = exp.getInstruction().look === highlightLook;
+              sameInstruction = exp.getHighlight().look === highlightLook;
               samePDF = exp.getPDF() === ins.getPDF();
               if (sameInstruction && samePDF && (exp.flags.expandUp == null)) {
                 matchedExpands.push(exp);
@@ -390,6 +460,10 @@ NFProject = {
             highlight = targetPDF != null ? targetPDF.findHighlight(lookString) : void 0;
           }
           expands.push(ins);
+          ins.expandLookString = lookString;
+          if (ins.instruction.behavior === NFLayoutBehavior.NONE) {
+            ins.instruction = NFLayoutInstructionExpand;
+          }
           if (highlight == null) {
             ins.valid = false;
             ins.validationMessage += "Missing expand '" + lookString + "' in PDF " + (ins.getPDF());

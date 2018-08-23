@@ -48,7 +48,13 @@ NFGaussyLayer = Object.assign NFGaussyLayer,
     gaussyAVLayer = gaussyLayer.layer
 
     gaussyAVLayer.adjustmentLayer = true
-    gaussyLayer.moveBefore model.group.getSpotlight()
+
+    spotlightLayer = model.group.getSpotlight()
+    if spotlightLayer?
+      gaussyLayer.moveBefore spotlightLayer
+    else
+      gaussyLayer.moveAfter model.group.getCitationLayer()
+
     gaussyAVLayer.startTime = model.time
     gaussyAVLayer.outPoint = model.time + model.duration
 

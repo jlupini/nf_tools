@@ -224,6 +224,7 @@ class NFComp extends NFObject
   @param {boolean} [model.applyStroke=no]
   @param {float} [model.fontSize=24]
   @param {float[]} [model.fillColor=[0,0,0]]
+  @param {float[]} [model.strokeColor=[1,1,1]]
   @param {ParagraphJustification} [model.justification=ParagraphJustification.LEFT_JUSTIFY]
   @param {String} [model.font="Avenir Next"]
   @returns {NFLayer} The newly created text layer
@@ -238,9 +239,12 @@ class NFComp extends NFObject
       at: model.at
       applyFill: model.applyFill ? yes
       applyStroke: model.applyStroke ? no
+      strokeWidth: model.strokeWidth ? 2
+      strokeOverFill: model.strokeOverFill ? false
       fontSize: model.fontSize ? 24
       text: model.text ? ""
       fillColor: model.fillColor ? [0,0,0]
+      strokeColor: model.strokeColor ? [1,1,1]
       justification: model.justification ? ParagraphJustification.LEFT_JUSTIFY
       font: model.font ? 'Avenir Next'
 
@@ -273,6 +277,9 @@ class NFComp extends NFObject
     textDoc.applyFill = model.applyFill
     textDoc.fillColor = model.fillColor
     textDoc.applyStroke = model.applyStroke
+    textDoc.strokeWidth = model.strokeWidth
+    textDoc.strokeOverFill = model.strokeOverFill
+    textDoc.strokeColor = model.strokeColor
     textDoc.font = model.font
     textDoc.fontSize = model.fontSize
     textDoc.justification = model.justification

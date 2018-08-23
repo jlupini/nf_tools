@@ -84,7 +84,7 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
   @returns {boolean} whether the AV layer is a valid spotlight layer
   ###
   isSpotlightLayer: (theLayer) ->
-    return theLayer.isAVLayer() and theLayer.isSolid()
+    return theLayer.isAVLayer() and theLayer.isSolid() and theLayer.name.indexOf "Spotlight" >= 0
 
   ###*
   Returns the name for a spotlight layer for a given PDF Number

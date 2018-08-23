@@ -170,6 +170,21 @@ class NFPaperLayerGroup extends NFObject
     @
 
   ###*
+  Trims an active placeholder on the group to the given time
+  @memberof NFPaperLayerGroup
+  @param {float} [time=currTime] - the time to check at, or the current time by
+  default
+  @returns {NFPaperLayerGroup} self
+  ###
+  trimActivePlaceholder: (time) ->
+    @log "Trimming placeholders at time: #{time}"
+    time = time ? @containingComp().getTime()
+
+    activePH = @containingComp().activePlaceholder time
+    activePH.layer.outPoint = time if activePH?
+    @
+
+  ###*
   Trims all layers in this group to the given time. Call #extend to restore
   citation and spotlight master layers to a given time. Spotlights will end just
   before the group does.
@@ -183,6 +198,7 @@ class NFPaperLayerGroup extends NFObject
     time = time ? @containingComp().getTime()
 
     @trimActiveSpotlights time - 0.75
+    @trimActivePlaceholder time
     @getChildren().forEach (layer) =>
       layer.layer.outPoint = time if layer.layer.outPoint > time
     @getCitationLayer()?.layer.outPoint = time

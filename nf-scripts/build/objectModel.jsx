@@ -386,13 +386,14 @@ NFComp = (function(superClass) {
   @param {boolean} [model.applyStroke=no]
   @param {float} [model.fontSize=24]
   @param {float[]} [model.fillColor=[0,0,0]]
+  @param {float[]} [model.strokeColor=[1,1,1]]
   @param {ParagraphJustification} [model.justification=ParagraphJustification.LEFT_JUSTIFY]
   @param {String} [model.font="Avenir Next"]
   @returns {NFLayer} The newly created text layer
    */
 
   NFComp.prototype.addTextLayer = function(model) {
-    var index, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, textAVLayer, textDoc, textDocProp, tooManyIndices;
+    var index, ref, ref1, ref10, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, textAVLayer, textDoc, textDocProp, tooManyIndices;
     if (model.time == null) {
       model.time = this.getTime();
     }
@@ -404,11 +405,14 @@ NFComp = (function(superClass) {
       at: model.at,
       applyFill: (ref1 = model.applyFill) != null ? ref1 : true,
       applyStroke: (ref2 = model.applyStroke) != null ? ref2 : false,
-      fontSize: (ref3 = model.fontSize) != null ? ref3 : 24,
-      text: (ref4 = model.text) != null ? ref4 : "",
-      fillColor: (ref5 = model.fillColor) != null ? ref5 : [0, 0, 0],
-      justification: (ref6 = model.justification) != null ? ref6 : ParagraphJustification.LEFT_JUSTIFY,
-      font: (ref7 = model.font) != null ? ref7 : 'Avenir Next'
+      strokeWidth: (ref3 = model.strokeWidth) != null ? ref3 : 2,
+      strokeOverFill: (ref4 = model.strokeOverFill) != null ? ref4 : false,
+      fontSize: (ref5 = model.fontSize) != null ? ref5 : 24,
+      text: (ref6 = model.text) != null ? ref6 : "",
+      fillColor: (ref7 = model.fillColor) != null ? ref7 : [0, 0, 0],
+      strokeColor: (ref8 = model.strokeColor) != null ? ref8 : [1, 1, 1],
+      justification: (ref9 = model.justification) != null ? ref9 : ParagraphJustification.LEFT_JUSTIFY,
+      font: (ref10 = model.font) != null ? ref10 : 'Avenir Next'
     };
     if ((model.above != null) && !model.above instanceof NFLayer) {
       throw new Error("model.above must be an NFLayer");
@@ -451,6 +455,9 @@ NFComp = (function(superClass) {
     textDoc.applyFill = model.applyFill;
     textDoc.fillColor = model.fillColor;
     textDoc.applyStroke = model.applyStroke;
+    textDoc.strokeWidth = model.strokeWidth;
+    textDoc.strokeOverFill = model.strokeOverFill;
+    textDoc.strokeColor = model.strokeColor;
     textDoc.font = model.font;
     textDoc.fontSize = model.fontSize;
     textDoc.justification = model.justification;
@@ -1886,8 +1893,10 @@ at a certain time.
 due to the instructions before or after this one
 @property {NFLayoutInstruction} next - the next instruction
 @property {NFLayoutInstruction} prev - the previous instruction
-@property {int} expandNumber - which expand this is.
-@property {int} expandUpNumber - which expandUp this is.
+@property {int} expandNumber - which expand this is. Set by the validator
+@property {int} expandUpNumber - which expandUp this is. Set by the validator
+@property {String} expandLookString - the string to search for when looking for
+this highlight if it's an expand. Set by the validator
  */
 var NFLayoutInstruction,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1912,7 +1921,7 @@ NFLayoutInstruction = (function(superClass) {
   }
 
   NFLayoutInstruction.prototype.toString = function() {
-    return "NFLayoutInstruction: '" + this.instruction.display + "' @ " + this.time + " in PDF " + this.pdf;
+    return "NFLayoutInstruction: [" + this.raw + "]";
   };
 
 
@@ -1936,7 +1945,7 @@ NFLayoutInstruction = (function(superClass) {
    */
 
   NFLayoutInstruction.prototype.getInstruction = function() {
-    if (this.instruction.behavior === NFLayoutBehavior.UNRECOGNIZED && (this.flags.expand != null)) {
+    if ((this.instruction.behavior === NFLayoutBehavior.UNRECOGNIZED || this.instruction.behavior === NFLayoutBehavior.NONE) && (this.flags.expand != null)) {
       return this.getHighlight();
     } else {
       return this.instruction;
@@ -1945,7 +1954,7 @@ NFLayoutInstruction = (function(superClass) {
 
 
   /**
-  Internal use only. Returns the most recent highlight instruction
+  Returns the most recent highlight instruction
   @memberof NFLayoutInstruction
   @returns {Object} the highlight instruction (from NFLayoutInstructionDict)
    */
@@ -2472,6 +2481,26 @@ NFPaperLayerGroup = (function(superClass) {
 
 
   /**
+  Trims an active placeholder on the group to the given time
+  @memberof NFPaperLayerGroup
+  @param {float} [time=currTime] - the time to check at, or the current time by
+  default
+  @returns {NFPaperLayerGroup} self
+   */
+
+  NFPaperLayerGroup.prototype.trimActivePlaceholder = function(time) {
+    var activePH;
+    this.log("Trimming placeholders at time: " + time);
+    time = time != null ? time : this.containingComp().getTime();
+    activePH = this.containingComp().activePlaceholder(time);
+    if (activePH != null) {
+      activePH.layer.outPoint = time;
+    }
+    return this;
+  };
+
+
+  /**
   Trims all layers in this group to the given time. Call #extend to restore
   citation and spotlight master layers to a given time. Spotlights will end just
   before the group does.
@@ -2486,6 +2515,7 @@ NFPaperLayerGroup = (function(superClass) {
     this.log("Trimming group at time: " + time);
     time = time != null ? time : this.containingComp().getTime();
     this.trimActiveSpotlights(time - 0.75);
+    this.trimActivePlaceholder(time);
     this.getChildren().forEach((function(_this) {
       return function(layer) {
         if (layer.layer.outPoint > time) {
@@ -3125,7 +3155,7 @@ NFGaussyLayer = Object.assign(NFGaussyLayer, {
   @returns {NFGaussyLayer} the new gaussy layer
    */
   newGaussyLayer: function(model) {
-    var effects, gaussianBlur, gaussyAVLayer, gaussyEffect, gaussyLayer, hueSatEffect, masterLightness, masterSaturation, newName, ref, ref1, ref2, sourceExpression;
+    var effects, gaussianBlur, gaussyAVLayer, gaussyEffect, gaussyLayer, hueSatEffect, masterLightness, masterSaturation, newName, ref, ref1, ref2, sourceExpression, spotlightLayer;
     model = {
       group: (function() {
         if ((ref = model.group) != null) {
@@ -3145,7 +3175,12 @@ NFGaussyLayer = Object.assign(NFGaussyLayer, {
     });
     gaussyAVLayer = gaussyLayer.layer;
     gaussyAVLayer.adjustmentLayer = true;
-    gaussyLayer.moveBefore(model.group.getSpotlight());
+    spotlightLayer = model.group.getSpotlight();
+    if (spotlightLayer != null) {
+      gaussyLayer.moveBefore(spotlightLayer);
+    } else {
+      gaussyLayer.moveAfter(model.group.getCitationLayer());
+    }
     gaussyAVLayer.startTime = model.time;
     gaussyAVLayer.outPoint = model.time + model.duration;
     effects = gaussyLayer.effects();
@@ -3418,7 +3453,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     if (!(((model != null ? model.group : void 0) != null) && (model.highlight != null))) {
       throw new Error("Missing parameters");
     }
-    NFTools.log("Creating new control layer for highlight: " + (model.highlight.toString()));
+    NFTools.log("Creating new control layer for highlight: " + (model.highlight.toString()), "NFHighlightControlLayer");
     partComp = model.group.containingComp();
     controlLayer = partComp.addSolid({
       color: [1, 1, 0],
@@ -5461,6 +5496,7 @@ NFPartComp = (function(superClass) {
   @param {Object} model - the model object
   @param {NFHighlightLayer} [model.highlight] - the highlight to animate to
   @param {NFPageComp} [model.page] - the page to animate to
+  @param {time} [model.time=currTime] - the time to do the animation at
   @param {float} [model.animationDuration=3] - the length of the move and scale
   @param {float} [model.pageTurnDuration=2] - the length of the pageturn
   @param {float} [model.maxPageScale=115] - the maximum a page will scale
@@ -5475,10 +5511,11 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, i, isTitlePage, isUsedInPartAboveCurrentLayer, j, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer, trimTime;
+    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, isTitlePage, isUsedInPartAboveCurrentLayer, latestKeyTime, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer, trimTime;
     model = {
       highlight: model.highlight,
       page: model.page,
+      time: model.time,
       animationDuration: (ref = model.animationDuration) != null ? ref : 3,
       pageTurnDuration: (ref1 = model.pageTurnDuration) != null ? ref1 : 2,
       maxPageScale: (ref2 = model.maxPageScale) != null ? ref2 : 115,
@@ -5505,6 +5542,9 @@ NFPartComp = (function(superClass) {
     containingPartComps = targetPDF.containingPartComps();
     targetPage = (ref5 = model.page) != null ? ref5 : model.highlight.getPageComp();
     preAnimationTime = this.getTime();
+    if (model.time != null) {
+      this.setTime(model.time);
+    }
     activePDF = this.activePDF();
     if (activePDF != null) {
       prevGroup = this.groupFromPDF(activePDF);
@@ -5581,25 +5621,30 @@ NFPartComp = (function(superClass) {
       if (targetGroup != null) {
         posProp = targetGroup.paperParent.transform().position;
         if (posProp.numKeys > 0) {
-          for (i = j = 1, ref6 = posProp.numKeys; 1 <= ref6 ? j <= ref6 : j >= ref6; i = 1 <= ref6 ? ++j : --j) {
-            if (posProp.keyTime(i) > this.getTime()) {
-              throw new Error("Can't animate to page or highlight because animations exist in the FUTURE on the target PDF");
-            }
+          latestKeyTime = posProp.keyTime(posProp.numKeys);
+        }
+        if (latestKeyTime != null) {
+          if (latestKeyTime > this.getTime() + 2.0) {
+            throw new Error("Can't animate to page or highlight because animations exist in the FUTURE on the target PDF");
+          } else if (latestKeyTime > this.getTime()) {
+            this.log("WARNING: This instruction is too close to the previous one, so we're bumping it forward up to two seconds.");
+            this.setTime(latestKeyTime + 0.1);
           }
         }
       }
-      if ((ref7 = this.activePDF()) != null ? ref7.is(targetPDF) : void 0) {
+      if ((ref6 = this.activePDF()) != null ? ref6.is(targetPDF) : void 0) {
         activePageLayer = this.activePage();
         group = new NFPaperLayerGroup(activePageLayer.getPaperParentLayer());
         if (targetPage.is(activePageLayer.getPageComp())) {
           group.moveTo({
-            highlight: (ref8 = model.highlight) != null ? ref8 : null,
+            highlight: (ref7 = model.highlight) != null ? ref7 : null,
             rect: model.highlight != null ? null : activePageLayer.sourceRectForFullTop(),
             layer: model.highlight != null ? null : activePageLayer,
             duration: model.animationDuration,
             fillPercentage: model.highlight != null ? model.fillPercentage : 100,
             maxScale: model.maxPageScale
           });
+          group.trimActivePlaceholder(this.getTime());
           group.trimActiveSpotlights(this.getTime() + (model.animationDuration / 2));
           this.hideGaussy(this.getTime());
           if (model.highlight != null) {
@@ -5635,6 +5680,7 @@ NFPartComp = (function(superClass) {
               });
             }
             activePageLayer.layer.outPoint = this.getTime() - 0.5 + 2.0;
+            group.trimActivePlaceholder(this.getTime());
             group.trimActiveSpotlights(this.getTime() + 0.5);
             this.hideGaussy(this.getTime());
             if (model.highlight != null) {
@@ -5663,6 +5709,7 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage
               });
             }
+            group.trimActivePlaceholder(this.getTime());
             group.trimActiveSpotlights(this.getTime() + 0.5);
             this.hideGaussy(this.getTime());
             if (model.highlight != null) {
@@ -5794,6 +5841,48 @@ NFPartComp = (function(superClass) {
 
 
   /**
+  Adds a new placeholder layer to the comp, above the currently active group. If a
+  placeholder is already active, replace the placeholder text with the new one at
+  the given time.
+  @memberof NFPartComp
+  @param {Object} model
+  @param {String} [model.text] - the placeholder text to show over the layer
+  @param {float} [model.time=currTime] - the start time of the placeholder layer
+  @param {float} [model.duration] - the length of the placeholder layer. If not
+  given a duration, the layer will continue indefinitely.
+  @returns {NFPartComp} self
+   */
+
+  NFPartComp.prototype.addPlaceholder = function(model) {
+    var activeGroup, activePDF, placeholder, ref, ref1;
+    model.time = (ref = model.time) != null ? ref : this.getTime();
+    model.duration = (ref1 = model.duration) != null ? ref1 : this.comp.duration - model.time;
+    activePDF = this.activePDF(model.time);
+    if (activePDF != null) {
+      activeGroup = this.groupFromPDF(activePDF);
+      activeGroup.trimActivePlaceholder(model.time);
+      placeholder = this.addTextLayer({
+        text: model.text,
+        time: model.time,
+        duration: model.duration,
+        fillColor: [0, 0.6, 0.9],
+        strokeWidth: 10,
+        strokeColor: [0, 0, 0],
+        applyStroke: true,
+        below: activeGroup.getCitationLayer(),
+        justification: ParagraphJustification.CENTER_JUSTIFY,
+        fontSize: 70
+      });
+      placeholder.transform().property("Position").setValue([960, 980]);
+      placeholder.layer.name = "INSTRUCTION: " + model.text;
+    } else {
+      throw new Error("No active group to create a placeholder layer on top of");
+    }
+    return this;
+  };
+
+
+  /**
   Adds a new gaussy layer to the comp, above the currently active group. If a
   gaussy is already active, replace the placeholder text with the new one at
   the given time.
@@ -5810,7 +5899,7 @@ NFPartComp = (function(superClass) {
     var activeGaussy, activeGroup, activePDF, belowTarget, children, gaussy, placeholder, ref, ref1;
     model.time = (ref = model.time) != null ? ref : this.getTime();
     model.duration = (ref1 = model.duration) != null ? ref1 : this.comp.duration - model.time;
-    activePDF = this.activePDF();
+    activePDF = this.activePDF(model.time);
     if (activePDF != null) {
       activeGroup = this.groupFromPDF(activePDF);
       activeGaussy = this.activeGaussy(model.time);
@@ -5945,6 +6034,28 @@ NFPartComp = (function(superClass) {
 
 
   /**
+  Returns an active placeholder if one exists, or null.
+  @memberof NFPartComp
+  @param {float} [time=currTime] - the time to check
+  @returns {NFLayer} the active placeholder layer at the given time, or null
+   */
+
+  NFPartComp.prototype.activePlaceholder = function(time) {
+    var foundPlaceholder;
+    time = time != null ? time : this.getTime();
+    foundPlaceholder = null;
+    this.activeLayers(time).forEach((function(_this) {
+      return function(activeLayer) {
+        if (activeLayer.getName().indexOf("INSTRUCTION:") >= 0) {
+          return foundPlaceholder = activeLayer;
+        }
+      };
+    })(this));
+    return foundPlaceholder;
+  };
+
+
+  /**
   Gets the zoomer layer
   @memberof NFPartComp
   @override
@@ -5992,11 +6103,11 @@ NFPartComp = (function(superClass) {
       this.setTime(time);
     }
     activePage = null;
-    activeLayers = this.activeLayers();
+    activeLayers = this.activeLayers(time);
     while (!activeLayers.isEmpty()) {
       topLayer = activeLayers.getTopmostLayer();
       if (topLayer instanceof NFPageLayer) {
-        if (topLayer.pageTurnStatus() !== NFPageLayer.PAGETURN_FLIPPED_UP && topLayer.property("Transform").property("Opacity").value === 100) {
+        if (topLayer.pageTurnStatus(time) !== NFPageLayer.PAGETURN_FLIPPED_UP && topLayer.property("Transform").property("Opacity").value === 100) {
           activePage = topLayer;
           break;
         }
@@ -6164,7 +6275,7 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
   @returns {boolean} whether the AV layer is a valid spotlight layer
    */
   isSpotlightLayer: function(theLayer) {
-    return theLayer.isAVLayer() && theLayer.isSolid();
+    return theLayer.isAVLayer() && theLayer.isSolid() && theLayer.name.indexOf("Spotlight" >= 0);
   },
 
   /**

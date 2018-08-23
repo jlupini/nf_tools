@@ -16,8 +16,10 @@ at a certain time.
 due to the instructions before or after this one
 @property {NFLayoutInstruction} next - the next instruction
 @property {NFLayoutInstruction} prev - the previous instruction
-@property {int} expandNumber - which expand this is.
-@property {int} expandUpNumber - which expandUp this is.
+@property {int} expandNumber - which expand this is. Set by the validator
+@property {int} expandUpNumber - which expandUp this is. Set by the validator
+@property {String} expandLookString - the string to search for when looking for
+this highlight if it's an expand. Set by the validator
 ###
 class NFLayoutInstruction extends NFObject
   constructor: (model) ->
@@ -34,7 +36,7 @@ class NFLayoutInstruction extends NFObject
     @expandNumber = 0
     @expandUpNumber = 0
   toString: ->
-    return "NFLayoutInstruction: '#{@instruction.display}' @ #{@time} in PDF #{@pdf}"
+    return "NFLayoutInstruction: [#{@raw}]"
 
   ###*
   Gets the pdf, looking recursively back through previous instructions until
@@ -52,13 +54,13 @@ class NFLayoutInstruction extends NFObject
   @returns {Object} the instruction (from NFLayoutInstructionDict)
   ###
   getInstruction: ->
-    if @instruction.behavior is NFLayoutBehavior.UNRECOGNIZED and @flags.expand?
+    if (@instruction.behavior is NFLayoutBehavior.UNRECOGNIZED or @instruction.behavior is NFLayoutBehavior.NONE) and @flags.expand?
       # We have an expand but not the highlight - go back and find it
       return @getHighlight()
     else return @instruction
 
   ###*
-  Internal use only. Returns the most recent highlight instruction
+  Returns the most recent highlight instruction
   @memberof NFLayoutInstruction
   @returns {Object} the highlight instruction (from NFLayoutInstructionDict)
   ###
