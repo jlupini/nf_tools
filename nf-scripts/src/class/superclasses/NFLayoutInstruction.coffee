@@ -18,6 +18,7 @@ due to the instructions before or after this one
 @property {NFLayoutInstruction} prev - the previous instruction
 @property {int} expandNumber - which expand this is. Set by the validator
 @property {int} expandUpNumber - which expandUp this is. Set by the validator
+@property {boolean} break - if the script should add a breakpoint before processing
 @property {String} expandLookString - the string to search for when looking for
 this highlight if it's an expand. Set by the validator
 ###
@@ -35,6 +36,7 @@ class NFLayoutInstruction extends NFObject
     @prev = model.prev
     @expandNumber = 0
     @expandUpNumber = 0
+    @break = model.break
   toString: ->
     return "NFLayoutInstruction: [#{@raw}]"
 

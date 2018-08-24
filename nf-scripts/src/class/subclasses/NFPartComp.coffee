@@ -511,7 +511,7 @@ class NFPartComp extends NFComp
   ###
   trimTo: (time) ->
     @activeLayers(time).forEach (layer) =>
-      layer.outPoint = time
+      layer.layer.outPoint = time
 
   ###*
   Returns an active gaussy if one exists, or null. DIFFERENT FROM #gaussyActive

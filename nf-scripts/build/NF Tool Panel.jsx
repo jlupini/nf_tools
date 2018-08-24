@@ -81,6 +81,24 @@ toolRegistry = {
   animation: {
     name: "Animation",
     tools: {
+      toggleSpotlights: {
+        name: "Toggle Spotlight Layers",
+        callback: function() {
+          var j, len, part, parts, results, spotlightLayers;
+          parts = NFProject.allPartComps();
+          results = [];
+          for (j = 0, len = parts.length; j < len; j++) {
+            part = parts[j];
+            spotlightLayers = part.searchLayers("Spotlight");
+            results.push(spotlightLayers.forEach((function(_this) {
+              return function(spotlight) {
+                return spotlight.layer.enabled = !spotlight.layer.enabled;
+              };
+            })(this)));
+          }
+          return results;
+        }
+      },
       addSpotlightMarker: {
         name: "Add Spotlight Marker",
         callback: function() {

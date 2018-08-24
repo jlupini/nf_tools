@@ -30,8 +30,8 @@ class NFHighlightControlLayer extends NFLayer
       thisMarkerValue = markers.keyValue idx
       if thisMarkerValue.comment is "Spotlight"
         markerObject =
-          value: @markers().keyValue "Spotlight"
-          time: @markers().keyTime "Spotlight"
+          value: @markers().keyValue idx
+          time: @markers().keyTime idx
         spotMarkers.push markerObject
 
     return spotMarkers
@@ -69,12 +69,17 @@ class NFHighlightControlLayer extends NFLayer
       throw new Error "Can't set spotlight marker in point because there are no spotlight markers"
 
     oldMarker = spotMarkers[0]
+    oldMarkerIdx = 1
     if spotMarkers.length > 1
       # Get the one with the closest in point
+      i = 0
       for testMarker in spotMarkers
         currDistance = Math.abs(oldMarker.time - newInPoint)
         testDistance = Math.abs(testMarker.time - newInPoint)
-        oldMarker = testMarker if testDistance < currDistance
+        if testDistance < currDistance
+          oldMarker = testMarker
+          oldMarkerIdx = i + 1
+        i++
 
 
     startDelta = newInPoint - oldMarker.time
@@ -82,7 +87,7 @@ class NFHighlightControlLayer extends NFLayer
     newDuration = 0 if newDuration < 0
 
     # Remove the old marker
-    @markers().removeKey @layer.indexOfMarker("Spotlight")
+    @markers().removeKey oldMarkerIdx
 
     @addMarker
       comment: "Spotlight"
@@ -104,12 +109,17 @@ class NFHighlightControlLayer extends NFLayer
       throw new Error "Can't set spotlight marker out point because there are no spotlight markers"
 
     oldMarker = spotMarkers[0]
+    oldMarkerIdx = 1
     if spotMarkers.length > 1
       # Get the one with the closest out point
+      i = 0
       for testMarker in spotMarkers
         currDistance = Math.abs(oldMarker.time + oldMarker.value.duration - newOutPoint)
         testDistance = Math.abs(testMarker.time + testMarker.value.duration - newOutPoint)
-        oldMarker = testMarker if testDistance < currDistance
+        if testDistance < currDistance
+          oldMarker = testMarker
+          oldMarkerIdx = i + 1
+        i++
 
     if newOutPoint < oldMarker.time
       newInPoint = newOutPoint
@@ -121,7 +131,7 @@ class NFHighlightControlLayer extends NFLayer
       duration = oldMarker.value.duration + delta
 
     # Remove the old marker
-    @markers().removeKey @layer.indexOfMarker("Spotlight")
+    @markers().removeKey oldMarkerIdx
 
     @addMarker
       comment: "Spotlight"

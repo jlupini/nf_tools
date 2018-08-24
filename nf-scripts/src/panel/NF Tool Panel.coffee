@@ -73,6 +73,15 @@ toolRegistry =
     name: "Animation"
     tools:
 
+      toggleSpotlights:
+        name: "Toggle Spotlight Layers"
+        callback: ->
+          parts = NFProject.allPartComps()
+          for part in parts
+            spotlightLayers = part.searchLayers "Spotlight"
+            spotlightLayers.forEach (spotlight) =>
+              spotlight.layer.enabled = !spotlight.layer.enabled
+
       addSpotlightMarker:
         name: "Add Spotlight Marker"
         callback: ->

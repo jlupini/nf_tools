@@ -34,6 +34,11 @@ NFLayoutInstructionExpand =
 	display: "Expand"
 	type: NFLayoutType.EXPAND
 
+NFLayoutInstructionIgnore =
+	display: "Ignore"
+	type: NFLayoutType.INSTRUCTION
+	behavior: NFLayoutBehavior.DO_NOTHING
+
 NFLayoutInstructionNone =
 	display: "No Instruction"
 	type: NFLayoutType.INSTRUCTION

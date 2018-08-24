@@ -72,8 +72,10 @@ NFTools = {
   @returns {null} null
    */
   editFile: function(filename, fn) {
-    var closeCheck, encoding, newFileText, openCheck, theFile, theFileText, writeCheck;
-    theFile = new File(filename);
+    var closeCheck, encoding, newFileText, openCheck, parentPath, relPath, theFile, theFileText, writeCheck;
+    parentPath = (new File($.fileName)).parent.fsName;
+    relPath = filename[0] === "/" ? filename : "/" + filename;
+    theFile = new File(parentPath + relPath);
     if (theFile.exists) {
       openCheck = theFile.open("r");
       if (!openCheck) {
@@ -333,7 +335,7 @@ NFTools = {
   @returns {NFLayoutInstruction[]} the instruction object array
    */
   parseInstructions: function(parsedLines) {
-    var key, l, layoutInstruction, len1, len2, line, logString, o, pad, parsed, parsedInstructions, prevInstruction;
+    var key, l, layoutInstruction, len1, len2, line, logString, m, pad, parsed, parsedInstructions, prevInstruction;
     parsedInstructions = [];
     prevInstruction = null;
     NFTools.log("Parsing instructions...", "parseInstructions");
@@ -354,8 +356,8 @@ NFTools = {
     }
     parsedInstructions.push(prevInstruction);
     NFTools.log("Finished parsing instructions. Result:", "parseInstructions");
-    for (o = 0, len2 = parsedInstructions.length; o < len2; o++) {
-      parsed = parsedInstructions[o];
+    for (m = 0, len2 = parsedInstructions.length; m < len2; m++) {
+      parsed = parsedInstructions[m];
       pad = function(str, len) {
         str = str.toString();
         if (str.length < len) {
@@ -393,17 +395,33 @@ NFTools = {
   @returns {NFLayoutInstruction} the instruction object
    */
   parseInstructionString: function(input) {
-    var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, o, option, parsedObject, ref, ref1, regexResult, targetPDFNumber;
+    var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, m, option, parsedObject, ref, ref1, regexResult, shouldBreak, strippedInput, targetPDFNumber;
     NFTools.log("Parsing instruction: '" + input + "'", "parseInstructionString");
-    targetPDFNumber = /(^\d+)/i.exec(input);
+    if (input[0] === "\\") {
+      NFTools.log("Ignoring instruction", "parseInstructionString");
+      NFTools.logLine();
+      return new NFLayoutInstruction({
+        raw: input,
+        flags: {},
+        instruction: NFLayoutInstructionIgnore
+      });
+    }
+    if (input[0] === "!") {
+      strippedInput = input.substr(1);
+      shouldBreak = true;
+    } else {
+      strippedInput = input;
+      shouldBreak = false;
+    }
+    targetPDFNumber = /(^\d+)/i.exec(strippedInput);
     if (targetPDFNumber != null) {
       targetPDFNumber = targetPDFNumber[1];
     }
     if (targetPDFNumber != null) {
-      instructionString = input.slice(targetPDFNumber.length);
+      instructionString = strippedInput.slice(targetPDFNumber.length);
       NFTools.log("Target PDF Number found: '" + targetPDFNumber + "'", "parseInstructionString");
     } else {
-      instructionString = input;
+      instructionString = strippedInput;
     }
     flags = {};
     for (key in NFLayoutFlagDict) {
@@ -424,8 +442,8 @@ NFTools = {
       for (key in NFLayoutInstructionDict) {
         option = NFLayoutInstructionDict[key];
         ref1 = option.code;
-        for (o = 0, len2 = ref1.length; o < len2; o++) {
-          code = ref1[o];
+        for (m = 0, len2 = ref1.length; m < len2; m++) {
+          code = ref1[m];
           if (instructionString === code) {
             if (instruction != null) {
               if ((option.priority != null) && (instruction.priority != null) && option.priority < instruction.priority) {
@@ -464,7 +482,8 @@ NFTools = {
       raw: input,
       pdf: targetPDFNumber,
       flags: flags,
-      instruction: instruction
+      instruction: instruction,
+      "break": shouldBreak
     });
   },
 
@@ -472,11 +491,15 @@ NFTools = {
   Imports the script (script.txt) and the instructions (transcript.csv) files.
   Compares the two of them to combine.
   @memberof NFTools
+  @param {boolean} [detailedAnalysis=no] - if a detailed analysis should be done
   @returns {Object[]} an Array of line objects with 'instruction', 'text', and
   'timecodes' keys
    */
-  readAndCombineScriptAndInstructions: function() {
-    var assumedLineTimecodes, assumedSentence, avg, cleanLine, compareRange, customTC, dirtyScriptArray, element, endIdx, getMinSim, growCount, growThreshold, i, instructionArray, instructionFile, instructionString, l, len1, len2, lineObj, minSim, minSims, o, parsedLines, prevTC, rangeString, ref, removeLineBreaks, scriptFile, scriptLines, scriptString, sim, simValues, splitElement, startIdx, sum, tc, testChar, testLine, testLineIdx, testLineText, theWord, toPercent, trimmed, val, word;
+  readAndCombineScriptAndInstructions: function(detailedAnalysis) {
+    var afterTC, averageTC, beforeTC, bestComparison, cleanLine, comparison, comprehensiveRangeTest, dirtyScriptArray, dummy, element, findBestRange, getMinSim, instructionArray, instructionFile, instructionString, l, lastWinner, len1, len2, lineObj, m, o, parsedLine, parsedLines, rangeComparison, ref, ref1, removeLineBreaks, scriptFile, scriptLines, scriptString, sentenceFromInstructionRange, splitElement, testChar, testEnd, testLine, testLineIdx, testStart, timecodes, toPercent, trimmed, winners, wordCount;
+    if (detailedAnalysis == null) {
+      detailedAnalysis = false;
+    }
     cleanLine = function(line) {
       var cleaned;
       cleaned = line.toLowerCase();
@@ -519,19 +542,23 @@ NFTools = {
     }
     instructionString = NFTools.readProjectFile(instructionFile);
     instructionArray = instructionString.splitCSV();
-    compareRange = function(model) {
-      var lineSentence, retObj, testSentence, testTimecodes, theWord;
-      testTimecodes = instructionArray.slice(model.from, model.to + 1);
-      testSentence = cleanLine(((function() {
-        var len2, o, results;
+    sentenceFromInstructionRange = function(fromVal, toVal) {
+      var testTimecodes, theWord;
+      testTimecodes = instructionArray.slice(fromVal, toVal + 1);
+      return ((function() {
+        var len2, m, results;
         results = [];
-        for (o = 0, len2 = testTimecodes.length; o < len2; o++) {
-          theWord = testTimecodes[o];
+        for (m = 0, len2 = testTimecodes.length; m < len2; m++) {
+          theWord = testTimecodes[m];
           results.push(theWord[1] + " ");
         }
         return results;
-      })()).join("").trim());
-      lineSentence = cleanLine(scriptLines[model.line].text);
+      })()).join("").trim();
+    };
+    rangeComparison = function(model) {
+      var lineSentence, retObj, testSentence;
+      testSentence = cleanLine(sentenceFromInstructionRange(model.from, model.to));
+      lineSentence = cleanLine(model.line.text);
       return retObj = {
         match: NFTools.similarity(testSentence, lineSentence),
         line: model.line,
@@ -539,114 +566,166 @@ NFTools = {
         to: model.to
       };
     };
-    testLineIdx = 0;
-    testLine = "";
-    rangeString = "";
-    startIdx = 0;
-    endIdx = 0;
-    growCount = 0;
-    growThreshold = 3;
-    minSims = [];
-    simValues = [];
-    parsedLines = [];
-    i = 1;
-    NFTools.log("Comparing lines...", "readAndCombineScriptAndInstructions");
-    while (testLineIdx !== scriptLines.length) {
-      if (testLineIdx === scriptLines.length - 1) {
-        assumedLineTimecodes = instructionArray.slice(i);
-        assumedSentence = ((function() {
-          var len2, o, results;
-          results = [];
-          for (o = 0, len2 = assumedLineTimecodes.length; o < len2; o++) {
-            theWord = assumedLineTimecodes[o];
-            results.push(theWord[1] + " ");
-          }
-          return results;
-        })()).join("").trim();
-        sim = NFTools.similarity(cleanLine(assumedSentence), testLineText);
-        minSims.push(sim);
-        NFTools.log("Last line - grabbing whatever's left: '" + (cleanLine(assumedSentence)) + "' at " + assumedLineTimecodes[0][0], "readAndCombineScriptAndInstructions");
-        NFTools.log("Match: " + (toPercent(sim)), "readAndCombineScriptAndInstructions");
-        NFTools.logLine();
-        parsedLines.push({
-          instruction: testLine.instruction,
-          text: removeLineBreaks(testLine.text),
-          timecodes: assumedLineTimecodes
-        });
-        break;
-      }
-      if (testLine.text !== scriptLines[testLineIdx].text) {
-        testLine = scriptLines[testLineIdx];
-        testLineText = cleanLine(testLine.text);
-        NFTools.log("Test Line:   '" + testLineText + "'", "readAndCombineScriptAndInstructions");
-      }
-      tc = instructionArray[i][0];
-      word = instructionArray[i][1];
-      if (testLineText === "") {
-        prevTC = i === 1 ? 0 : instructionArray[i - 1][0];
-        customTC = (parseFloat(tc) + parseFloat(prevTC)) / 2;
-        assumedLineTimecodes = [[customTC, '', '']];
-        parsedLines.push({
-          instruction: testLine.instruction,
-          text: "",
-          timecodes: assumedLineTimecodes
-        });
-        NFTools.log("Empty test line at " + assumedLineTimecodes[0][0] + " - moving on", "readAndCombineScriptAndInstructions");
-        NFTools.logLine();
-        testLineIdx++;
-      } else {
-        if (rangeString === "") {
-          startIdx = i;
-          rangeString = word;
-        } else {
-          rangeString += " " + word;
+    findBestRange = function(model) {
+      var bestComparison, comparison, comparisons, growCount, growThreshold, lastComparison, len2, m, ref1, ref2, ref3, testComparison, testCount;
+      model = {
+        testStart: model.testStart,
+        testEnd: model.testEnd,
+        startDelta: (ref1 = model.startDelta) != null ? ref1 : 0,
+        endDelta: (ref2 = model.endDelta) != null ? ref2 : 0,
+        maxTests: (ref3 = model.maxTests) != null ? ref3 : 100,
+        method: model.method
+      };
+      testCount = 0;
+      growCount = 0;
+      growThreshold = 2;
+      comparisons = [];
+      while (growCount <= growThreshold && testCount <= model.maxTests) {
+        if (comparisons.length) {
+          lastComparison = comparisons[comparisons.length - 1];
         }
-        rangeString = cleanLine(rangeString);
-        simValues[i] = NFTools.similarity(rangeString, testLineText);
-        if (simValues[i] > simValues[i - 1]) {
+        comparison = rangeComparison({
+          line: testLine,
+          from: testStart,
+          to: testEnd
+        });
+        comparisons.push(comparison);
+        if ((lastComparison != null ? lastComparison.match : void 0) < comparison.match) {
           growCount++;
-        } else {
-          growCount = 0;
         }
-        if (growCount >= growThreshold) {
-          minSim = getMinSim(simValues);
-          minSims.push(minSim);
-          endIdx = simValues.indexOf(minSim);
-          assumedLineTimecodes = instructionArray.slice(startIdx, endIdx + 1);
-          assumedSentence = ((function() {
-            var len2, o, results;
-            results = [];
-            for (o = 0, len2 = assumedLineTimecodes.length; o < len2; o++) {
-              theWord = assumedLineTimecodes[o];
-              results.push(theWord[1] + " ");
-            }
-            return results;
-          })()).join("").trim();
-          NFTools.log("Best result: '" + (cleanLine(assumedSentence)) + "' at " + assumedLineTimecodes[0][0], "readAndCombineScriptAndInstructions");
-          NFTools.log("Match: " + (toPercent(minSim)), "readAndCombineScriptAndInstructions");
-          NFTools.logLine();
-          parsedLines.push({
-            instruction: testLine.instruction,
-            text: removeLineBreaks(testLine.text),
-            timecodes: assumedLineTimecodes
-          });
-          simValues = [];
-          rangeString = "";
-          growCount = 0;
-          i = endIdx;
-          testLineIdx++;
+        testCount++;
+        testEnd += model.endDelta;
+        testStart += model.startDelta;
+        if (testStart < 1 || testEnd > instructionArray.length) {
+          break;
         }
-        i++;
+        if (testEnd < testStart) {
+          break;
+        }
       }
+      bestComparison = null;
+      for (m = 0, len2 = comparisons.length; m < len2; m++) {
+        testComparison = comparisons[m];
+        if ((bestComparison == null) || testComparison.match < bestComparison.match) {
+          bestComparison = testComparison;
+        }
+      }
+      bestComparison.method = model.method;
+      return bestComparison;
+    };
+    comprehensiveRangeTest = function(model) {
+      var bestComparison, len2, m, testComparison, testResults;
+      testResults = [];
+      testResults.push(findBestRange({
+        testStart: testStart,
+        testEnd: testEnd,
+        endDelta: 1,
+        method: "Growing Tail"
+      }));
+      testResults.push(findBestRange({
+        testStart: testStart,
+        testEnd: testEnd,
+        endDelta: -1,
+        method: "Shrinking Tail"
+      }));
+      if (detailedAnalysis) {
+        testResults.push(findBestRange({
+          testStart: testStart,
+          testEnd: testEnd,
+          startDelta: -1,
+          endDelta: -1,
+          maxTests: 20,
+          method: "Shifting Back"
+        }));
+        testResults.push(findBestRange({
+          testStart: testStart,
+          testEnd: testEnd,
+          startDelta: 1,
+          endDelta: 1,
+          maxTests: 20,
+          method: "Shifting Forward"
+        }));
+        testResults.push(findBestRange({
+          testStart: testStart,
+          testEnd: testEnd,
+          startDelta: -2,
+          endDelta: -1,
+          maxTests: 20,
+          method: "Growing Backwards"
+        }));
+        testResults.push(findBestRange({
+          testStart: testStart,
+          testEnd: testEnd,
+          startDelta: 1,
+          endDelta: 2,
+          maxTests: 20,
+          method: "Growing Forwards"
+        }));
+      }
+      bestComparison = null;
+      for (m = 0, len2 = testResults.length; m < len2; m++) {
+        testComparison = testResults[m];
+        if ((bestComparison == null) || testComparison.match < bestComparison.match) {
+          bestComparison = testComparison;
+        }
+      }
+      return bestComparison;
+    };
+    NFTools.log("Comparing lines...\n", "readAndCombineScriptAndInstructions");
+    winners = [];
+    for (testLineIdx = m = 0, ref1 = scriptLines.length - 1; 0 <= ref1 ? m <= ref1 : m >= ref1; testLineIdx = 0 <= ref1 ? ++m : --m) {
+      testLine = scriptLines[testLineIdx];
+      lastWinner = winners.length ? winners[winners.length - 1] : null;
+      NFTools.log("Test Line:   '" + (cleanLine(testLine.text)) + "'", "readAndCombineScriptAndInstructions");
+      wordCount = testLine.text.split(' ').length;
+      testStart = lastWinner != null ? lastWinner.to + 1 : 1;
+      testEnd = testStart + wordCount;
+      if (testLine.text === "") {
+        winners.push(dummy = {
+          from: testStart,
+          to: testStart - 1,
+          line: testLine,
+          method: "None",
+          match: 0
+        });
+        NFTools.log("Empty test line - moving on", "readAndCombineScriptAndInstructions");
+      } else {
+        bestComparison = comprehensiveRangeTest({
+          testStart: testStart,
+          testEnd: testEnd
+        });
+        winners.push(bestComparison);
+        NFTools.log("Best result: '" + (cleanLine(sentenceFromInstructionRange(bestComparison.from, bestComparison.to))) + "'", "readAndCombineScriptAndInstructions");
+        NFTools.log("Method '" + bestComparison.method + "' is the winner, with range " + bestComparison.from + "-" + bestComparison.to, "readAndCombineScriptAndInstructions");
+        if ((lastWinner != null) && lastWinner.to >= bestComparison.from) {
+          NFTools.logLine();
+          NFTools.log("NOTE: last result shifted back, so we're moving the previous one...", "readAndCombineScriptAndInstructions");
+          lastWinner.to = bestComparison.from - 1;
+          NFTools.log("Prev test Line:   '" + (cleanLine(lastWinner.line.text)) + "'", "readAndCombineScriptAndInstructions");
+          NFTools.log("Adjusted match:   '" + (cleanLine(sentenceFromInstructionRange(lastWinner.from, lastWinner.to))) + "'", "readAndCombineScriptAndInstructions");
+          winners[winners.length - 2] = lastWinner;
+        }
+      }
+      NFTools.logLine();
     }
-    sum = 0;
-    for (o = 0, len2 = minSims.length; o < len2; o++) {
-      val = minSims[o];
-      sum += val;
+    parsedLines = [];
+    for (o = 0, len2 = winners.length; o < len2; o++) {
+      comparison = winners[o];
+      if (comparison.to < comparison.from) {
+        beforeTC = comparison.to <= 1 ? 0 : instructionArray[comparison.to][0];
+        afterTC = instructionArray[comparison.from][0];
+        averageTC = (parseFloat(beforeTC) + parseFloat(afterTC)) / 2;
+        timecodes = [[averageTC, '', '']];
+      } else {
+        timecodes = instructionArray.slice(comparison.from, comparison.to + 1);
+      }
+      parsedLine = {
+        instruction: comparison.line.instruction,
+        text: comparison.line.text,
+        timecodes: timecodes
+      };
+      parsedLines.push(parsedLine);
     }
-    avg = sum / minSims.length;
-    NFTools.log("Average match: " + (toPercent(avg)), "readAndCombineScriptAndInstructions");
-    NFTools.logLine();
     NFTools.log("Done Importing!", "readAndCombineScriptAndInstructions");
     NFTools.logLine();
     return parsedLines;
@@ -662,12 +741,13 @@ NFTools = {
   @returns {int} the result
    */
   similarity: function(str1, str2) {
-    var n;
+    var n, res;
     if (!(typeof str1 === 'string' && typeof str2 === 'string')) {
       throw new Error("Can't compare similarity of non-strings");
     }
     n = Math.max(str1.length, str2.length);
-    return NFTools.levenshtein(str1, str2) / n;
+    res = NFTools.levenshtein(str1, str2) / n;
+    return res;
   },
 
   /**
@@ -678,58 +758,40 @@ NFTools = {
   @param {String} str2
   @returns {int} the result
    */
-  levenshtein: function(str1, str2) {
-    var cost, i, j, m, minimum, n, x, y;
-    cost = new Array;
-    n = str1.length;
-    m = str2.length;
-    minimum = function(a, b, c) {
-      var min;
-      min = a;
-      if (b < min) {
-        min = b;
-      }
-      if (c < min) {
-        min = c;
-      }
-      return min;
-    };
-    if (n === 0) {
-      return;
+  levenshtein: function(a, b) {
+    var i, j, matrix;
+    if (a.length === 0) {
+      return b.length;
     }
-    if (m === 0) {
-      return;
+    if (b.length === 0) {
+      return a.length;
     }
+    matrix = [];
+    i = void 0;
     i = 0;
-    while (i <= n) {
-      cost[i] = new Array;
+    while (i <= b.length) {
+      matrix[i] = [i];
       i++;
     }
-    i = 0;
-    while (i <= n) {
-      cost[i][0] = i;
-      i++;
-    }
+    j = void 0;
     j = 0;
-    while (j <= m) {
-      cost[0][j] = j;
+    while (j <= a.length) {
+      matrix[0][j] = j;
       j++;
     }
     i = 1;
-    while (i <= n) {
-      x = str1.charAt(i - 1);
+    while (i <= b.length) {
       j = 1;
-      while (j <= m) {
-        y = str2.charAt(j - 1);
-        if (x === y) {
-          cost[i][j] = cost[i - 1][j - 1];
+      while (j <= a.length) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
         } else {
-          cost[i][j] = 1 + minimum(cost[i - 1][j - 1], cost[i][j - 1], cost[i - 1][j]);
+          matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
         }
         j++;
       }
       i++;
     }
-    return cost[n][m];
+    return matrix[b.length][a.length];
   }
 };

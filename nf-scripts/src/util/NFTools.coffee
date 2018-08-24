@@ -77,7 +77,9 @@ NFTools =
   @returns {null} null
   ###
   editFile: (filename, fn) ->
-    theFile = new File filename
+    parentPath = (new File($.fileName)).parent.fsName
+    relPath = if filename[0] is "/" then filename else "/#{filename}"
+    theFile = new File(parentPath + relPath)
 
     if theFile.exists
 
@@ -341,16 +343,32 @@ NFTools =
   @returns {NFLayoutInstruction} the instruction object
   ###
   parseInstructionString: (input) ->
-
     NFTools.log "Parsing instruction: '#{input}'", "parseInstructionString"
+
+    # Skip parsing if the instruction starts with a backslash
+    if input[0] is "\\"
+      NFTools.log "Ignoring instruction", "parseInstructionString"
+      NFTools.logLine()
+      return new NFLayoutInstruction
+        raw: input
+        flags: {}
+        instruction: NFLayoutInstructionIgnore
+
+    if input[0] is "!"
+      strippedInput = input.substr 1
+      shouldBreak = yes
+    else
+      strippedInput = input
+      shouldBreak = no
+
     # Get a PDF Number from the input, if any
-    targetPDFNumber = /(^\d+)/i.exec(input)
+    targetPDFNumber = /(^\d+)/i.exec(strippedInput)
     targetPDFNumber = targetPDFNumber[1] if targetPDFNumber?
     if targetPDFNumber?
-      instructionString = input.slice(targetPDFNumber.length)
+      instructionString = strippedInput.slice(targetPDFNumber.length)
       NFTools.log "Target PDF Number found: '#{targetPDFNumber}'", "parseInstructionString"
     else
-      instructionString = input
+      instructionString = strippedInput
 
     flags = {}
     # Look for any flags and remove them for later
@@ -408,15 +426,17 @@ NFTools =
       pdf: targetPDFNumber
       flags: flags
       instruction: instruction
+      break: shouldBreak
 
   ###*
   Imports the script (script.txt) and the instructions (transcript.csv) files.
   Compares the two of them to combine.
   @memberof NFTools
+  @param {boolean} [detailedAnalysis=no] - if a detailed analysis should be done
   @returns {Object[]} an Array of line objects with 'instruction', 'text', and
   'timecodes' keys
   ###
-  readAndCombineScriptAndInstructions: ->
+  readAndCombineScriptAndInstructions: (detailedAnalysis = no) ->
 
     # Removes punctuation, line breaks, and converts to lower case
     cleanLine = (line) ->
@@ -458,124 +478,179 @@ NFTools =
     instructionString = NFTools.readProjectFile instructionFile
     instructionArray = instructionString.splitCSV()
 
-    # Takes the line index, and a instruction range, and returns the similarity value
-    compareRange = (model) ->
+    sentenceFromInstructionRange = (fromVal, toVal) ->
+      testTimecodes = instructionArray.slice fromVal, toVal + 1
+      return ("#{theWord[1]} " for theWord in testTimecodes).join("").trim()
+
+    # Takes the line, and a instruction range, and returns the similarity value
+    rangeComparison = (model) ->
       # model =
       #   model.line
       #   model.from
       #   model.to
-      testTimecodes = instructionArray.slice model.from, model.to + 1
-      testSentence = cleanLine (("#{theWord[1]} " for theWord in testTimecodes).join("").trim())
-      lineSentence = cleanLine scriptLines[model.line].text
+      testSentence = cleanLine sentenceFromInstructionRange(model.from, model.to)
+      lineSentence = cleanLine model.line.text
       return retObj =
         match: NFTools.similarity testSentence, lineSentence
         line: model.line
         from: model.from
         to: model.to
 
+    findBestRange = (model) ->
+      model =
+        testStart: model.testStart
+        testEnd: model.testEnd
+        startDelta: model.startDelta ? 0
+        endDelta: model.endDelta ? 0
+        maxTests: model.maxTests ? 100
+        method: model.method
 
-    # Match up lines with ranges of words from the instruction array
-    testLineIdx = 0
-    testLine = ""
-    rangeString = ""
-    startIdx = 0
-    endIdx = 0
-    growCount = 0
-    growThreshold = 3
-    minSims = []
-    simValues = []
-    parsedLines = []
-    i = 1
-    # FIXME: Deal with the possibility of the first testLine being empty texted
-    NFTools.log "Comparing lines...", "readAndCombineScriptAndInstructions"
-    while testLineIdx isnt scriptLines.length
-      # If we're on the last line, save some time by just grabbing whatever's left
-      if testLineIdx is scriptLines.length - 1
-        assumedLineTimecodes = instructionArray.slice i
-        assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
-        sim = NFTools.similarity cleanLine(assumedSentence), testLineText
-        minSims.push sim
-        NFTools.log "Last line - grabbing whatever's left: '#{cleanLine assumedSentence}' at #{assumedLineTimecodes[0][0]}", "readAndCombineScriptAndInstructions"
-        NFTools.log "Match: #{toPercent sim}", "readAndCombineScriptAndInstructions"
-        NFTools.logLine()
-        parsedLines.push
-          instruction: testLine.instruction
-          text: removeLineBreaks testLine.text
-          timecodes: assumedLineTimecodes
-        break
+      # NFTools.log "Testing method '#{model.method}'", "Fuck it"
 
-      # Grab the testLine
-      if testLine.text isnt scriptLines[testLineIdx].text
-        testLine = scriptLines[testLineIdx]
-        testLineText = cleanLine testLine.text
-        NFTools.log "Test Line:   '#{testLineText}'", "readAndCombineScriptAndInstructions"
+      testCount = 0
+      growCount = 0
+      growThreshold = 2
+      comparisons = []
+      while growCount <= growThreshold and testCount <= model.maxTests
+        # NFTools.log "Trying #{testStart}-#{testEnd}", "Fuck it"
+        lastComparison = comparisons[comparisons.length-1] if comparisons.length
+        comparison = rangeComparison
+          line: testLine
+          from: testStart
+          to: testEnd
+        comparisons.push comparison
+
+        growCount++ if lastComparison?.match < comparison.match
+        testCount++
+
+        # Adjust test range for next round
+        testEnd += model.endDelta
+        testStart += model.startDelta
+
+        # Break if going out of bounds or end and start switch
+        break if testStart < 1 or testEnd > instructionArray.length
+        break if testEnd < testStart
+
+      # look for the best value we found
+      bestComparison = null
+      for testComparison in comparisons
+        if not bestComparison? or testComparison.match < bestComparison.match
+          bestComparison = testComparison
+      bestComparison.method = model.method
+      # NFTools.log "Method '#{model.method}' had a best match of #{bestComparison.match}", "Fuck it"
+      return bestComparison
+
+    comprehensiveRangeTest = (model) ->
+      # Get best ranges for a few different directions
+      testResults = []
+      testResults.push findBestRange
+        testStart: testStart
+        testEnd: testEnd
+        endDelta: 1
+        method: "Growing Tail"
+
+      testResults.push findBestRange
+        testStart: testStart
+        testEnd: testEnd
+        endDelta: -1
+        method: "Shrinking Tail"
+
+      if detailedAnalysis
+        testResults.push findBestRange
+          testStart: testStart
+          testEnd: testEnd
+          startDelta: -1
+          endDelta: -1
+          maxTests: 20
+          method: "Shifting Back"
+
+        testResults.push findBestRange
+          testStart: testStart
+          testEnd: testEnd
+          startDelta: 1
+          endDelta: 1
+          maxTests: 20
+          method: "Shifting Forward"
+
+        testResults.push findBestRange
+          testStart: testStart
+          testEnd: testEnd
+          startDelta: -2
+          endDelta: -1
+          maxTests: 20
+          method: "Growing Backwards"
+
+        testResults.push findBestRange
+          testStart: testStart
+          testEnd: testEnd
+          startDelta: 1
+          endDelta: 2
+          maxTests: 20
+          method: "Growing Forwards"
+
+      # look for the best value we found
+      bestComparison = null
+      for testComparison in testResults
+        if not bestComparison? or testComparison.match < bestComparison.match
+          bestComparison = testComparison
+      return bestComparison
 
 
-      # We start at 1 because the first line is headers.
-      tc = instructionArray[i][0]
-      word = instructionArray[i][1]
+    NFTools.log "Comparing lines...\n", "readAndCombineScriptAndInstructions"
+    winners = []
+    for testLineIdx in [0..scriptLines.length-1]
+      testLine = scriptLines[testLineIdx]
+      lastWinner = if winners.length then winners[winners.length-1] else null
+      NFTools.log "Test Line:   '#{cleanLine testLine.text}'", "readAndCombineScriptAndInstructions"
 
-      # If we have an empty testLine, push a timecode halfway between this and the next one.
-      if testLineText is ""
-        # Make a fake timecode halfway betweeen the one we're looking at now
-        # and the previous one.
-        prevTC = if i is 1 then 0 else instructionArray[i-1][0]
-        customTC = (parseFloat(tc) + parseFloat(prevTC)) / 2
-        assumedLineTimecodes = [[customTC, '', '']]
-        parsedLines.push
-          instruction: testLine.instruction
-          text: ""
-          timecodes: assumedLineTimecodes
-        NFTools.log "Empty test line at #{assumedLineTimecodes[0][0]} - moving on", "readAndCombineScriptAndInstructions"
-        NFTools.logLine()
-        testLineIdx++
+      # May as well begin with the same number of words in the line
+      wordCount = testLine.text.split(' ').length
+      testStart = if lastWinner? then lastWinner.to + 1 else 1
+      testEnd = testStart + wordCount
+
+      # Handle empty lines
+      if testLine.text is ""
+        winners.push dummy =
+          from: testStart
+          to: testStart - 1
+          line: testLine
+          method: "None"
+          match: 0
+        NFTools.log "Empty test line - moving on", "readAndCombineScriptAndInstructions"
       else
-        # Adjust the indecies and add to the rangeString (stripped of whitespace in lowercase) ^
-        if rangeString is ""
-          startIdx = i
-          rangeString = word
-        else
-          rangeString += " #{word}"
-        rangeString = cleanLine rangeString
+        bestComparison = comprehensiveRangeTest
+          testStart: testStart
+          testEnd: testEnd
+        winners.push bestComparison
+        NFTools.log "Best result: '#{cleanLine sentenceFromInstructionRange(bestComparison.from, bestComparison.to)}'", "readAndCombineScriptAndInstructions"
+        NFTools.log "Method '#{bestComparison.method}' is the winner, with range #{bestComparison.from}-#{bestComparison.to}", "readAndCombineScriptAndInstructions"
 
-        # Check the similarity value
-        simValues[i] = NFTools.similarity rangeString, testLineText
-        # Increment the growCount if the sim value is growing
-        if simValues[i] > simValues[i-1] then growCount++ else growCount = 0
-
-        # If the growCount has reached the threshold, assume that we're now
-        # getting further away from the right range.
-        if growCount >= growThreshold
-          minSim = getMinSim simValues
-          minSims.push minSim
-          endIdx = simValues.indexOf minSim
-          # Make a new array of the range for what we think is this line
-          assumedLineTimecodes = instructionArray.slice startIdx, endIdx + 1
-          assumedSentence = ("#{theWord[1]} " for theWord in assumedLineTimecodes).join("").trim()
-          NFTools.log "Best result: '#{cleanLine assumedSentence}' at #{assumedLineTimecodes[0][0]}", "readAndCombineScriptAndInstructions"
-          NFTools.log "Match: #{toPercent minSim}", "readAndCombineScriptAndInstructions"
+        if lastWinner? and lastWinner.to >= bestComparison.from
           NFTools.logLine()
-          parsedLines.push
-            instruction: testLine.instruction
-            text: removeLineBreaks testLine.text
-            timecodes: assumedLineTimecodes
+          NFTools.log "NOTE: last result shifted back, so we're moving the previous one...", "readAndCombineScriptAndInstructions"
+          lastWinner.to = bestComparison.from - 1
+          NFTools.log "Prev test Line:   '#{cleanLine lastWinner.line.text}'", "readAndCombineScriptAndInstructions"
+          NFTools.log "Adjusted match:   '#{cleanLine sentenceFromInstructionRange(lastWinner.from, lastWinner.to)}'", "readAndCombineScriptAndInstructions"
+          winners[winners.length-2] = lastWinner
 
-          # Reset the rangeString and simValues
-          simValues = []
-          rangeString = ""
-          growCount = 0
-          # Move the iterator back to the last word we grabbed (because it's about to increment anyway)
-          i = endIdx
-          # Grab the next testLine
-          testLineIdx++
-        i++
+      NFTools.logLine()
 
-    # Get the average match ratio score
-    sum = 0
-    sum += val for val in minSims
-    avg = sum / minSims.length
-    NFTools.log "Average match: #{toPercent avg}", "readAndCombineScriptAndInstructions"
-    NFTools.logLine()
+    parsedLines = []
+    for comparison in winners
+      # Fake an entry for timecode if the script line was blank.
+      if comparison.to < comparison.from
+        beforeTC = if comparison.to <= 1 then 0 else instructionArray[comparison.to][0]
+        afterTC = instructionArray[comparison.from][0]
+        averageTC = (parseFloat(beforeTC) + parseFloat(afterTC)) / 2
+        timecodes = [[averageTC, '', '']]
+      else
+        timecodes = instructionArray.slice comparison.from, comparison.to + 1
+
+      parsedLine =
+        instruction: comparison.line.instruction
+        text: comparison.line.text
+        timecodes: timecodes
+      parsedLines.push parsedLine
 
     NFTools.log "Done Importing!", "readAndCombineScriptAndInstructions"
     NFTools.logLine()
@@ -594,7 +669,8 @@ NFTools =
     unless typeof str1 is 'string' and typeof str2 is 'string'
       throw new Error "Can't compare similarity of non-strings"
     n = Math.max(str1.length, str2.length)
-    return NFTools.levenshtein(str1, str2) / n
+    res = NFTools.levenshtein(str1, str2) / n
+    return res
 
 
   ###*
@@ -605,47 +681,34 @@ NFTools =
   @param {String} str2
   @returns {int} the result
   ###
-  levenshtein: (str1, str2) ->
-    cost = new Array
-    n = str1.length
-    m = str2.length
-
-    minimum = (a, b, c) ->
-      min = a
-      if b < min
-        min = b
-      if c < min
-        min = c
-      min
-
-    if n == 0
-      return
-    if m == 0
-      return
+  levenshtein: (a, b) ->
+    if a.length == 0
+      return b.length
+    if b.length == 0
+      return a.length
+    matrix = []
+    # increment along the first column of each row
+    i = undefined
     i = 0
-    while i <= n
-      cost[i] = new Array
+    while i <= b.length
+      matrix[i] = [ i ]
       i++
-    i = 0
-    while i <= n
-      cost[i][0] = i
-      i++
+    # increment each column in the first row
+    j = undefined
     j = 0
-    while j <= m
-      cost[0][j] = j
+    while j <= a.length
+      matrix[0][j] = j
       j++
+    # Fill in the rest of the matrix
     i = 1
-    while i <= n
-      x = str1.charAt(i - 1)
+    while i <= b.length
       j = 1
-      while j <= m
-        y = str2.charAt(j - 1)
-        if x == y
-          cost[i][j] = cost[i - 1][j - 1]
+      while j <= a.length
+        if b.charAt(i - 1) == a.charAt(j - 1)
+          matrix[i][j] = matrix[i - 1][j - 1]
         else
-          cost[i][j] = 1 + minimum(cost[i - 1][j - 1], cost[i][j - 1], cost[i - 1][j])
+          matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1))
+          # deletion
         j++
-      #endfor
       i++
-    #endfor
-    cost[n][m]
+    matrix[b.length][a.length]

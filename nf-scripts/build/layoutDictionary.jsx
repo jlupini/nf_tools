@@ -1,4 +1,4 @@
-var NFLayoutBehavior, NFLayoutFlagDict, NFLayoutInstructionDict, NFLayoutInstructionExpand, NFLayoutInstructionNone, NFLayoutInstructionNotFound, NFLayoutType;
+var NFLayoutBehavior, NFLayoutFlagDict, NFLayoutInstructionDict, NFLayoutInstructionExpand, NFLayoutInstructionIgnore, NFLayoutInstructionNone, NFLayoutInstructionNotFound, NFLayoutType;
 
 NFLayoutType = {
   HIGHLIGHT: 100,
@@ -42,6 +42,12 @@ NFLayoutInstructionNotFound = {
 NFLayoutInstructionExpand = {
   display: "Expand",
   type: NFLayoutType.EXPAND
+};
+
+NFLayoutInstructionIgnore = {
+  display: "Ignore",
+  type: NFLayoutType.INSTRUCTION,
+  behavior: NFLayoutBehavior.DO_NOTHING
 };
 
 NFLayoutInstructionNone = {

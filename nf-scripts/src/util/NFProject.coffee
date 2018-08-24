@@ -144,8 +144,8 @@ NFProject =
   @returns {null} nothin'
   ###
   importScript: ->
-    alert "About to import and combine the script and instructions.\nThis can
-           take a few minutes, so check 'log.txt' to stay updated as it runs."
+    # alert "About to import and combine the script and instructions.\nThis can
+    #        take a few minutes, so check 'log.txt' to stay updated as it runs."
 
     shouldUseCache = no
     if app.tmp?.parsedLines?
@@ -160,7 +160,11 @@ NFProject =
     else
       NFTools.log "Importing from files...", "importScript"
       NFTools.logLine()
-      parsedLines = NFTools.readAndCombineScriptAndInstructions()
+      shouldUseDetail = confirm "Would you like to do a detailed analysis on the
+                                 script? Accuracy is higher but it takes twice
+                                 as long to process. Only do this if standard
+                                 analysis gave messed up results.", true, "Detailed Analysis"
+      parsedLines = NFTools.readAndCombineScriptAndInstructions shouldUseDetail
     app.tmp =
       parsedLines: parsedLines
 
@@ -224,19 +228,32 @@ NFProject =
   @returns {String} A message to display to the user
   ###
   autoLayout: (layoutInstructions) ->
+
     # Check if there are existing pages in any parts
     allParts = NFProject.allPartComps()
     existingPages = no
     for part in allParts
       part.allLayers().forEach (layer) =>
         existingPages = yes if layer instanceof NFPageLayer
+
     if existingPages
       return "Aborting AutoLayout!\nIt looks like there are already pages in
               one or more part comps. Clean up and try again."
 
+    # Check if there are broken highlights anywhere
+    allHighlights = NFProject.allHighlights()
+    brokenHighlights = no
+    allHighlights.forEach (highlight) =>
+      highlight.resetExpressionErrors()
+      brokenHighlights = yes if highlight.isBroken()
+    if brokenHighlights
+      return "Aborting AutoLayout!\nThere are broken highlights in some page
+              comps. Fix before running again."
+
     NFTools.log "Beginning layout!", "autoLayout"
     lastPart = null
     for layoutInstruction in layoutInstructions
+      # try
       # Figure out which part to work in.
       instructionTime = parseFloat layoutInstruction.time
       thisPart = NFProject.partForTime instructionTime
@@ -244,11 +261,13 @@ NFProject =
       if lastPart? and not thisPart.is lastPart
         NFTools.logLine()
         NFTools.log "New part - Trimming previous one.", "autoLayout"
-        thisPart.trimTo instructionTime + 10
+        lastPart.trimTo instructionTime + 10
 
       NFTools.logLine()
       NFTools.logLine()
       NFTools.log "Laying out instruction [#{layoutInstruction.raw}] in #{thisPart.getName()}", "autoLayout"
+
+      $.bp() if layoutInstruction.break
 
       # if the instruction is a highlight, let's call animateTo
       switch layoutInstruction.instruction.type
@@ -279,7 +298,7 @@ NFProject =
               thisPart.addGaussy
                 placeholder: "[#{layoutInstruction.raw}]"
                 time: instructionTime
-            when NFLayoutBehavior.UNRECOGNIZED
+            when NFLayoutBehavior.UNRECOGNIZED, NFLayoutBehavior.DO_NOTHING
               if targetPDF?
                 NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
                 titlePage = targetPDF.getTitlePage()
@@ -302,7 +321,9 @@ NFProject =
               throw new Error "There isn't a case for this instruction"
         else
           throw new Error "Instruction not found"
-
+      # catch error
+      #   return "Aborting AutoLayout!\nError Message: '#{error.message}'\nFailed Instruction: [#{layoutInstruction.raw}]"
+      #   break
 
 
 
@@ -322,12 +343,17 @@ NFProject =
     mainComp = NFProject.mainComp()
     audioLayer = mainComp.audioLayers().getBottommostLayer()
     audioMarkers = audioLayer.markers()
+
     partName = "Part"
     for i in [1..audioMarkers.numKeys]
       markerTime = audioMarkers.keyTime i
       if time < markerTime
         partName += i
         break
+      else if i is audioMarkers.numKeys and time >= markerTime
+        partName += (i+1)
+        break
+
     matchingPart = null
     NFProject.allPartComps().forEach (partComp) =>
       matchingPart = partComp if partComp.getName() is partName

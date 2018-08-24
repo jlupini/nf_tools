@@ -181,8 +181,7 @@ NFProject = {
   @returns {null} nothin'
    */
   importScript: function() {
-    var allParts, autoLayoutStatus, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldContinue, shouldUseCache, validationResult;
-    alert("About to import and combine the script and instructions.\nThis can take a few minutes, so check 'log.txt' to stay updated as it runs.");
+    var allParts, autoLayoutStatus, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldContinue, shouldUseCache, shouldUseDetail, validationResult;
     shouldUseCache = false;
     if (((ref = app.tmp) != null ? ref.parsedLines : void 0) != null) {
       shouldUseCache = confirm("Cached script/instruction data found. Use the cached data? Select NO if you've changed the script.txt or transcript.csv files since the last import.", false, "Cached Data");
@@ -194,7 +193,8 @@ NFProject = {
     } else {
       NFTools.log("Importing from files...", "importScript");
       NFTools.logLine();
-      parsedLines = NFTools.readAndCombineScriptAndInstructions();
+      shouldUseDetail = confirm("Would you like to do a detailed analysis on the script? Accuracy is higher but it takes twice as long to process. Only do this if standard analysis gave messed up results.", true, "Detailed Analysis");
+      parsedLines = NFTools.readAndCombineScriptAndInstructions(shouldUseDetail);
     }
     app.tmp = {
       parsedLines: parsedLines
@@ -256,7 +256,7 @@ NFProject = {
   @returns {String} A message to display to the user
    */
   autoLayout: function(layoutInstructions) {
-    var allParts, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, targetPDF, thisPart, titlePage;
+    var allHighlights, allParts, brokenHighlights, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, targetPDF, thisPart, titlePage;
     allParts = NFProject.allPartComps();
     existingPages = false;
     for (j = 0, len = allParts.length; j < len; j++) {
@@ -272,6 +272,19 @@ NFProject = {
     if (existingPages) {
       return "Aborting AutoLayout!\nIt looks like there are already pages in one or more part comps. Clean up and try again.";
     }
+    allHighlights = NFProject.allHighlights();
+    brokenHighlights = false;
+    allHighlights.forEach((function(_this) {
+      return function(highlight) {
+        highlight.resetExpressionErrors();
+        if (highlight.isBroken()) {
+          return brokenHighlights = true;
+        }
+      };
+    })(this));
+    if (brokenHighlights) {
+      return "Aborting AutoLayout!\nThere are broken highlights in some page comps. Fix before running again.";
+    }
     NFTools.log("Beginning layout!", "autoLayout");
     lastPart = null;
     for (k = 0, len1 = layoutInstructions.length; k < len1; k++) {
@@ -281,11 +294,14 @@ NFProject = {
       if ((lastPart != null) && !thisPart.is(lastPart)) {
         NFTools.logLine();
         NFTools.log("New part - Trimming previous one.", "autoLayout");
-        thisPart.trimTo(instructionTime + 10);
+        lastPart.trimTo(instructionTime + 10);
       }
       NFTools.logLine();
       NFTools.logLine();
       NFTools.log("Laying out instruction [" + layoutInstruction.raw + "] in " + (thisPart.getName()), "autoLayout");
+      if (layoutInstruction["break"]) {
+        $.bp();
+      }
       switch (layoutInstruction.instruction.type) {
         case NFLayoutType.HIGHLIGHT:
         case NFLayoutType.EXPAND:
@@ -325,6 +341,7 @@ NFProject = {
               });
               break;
             case NFLayoutBehavior.UNRECOGNIZED:
+            case NFLayoutBehavior.DO_NOTHING:
               if (targetPDF != null) {
                 NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
                 titlePage = targetPDF.getTitlePage();
@@ -377,6 +394,9 @@ NFProject = {
       markerTime = audioMarkers.keyTime(i);
       if (time < markerTime) {
         partName += i;
+        break;
+      } else if (i === audioMarkers.numKeys && time >= markerTime) {
+        partName += i + 1;
         break;
       }
     }
