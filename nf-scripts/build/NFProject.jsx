@@ -82,21 +82,6 @@ NFProject = {
   },
 
   /**
-  Returns the Active Comp
-  @memberof NFProject
-  @returns {CompItem | null} the active CompItem or null
-   */
-  activeComp: function() {
-    var activeItem;
-    activeItem = app.project.activeItem;
-    if (activeItem instanceof CompItem) {
-      return new NFComp(activeItem);
-    } else {
-      return null;
-    }
-  },
-
-  /**
   Returns an NFLayerCollection of selected layers in the active comp
   @memberof NFProject
   @returns {NFLayerCollection} - the selected layers
@@ -181,7 +166,11 @@ NFProject = {
   @returns {null} nothin'
    */
   importScript: function() {
-    var allParts, autoLayoutStatus, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldContinue, shouldUseCache, shouldUseDetail, validationResult;
+    var allParts, autoLayoutStatus, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, ref, shouldContinue, shouldImport, shouldUseCache, shouldUseDetail, validationResult;
+    shouldImport = confirm("Import Script?", false, "Import?");
+    if (!shouldImport) {
+      return null;
+    }
     shouldUseCache = false;
     if (((ref = app.tmp) != null ? ref.parsedLines : void 0) != null) {
       shouldUseCache = confirm("Cached script/instruction data found. Use the cached data? Select NO if you've changed the script.txt or transcript.csv files since the last import.", false, "Cached Data");
@@ -250,13 +239,134 @@ NFProject = {
   },
 
   /**
+  Returns whether there are broken highlights in the project
+  @memberof NFProject
+  @returns {boolean} If there are broken highlights
+   */
+  containsBrokenHighlights: function() {
+    var allHighlights, brokenHighlights;
+    allHighlights = NFProject.allHighlights();
+    brokenHighlights = false;
+    allHighlights.forEach((function(_this) {
+      return function(highlight) {
+        highlight.resetExpressionErrors();
+        if (highlight.isBroken()) {
+          return brokenHighlights = true;
+        }
+      };
+    })(this));
+    return brokenHighlights;
+  },
+
+  /**
+  Takes a single NFLayoutInstruction and lays it out at the current time in the
+  current part
+  @memberof NFProject
+  @param {NFLayoutInstruction} layoutInstruction
+  @returns {String} A message to display to the user
+   */
+  layoutSingleInstruction: function(layoutInstruction) {
+    var activeComp, highlight, lookString, targetPDF, titlePage;
+    activeComp = NFProject.activeComp();
+    if (!(activeComp instanceof NFPartComp)) {
+      return "Cannot layout an instruction in a non-part comp.";
+    }
+    if (NFProject.containsBrokenHighlights()) {
+      return "Aborting AutoLayout!\nThere are broken highlights in some page comps. Fix before running again.";
+    }
+    switch (layoutInstruction.instruction.type) {
+      case NFLayoutType.HIGHLIGHT:
+        targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
+        lookString = layoutInstruction.instruction.look;
+        highlight = targetPDF.findHighlight(lookString);
+        if (highlight == null) {
+          throw new Error("Can't find highlight with name '" + lookString + "' in PDF '" + (targetPDF.toString()) + "'");
+        }
+        NFTools.log("Animating to highlight '" + lookString + "'", "autoLayout");
+        activeComp.animateTo({
+          highlight: highlight,
+          time: layoutInstruction.time,
+          skipTitle: layoutInstruction.flags.skipTitle
+        });
+        break;
+      case NFLayoutType.EXPAND:
+        targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
+        lookString = layoutInstruction.expandLookString;
+        highlight = targetPDF.findHighlight(lookString);
+        if (highlight == null) {
+          throw new Error("Can't find highlight with name '" + lookString + "' in PDF '" + (targetPDF.toString()) + "'");
+        }
+        NFTools.log("Animating to highlight '" + lookString + "'", "autoLayout");
+        activeComp.animateTo({
+          highlight: highlight,
+          time: layoutInstruction.time,
+          skipTitle: layoutInstruction.flags.skipTitle
+        });
+        break;
+      case NFLayoutType.INSTRUCTION:
+        targetPDF = NFPDF.fromPDFNumber(layoutInstruction.pdf);
+        switch (layoutInstruction.instruction.behavior) {
+          case NFLayoutBehavior.SHOW_TITLE:
+            NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
+            activeComp.animateTo({
+              time: layoutInstruction.time,
+              page: targetPDF.getTitlePage()
+            });
+            break;
+          case NFLayoutBehavior.ICON_SEQUENCE:
+          case NFLayoutBehavior.GAUSSY:
+          case NFLayoutBehavior.FIGURE:
+          case NFLayoutBehavior.TABLE:
+            NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
+            activeComp.addGaussy({
+              placeholder: "[" + layoutInstruction.raw + "]",
+              time: layoutInstruction.time
+            });
+            break;
+          case NFLayoutBehavior.UNRECOGNIZED:
+          case NFLayoutBehavior.DO_NOTHING:
+            if (targetPDF != null) {
+              NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
+              titlePage = targetPDF.getTitlePage();
+              activeComp.animateTo({
+                time: layoutInstruction.time,
+                page: titlePage
+              });
+            }
+            NFTools.log("Adding placeholder for [" + layoutInstruction.raw + "]", "autoLayout");
+            activeComp.addPlaceholder({
+              text: "[" + layoutInstruction.raw + "]",
+              time: instructionTime
+            });
+            break;
+          case NFLayoutBehavior.NONE:
+            if (targetPDF != null) {
+              NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
+              titlePage = targetPDF.getTitlePage();
+              activeComp.animateTo({
+                time: layoutInstruction.time,
+                page: titlePage
+              });
+            }
+            break;
+          default:
+            throw new Error("There isn't a case for this instruction");
+        }
+        break;
+      default:
+        throw new Error("Instruction not found");
+    }
+    return null;
+  },
+
+  /**
   Takes a set of validated layoutInstructions and lays out the whole project.
   @memberof NFProject
   @param {NFLayoutInstruction[]} layoutInstructions
   @returns {String} A message to display to the user
    */
   autoLayout: function(layoutInstructions) {
-    var allHighlights, allParts, brokenHighlights, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, targetPDF, thisPart, titlePage;
+    var allParts, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, targetPDF, thisPart, titlePage;
     allParts = NFProject.allPartComps();
     existingPages = false;
     for (j = 0, len = allParts.length; j < len; j++) {
@@ -272,17 +382,7 @@ NFProject = {
     if (existingPages) {
       return "Aborting AutoLayout!\nIt looks like there are already pages in one or more part comps. Clean up and try again.";
     }
-    allHighlights = NFProject.allHighlights();
-    brokenHighlights = false;
-    allHighlights.forEach((function(_this) {
-      return function(highlight) {
-        highlight.resetExpressionErrors();
-        if (highlight.isBroken()) {
-          return brokenHighlights = true;
-        }
-      };
-    })(this));
-    if (brokenHighlights) {
+    if (NFProject.containsBrokenHighlights()) {
       return "Aborting AutoLayout!\nThere are broken highlights in some page comps. Fix before running again.";
     }
     NFTools.log("Beginning layout!", "autoLayout");
@@ -420,87 +520,17 @@ NFProject = {
   a boolean value 'valid' to indicate success or failure
    */
   validateInstructions: function(layoutInstructions) {
-    var anyInvalid, exp, expands, highlight, highlightLook, ins, j, k, l, len, len1, len2, lookString, matchedExpands, returnObj, sameInstruction, samePDF, targetPDF, validatedInstructions;
+    var anyInvalid, expands, ins, j, len, returnObj, thisValid, validatedInstructions;
     NFTools.log("Validating Instructions...", "validateInstructions");
     validatedInstructions = [];
     anyInvalid = false;
     expands = [];
     for (j = 0, len = layoutInstructions.length; j < len; j++) {
       ins = layoutInstructions[j];
-      ins.valid = true;
-      ins.validationMessage = "";
-      if (ins.pdf != null) {
-        targetPDF = NFPDF.fromPDFNumber(ins.pdf);
-        if (targetPDF == null) {
-          ins.valid = false;
-          ins.validationMessage += "Missing PDF: '" + ins.pdf + "'. ";
-        }
-      } else {
-        targetPDF = null;
-      }
-      if (ins.getInstruction().type === NFLayoutType.HIGHLIGHT) {
-        if (targetPDF == null) {
-          targetPDF = NFPDF.fromPDFNumber(ins.getPDF());
-        }
-        highlightLook = ins.getInstruction().look;
-        if (ins.flags.expand != null) {
-          if (ins.flags.expandUp != null) {
-            matchedExpands = [];
-            for (k = 0, len1 = expands.length; k < len1; k++) {
-              exp = expands[k];
-              sameInstruction = exp.getHighlight().look === highlightLook;
-              samePDF = exp.getPDF() === ins.getPDF();
-              if (sameInstruction && samePDF && (exp.flags.expandUp != null)) {
-                matchedExpands.push(exp);
-              }
-            }
-            ins.expandUpNumber = matchedExpands.length + 1;
-            if (ins.expandUpNumber === 1) {
-              lookString = highlightLook + " Expand Up";
-            } else {
-              lookString = highlightLook + " Expand Up " + ins.expandUpNumber;
-            }
-            highlight = targetPDF != null ? targetPDF.findHighlight(lookString) : void 0;
-          } else {
-            matchedExpands = [];
-            for (l = 0, len2 = expands.length; l < len2; l++) {
-              exp = expands[l];
-              sameInstruction = exp.getHighlight().look === highlightLook;
-              samePDF = exp.getPDF() === ins.getPDF();
-              if (sameInstruction && samePDF && (exp.flags.expandUp == null)) {
-                matchedExpands.push(exp);
-              }
-            }
-            ins.expandNumber = matchedExpands.length + 1;
-            if (ins.expandNumber === 1) {
-              lookString = highlightLook + " Expand";
-            } else {
-              lookString = highlightLook + " Expand " + ins.expandNumber;
-            }
-            highlight = targetPDF != null ? targetPDF.findHighlight(lookString) : void 0;
-          }
-          expands.push(ins);
-          ins.expandLookString = lookString;
-          if (ins.instruction.behavior === NFLayoutBehavior.NONE) {
-            ins.instruction = NFLayoutInstructionExpand;
-          }
-          if (highlight == null) {
-            ins.valid = false;
-            ins.validationMessage += "Missing expand '" + lookString + "' in PDF " + (ins.getPDF());
-          }
-        } else {
-          highlight = targetPDF != null ? targetPDF.findHighlight(ins.instruction.look) : void 0;
-          if (highlight == null) {
-            ins.valid = false;
-            ins.validationMessage += "Missing highlight '" + ins.instruction.look + "' in PDF " + (ins.getPDF());
-          }
-        }
-      }
-      if (ins.valid === false) {
+      thisValid = ins.validate();
+      if (!thisValid) {
         anyInvalid = true;
-        NFTools.log("Invalid Instruction [" + ins.raw + "]. Reasons: " + ins.validationMessage, "validateInstructions");
       }
-      ins.validated = true;
       validatedInstructions.push(ins);
     }
     if (anyInvalid) {
@@ -522,126 +552,31 @@ NFProject = {
   @returns {Item | null} the found item or null
    */
   followInstruction: function(input) {
-    var activePDF, activePDFNumber, alreadyOnTargetPaper, code, flagOption, flags, highlight, instruction, instructionString, j, k, key, len, len1, mainComp, option, ref, ref1, targetPDF, targetPDFNumber, titlePage;
-    NFTools.log("Parsing input: '" + input + "'", "Parser");
-    mainComp = this.activeComp();
-    if (!(mainComp instanceof NFPartComp)) {
-      throw new Error("Can only run instruction on a part comp");
-    }
-    targetPDFNumber = /(^\d+)/i.exec(input);
-    if (targetPDFNumber != null) {
-      targetPDFNumber = targetPDFNumber[1];
-    }
-    if (targetPDFNumber != null) {
-      instructionString = input.slice(targetPDFNumber.length);
-      NFTools.log("Target PDF Number found: '" + targetPDFNumber + "'", "Parser");
-    } else {
-      instructionString = input;
-    }
-    activePDF = mainComp.activePDF();
-    activePDFNumber = activePDF != null ? activePDF.getPDFNumber() : void 0;
-    alreadyOnTargetPaper = targetPDFNumber != null ? activePDFNumber === targetPDFNumber : true;
-    targetPDF = alreadyOnTargetPaper ? activePDF : NFPDF.fromPDFNumber(targetPDFNumber);
-    flags = {};
-    for (key in NFLayoutFlagDict) {
-      flagOption = NFLayoutFlagDict[key];
-      ref = flagOption.code;
-      for (j = 0, len = ref.length; j < len; j++) {
-        code = ref[j];
-        if (instructionString.indexOf(code) >= 0) {
-          flags[key] = flagOption;
-          instructionString = instructionString.replace(code, "").trim();
-          NFTools.log("Flag found: '" + flagOption.display + "'", "Parser");
-        }
+    var activePDF, instruction, lookString, result, valid;
+    instruction = NFTools.parseInstructionString(input);
+    instruction.time = NFProject.activeComp().getTime();
+    if ((instruction.pdf == null) && instruction.instruction.type === NFLayoutType.HIGHLIGHT || instruction.instruction.type === NFLayoutType.EXPAND) {
+      activePDF = NFProject.activeComp().activePDF();
+      if (activePDF != null) {
+        instruction.pdf = activePDF.getPDFNumber();
       }
     }
-    if (instructionString === "") {
-      if (flags.expand != null) {
-        NFTools.log("No instruction remaining. Converting Flag '" + flags.expand.display + "' to Instruction", "Parser");
-        instruction = NFLayoutInstructionDict.expand;
-        delete flags.expand;
+    if (instruction.flags.expand != null) {
+      lookString = prompt('Enter the look string for the expand:', '', 'AutoLayout');
+      if ((lookString != null) && lookString !== '') {
+        instruction.expandLookString = lookString;
       } else {
-        throw new Error("No instructionString remaining after parsing flags and PDF");
-      }
-    } else {
-      instruction = null;
-      NFTools.log("Instruction string remaining is: '" + instructionString + "'", "Parser");
-      for (key in NFLayoutInstructionDict) {
-        option = NFLayoutInstructionDict[key];
-        ref1 = option.code;
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
-          code = ref1[k];
-          if (instructionString === code) {
-            if (instruction != null) {
-              if ((option.priority != null) && (instruction.priority != null) && option.priority < instruction.priority) {
-                instruction = option;
-              } else if (((option.priority != null) && (instruction.priority != null)) || ((option.priority == null) && (instruction.priority == null))) {
-                throw new Error("instruction matched two instruction options (" + instruction.display + " and " + option.display + ") with the same priority. Fix layoutDictionary.");
-              } else if (option.priority != null) {
-                instruction = option;
-              }
-            } else {
-              instruction = option;
-            }
-          }
-        }
-      }
-      if (instruction != null) {
-        NFTools.log("Instruction found: '" + instruction.display + "'", "Parser");
-      } else {
-        throw new Error("No instruction matches instruction string");
+        return alert("Aborting - I need to know the look string for the expand.");
       }
     }
-    if ((targetPDF != null) && (instruction == null)) {
-      NFTools.log("PDF found but no instruction - animating to title page", "Parser");
-      titlePage = targetPDF.getTitlePage();
-      mainComp.animateTo({
-        page: titlePage
-      });
+    valid = instruction.validate();
+    if (valid) {
+      result = NFProject.layoutSingleInstruction(instruction);
     } else {
-      switch (instruction.type) {
-        case NFLayoutType.HIGHLIGHT:
-          highlight = targetPDF.findHighlight(instruction.look);
-          if (highlight == null) {
-            throw new Error("Can't find highlight with name '" + instruction.look + "' in PDF '" + (targetPDF.toString()) + "'");
-          }
-          NFTools.log("Animating to " + instruction.display, "Parser");
-          mainComp.animateTo({
-            highlight: highlight,
-            skipTitle: flags.skipTitle,
-            expand: flags.expand,
-            expandUp: flags.expandUp
-          });
-          break;
-        case NFLayoutType.EXPAND:
-          NFTools.log("Animating to " + instruction.display, "Parser");
-          break;
-        case NFLayoutType.INSTRUCTION:
-          switch (instruction.behavior) {
-            case NFLayoutBehavior.SHOW_TITLE:
-              NFTools.log("Following Instruction: " + instruction.display, "Parser");
-              mainComp.animateTo({
-                page: targetPDF.getTitlePage()
-              });
-              break;
-            case NFLayoutBehavior.ICON_SEQUENCE:
-            case NFLayoutBehavior.GAUSSY:
-            case NFLayoutBehavior.FIGURE:
-            case NFLayoutBehavior.TABLE:
-              NFTools.log("Following Instruction: " + instruction.display, "Parser");
-              mainComp.addGaussy({
-                placeholder: instruction.display
-              });
-              break;
-            default:
-              throw new Error("There isn't a case for this instruction");
-          }
-          this;
-          break;
-        default:
-          throw new Error("Instruction not found");
-      }
+      return alert("Aborting - Invalid instruction.\nValidator says: " + instruction.validationMessage);
     }
-    return this;
+    if (result != null) {
+      return alert(result);
+    }
   }
 };

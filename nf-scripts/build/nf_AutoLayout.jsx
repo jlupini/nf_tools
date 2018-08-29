@@ -6,9 +6,14 @@ NF = app.NF;
 app.beginUndoGroup('AutoLayout');
 
 main = function() {
+  var input;
   NFTools.clearLog();
   NFTools.log("Asking for input");
-  NFProject.importScript();
+  input = prompt('Enter the instruction (without brackets):', '', 'AutoLayout');
+  if (!((input != null) && input !== "")) {
+    return false;
+  }
+  NFProject.followInstruction(input);
   NFTools.log("Done following instruction");
   NFTools.breakLog();
   return true;

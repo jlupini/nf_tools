@@ -9,6 +9,14 @@ toolRegistry =
     name: "Setup"
     tools:
 
+      setupMainComp:
+        name: "Setup Main Comp"
+        callback: ->
+          start_folder = new Folder(new File($.fileName).parent.fsName)
+          scriptFile = new File(start_folder.fsName + '/nf_SetupMainComp.jsx')
+          script = "#include '#{scriptFile.fullName}'"
+          eval script
+
       renamePDFPrecomps:
         name: "Rename PDF Precomps"
         callback: ->
@@ -19,13 +27,35 @@ toolRegistry =
             item = precompFolder.item i
             item.name = item.name.replace '.pdf', ' NFPage'
 
+      createInstructionFile:
+        name: "Create Instruction File (Mac Only)"
+        callback: ->
+          start_folder = new Folder(new File($.fileName).parent.parent.fsName)
+          project_folder = new Folder(app.project.file.parent.fsName)
+          bashFile = new File(start_folder.fsName + '/lib/stt/systemcall.sh')
+          sttFolder = File(start_folder.fsName + '/lib/stt/')
+          audioLayer = NFProject.mainComp().audioLayers().getBottommostLayer()
+          audioFile = audioLayer.layer.source.file
+
+          cmdLineString = "sh '#{bashFile.fsName}' '#{sttFolder.fsName}' '#{audioFile.fsName}' '#{project_folder.fsName}'"
+
+          termfile = new File(File($.fileName).parent.fsName + '/command.term')
+          command = cmdLineString
+          termfile.open 'w'
+          termfile.writeln '<?xml version="1.0" encoding="UTF-8"?>\n' + '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"' + '"http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' + '<plist version="1.0">\n' + '<dict>\n' + '<key>WindowSettings</key>\n' + '<array>\n' + ' <dict>\n' + '<key>CustomTitle</key>\n' + '<string>My first termfile</string>\n' + '<key>ExecutionString</key>\n' + '<string>' + command + '</string>\n' + '</dict>\n' + '</array>\n' + '</dict>\n' + '</plist>\n'
+          termfile.close()
+          shouldContinue = confirm "This involves running a terminal instance to perform speech to text
+                                    and line up timecodes. It may take a while and you'll have to check
+                                    the terminal window to follow the progress. Continue?", false, "Run Script?"
+          termfile.execute() if shouldContinue
+
+
       importInstructions:
         name: "Import Script"
         callback: ->
           NFProject.importScript()
 
   render:
-
     name: "Render"
     tools:
 
@@ -81,6 +111,11 @@ toolRegistry =
             spotlightLayers = part.searchLayers "Spotlight"
             spotlightLayers.forEach (spotlight) =>
               spotlight.layer.enabled = !spotlight.layer.enabled
+
+      addGaussyLayer:
+        name: "Add Gaussy"
+        callback: ->
+          NFProject.activeComp().addGaussy()
 
       addSpotlightMarker:
         name: "Add Spotlight Marker"
@@ -143,7 +178,7 @@ getPanelUI = ->
       thisToolItem = thisCategoryNode.add 'item', thisTool.name
       thisToolItem.data = thisTool
 
-    thisCategoryNode.expanded = yes
+    thisCategoryNode.expanded = no
 
   buttonGroup = buttonPanel.add 'group', undefined
 

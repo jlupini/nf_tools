@@ -413,7 +413,10 @@ NFTools =
     unless instruction?
       NFTools.log "No Instruction found.", "parseInstructionString"
       if instructionString is ""
-        instruction = NFLayoutInstructionNone
+        if flags.expand?
+          instruction = NFLayoutInstructionExpand
+        else
+          instruction = NFLayoutInstructionNone
       else
         instruction = NFLayoutInstructionNotFound
 

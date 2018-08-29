@@ -6,16 +6,11 @@ app.beginUndoGroup 'AutoLayout'
 main = ->
 	NFTools.clearLog()
 	NFTools.log "Asking for input"
+	input = prompt 'Enter the instruction (without brackets):', '', 'AutoLayout'
 
-	NFProject.importScript()
+	return false unless input? and input isnt ""
 
-	# input = prompt 'Enter the instruction (without brackets):', '', 'AutoLayout'
-	#
-	# NFTools.log "Following Instruction"
-	#
-	# return false unless input? and input isnt ""
-	#
-	# NFProject.followInstruction input
+	NFProject.followInstruction input
 
 	NFTools.log "Done following instruction"
 	NFTools.breakLog()

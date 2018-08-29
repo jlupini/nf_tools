@@ -1914,11 +1914,9 @@ NFLayoutInstruction = (function(superClass) {
     this.flags = model.flags;
     this.instruction = model.instruction;
     this.line = model.line;
-    this.validated = false;
     this.next = model.next;
     this.prev = model.prev;
-    this.expandNumber = 0;
-    this.expandUpNumber = 0;
+    this.expandLookString = model.expandLookString;
     this["break"] = model["break"];
   }
 
@@ -1928,14 +1926,101 @@ NFLayoutInstruction = (function(superClass) {
 
 
   /**
+  Validates the instruction
+  @memberof NFLayoutInstruction
+  @returns {boolean} if valid
+   */
+
+  NFLayoutInstruction.prototype.validate = function() {
+    var highlight, lookString, searchPDF, targetPDF;
+    this.valid = true;
+    if (this.time == null) {
+      this.validationMessage = "Missing Time.";
+      return this.valid = false;
+    }
+    if (this.pdf != null) {
+      targetPDF = NFPDF.fromPDFNumber(this.pdf);
+      if (targetPDF == null) {
+        this.validationMessage = "Missing PDF: '" + ins.pdf + "'.";
+        return this.valid = false;
+      }
+    }
+    if ((this.flags.expand != null) && (this.assignLookStringForExpand() == null)) {
+      this.validationMessage = "No look string for expand.";
+      return this.valid = false;
+    }
+    switch (this.instruction.type) {
+      case NFLayoutType.HIGHLIGHT:
+      case NFLayoutType.EXPAND:
+        searchPDF = this.getPDF();
+        if (searchPDF == null) {
+          this.validationMessage = "Can't determine PDF.";
+          return this.valid = false;
+        }
+        targetPDF = NFPDF.fromPDFNumber(searchPDF);
+        if (targetPDF == null) {
+          this.validationMessage = "Can't find PDF: " + searchPDF;
+          return this.valid = false;
+        }
+        lookString = this.flags.expand != null ? this.expandLookString : this.instruction.look;
+        highlight = targetPDF.findHighlight(lookString);
+        if (highlight == null) {
+          this.validationMessage = "Can't find highlight '" + this.instruction.look + "' in PDF " + (targetPDF.toString());
+          return this.valid = false;
+        }
+    }
+    return this.valid;
+  };
+
+
+  /**
+  Gets the look string for the expand
+  @memberof NFLayoutInstruction
+  @returns {string | null} the look String
+   */
+
+  NFLayoutInstruction.prototype.assignLookStringForExpand = function() {
+    var foundExpands, ref, testHighlight, testIns;
+    if (this.flags.expand == null) {
+      return null;
+    }
+    if (this.expandLookString == null) {
+      testHighlight = this.getHighlight();
+      if (testHighlight == null) {
+        return null;
+      }
+      foundExpands = [];
+      testIns = this;
+      while (testIns != null) {
+        if (testIns.flags.expand != null) {
+          if ((this.flags.expandUp != null) === (testIns.flags.expandUp != null) && ((ref = testIns.getHighlight()) != null ? ref.look : void 0) === testHighlight.look) {
+            foundExpands.push(testIns);
+          }
+        }
+        testIns = testIns.prev;
+      }
+      this.expandLookString = testHighlight.look + " Expand";
+      if (this.flags.expandUp != null) {
+        this.expandLookString += " Up";
+      }
+      if (foundExpands.length > 0) {
+        this.expandLookString += " " + (foundExpands.length + 1);
+      }
+    }
+    return this.expandLookString;
+  };
+
+
+  /**
   Gets the pdf, looking recursively back through previous instructions until
   one is found
   @memberof NFLayoutInstruction
-  @returns {string} the PDF number
+  @returns {string | null} the PDF number
    */
 
   NFLayoutInstruction.prototype.getPDF = function() {
-    return this.pdf || this.prev.getPDF();
+    var ref;
+    return this.pdf || ((ref = this.prev) != null ? ref.getPDF() : void 0) || null;
   };
 
 
@@ -1948,7 +2033,7 @@ NFLayoutInstruction = (function(superClass) {
 
   NFLayoutInstruction.prototype.getInstruction = function() {
     if ((this.instruction.behavior === NFLayoutBehavior.UNRECOGNIZED || this.instruction.behavior === NFLayoutBehavior.NONE) && (this.flags.expand != null)) {
-      return this.getHighlight();
+      return this.getHighlight() || this.instruction;
     } else {
       return this.instruction;
     }
@@ -1958,7 +2043,7 @@ NFLayoutInstruction = (function(superClass) {
   /**
   Returns the most recent highlight instruction
   @memberof NFLayoutInstruction
-  @returns {Object} the highlight instruction (from NFLayoutInstructionDict)
+  @returns {Object | null} the highlight instruction (from NFLayoutInstructionDict)
    */
 
   NFLayoutInstruction.prototype.getHighlight = function() {
@@ -1967,7 +2052,7 @@ NFLayoutInstruction = (function(superClass) {
     } else if (this.prev != null) {
       return this.prev.getHighlight();
     } else {
-      throw new Error("Could not get highlight for instruction!");
+      return null;
     }
   };
 
@@ -5907,6 +5992,9 @@ NFPartComp = (function(superClass) {
 
   NFPartComp.prototype.addGaussy = function(model) {
     var activeGaussy, activeGroup, activePDF, belowTarget, children, gaussy, placeholder, ref, ref1;
+    if (model == null) {
+      model = {};
+    }
     model.time = (ref = model.time) != null ? ref : this.getTime();
     model.duration = (ref1 = model.duration) != null ? ref1 : this.comp.duration - model.time;
     activePDF = this.activePDF(model.time);

@@ -428,6 +428,7 @@ class NFPartComp extends NFComp
   @returns {NFPartComp} self
   ###
   addGaussy: (model) ->
+    model ?= {}
     model.time = model.time ? @getTime()
     model.duration = model.duration ? @comp.duration - model.time
 

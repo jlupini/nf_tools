@@ -472,7 +472,11 @@ NFTools = {
     if (instruction == null) {
       NFTools.log("No Instruction found.", "parseInstructionString");
       if (instructionString === "") {
-        instruction = NFLayoutInstructionNone;
+        if (flags.expand != null) {
+          instruction = NFLayoutInstructionExpand;
+        } else {
+          instruction = NFLayoutInstructionNone;
+        }
       } else {
         instruction = NFLayoutInstructionNotFound;
       }

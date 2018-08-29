@@ -63,18 +63,6 @@ NFProject =
     return parts
 
   ###*
-  Returns the Active Comp
-  @memberof NFProject
-  @returns {CompItem | null} the active CompItem or null
-  ###
-  activeComp: ->
-    activeItem = app.project.activeItem
-    if activeItem instanceof CompItem
-      return new NFComp activeItem
-    else
-      return null
-
-  ###*
   Returns an NFLayerCollection of selected layers in the active comp
   @memberof NFProject
   @returns {NFLayerCollection} - the selected layers
@@ -144,8 +132,8 @@ NFProject =
   @returns {null} nothin'
   ###
   importScript: ->
-    # alert "About to import and combine the script and instructions.\nThis can
-    #        take a few minutes, so check 'log.txt' to stay updated as it runs."
+    shouldImport = confirm "Import Script?", false, "Import?"
+    return null unless shouldImport
 
     shouldUseCache = no
     if app.tmp?.parsedLines?
@@ -222,6 +210,99 @@ NFProject =
     return null
 
   ###*
+  Returns whether there are broken highlights in the project
+  @memberof NFProject
+  @returns {boolean} If there are broken highlights
+  ###
+  containsBrokenHighlights: ->
+    allHighlights = NFProject.allHighlights()
+    brokenHighlights = no
+    allHighlights.forEach (highlight) =>
+      highlight.resetExpressionErrors()
+      brokenHighlights = yes if highlight.isBroken()
+    return brokenHighlights
+
+  ###*
+  Takes a single NFLayoutInstruction and lays it out at the current time in the
+  current part
+  @memberof NFProject
+  @param {NFLayoutInstruction} layoutInstruction
+  @returns {String} A message to display to the user
+  ###
+  layoutSingleInstruction: (layoutInstruction) ->
+    activeComp = NFProject.activeComp()
+    unless activeComp instanceof NFPartComp
+      return "Cannot layout an instruction in a non-part comp."
+
+    if NFProject.containsBrokenHighlights()
+      return "Aborting AutoLayout!\nThere are broken highlights in some page
+              comps. Fix before running again."
+
+    # if the instruction is a highlight, let's call animateTo
+    switch layoutInstruction.instruction.type
+      when NFLayoutType.HIGHLIGHT
+        # For highlights and expands we need a target PDF, so use this method instead of layoutInstruction.pdf
+        targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
+        lookString = layoutInstruction.instruction.look
+        highlight = targetPDF.findHighlight lookString
+        throw new Error "Can't find highlight with name '#{lookString}' in PDF '#{targetPDF.toString()}'" unless highlight?
+
+        NFTools.log "Animating to highlight '#{lookString}'", "autoLayout"
+        activeComp.animateTo
+          highlight: highlight
+          time: layoutInstruction.time
+          skipTitle: layoutInstruction.flags.skipTitle
+      when NFLayoutType.EXPAND
+        # For highlights and expands we need a target PDF, so use this method instead of layoutInstruction.pdf
+        targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
+        lookString = layoutInstruction.expandLookString
+        highlight = targetPDF.findHighlight lookString
+        throw new Error "Can't find highlight with name '#{lookString}' in PDF '#{targetPDF.toString()}'" unless highlight?
+
+        NFTools.log "Animating to highlight '#{lookString}'", "autoLayout"
+        activeComp.animateTo
+          highlight: highlight
+          time: layoutInstruction.time
+          skipTitle: layoutInstruction.flags.skipTitle
+      when NFLayoutType.INSTRUCTION
+        targetPDF = NFPDF.fromPDFNumber layoutInstruction.pdf # Use only explicit PDFs here
+        switch layoutInstruction.instruction.behavior
+          when NFLayoutBehavior.SHOW_TITLE
+            NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
+            activeComp.animateTo
+              time: layoutInstruction.time
+              page: targetPDF.getTitlePage()
+          when NFLayoutBehavior.ICON_SEQUENCE, NFLayoutBehavior.GAUSSY, NFLayoutBehavior.FIGURE, NFLayoutBehavior.TABLE
+            NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
+            activeComp.addGaussy
+              placeholder: "[#{layoutInstruction.raw}]"
+              time: layoutInstruction.time
+          when NFLayoutBehavior.UNRECOGNIZED, NFLayoutBehavior.DO_NOTHING
+            if targetPDF?
+              NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
+              titlePage = targetPDF.getTitlePage()
+              activeComp.animateTo
+                time: layoutInstruction.time
+                page: titlePage
+            NFTools.log "Adding placeholder for [#{layoutInstruction.raw}]", "autoLayout"
+            activeComp.addPlaceholder
+              text: "[#{layoutInstruction.raw}]"
+              time: instructionTime
+          when NFLayoutBehavior.NONE
+            if targetPDF?
+              NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
+              titlePage = targetPDF.getTitlePage()
+              activeComp.animateTo
+                time: layoutInstruction.time
+                page: titlePage
+
+          else
+            throw new Error "There isn't a case for this instruction"
+      else
+        throw new Error "Instruction not found"
+    return null
+
+  ###*
   Takes a set of validated layoutInstructions and lays out the whole project.
   @memberof NFProject
   @param {NFLayoutInstruction[]} layoutInstructions
@@ -240,20 +321,13 @@ NFProject =
       return "Aborting AutoLayout!\nIt looks like there are already pages in
               one or more part comps. Clean up and try again."
 
-    # Check if there are broken highlights anywhere
-    allHighlights = NFProject.allHighlights()
-    brokenHighlights = no
-    allHighlights.forEach (highlight) =>
-      highlight.resetExpressionErrors()
-      brokenHighlights = yes if highlight.isBroken()
-    if brokenHighlights
+    if NFProject.containsBrokenHighlights()
       return "Aborting AutoLayout!\nThere are broken highlights in some page
               comps. Fix before running again."
 
     NFTools.log "Beginning layout!", "autoLayout"
     lastPart = null
     for layoutInstruction in layoutInstructions
-      # try
       # Figure out which part to work in.
       instructionTime = parseFloat layoutInstruction.time
       thisPart = NFProject.partForTime instructionTime
@@ -360,6 +434,7 @@ NFProject =
     return matchingPart
 
 
+
   ###*
   Checks the instructions against the project to make sure there aren't any
   missing highlights/expands, etc.
@@ -374,68 +449,9 @@ NFProject =
     anyInvalid = no
     expands = []
     for ins in layoutInstructions
-      ins.valid = yes
-      ins.validationMessage = ""
-
-      # If there's a native PDF, make sure it exists
-      if ins.pdf?
-        targetPDF = NFPDF.fromPDFNumber(ins.pdf)
-        if not targetPDF?
-          ins.valid = no
-          ins.validationMessage += "Missing PDF: '#{ins.pdf}'. "
-      else
-        targetPDF = null
-
-      # If there's a highlight, make sure it exists on the relevant PDF
-      if ins.getInstruction().type is NFLayoutType.HIGHLIGHT
-        targetPDF = NFPDF.fromPDFNumber(ins.getPDF()) unless targetPDF?
-        highlightLook = ins.getInstruction().look
-        if ins.flags.expand?
-          if ins.flags.expandUp?
-            # First, figure out which expandUp this is...
-            matchedExpands = []
-            for exp in expands
-              # If we've encountered an expand with the same PDF and highlight
-              sameInstruction = exp.getHighlight().look is highlightLook
-              samePDF = exp.getPDF() is ins.getPDF()
-              matchedExpands.push exp if sameInstruction and samePDF and exp.flags.expandUp?
-            ins.expandUpNumber = matchedExpands.length + 1
-            if ins.expandUpNumber is 1
-              lookString = "#{highlightLook} Expand Up"
-            else
-              lookString = "#{highlightLook} Expand Up #{ins.expandUpNumber}"
-            highlight = targetPDF?.findHighlight lookString
-          else
-            # First, figure out which expand this is...
-            matchedExpands = []
-            for exp in expands
-              # If we've encountered an expand with the same PDF and highlight
-              sameInstruction = exp.getHighlight().look is highlightLook
-              samePDF = exp.getPDF() is ins.getPDF()
-              matchedExpands.push exp if sameInstruction and samePDF and not exp.flags.expandUp?
-            ins.expandNumber = matchedExpands.length + 1
-            if ins.expandNumber is 1
-              lookString = "#{highlightLook} Expand"
-            else
-              lookString = "#{highlightLook} Expand #{ins.expandNumber}"
-            highlight = targetPDF?.findHighlight lookString
-          expands.push ins
-          ins.expandLookString = lookString
-          ins.instruction = NFLayoutInstructionExpand if ins.instruction.behavior is NFLayoutBehavior.NONE
-          if not highlight?
-            ins.valid = no
-            ins.validationMessage += "Missing expand '#{lookString}' in PDF #{ins.getPDF()}"
-        else
-          highlight = targetPDF?.findHighlight ins.instruction.look
-          if not highlight?
-            ins.valid = no
-            ins.validationMessage += "Missing highlight '#{ins.instruction.look}' in PDF #{ins.getPDF()}"
-
-      if ins.valid is no
-        anyInvalid = yes
-        NFTools.log "Invalid Instruction [#{ins.raw}]. Reasons: #{ins.validationMessage}", "validateInstructions"
-
-      ins.validated = yes
+      thisValid = ins.validate()
+      # ins = NFProject.validateSingleInstruction ins
+      anyInvalid = yes unless thisValid
       validatedInstructions.push ins
 
     if anyInvalid
@@ -454,109 +470,28 @@ NFProject =
   @returns {Item | null} the found item or null
   ###
   followInstruction: (input) ->
-    # FIXME: This needs to be re-written for one-offs now...
-    NFTools.log "Parsing input: '#{input}'", "Parser"
-    # Get a PDF Number from the input, if any
-    mainComp = @activeComp()
-    throw new Error "Can only run instruction on a part comp" unless mainComp instanceof NFPartComp
-    targetPDFNumber = /(^\d+)/i.exec(input)
-    targetPDFNumber = targetPDFNumber[1] if targetPDFNumber?
-    if targetPDFNumber?
-      instructionString = input.slice(targetPDFNumber.length)
-      NFTools.log "Target PDF Number found: '#{targetPDFNumber}'", "Parser"
-    else
-      instructionString = input
+    instruction = NFTools.parseInstructionString input
 
-    # Get some information about which PDF we're on and which one we need
-    activePDF = mainComp.activePDF()
-    activePDFNumber = activePDF?.getPDFNumber()
-    alreadyOnTargetPaper = if targetPDFNumber? then activePDFNumber is targetPDFNumber else true
-    targetPDF = if alreadyOnTargetPaper then activePDF else NFPDF.fromPDFNumber(targetPDFNumber)
+    # Assign the instruction the current active comp time
+    instruction.time = NFProject.activeComp().getTime()
 
-    flags = {}
-    # Look for any flags and remove them for later
-    for key of NFLayoutFlagDict
-      flagOption = NFLayoutFlagDict[key]
-      for code in flagOption.code
-        if instructionString.indexOf(code) >= 0
-          flags[key] = flagOption
-          instructionString = instructionString.replace(code, "").trim()
-          NFTools.log "Flag found: '#{flagOption.display}'", "Parser"
+    # Assign the instruction the current active PDF if none given
+    if not instruction.pdf? and instruction.instruction.type is NFLayoutType.HIGHLIGHT or instruction.instruction.type is NFLayoutType.EXPAND
+       activePDF = NFProject.activeComp().activePDF()
+       instruction.pdf = activePDF.getPDFNumber() if activePDF?
 
-    # If we've only got expand/expandup flags and there's nothing else left,
-    # we can assume those should be instructions instead.
-    if instructionString is ""
-      if flags.expand?
-        NFTools.log "No instruction remaining. Converting Flag '#{flags.expand.display}' to Instruction", "Parser"
-        instruction = NFLayoutInstructionDict.expand
-        delete flags.expand
+    # Ask for the expand look string manually if needed
+    if instruction.flags.expand?
+      lookString = prompt 'Enter the look string for the expand:', '', 'AutoLayout'
+      if lookString? and lookString isnt ''
+        instruction.expandLookString = lookString
       else
-        throw new Error "No instructionString remaining after parsing flags and PDF"
+        return alert "Aborting - I need to know the look string for the expand."
+
+    valid = instruction.validate()
+    if valid
+      result = NFProject.layoutSingleInstruction instruction
     else
-      # Look for an instruction
-      instruction = null
-      NFTools.log "Instruction string remaining is: '#{instructionString}'", "Parser"
-      for key of NFLayoutInstructionDict
-        option = NFLayoutInstructionDict[key]
-        for code in option.code
-          if instructionString is code
-            if instruction?
-              # If there's already an instruction found found, get the highest priority one
-              if option.priority? and instruction.priority? and option.priority < instruction.priority
-                instruction = option
-              else if (option.priority? and instruction.priority?) or (not option.priority? and not instruction.priority?)
-                throw new Error "instruction matched two instruction options (#{instruction.display} and #{option.display}) with the same priority. Fix layoutDictionary."
-              else if option.priority?
-                instruction = option
-            else
-              instruction = option
+      return alert "Aborting - Invalid instruction.\nValidator says: #{instruction.validationMessage}"
 
-      if instruction?
-        NFTools.log "Instruction found: '#{instruction.display}'", "Parser"
-      else
-        throw new Error "No instruction matches instruction string"
-
-    # OK, now we have four key pieces of information: the instruction, flags, the current PDF and the active PDF
-
-    # FIXME: Pickup here and deal with the various expand flags and instructions that could have arrived...
-
-    # If we have a PDF to go to but no instruction, assume we should bring in
-    # the title page
-    if targetPDF? and not instruction?
-      NFTools.log "PDF found but no instruction - animating to title page", "Parser"
-      titlePage = targetPDF.getTitlePage()
-      mainComp.animateTo
-        page: titlePage
-
-    # if the instruction is a highlight, let's call animateTo
-    else switch instruction.type
-      when NFLayoutType.HIGHLIGHT
-        highlight = targetPDF.findHighlight instruction.look
-        throw new Error "Can't find highlight with name '#{instruction.look}' in PDF '#{targetPDF.toString()}'" unless highlight?
-
-        NFTools.log "Animating to #{instruction.display}", "Parser"
-        mainComp.animateTo
-          highlight: highlight
-          skipTitle: flags.skipTitle
-          expand: flags.expand
-          expandUp: flags.expandUp
-
-      when NFLayoutType.EXPAND
-        NFTools.log "Animating to #{instruction.display}", "Parser"
-        # FIXME: Need to build this out so that the relevant expand highlight
-        # can be determined and checked from the previous instructions
-
-      when NFLayoutType.INSTRUCTION
-        switch instruction.behavior
-          when NFLayoutBehavior.SHOW_TITLE
-            NFTools.log "Following Instruction: #{instruction.display}", "Parser"
-            mainComp.animateTo
-              page: targetPDF.getTitlePage()
-          when NFLayoutBehavior.ICON_SEQUENCE, NFLayoutBehavior.GAUSSY, NFLayoutBehavior.FIGURE, NFLayoutBehavior.TABLE
-            NFTools.log "Following Instruction: #{instruction.display}", "Parser"
-            mainComp.addGaussy
-              placeholder: instruction.display
-          else throw new Error "There isn't a case for this instruction"
-        @
-      else throw new Error "Instruction not found"
-    @
+    alert result if result?

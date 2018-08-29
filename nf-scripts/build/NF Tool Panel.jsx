@@ -9,6 +9,16 @@ toolRegistry = {
   setup: {
     name: "Setup",
     tools: {
+      setupMainComp: {
+        name: "Setup Main Comp",
+        callback: function() {
+          var script, scriptFile, start_folder;
+          start_folder = new Folder(new File($.fileName).parent.fsName);
+          scriptFile = new File(start_folder.fsName + '/nf_SetupMainComp.jsx');
+          script = "#include '" + scriptFile.fullName + "'";
+          return eval(script);
+        }
+      },
       renamePDFPrecomps: {
         name: "Rename PDF Precomps",
         callback: function() {
@@ -23,6 +33,28 @@ toolRegistry = {
             results.push(item.name = item.name.replace('.pdf', ' NFPage'));
           }
           return results;
+        }
+      },
+      createInstructionFile: {
+        name: "Create Instruction File (Mac Only)",
+        callback: function() {
+          var audioFile, audioLayer, bashFile, cmdLineString, command, project_folder, shouldContinue, start_folder, sttFolder, termfile;
+          start_folder = new Folder(new File($.fileName).parent.parent.fsName);
+          project_folder = new Folder(app.project.file.parent.fsName);
+          bashFile = new File(start_folder.fsName + '/lib/stt/systemcall.sh');
+          sttFolder = File(start_folder.fsName + '/lib/stt/');
+          audioLayer = NFProject.mainComp().audioLayers().getBottommostLayer();
+          audioFile = audioLayer.layer.source.file;
+          cmdLineString = "sh '" + bashFile.fsName + "' '" + sttFolder.fsName + "' '" + audioFile.fsName + "' '" + project_folder.fsName + "'";
+          termfile = new File(File($.fileName).parent.fsName + '/command.term');
+          command = cmdLineString;
+          termfile.open('w');
+          termfile.writeln('<?xml version="1.0" encoding="UTF-8"?>\n' + '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"' + '"http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' + '<plist version="1.0">\n' + '<dict>\n' + '<key>WindowSettings</key>\n' + '<array>\n' + ' <dict>\n' + '<key>CustomTitle</key>\n' + '<string>My first termfile</string>\n' + '<key>ExecutionString</key>\n' + '<string>' + command + '</string>\n' + '</dict>\n' + '</array>\n' + '</dict>\n' + '</plist>\n');
+          termfile.close();
+          shouldContinue = confirm("This involves running a terminal instance to perform speech to text and line up timecodes. It may take a while and you'll have to check the terminal window to follow the progress. Continue?", false, "Run Script?");
+          if (shouldContinue) {
+            return termfile.execute();
+          }
         }
       },
       importInstructions: {
@@ -99,6 +131,12 @@ toolRegistry = {
           return results;
         }
       },
+      addGaussyLayer: {
+        name: "Add Gaussy",
+        callback: function() {
+          return NFProject.activeComp().addGaussy();
+        }
+      },
       addSpotlightMarker: {
         name: "Add Spotlight Marker",
         callback: function() {
@@ -169,7 +207,7 @@ getPanelUI = function() {
       thisToolItem = thisCategoryNode.add('item', thisTool.name);
       thisToolItem.data = thisTool;
     }
-    thisCategoryNode.expanded = true;
+    thisCategoryNode.expanded = false;
   }
   buttonGroup = buttonPanel.add('group', void 0);
   goButton = buttonGroup.add('button', void 0, 'Do it!');
