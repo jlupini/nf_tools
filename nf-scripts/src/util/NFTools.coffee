@@ -361,6 +361,8 @@ NFTools =
       strippedInput = input
       shouldBreak = no
 
+    $.bp() if shouldBreak
+
     # Get a PDF Number from the input, if any
     targetPDFNumber = /(^\d+)/i.exec(strippedInput)
     targetPDFNumber = targetPDFNumber[1] if targetPDFNumber?

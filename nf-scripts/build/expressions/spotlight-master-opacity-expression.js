@@ -24,7 +24,7 @@ i = 1;
 
 while (i <= numLayers) {
   theLayer = thisComp.layer(i);
-  if (theLayer.name.indexOf(targetPDF + " -") >= 0 && theLayer.name.indexOf("Highlight Control") >= 0) {
+  if (theLayer.name.indexOf(targetPDF + " -") === 0 && theLayer.name.indexOf("Highlight Control") >= 0) {
     babbies.push(theLayer);
     if (theLayer.marker.numKeys > 0) {
       for (idx = j = 1, ref = theLayer.marker.numKeys; 1 <= ref ? j <= ref : j >= ref; idx = 1 <= ref ? ++j : --j) {

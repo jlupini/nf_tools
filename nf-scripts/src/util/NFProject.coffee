@@ -158,6 +158,24 @@ NFProject =
 
     parsedInstructions = NFTools.parseInstructions parsedLines
 
+    shouldContinue = confirm "Import complete! Continue to Validation?", false, 'Validation'
+    return null unless shouldContinue
+
+    validationResult = NFProject.validateInstructions parsedInstructions
+
+    if not validationResult.valid
+      alert "Validation failed!\nCheck log for details. I've cached
+             the import data, so as long as you just need to fix things
+             in the AE project, you won't need to wait for all the script
+             matching next time. However, if you modify anything in the
+             transcript.csv or script.txt files, you'll need to re-import."
+      return null
+    else
+      shouldContinue = confirm "Validation successful!\nWould you like to run
+                                AutoLayout now? It takes a while and you won't
+                                be able to stop the process once it begins.", false, 'AutoLayout'
+    return null unless shouldContinue
+
     # Add the line and instruction markers to part comps
     allParts = NFProject.allPartComps()
     lineWrap = "...\n"
@@ -187,23 +205,6 @@ NFProject =
           time: ins.time
           comment: lineInstruction
 
-    shouldContinue = confirm "Import complete! Continue to Validation?", false, 'Validation'
-    return null unless shouldContinue
-
-    validationResult = NFProject.validateInstructions parsedInstructions
-
-    if not validationResult.valid
-      alert "Validation failed!\nCheck log for details. I've cached
-             the import data, so as long as you just need to fix things
-             in the AE project, you won't need to wait for all the script
-             matching next time. However, if you modify anything in the
-             transcript.csv or script.txt files, you'll need to re-import."
-      return null
-    else
-      shouldContinue = confirm "Validation successful!\nWould you like to run
-                                AutoLayout now? It takes a while and you won't
-                                be able to stop the process once it begins.", false, 'AutoLayout'
-    return null unless shouldContinue
     autoLayoutStatus = NFProject.autoLayout validationResult.layoutInstructions
     alert autoLayoutStatus
 
@@ -243,7 +244,7 @@ NFProject =
       when NFLayoutType.HIGHLIGHT
         # For highlights and expands we need a target PDF, so use this method instead of layoutInstruction.pdf
         targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
-        lookString = layoutInstruction.instruction.look
+        lookString = layoutInstruction.expandLookString or layoutInstruction.instruction.look
         highlight = targetPDF.findHighlight lookString
         throw new Error "Can't find highlight with name '#{lookString}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
@@ -455,6 +456,8 @@ NFProject =
       validatedInstructions.push ins
 
     if anyInvalid
+      for ins in layoutInstructions
+        NFTools.log "Invalid Instruction [#{ins.raw}]: #{ins.validationMessage}" unless ins.valid
       NFTools.log "Validation completed with errors!", "validateInstructions"
     else
       NFTools.log "Validation completed with no errors!", "validateInstructions"

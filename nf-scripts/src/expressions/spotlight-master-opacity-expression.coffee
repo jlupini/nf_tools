@@ -16,7 +16,7 @@ numLayers = thisComp.numLayers
 i = 1
 while i <= numLayers
   theLayer = thisComp.layer(i)
-  if theLayer.name.indexOf(targetPDF + " -") >= 0 and theLayer.name.indexOf("Highlight Control") >= 0
+  if theLayer.name.indexOf(targetPDF + " -") is 0 and theLayer.name.indexOf("Highlight Control") >= 0
     babbies.push theLayer
 
     if theLayer.marker.numKeys > 0

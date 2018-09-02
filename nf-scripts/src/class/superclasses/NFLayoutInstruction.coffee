@@ -44,6 +44,8 @@ class NFLayoutInstruction extends NFObject
   @returns {boolean} if valid
   ###
   validate: ->
+    $.bp() if @break
+
     @valid = yes
 
     if not @time?
@@ -54,7 +56,7 @@ class NFLayoutInstruction extends NFObject
     if @pdf?
       targetPDF = NFPDF.fromPDFNumber @pdf
       if not targetPDF?
-        @validationMessage = "Missing PDF: '#{ins.pdf}'."
+        @validationMessage = "Missing PDF: '#{@pdf}'."
         return @valid = no
 
     # If the instruction is an expand and there's no look string yet, find one
@@ -105,13 +107,13 @@ class NFLayoutInstruction extends NFObject
       testIns = @
       while testIns?
         if testIns.flags.expand?
-          if @flags.expandUp? is testIns.flags.expandUp? and testIns.getHighlight()?.look is testHighlight.look
+          if @flags.expandUp? is testIns.flags.expandUp? and testIns.getHighlight()?.look is testHighlight.look and testIns.getPDF() is @getPDF()
             foundExpands.push testIns
         testIns = testIns.prev
 
       @expandLookString = "#{testHighlight.look} Expand"
       @expandLookString += " Up" if @flags.expandUp?
-      @expandLookString += " #{foundExpands.length + 1}" if foundExpands.length > 0
+      @expandLookString += " #{foundExpands.length}" if foundExpands.length > 1
 
     return @expandLookString
 

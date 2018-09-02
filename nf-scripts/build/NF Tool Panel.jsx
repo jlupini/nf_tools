@@ -71,23 +71,45 @@ toolRegistry = {
       prepareForSafeRender: {
         name: "Arm Settings for Software Render",
         callback: function() {
-          var mainComp;
+          var j, len, mainComp, part, parts, results, spotlightLayers;
           if (app.availableGPUAccelTypes.indexOf(GpuAccelType.SOFTWARE >= 0)) {
             app.project.gpuAccelType = GpuAccelType.SOFTWARE;
           }
           mainComp = NFProject.mainComp().comp;
           mainComp.motionBlur = true;
-          return mainComp.resolutionFactor = [1, 1];
+          mainComp.resolutionFactor = [1, 1];
+          parts = NFProject.allPartComps();
+          results = [];
+          for (j = 0, len = parts.length; j < len; j++) {
+            part = parts[j];
+            spotlightLayers = part.searchLayers("Spotlight");
+            results.push(spotlightLayers.forEach((function(_this) {
+              return function(spotlight) {
+                return spotlight.layer.enabled = true;
+              };
+            })(this)));
+          }
+          return results;
         }
       },
       prepareForStandardRender: {
         name: "Arm Settings for Fast Render",
         callback: function() {
-          var mainComp;
+          var j, len, mainComp, part, parts, spotlightLayers;
           if (app.availableGPUAccelTypes.indexOf(GpuAccelType.OPENCL >= 0)) {
             app.project.gpuAccelType = GpuAccelType.OPENCL;
           } else if (app.availableGPUAccelTypes.indexOf(GpuAccelType.CUDA >= 0)) {
             app.project.gpuAccelType = GpuAccelType.CUDA;
+          }
+          parts = NFProject.allPartComps();
+          for (j = 0, len = parts.length; j < len; j++) {
+            part = parts[j];
+            spotlightLayers = part.searchLayers("Spotlight");
+            spotlightLayers.forEach((function(_this) {
+              return function(spotlight) {
+                return spotlight.layer.enabled = true;
+              };
+            })(this));
           }
           mainComp = NFProject.mainComp().comp;
           mainComp.motionBlur = true;
@@ -116,15 +138,19 @@ toolRegistry = {
       toggleSpotlights: {
         name: "Toggle Spotlight Layers",
         callback: function() {
-          var j, len, part, parts, results, spotlightLayers;
+          var j, len, part, parts, results, spotlightLayers, targetValue;
           parts = NFProject.allPartComps();
+          targetValue = null;
           results = [];
           for (j = 0, len = parts.length; j < len; j++) {
             part = parts[j];
             spotlightLayers = part.searchLayers("Spotlight");
             results.push(spotlightLayers.forEach((function(_this) {
               return function(spotlight) {
-                return spotlight.layer.enabled = !spotlight.layer.enabled;
+                if (targetValue === null) {
+                  targetValue = !spotlight.layer.enabled;
+                }
+                return spotlight.layer.enabled = targetValue;
               };
             })(this)));
           }
@@ -167,6 +193,51 @@ toolRegistry = {
               }
             };
           })(this));
+        }
+      },
+      updateSpotlightExpressions: {
+        name: "Update Spotlight Expressions",
+        callback: function() {
+          var j, len, newMaskOpacityExpSegment, newMaskPathExpSegment, newMasterOpacityExpSegment, part, parts, results, spotlightLayers;
+          newMaskOpacityExpSegment = NFTools.readExpression("spotlight-mask-opacity-expression");
+          newMaskOpacityExpSegment = newMaskOpacityExpSegment.substring(newMaskOpacityExpSegment.indexOf("inFunc = function(mark)"));
+          newMaskPathExpSegment = NFTools.readExpression("spotlight-mask-expression");
+          newMaskPathExpSegment = newMaskPathExpSegment.substring(newMaskPathExpSegment.indexOf("numLayers = thisComp.numLayers;"));
+          newMasterOpacityExpSegment = NFTools.readExpression("spotlight-master-opacity-expression");
+          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("numLayers = thisComp.numLayers;"));
+          parts = NFProject.allPartComps();
+          spotlightLayers = new NFLayerCollection();
+          results = [];
+          for (j = 0, len = parts.length; j < len; j++) {
+            part = parts[j];
+            results.push(part.searchLayers("Spotlight").forEach((function(_this) {
+              return function(partSpotLayer) {
+                var currExp, i, k, mask, prop, ref, results1, spotMasks, strippedExp;
+                spotMasks = partSpotLayer.mask();
+                results1 = [];
+                for (i = k = 1, ref = spotMasks.numProperties; 1 <= ref ? k <= ref : k >= ref; i = 1 <= ref ? ++k : --k) {
+                  mask = spotMasks.property(i);
+                  if (mask.name === "Dummy") {
+                    prop = mask.property("Mask Opacity");
+                    currExp = prop.expression;
+                    strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"));
+                    results1.push(prop.expression = strippedExp + newMasterOpacityExpSegment);
+                  } else {
+                    prop = mask.property("Mask Path");
+                    currExp = prop.expression;
+                    strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"));
+                    strippedExp = prop.expression = strippedExp + newMaskPathExpSegment.replace("highlightComp.duration", "540");
+                    prop = mask.property("Mask Opacity");
+                    currExp = prop.expression;
+                    strippedExp = currExp.substring(0, currExp.indexOf("inFunc = function(mark)"));
+                    results1.push(prop.expression = strippedExp + newMaskOpacityExpSegment);
+                  }
+                }
+                return results1;
+              };
+            })(this)));
+          }
+          return results;
         }
       }
     }

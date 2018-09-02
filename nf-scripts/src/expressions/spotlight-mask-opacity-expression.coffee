@@ -9,6 +9,7 @@ firstInBlock = 101
 lastInBlock = 202
 onlyInBlock = 252
 notFirstOrLastInBlock = 303
+nearestSpotlightMarkerOnThisControl = null
 
 inFunc = (mark) ->
   return mark.time
@@ -17,18 +18,20 @@ outFunc = (mark) ->
 
 # Gets an array of the active markers at this time
 activeMarkersAtTime = ->
-  babbies = []
   activeMarkers = []
+  nearestMarker = null
   numLayers = thisComp.numLayers
   i = 1
   while i <= numLayers
     theLayer = thisComp.layer(i)
-    if theLayer.name.indexOf(targetPDF + " -") >= 0 and theLayer.name.indexOf("Highlight Control") >= 0
-      babbies.push theLayer
+    if theLayer.name.indexOf(targetPDF + " -") is 0 and theLayer.name.indexOf("Highlight Control") >= 0
 
       if theLayer.marker.numKeys > 0
+        # For each marker, check if it's a spotlight marker. Also grab the nearest spotlight marker on this control when we find it.
         for idx in [1..theLayer.marker.numKeys]
+
           testMarker = theLayer.marker.key(idx)
+
           if testMarker.comment is "Spotlight"
             spotlightMarkers.push testMarker
 
@@ -36,37 +39,25 @@ activeMarkersAtTime = ->
             adjOut = outFunc testMarker
             activeMarkers.push testMarker if adjIn <= time < adjOut
 
+            if theLayer.name is controlLayer.name
+              if adjIn <= time <= adjOut
+                nearestMarker = testMarker
+              else if nearestMarker?
+                timeToIn = Math.abs(time - adjIn)
+                timeToOut = Math.abs(time - adjOut)
+                prevTimeToIn = Math.abs(time - inFunc(nearestMarker))
+                prevTimeToOut = Math.abs(time - outFunc(nearestMarker))
+
+                min = Math.min timeToIn, timeToOut, prevTimeToIn, prevTimeToOut
+                if min is timeToIn or min is timeToOut
+                  nearestMarker = testMarker
+              else
+                nearestMarker = testMarker
+
+      nearestSpotlightMarkerOnThisControl = nearestMarker
+
     i++
   return activeMarkers
-
-# Gets the nearest spotlight marker on this layer
-nearestSpotlightMarker = ->
-  nearestMarker = null
-  if controlLayer.marker.numKeys > 0
-    for idx in [1..controlLayer.marker.numKeys]
-      testMarker = controlLayer.marker.key(idx)
-      if testMarker.comment is "Spotlight"
-        # Return immediately if the time is actually inside this marker
-        testMarkIn = inFunc testMarker
-        testMarkOut = outFunc testMarker
-
-        if testMarkIn <= time <= testMarkOut
-          return testMarker
-        else if nearestMarker?
-          timeToIn = Math.abs(time - testMarkIn)
-          timeToOut = Math.abs(time - testMarkOut)
-          prevTimeToIn = Math.abs(time - inFunc(nearestMarker))
-          prevTimeToOut = Math.abs(time - outFunc(nearestMarker))
-
-          min = Math.min timeToIn, timeToOut, prevTimeToIn, prevTimeToOut
-          if min is timeToIn or min is timeToOut
-            nearestMarker = testMarker
-        else
-          nearestMarker = testMarker
-
-    return nearestMarker
-  else
-    return null
 
 positionInBlock = ->
   activeMarkers = activeMarkersAtTime()
@@ -90,7 +81,7 @@ positionInBlock = ->
     else
       return onlyInBlock
 
-    thisMarker = nearestSpotlightMarker()
+    thisMarker = nearestSpotlightMarkerOnThisControl
     if blockStartMarker.time is thisMarker.time
       return firstInBlock
     else if blockEndMarker.time is thisMarker.time
@@ -100,10 +91,9 @@ positionInBlock = ->
 
 # Gets null or the value the opacity should be at
 expValue = ->
-  spotMarker = nearestSpotlightMarker()
-  return null unless spotMarker?
-
   posInBlk = positionInBlock()
+  spotMarker = nearestSpotlightMarkerOnThisControl
+  return null unless spotMarker?
 
   inTime = inFunc spotMarker
   outTime = outFunc spotMarker

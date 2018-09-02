@@ -413,6 +413,9 @@ NFTools = {
       strippedInput = input;
       shouldBreak = false;
     }
+    if (shouldBreak) {
+      $.bp();
+    }
     targetPDFNumber = /(^\d+)/i.exec(strippedInput);
     if (targetPDFNumber != null) {
       targetPDFNumber = targetPDFNumber[1];

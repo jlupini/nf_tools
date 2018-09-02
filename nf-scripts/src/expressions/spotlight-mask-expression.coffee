@@ -1,5 +1,6 @@
 targetPage = 'TARGET_PAGE'
-highlightLayer = comp('COMP_NAME').layer('HIGHLIGHT_LAYER_NAME')
+highlightComp = comp('COMP_NAME')
+highlightLayer = highlightComp.layer('HIGHLIGHT_LAYER_NAME')
 controlLayerEffect = highlightLayer.effect('AV_Highlighter')
 
 # Get our matching page layer
@@ -15,7 +16,7 @@ if activeBabby == null
   ori = [0, 0]
   createPath points = [ori, ori, ori, ori], inTangents = [], outTangents = [], is_closed = true
 else
-  rect = highlightLayer.sourceRectAtTime(time)
+  rect = highlightLayer.sourceRectAtTime(highlightComp.duration)
   lt = [rect.left, rect.top]
   lb = [rect.left, rect.top + rect.height]
   rt = [rect.left + rect.width, rect.top]

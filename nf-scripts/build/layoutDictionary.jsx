@@ -20,7 +20,7 @@ NFLayoutBehavior = {
 
 NFLayoutFlagDict = {
   skipTitle: {
-    code: ['no q', 'noq', 'no q just citation', 'no q just citation bar'],
+    code: ['no q just citation bar', 'no q just citation', 'no q', 'noq'],
     display: "Skip Paper Title Page"
   },
   expandUp: {
@@ -57,17 +57,80 @@ NFLayoutInstructionNone = {
 };
 
 NFLayoutInstructionDict = {
+  greenStrikethroughHighlight: {
+    code: ['g strikethrough', 'gstrikethrough'],
+    look: "Green Strikethrough",
+    display: "Green Strikethrough Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  yellowStrikethroughHighlight: {
+    code: ['y strikethrough', 'ystrikethrough'],
+    look: "Yellow Strikethrough",
+    display: "Yellow Strikethrough Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  blueStrikethroughHighlight: {
+    code: ['b strikethrough', 'bstrikethrough'],
+    look: "Blue Strikethrough",
+    display: "Blue Strikethrough Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  pinkStrikethroughHighlight: {
+    code: ['i strikethrough', 'istrikethrough'],
+    look: "Pink Strikethrough",
+    display: "Pink Strikethrough Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  purpleStrikethroughHighlight: {
+    code: ['u strikethrough', 'ustrikethrough'],
+    look: "Purple Strikethrough",
+    display: "Purple Strikethrough Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
   yellowUnderlineHighlight: {
-    code: ['yunderline'],
+    code: ['yunderline', 'y underline'],
     look: "Yellow Underline",
     display: "Yellow Underline Highlight",
     priority: 1,
     type: NFLayoutType.HIGHLIGHT
   },
   greenUnderlineHighlight: {
-    code: ['gunderline'],
+    code: ['gunderline', 'g underline'],
     look: "Green Underline",
     display: "Green Underline Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  blueUnderlineHighlight: {
+    code: ['bunderline', 'b underline'],
+    look: "Blue Underline",
+    display: "Blue Underline Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  orangeUnderlineHighlight: {
+    code: ['ounderline', 'o underline'],
+    look: "Orange Underline",
+    display: "Orange Underline Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  pinkUnderlineHighlight: {
+    code: ['iunderline', 'i underline'],
+    look: "Pink Underline",
+    display: "Pink Underline Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  purpleUnderlineHighlight: {
+    code: ['uunderline', 'u underline'],
+    look: "Purple Underline",
+    display: "Purple Underline Highlight",
     priority: 1,
     type: NFLayoutType.HIGHLIGHT
   },

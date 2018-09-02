@@ -1933,6 +1933,9 @@ NFLayoutInstruction = (function(superClass) {
 
   NFLayoutInstruction.prototype.validate = function() {
     var highlight, lookString, searchPDF, targetPDF;
+    if (this["break"]) {
+      $.bp();
+    }
     this.valid = true;
     if (this.time == null) {
       this.validationMessage = "Missing Time.";
@@ -1941,7 +1944,7 @@ NFLayoutInstruction = (function(superClass) {
     if (this.pdf != null) {
       targetPDF = NFPDF.fromPDFNumber(this.pdf);
       if (targetPDF == null) {
-        this.validationMessage = "Missing PDF: '" + ins.pdf + "'.";
+        this.validationMessage = "Missing PDF: '" + this.pdf + "'.";
         return this.valid = false;
       }
     }
@@ -1993,7 +1996,7 @@ NFLayoutInstruction = (function(superClass) {
       testIns = this;
       while (testIns != null) {
         if (testIns.flags.expand != null) {
-          if ((this.flags.expandUp != null) === (testIns.flags.expandUp != null) && ((ref = testIns.getHighlight()) != null ? ref.look : void 0) === testHighlight.look) {
+          if ((this.flags.expandUp != null) === (testIns.flags.expandUp != null) && ((ref = testIns.getHighlight()) != null ? ref.look : void 0) === testHighlight.look && testIns.getPDF() === this.getPDF()) {
             foundExpands.push(testIns);
           }
         }
@@ -2003,8 +2006,8 @@ NFLayoutInstruction = (function(superClass) {
       if (this.flags.expandUp != null) {
         this.expandLookString += " Up";
       }
-      if (foundExpands.length > 0) {
-        this.expandLookString += " " + (foundExpands.length + 1);
+      if (foundExpands.length > 1) {
+        this.expandLookString += " " + foundExpands.length;
       }
     }
     return this.expandLookString;
@@ -4761,7 +4764,7 @@ NFPageLayer = (function(superClass) {
         case !animatingX:
           return slider.property("Slider");
         default:
-          return positionProperty.value[0];
+          return "value[0]";
       }
     })();
     yVal = (function() {
@@ -4769,10 +4772,10 @@ NFPageLayer = (function(superClass) {
         case !animatingY:
           return slider.property("Slider");
         default:
-          return positionProperty.value[1];
+          return "value[1]";
       }
     })();
-    zVal = positionProperty.value[2];
+    zVal = 0;
     if (model["in"]) {
       startEquation = EasingEquation.quint.out;
       startValue = [xVal, yVal, zVal];

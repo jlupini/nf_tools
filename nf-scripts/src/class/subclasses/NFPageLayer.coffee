@@ -399,11 +399,11 @@ class NFPageLayer extends NFLayer
 
     xVal = switch
       when animatingX then slider.property("Slider")
-      else positionProperty.value[0]
+      else "value[0]"
     yVal = switch
       when animatingY then slider.property("Slider")
-      else positionProperty.value[1]
-    zVal = positionProperty.value[2]
+      else "value[1]"
+    zVal = 0
 
     if model.in
       startEquation = EasingEquation.quint.out

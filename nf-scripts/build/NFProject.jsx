@@ -189,6 +189,20 @@ NFProject = {
       parsedLines: parsedLines
     };
     parsedInstructions = NFTools.parseInstructions(parsedLines);
+    shouldContinue = confirm("Import complete! Continue to Validation?", false, 'Validation');
+    if (!shouldContinue) {
+      return null;
+    }
+    validationResult = NFProject.validateInstructions(parsedInstructions);
+    if (!validationResult.valid) {
+      alert("Validation failed!\nCheck log for details. I've cached the import data, so as long as you just need to fix things in the AE project, you won't need to wait for all the script matching next time. However, if you modify anything in the transcript.csv or script.txt files, you'll need to re-import.");
+      return null;
+    } else {
+      shouldContinue = confirm("Validation successful!\nWould you like to run AutoLayout now? It takes a while and you won't be able to stop the process once it begins.", false, 'AutoLayout');
+    }
+    if (!shouldContinue) {
+      return null;
+    }
     allParts = NFProject.allPartComps();
     lineWrap = "...\n";
     for (j = 0, len = allParts.length; j < len; j++) {
@@ -218,20 +232,6 @@ NFProject = {
           comment: lineInstruction
         });
       }
-    }
-    shouldContinue = confirm("Import complete! Continue to Validation?", false, 'Validation');
-    if (!shouldContinue) {
-      return null;
-    }
-    validationResult = NFProject.validateInstructions(parsedInstructions);
-    if (!validationResult.valid) {
-      alert("Validation failed!\nCheck log for details. I've cached the import data, so as long as you just need to fix things in the AE project, you won't need to wait for all the script matching next time. However, if you modify anything in the transcript.csv or script.txt files, you'll need to re-import.");
-      return null;
-    } else {
-      shouldContinue = confirm("Validation successful!\nWould you like to run AutoLayout now? It takes a while and you won't be able to stop the process once it begins.", false, 'AutoLayout');
-    }
-    if (!shouldContinue) {
-      return null;
     }
     autoLayoutStatus = NFProject.autoLayout(validationResult.layoutInstructions);
     alert(autoLayoutStatus);
@@ -277,7 +277,7 @@ NFProject = {
     switch (layoutInstruction.instruction.type) {
       case NFLayoutType.HIGHLIGHT:
         targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
-        lookString = layoutInstruction.instruction.look;
+        lookString = layoutInstruction.expandLookString || layoutInstruction.instruction.look;
         highlight = targetPDF.findHighlight(lookString);
         if (highlight == null) {
           throw new Error("Can't find highlight with name '" + lookString + "' in PDF '" + (targetPDF.toString()) + "'");
@@ -520,7 +520,7 @@ NFProject = {
   a boolean value 'valid' to indicate success or failure
    */
   validateInstructions: function(layoutInstructions) {
-    var anyInvalid, expands, ins, j, len, returnObj, thisValid, validatedInstructions;
+    var anyInvalid, expands, ins, j, k, len, len1, returnObj, thisValid, validatedInstructions;
     NFTools.log("Validating Instructions...", "validateInstructions");
     validatedInstructions = [];
     anyInvalid = false;
@@ -534,6 +534,12 @@ NFProject = {
       validatedInstructions.push(ins);
     }
     if (anyInvalid) {
+      for (k = 0, len1 = layoutInstructions.length; k < len1; k++) {
+        ins = layoutInstructions[k];
+        if (!ins.valid) {
+          NFTools.log("Invalid Instruction [" + ins.raw + "]: " + ins.validationMessage);
+        }
+      }
       NFTools.log("Validation completed with errors!", "validateInstructions");
     } else {
       NFTools.log("Validation completed with no errors!", "validateInstructions");

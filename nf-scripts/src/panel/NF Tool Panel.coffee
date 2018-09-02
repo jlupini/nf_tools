@@ -71,6 +71,12 @@ toolRegistry =
           mainComp.motionBlur = on
           mainComp.resolutionFactor = [1,1]
 
+          parts = NFProject.allPartComps()
+          for part in parts
+            spotlightLayers = part.searchLayers "Spotlight"
+            spotlightLayers.forEach (spotlight) =>
+              spotlight.layer.enabled = yes
+
       prepareForStandardRender:
         name: "Arm Settings for Fast Render"
         callback: ->
@@ -79,6 +85,12 @@ toolRegistry =
             app.project.gpuAccelType = GpuAccelType.OPENCL
           else if app.availableGPUAccelTypes.indexOf GpuAccelType.CUDA >= 0
             app.project.gpuAccelType = GpuAccelType.CUDA
+
+          parts = NFProject.allPartComps()
+          for part in parts
+            spotlightLayers = part.searchLayers "Spotlight"
+            spotlightLayers.forEach (spotlight) =>
+              spotlight.layer.enabled = yes
 
           # Set Motion Blur on/resolution full
           mainComp = NFProject.mainComp().comp
@@ -107,10 +119,12 @@ toolRegistry =
         name: "Toggle Spotlight Layers"
         callback: ->
           parts = NFProject.allPartComps()
+          targetValue = null
           for part in parts
             spotlightLayers = part.searchLayers "Spotlight"
             spotlightLayers.forEach (spotlight) =>
-              spotlight.layer.enabled = !spotlight.layer.enabled
+              targetValue = !spotlight.layer.enabled if targetValue is null
+              spotlight.layer.enabled = targetValue
 
       addGaussyLayer:
         name: "Add Gaussy"
@@ -138,6 +152,46 @@ toolRegistry =
             if highlight.isBroken()
               highlight.disconnect()
               NFTools.log "Disconnected highlight: #{highlight.getName()} in page: #{highlight.getPageComp().comp.name}\n", "NFToolPanel#disconnectBrokenHighlights"
+
+      updateSpotlightExpressions:
+        name: "Update Spotlight Expressions"
+        callback: ->
+
+          # Get our script segments
+          newMaskOpacityExpSegment = NFTools.readExpression "spotlight-mask-opacity-expression"
+          newMaskOpacityExpSegment = newMaskOpacityExpSegment.substring(newMaskOpacityExpSegment.indexOf("inFunc = function(mark)"))
+
+          newMaskPathExpSegment = NFTools.readExpression "spotlight-mask-expression"
+          newMaskPathExpSegment = newMaskPathExpSegment.substring(newMaskPathExpSegment.indexOf("numLayers = thisComp.numLayers;"))
+
+          newMasterOpacityExpSegment = NFTools.readExpression "spotlight-master-opacity-expression"
+          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("numLayers = thisComp.numLayers;"))
+
+          # Get all the spotlight layers...
+          parts = NFProject.allPartComps()
+          spotlightLayers = new NFLayerCollection()
+          for part in parts
+            part.searchLayers("Spotlight").forEach (partSpotLayer) =>
+              spotMasks = partSpotLayer.mask()
+              for i in [1..spotMasks.numProperties]
+                mask = spotMasks.property(i)
+                # $.bp()
+                if mask.name is "Dummy"
+                  prop = mask.property("Mask Opacity")
+                  currExp = prop.expression
+                  strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"))
+                  prop.expression = strippedExp + newMasterOpacityExpSegment
+                else
+                  prop = mask.property("Mask Path")
+                  currExp = prop.expression
+                  strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"))
+                  strippedExp =
+                  prop.expression = strippedExp + newMaskPathExpSegment.replace("highlightComp.duration", "540")
+
+                  prop = mask.property("Mask Opacity")
+                  currExp = prop.expression
+                  strippedExp = currExp.substring(0, currExp.indexOf("inFunc = function(mark)"))
+                  prop.expression = strippedExp + newMaskOpacityExpSegment
 
 main = ->
   _.panel = getPanelUI()
