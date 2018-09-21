@@ -13,6 +13,7 @@ dev = true;
 if (dev) {
   $.write(">> Dev mode: loading libraries!\n");
   eval('#include "../lib/extendscript.prototypes.js"');
+  eval('#include "../lib/json3.js"');
   eval('#include "easingEquations.jsx"');
   eval('#include "utilFunctions.jsx"');
   eval('#include "objectModel.jsx"');

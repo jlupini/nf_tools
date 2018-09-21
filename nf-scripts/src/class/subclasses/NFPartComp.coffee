@@ -406,12 +406,24 @@ class NFPartComp extends NFComp
         applyStroke: yes
         below: activeGroup.getCitationLayer()
         justification: ParagraphJustification.CENTER_JUSTIFY
-        fontSize: 70
+        fontSize: 60
       placeholder.transform().property("Position").setValue [960, 980]
       placeholder.layer.name = "INSTRUCTION: #{model.text}"
 
     else
-      throw new Error "No active group to create a placeholder layer on top of"
+      # FIXME: Should be able to catch these non-attached ones and trim...
+      placeholder = @addTextLayer
+        text: model.text
+        time: model.time
+        duration: model.duration
+        fillColor: [0,0.6,0.9]
+        strokeWidth: 10
+        strokeColor: [0,0,0]
+        applyStroke: yes
+        justification: ParagraphJustification.CENTER_JUSTIFY
+        fontSize: 60
+      placeholder.transform().property("Position").setValue [960, 980]
+      placeholder.layer.name = "INSTRUCTION: #{model.text}"
 
     @
 

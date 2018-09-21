@@ -5969,12 +5969,24 @@ NFPartComp = (function(superClass) {
         applyStroke: true,
         below: activeGroup.getCitationLayer(),
         justification: ParagraphJustification.CENTER_JUSTIFY,
-        fontSize: 70
+        fontSize: 60
       });
       placeholder.transform().property("Position").setValue([960, 980]);
       placeholder.layer.name = "INSTRUCTION: " + model.text;
     } else {
-      throw new Error("No active group to create a placeholder layer on top of");
+      placeholder = this.addTextLayer({
+        text: model.text,
+        time: model.time,
+        duration: model.duration,
+        fillColor: [0, 0.6, 0.9],
+        strokeWidth: 10,
+        strokeColor: [0, 0, 0],
+        applyStroke: true,
+        justification: ParagraphJustification.CENTER_JUSTIFY,
+        fontSize: 60
+      });
+      placeholder.transform().property("Position").setValue([960, 980]);
+      placeholder.layer.name = "INSTRUCTION: " + model.text;
     }
     return this;
   };
