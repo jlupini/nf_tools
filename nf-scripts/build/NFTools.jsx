@@ -61,13 +61,62 @@ NFTools = {
   /**
   Opens a file with a given path, and lets you work with the file using a
   callback function. File will be created if it does not already exist.
+  Path relative to project.
   @memberof NFTools
   @param {String} filename - the path to the file as a string. No leading
   slashes are necessary
   @param {function} fn - the callback function which should return the new file
   contents
   @example
-  NFTools.openFile "../log.txt", (theFileText) =>
+  NFTools.editProjectFile "../log.txt", (theFileText) =>
+    return "Layer number #{i} is called #{layer.getName()}"
+  @returns {null} null
+   */
+  editProjectFile: function(filename, fn) {
+    var closeCheck, encoding, file_contents, newFileText, openCheck, start_folder, theFile, theFileText, writeCheck;
+    file_contents = void 0;
+    start_folder = new Folder(app.project.file.parent.fsName);
+    theFile = new File(start_folder.fsName + '/' + filename);
+    if (theFile.exists) {
+      openCheck = theFile.open("r");
+      if (!openCheck) {
+        throw new Error("Can't open the File with read permissions!");
+      }
+      theFileText = theFile.read();
+      closeCheck = theFile.close();
+      if (!closeCheck) {
+        throw new Error("Can't close the File!");
+      }
+    } else {
+      encoding = 'utf-8';
+      theFile.encoding = encoding;
+    }
+    openCheck = theFile.open("w");
+    if (!openCheck) {
+      throw new Error("Can't open the File with write permissions");
+    }
+    newFileText = fn(theFileText);
+    writeCheck = theFile.write(newFileText);
+    if (!writeCheck) {
+      throw new Error("Can't write to the File!");
+    }
+    closeCheck = theFile.close();
+    if (!closeCheck) {
+      throw new Error("Can't close the File!");
+    }
+    return null;
+  },
+
+  /**
+  Opens a file with a given path, and lets you work with the file using a
+  callback function. File will be created if it does not already exist.
+  @memberof NFTools
+  @param {String} filename - the path to the file as a string. No leading
+  slashes are necessary
+  @param {function} fn - the callback function which should return the new file
+  contents
+  @example
+  NFTools.editFile "../log.txt", (theFileText) =>
     return "Layer number #{i} is called #{layer.getName()}"
   @returns {null} null
    */

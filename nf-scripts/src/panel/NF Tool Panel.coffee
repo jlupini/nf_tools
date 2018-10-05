@@ -1,5 +1,7 @@
 `#include "runtimeLibraries.jsx"`
 _ = {}
+_.cacheFileName = "combinedTranscript.json"
+
 panelTest = this
 
 toolRegistry =
@@ -51,9 +53,101 @@ toolRegistry =
 
 
       importInstructions:
-        name: "Import Script"
+        name: "Import Script/Instructions"
         callback: ->
-          NFProject.importScript()
+          NFTools.log "Importing from files...", "importScript"
+          NFTools.logLine()
+          shouldUseDetail = confirm "Would you like to do a detailed analysis on the
+                                     script? Accuracy is higher but it takes twice
+                                     as long to process. Only do this if standard
+                                     analysis gave messed up results.", true, "Detailed Analysis"
+          parsedLines = NFTools.readAndCombineScriptAndInstructions shouldUseDetail
+
+          NFTools.editProjectFile _.cacheFileName, (theFileText) =>
+            return JSON.stringify parsedLines, null, 4
+
+          alert "Import complete!\nImported data is located in the project
+                 directory in the file '#{_.cacheFileName}'. Edit the instruction
+                 strings on this new file if you want to change
+                 things without having to run Import again."
+
+          null
+
+      validateInstructions:
+        name: "Validate Instructions"
+        callback: ->
+          if NFTools.testProjectFile _.cacheFileName
+            cacheJSON = NFTools.readProjectFile _.cacheFileName
+            parsedLines = JSON.parse cacheJSON
+
+            parsedInstructions = NFTools.parseInstructions parsedLines
+
+            validationResult = NFProject.validateInstructions parsedInstructions
+            if not validationResult.valid
+              errorString = ""
+              for i in [0..validationResult.layoutInstructions.length-1]
+                thisIns = validationResult.layoutInstructions[i]
+                if not thisIns.valid
+                  errorString += "\n" unless errorString is ""
+                  errorString += "❌ Instruction ##{i+1}: [#{thisIns.raw}] - #{thisIns.validationMessage}"
+
+              alert "Validation failed!\n\nErrors:\n#{errorString}"
+              return null
+            else
+              alert "Validation Successful!\nEverything looks good to go, so
+                     run 'Auto Layout' whenever you're ready."
+
+          else
+            alert "No import data found!\nRun 'Import Script/Instructions' before
+                   validating or laying out."
+
+      autoLayout:
+        name: "Auto Layout"
+        callback: ->
+
+          if NFTools.testProjectFile _.cacheFileName
+            cacheJSON = NFTools.readProjectFile _.cacheFileName
+            parsedLines = JSON.parse cacheJSON
+
+            parsedInstructions = NFTools.parseInstructions parsedLines
+
+            validationResult = NFProject.validateInstructions parsedInstructions
+
+            if not validationResult.valid
+              alert "Validation failed!\n Aborting layout - Check log for details."
+              return null
+
+            # Add the line and instruction markers to part comps
+            allParts = NFProject.allPartComps()
+            lineWrap = "...\n"
+            for part in allParts
+
+              lineLayer = part.addSolid
+                color: [0,1,0.2]
+                name: "Lines"
+              lineLayer.moveBefore part.allLayers().getBottommostLayer()
+
+              instructionLayer = part.addSolid
+                color: [0,0.8, 0.4]
+                name: "Instructions"
+              instructionLayer.moveBefore lineLayer
+
+              lineLayer.layer.guideLayer = instructionLayer.layer.guideLayer = yes
+              lineLayer.layer.enabled = instructionLayer.layer.enabled = no
+
+              for ins in parsedInstructions
+                lineText = if ins.line.length > 15 then ins.line.insertAt(15, lineWrap) else ins.line
+                lineInstruction = if ins.raw.length > 15 then ins.raw.insertAt(15, lineWrap) else ins.raw
+
+                lineLayer.addMarker
+                  time: ins.time
+                  comment: lineText
+                instructionLayer.addMarker
+                  time: ins.time
+                  comment: lineInstruction
+
+            autoLayoutStatus = NFProject.autoLayout validationResult.layoutInstructions
+            alert autoLayoutStatus
 
   render:
     name: "Render"

@@ -3,6 +3,8 @@ var _, getPanelUI, main, panelTest, toolRegistry;
 
 _ = {};
 
+_.cacheFileName = "combinedTranscript.json";
+
 panelTest = this;
 
 toolRegistry = {
@@ -58,9 +60,98 @@ toolRegistry = {
         }
       },
       importInstructions: {
-        name: "Import Script",
+        name: "Import Script/Instructions",
         callback: function() {
-          return NFProject.importScript();
+          var parsedLines, shouldUseDetail;
+          NFTools.log("Importing from files...", "importScript");
+          NFTools.logLine();
+          shouldUseDetail = confirm("Would you like to do a detailed analysis on the script? Accuracy is higher but it takes twice as long to process. Only do this if standard analysis gave messed up results.", true, "Detailed Analysis");
+          parsedLines = NFTools.readAndCombineScriptAndInstructions(shouldUseDetail);
+          NFTools.editProjectFile(_.cacheFileName, (function(_this) {
+            return function(theFileText) {
+              return JSON.stringify(parsedLines, null, 4);
+            };
+          })(this));
+          alert("Import complete!\nImported data is located in the project directory in the file '" + _.cacheFileName + "'. Edit the instruction strings on this new file if you want to change things without having to run Import again.");
+          return null;
+        }
+      },
+      validateInstructions: {
+        name: "Validate Instructions",
+        callback: function() {
+          var cacheJSON, errorString, i, j, parsedInstructions, parsedLines, ref, thisIns, validationResult;
+          if (NFTools.testProjectFile(_.cacheFileName)) {
+            cacheJSON = NFTools.readProjectFile(_.cacheFileName);
+            parsedLines = JSON.parse(cacheJSON);
+            parsedInstructions = NFTools.parseInstructions(parsedLines);
+            validationResult = NFProject.validateInstructions(parsedInstructions);
+            if (!validationResult.valid) {
+              errorString = "";
+              for (i = j = 0, ref = validationResult.layoutInstructions.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+                thisIns = validationResult.layoutInstructions[i];
+                if (!thisIns.valid) {
+                  if (errorString !== "") {
+                    errorString += "\n";
+                  }
+                  errorString += "❌ Instruction #" + (i + 1) + ": [" + thisIns.raw + "] - " + thisIns.validationMessage;
+                }
+              }
+              alert("Validation failed!\n\nErrors:\n" + errorString);
+              return null;
+            } else {
+              return alert("Validation Successful!\nEverything looks good to go, so run 'Auto Layout' whenever you're ready.");
+            }
+          } else {
+            return alert("No import data found!\nRun 'Import Script/Instructions' before validating or laying out.");
+          }
+        }
+      },
+      autoLayout: {
+        name: "Auto Layout",
+        callback: function() {
+          var allParts, autoLayoutStatus, cacheJSON, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, validationResult;
+          if (NFTools.testProjectFile(_.cacheFileName)) {
+            cacheJSON = NFTools.readProjectFile(_.cacheFileName);
+            parsedLines = JSON.parse(cacheJSON);
+            parsedInstructions = NFTools.parseInstructions(parsedLines);
+            validationResult = NFProject.validateInstructions(parsedInstructions);
+            if (!validationResult.valid) {
+              alert("Validation failed!\n Aborting layout - Check log for details.");
+              return null;
+            }
+            allParts = NFProject.allPartComps();
+            lineWrap = "...\n";
+            for (j = 0, len = allParts.length; j < len; j++) {
+              part = allParts[j];
+              lineLayer = part.addSolid({
+                color: [0, 1, 0.2],
+                name: "Lines"
+              });
+              lineLayer.moveBefore(part.allLayers().getBottommostLayer());
+              instructionLayer = part.addSolid({
+                color: [0, 0.8, 0.4],
+                name: "Instructions"
+              });
+              instructionLayer.moveBefore(lineLayer);
+              lineLayer.layer.guideLayer = instructionLayer.layer.guideLayer = true;
+              lineLayer.layer.enabled = instructionLayer.layer.enabled = false;
+              for (k = 0, len1 = parsedInstructions.length; k < len1; k++) {
+                ins = parsedInstructions[k];
+                lineText = ins.line.length > 15 ? ins.line.insertAt(15, lineWrap) : ins.line;
+                lineInstruction = ins.raw.length > 15 ? ins.raw.insertAt(15, lineWrap) : ins.raw;
+                lineLayer.addMarker({
+                  time: ins.time,
+                  comment: lineText
+                });
+                instructionLayer.addMarker({
+                  time: ins.time,
+                  comment: lineInstruction
+                });
+              }
+            }
+            autoLayoutStatus = NFProject.autoLayout(validationResult.layoutInstructions);
+            return alert(autoLayoutStatus);
+          }
         }
       }
     }
