@@ -396,7 +396,7 @@ NFTools =
     NFTools.log "Parsing instruction: '#{input}'", "parseInstructionString"
 
     # Skip parsing if the instruction starts with a backslash
-    if input[0] is "\\"
+    if input[0] is "/"
       NFTools.log "Ignoring instruction", "parseInstructionString"
       NFTools.logLine()
       return new NFLayoutInstruction

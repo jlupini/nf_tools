@@ -446,7 +446,7 @@ NFTools = {
   parseInstructionString: function(input) {
     var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, m, option, parsedObject, ref, ref1, regexResult, shouldBreak, strippedInput, targetPDFNumber;
     NFTools.log("Parsing instruction: '" + input + "'", "parseInstructionString");
-    if (input[0] === "\\") {
+    if (input[0] === "/") {
       NFTools.log("Ignoring instruction", "parseInstructionString");
       NFTools.logLine();
       return new NFLayoutInstruction({
