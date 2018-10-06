@@ -79,7 +79,7 @@ toolRegistry = {
       validateInstructions: {
         name: "Validate Instructions",
         callback: function() {
-          var cacheJSON, errorString, i, j, parsedInstructions, parsedLines, ref, thisIns, validationResult;
+          var cacheJSON, errorString, i, j, parsedInstructions, parsedLines, ref, shouldFix, straddlers, thisIns, validationResult;
           if (NFTools.testProjectFile(_.cacheFileName)) {
             cacheJSON = NFTools.readProjectFile(_.cacheFileName);
             parsedLines = JSON.parse(cacheJSON);
@@ -91,7 +91,7 @@ toolRegistry = {
                 thisIns = validationResult.layoutInstructions[i];
                 if (!thisIns.valid) {
                   if (errorString !== "") {
-                    errorString += "\n";
+                    errorString += "\n\n";
                   }
                   errorString += "❌ Instruction #" + (i + 1) + ": [" + thisIns.raw + "] - " + thisIns.validationMessage;
                 }
@@ -99,7 +99,14 @@ toolRegistry = {
               alert("Validation failed!\n\nErrors:\n" + errorString);
               return null;
             } else {
-              return alert("Validation Successful!\nEverything looks good to go, so run 'Auto Layout' whenever you're ready.");
+              straddlers = NFProject.searchForStraddlers(parsedInstructions);
+              if (straddlers != null) {
+                shouldFix = confirm("Validation was successful, but we found a few PDFs that straddle the part markers.\n\nWould you like to automatically fix these?", false, "Fix Straddlers?");
+                if (shouldFix) {
+                  NFProject.fixStraddlers(straddlers);
+                }
+              }
+              return alert("Validation Complete!\nEverything looks good to go, so run 'Auto Layout' whenever you're ready.");
             }
           } else {
             return alert("No import data found!\nRun 'Import Script/Instructions' before validating or laying out.");

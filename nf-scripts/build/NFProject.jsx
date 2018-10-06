@@ -471,6 +471,84 @@ NFProject = {
   },
 
   /**
+  Looks for PDFs that straddle the part markers.
+  @memberof NFProject
+  @param {Object} instructions - the parsed instructions object
+  @returns {Object[] | null} A straddlers object to be passed to #fixStraddlers, or null
+   */
+  searchForStraddlers: function(instructions) {
+    var audioLayer, audioMarkers, i, ins, j, k, len, mainComp, markerTimes, pdfBefore, ref, straddling, straddlingInstructions, subsequentInstructions, testIns;
+    straddlingInstructions = [];
+    mainComp = NFProject.mainComp();
+    audioLayer = mainComp.audioLayers().getBottommostLayer();
+    audioMarkers = audioLayer.markers();
+    markerTimes = [];
+    for (i = j = 1, ref = audioMarkers.numKeys; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+      markerTimes.push(audioMarkers.keyTime(i));
+    }
+    subsequentInstructions = [];
+    for (k = 0, len = instructions.length; k < len; k++) {
+      ins = instructions[k];
+      if (markerTimes[subsequentInstructions.length] <= ins.time) {
+        subsequentInstructions.push(ins);
+        pdfBefore = ins.prev.getPDF();
+        testIns = ins;
+        straddling = false;
+        while ((testIns != null) && testIns.getPDF() === pdfBefore) {
+          if (testIns.instruction.type === NFLayoutType.HIGHLIGHT || testIns.instruction.type === NFLayoutType.EXPAND) {
+            straddling = true;
+            break;
+          }
+          testIns = testIns.next;
+        }
+        if (straddling) {
+          straddlingInstructions.push(ins);
+        }
+      }
+      if (subsequentInstructions.length === markerTimes.length) {
+        break;
+      }
+    }
+    if (straddlingInstructions.length === 0) {
+      return null;
+    }
+    return straddlingInstructions;
+  },
+
+  /**
+  Moves the part markers to fix straddlers. Needs to be passed the output of
+  #searchForStraddlers.
+  @memberof NFProject
+  @param {Object[]} straddlers - the straddlers object
+  @returns {null}
+   */
+  fixStraddlers: function(straddlers) {
+    var audioLayer, audioMarkers, j, keyPDF, len, mainComp, markerComment, markerValue, nearestKeyIndex, results, straddler, testIns;
+    results = [];
+    for (j = 0, len = straddlers.length; j < len; j++) {
+      straddler = straddlers[j];
+      $.bp();
+      keyPDF = straddler.getPDF();
+      testIns = straddler;
+      while ((testIns.prev != null) && testIns.prev.getPDF() === keyPDF) {
+        testIns = testIns.prev;
+      }
+      mainComp = NFProject.mainComp();
+      audioLayer = mainComp.audioLayers().getBottommostLayer();
+      audioMarkers = audioLayer.markers();
+      nearestKeyIndex = audioMarkers.nearestKeyIndex(straddler.time);
+      markerValue = audioMarkers.keyValue(nearestKeyIndex);
+      markerComment = markerValue.comment;
+      audioMarkers.removeKey(nearestKeyIndex);
+      results.push(audioLayer.addMarker({
+        time: testIns.time - mainComp.comp.frameDuration,
+        comment: markerComment + " - ADJUSTED"
+      }));
+    }
+    return results;
+  },
+
+  /**
   Follow a single instruction string (ie. "41g")
   @memberof NFProject
   @param {string} itemName - the string to search for

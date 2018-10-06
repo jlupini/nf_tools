@@ -380,6 +380,87 @@ NFProject =
       valid: !anyInvalid
 
   ###*
+  Looks for PDFs that straddle the part markers.
+  @memberof NFProject
+  @param {Object} instructions - the parsed instructions object
+  @returns {Object[] | null} A straddlers object to be passed to #fixStraddlers, or null
+  ###
+  searchForStraddlers: (instructions) ->
+    straddlingInstructions = []
+
+    mainComp = NFProject.mainComp()
+    audioLayer = mainComp.audioLayers().getBottommostLayer()
+    audioMarkers = audioLayer.markers()
+
+    markerTimes = []
+    markerTimes.push audioMarkers.keyTime i for i in [1..audioMarkers.numKeys]
+
+    # Make a new array with the instruction that comes immediately after each marker
+    subsequentInstructions = []
+    for ins in instructions
+      if markerTimes[subsequentInstructions.length] <= ins.time
+        subsequentInstructions.push ins
+
+        # We found the instruction after the marker. Let's explore it.
+
+        # First, what's the PDF from the intruction before this one?
+        pdfBefore = ins.prev.getPDF()
+
+        # If there are any expand or highlight instructions AFTER the fold
+        # which share this PDF number, ITS A STRADDLE!
+        testIns = ins
+        straddling = no
+        while testIns? and testIns.getPDF() is pdfBefore
+          if testIns.instruction.type is NFLayoutType.HIGHLIGHT or testIns.instruction.type is NFLayoutType.EXPAND
+            straddling = yes
+            break
+          testIns = testIns.next
+
+        straddlingInstructions.push ins if straddling
+
+      break if subsequentInstructions.length is markerTimes.length
+
+    return null if straddlingInstructions.length is 0
+
+    return straddlingInstructions
+
+
+
+  ###*
+  Moves the part markers to fix straddlers. Needs to be passed the output of
+  #searchForStraddlers.
+  @memberof NFProject
+  @param {Object[]} straddlers - the straddlers object
+  @returns {null}
+  ###
+  fixStraddlers: (straddlers) ->
+    # For each straddler, first find the instruction we need to move the marker
+    # before, then... actually do it.
+    for straddler in straddlers
+      $.bp()
+      keyPDF = straddler.getPDF()
+      testIns = straddler
+      while testIns.prev? and testIns.prev.getPDF() is keyPDF
+        testIns = testIns.prev
+
+      # Now testIns is the first instruction of the key PDF
+      # Let's move the marker.
+      mainComp = NFProject.mainComp()
+      audioLayer = mainComp.audioLayers().getBottommostLayer()
+      audioMarkers = audioLayer.markers()
+
+      nearestKeyIndex = audioMarkers.nearestKeyIndex straddler.time
+      markerValue = audioMarkers.keyValue nearestKeyIndex
+      markerComment = markerValue.comment
+      audioMarkers.removeKey nearestKeyIndex
+
+      audioLayer.addMarker
+        time: testIns.time - mainComp.comp.frameDuration
+        comment: markerComment + " - ADJUSTED"
+
+
+
+  ###*
   Follow a single instruction string (ie. "41g")
   @memberof NFProject
   @param {string} itemName - the string to search for

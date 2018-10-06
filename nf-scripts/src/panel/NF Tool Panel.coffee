@@ -88,13 +88,21 @@ toolRegistry =
               for i in [0..validationResult.layoutInstructions.length-1]
                 thisIns = validationResult.layoutInstructions[i]
                 if not thisIns.valid
-                  errorString += "\n" unless errorString is ""
+                  errorString += "\n\n" unless errorString is ""
                   errorString += "❌ Instruction ##{i+1}: [#{thisIns.raw}] - #{thisIns.validationMessage}"
 
               alert "Validation failed!\n\nErrors:\n#{errorString}"
               return null
             else
-              alert "Validation Successful!\nEverything looks good to go, so
+              straddlers = NFProject.searchForStraddlers parsedInstructions
+              if straddlers?
+                shouldFix = confirm "Validation was successful, but
+                                     we found a few PDFs that straddle
+                                     the part markers.\n\nWould you like
+                                     to automatically fix these?", false, "Fix Straddlers?"
+                NFProject.fixStraddlers straddlers if shouldFix
+
+              alert "Validation Complete!\nEverything looks good to go, so
                      run 'Auto Layout' whenever you're ready."
 
           else
