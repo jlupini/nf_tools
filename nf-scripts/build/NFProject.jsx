@@ -523,27 +523,37 @@ NFProject = {
   @returns {null}
    */
   fixStraddlers: function(straddlers) {
-    var audioLayer, audioMarkers, j, keyPDF, len, mainComp, markerComment, markerValue, nearestKeyIndex, results, straddler, testIns;
+    var allComps, audioLayer, audioMarkers, j, k, keyPDF, len, len1, markerComment, markerValue, nearestKeyIndex, oldMarkerTime, oldOutPoint, ref, results, straddler, testIns, thisComp;
+    allComps = NFProject.allPartComps();
+    allComps.push(NFProject.mainComp());
     results = [];
     for (j = 0, len = straddlers.length; j < len; j++) {
       straddler = straddlers[j];
-      $.bp();
       keyPDF = straddler.getPDF();
       testIns = straddler;
       while ((testIns.prev != null) && testIns.prev.getPDF() === keyPDF) {
         testIns = testIns.prev;
       }
-      mainComp = NFProject.mainComp();
-      audioLayer = mainComp.audioLayers().getBottommostLayer();
-      audioMarkers = audioLayer.markers();
-      nearestKeyIndex = audioMarkers.nearestKeyIndex(straddler.time);
-      markerValue = audioMarkers.keyValue(nearestKeyIndex);
-      markerComment = markerValue.comment;
-      audioMarkers.removeKey(nearestKeyIndex);
-      results.push(audioLayer.addMarker({
-        time: testIns.time - mainComp.comp.frameDuration,
-        comment: markerComment + " - ADJUSTED"
-      }));
+      for (k = 0, len1 = allComps.length; k < len1; k++) {
+        thisComp = allComps[k];
+        audioLayer = thisComp.audioLayers().getBottommostLayer();
+        audioMarkers = audioLayer.markers();
+        nearestKeyIndex = audioMarkers.nearestKeyIndex(straddler.time);
+        oldMarkerTime = audioMarkers.keyTime(nearestKeyIndex);
+        markerValue = audioMarkers.keyValue(nearestKeyIndex);
+        markerComment = markerValue.comment;
+        audioMarkers.removeKey(nearestKeyIndex);
+        audioLayer.addMarker({
+          time: testIns.time - thisComp.comp.frameDuration,
+          comment: markerComment + " - ADJUSTED"
+        });
+        if ((oldMarkerTime - 1 < (ref = audioLayer.layer.inPoint) && ref < oldMarkerTime + 1)) {
+          oldOutPoint = audioLayer.layer.outPoint;
+          audioLayer.layer.inPoint = testIns.time - thisComp.comp.frameDuration;
+          audioLayer.layer.outPoint = oldOutPoint;
+        }
+      }
+      results.push(null);
     }
     return results;
   },

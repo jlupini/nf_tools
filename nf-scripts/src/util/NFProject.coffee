@@ -434,29 +434,38 @@ NFProject =
   @returns {null}
   ###
   fixStraddlers: (straddlers) ->
+    allComps = NFProject.allPartComps()
+    allComps.push NFProject.mainComp()
+
     # For each straddler, first find the instruction we need to move the marker
     # before, then... actually do it.
     for straddler in straddlers
-      $.bp()
       keyPDF = straddler.getPDF()
       testIns = straddler
       while testIns.prev? and testIns.prev.getPDF() is keyPDF
         testIns = testIns.prev
 
       # Now testIns is the first instruction of the key PDF
-      # Let's move the marker.
-      mainComp = NFProject.mainComp()
-      audioLayer = mainComp.audioLayers().getBottommostLayer()
-      audioMarkers = audioLayer.markers()
+      # Let's move the markers
+      for thisComp in allComps
+        audioLayer = thisComp.audioLayers().getBottommostLayer()
+        audioMarkers = audioLayer.markers()
 
-      nearestKeyIndex = audioMarkers.nearestKeyIndex straddler.time
-      markerValue = audioMarkers.keyValue nearestKeyIndex
-      markerComment = markerValue.comment
-      audioMarkers.removeKey nearestKeyIndex
+        nearestKeyIndex = audioMarkers.nearestKeyIndex straddler.time
+        oldMarkerTime = audioMarkers.keyTime nearestKeyIndex
+        markerValue = audioMarkers.keyValue nearestKeyIndex
+        markerComment = markerValue.comment
+        audioMarkers.removeKey nearestKeyIndex
 
-      audioLayer.addMarker
-        time: testIns.time - mainComp.comp.frameDuration
-        comment: markerComment + " - ADJUSTED"
+        audioLayer.addMarker
+          time: testIns.time - thisComp.comp.frameDuration
+          comment: markerComment + " - ADJUSTED"
+
+        if oldMarkerTime-1 < audioLayer.layer.inPoint < oldMarkerTime+1
+          oldOutPoint = audioLayer.layer.outPoint
+          audioLayer.layer.inPoint = testIns.time - thisComp.comp.frameDuration
+          audioLayer.layer.outPoint = oldOutPoint
+      null
 
 
 
