@@ -97,7 +97,7 @@ class NFPageLayer extends NFLayer
   so you should have disconnected them first
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
-  @deprecated replaced by NFPaperLayerGroup#bubbleUp
+  @deprecated replaced by NFPaperLayerGroup#assignControlLayer
   ###
   bubbleUp: (highlightsToBubble) ->
     @getPaperLayerGroup().bubbleUp highlightsToBubble
@@ -343,11 +343,12 @@ class NFPageLayer extends NFLayer
   ###*
   Returns the NFPaperLayerGroup for this page, if it exists. Will not create one
   @memberof NFPageLayer
-  @returns {NFPaperLayerGroup} the paper layer group
+  @returns {NFPaperLayerGroup | null} the paper layer group
   ###
   getPaperLayerGroup: ->
     paperParentLayer = @getPaperParentLayer()
     return new NFPaperLayerGroup paperParentLayer if paperParentLayer?
+    return null
 
 
   ###*

@@ -4350,7 +4350,7 @@ NFPageLayer = (function(superClass) {
   so you should have disconnected them first
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
-  @deprecated replaced by NFPaperLayerGroup#bubbleUp
+  @deprecated replaced by NFPaperLayerGroup#assignControlLayer
    */
 
   NFPageLayer.prototype.bubbleUp = function(highlightsToBubble) {
@@ -4688,7 +4688,7 @@ NFPageLayer = (function(superClass) {
   /**
   Returns the NFPaperLayerGroup for this page, if it exists. Will not create one
   @memberof NFPageLayer
-  @returns {NFPaperLayerGroup} the paper layer group
+  @returns {NFPaperLayerGroup | null} the paper layer group
    */
 
   NFPageLayer.prototype.getPaperLayerGroup = function() {
@@ -4697,6 +4697,7 @@ NFPageLayer = (function(superClass) {
     if (paperParentLayer != null) {
       return new NFPaperLayerGroup(paperParentLayer);
     }
+    return null;
   };
 
 
@@ -5268,7 +5269,7 @@ NFPageLayerCollection = (function(superClass) {
   @memberof NFPageLayerCollection
   @returns {NFPageLayerCollection} self
   @param {NFHighlightLayerCollection} highlightCollection - the highlights to bubble up
-  @deprecated replaced by NFPaperLayerGroup#bubbleUp
+  @deprecated replaced by NFPaperLayerGroup#assignControlLayer
    */
 
   NFPageLayerCollection.prototype.bubbleUpHighlights = function(highlightCollection) {

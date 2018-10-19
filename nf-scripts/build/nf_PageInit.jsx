@@ -10,7 +10,7 @@ _ = {
 };
 
 presentUI = function() {
-  var allHighlights, animatePageCheckbox, bubButtonGroup, bubCancelButton, bubOkButton, bubblableHighlights, bubbleOnlyTab, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, highlightBubbleCheckboxes, highlightBubblePanel, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initLayerTransformsCheckbox, initTab, okButton, onlyBubbleUpCheckbox, optionsPanel, orphans, shouldPresentBubbleOnlyPanel, tPanel, w;
+  var allHighlights, animatePageCheckbox, bubButtonGroup, bubCancelButton, bubOkButton, bubblableHighlights, bubbleOnlyTab, buttonGroup, cancelButton, disButtonGroup, disCancelButton, disOkButton, disOptionsPanel, disconnectTab, highlightBubbleCheckboxes, highlightBubblePanel, highlightCheckboxes, highlightDisconnectCheckboxes, highlightDisconnectPanel, highlightPanel, initLayerTransformsCheckbox, initTab, okButton, optionsPanel, orphans, shouldPresentBubbleOnlyPanel, tPanel, w;
   if (_.mainComp.selectedLayers().onlyContainsPageLayers()) {
     _.selectedPages = _.mainComp.selectedPageLayers();
   } else {
@@ -31,7 +31,7 @@ presentUI = function() {
   orphans = 0;
   _.selectedPages.forEach((function(_this) {
     return function(theLayer) {
-      if (!theLayer.hasNullParent()) {
+      if (theLayer.getPaperLayerGroup() == null) {
         return orphans++;
       }
     };
@@ -51,17 +51,6 @@ presentUI = function() {
     animatePageCheckbox.value = true;
     initLayerTransformsCheckbox = optionsPanel.add("checkbox", void 0, "Init Size and Position");
     initLayerTransformsCheckbox.value = true;
-    onlyBubbleUpCheckbox = optionsPanel.add("checkbox", void 0, "Bubbleup Only");
-    onlyBubbleUpCheckbox.value = false;
-    onlyBubbleUpCheckbox.onClick = function() {
-      if (onlyBubbleUpCheckbox.value === true) {
-        animatePageCheckbox.value = initLayerTransformsCheckbox.value = false;
-        return animatePageCheckbox.enabled = initLayerTransformsCheckbox.enabled = false;
-      } else {
-        animatePageCheckbox.value = initLayerTransformsCheckbox.value = true;
-        return animatePageCheckbox.enabled = initLayerTransformsCheckbox.enabled = true;
-      }
-    };
     highlightPanel = initTab.add('panel', void 0, 'Highlights', {
       borderStyle: 'none'
     });
@@ -95,7 +84,7 @@ presentUI = function() {
     });
     cancelButton.onClick = getCancelFunction(w);
     okButton.onClick = function() {
-      var curTime, highlightChoices, newParent, topLayer;
+      var curTime, group, highlightChoices, newParent, topLayer;
       highlightChoices = new NFHighlightLayerCollection();
       allHighlights.forEach((function(_this) {
         return function(highlight) {
@@ -106,29 +95,28 @@ presentUI = function() {
           }
         };
       })(this));
-      if (onlyBubbleUpCheckbox.value === false) {
-        curTime = _.mainComp.getTime();
-        topLayer = _.selectedPages.getTopmostLayer();
-        _.mainComp.setTime(topLayer.layer.startTime);
-        if (initLayerTransformsCheckbox.value === true) {
-          _.selectedPages.initLayerTransforms();
-        }
-        _.selectedPages.initLayers();
-        newParent = _.selectedPages.assignPaperParentLayer(true);
-        _.mainComp.setTime(curTime);
-        if (animatePageCheckbox.value) {
-          topLayer.slideIn();
-          _.selectedPages.forEach((function(_this) {
-            return function(layer) {
-              if (!layer.is(topLayer)) {
-                return layer.layer.startTime = topLayer.getInMarkerTime();
-              }
-            };
-          })(this));
-        }
+      curTime = _.mainComp.getTime();
+      topLayer = _.selectedPages.getTopmostLayer();
+      _.mainComp.setTime(topLayer.layer.startTime);
+      if (initLayerTransformsCheckbox.value === true) {
+        _.selectedPages.initLayerTransforms();
+      }
+      _.selectedPages.initLayers();
+      newParent = _.selectedPages.assignPaperParentLayer(true);
+      group = new NFPaperLayerGroup(newParent);
+      _.mainComp.setTime(curTime);
+      if (animatePageCheckbox.value) {
+        topLayer.slideIn();
+        _.selectedPages.forEach((function(_this) {
+          return function(layer) {
+            if (!layer.is(topLayer)) {
+              return layer.layer.startTime = topLayer.getInMarkerTime();
+            }
+          };
+        })(this));
       }
       highlightChoices.disconnectHighlights();
-      _.selectedPages.bubbleUpHighlights(highlightChoices);
+      group.assignControlLayer(highlightChoices);
       return w.hide();
     };
   } else {
@@ -175,7 +163,7 @@ presentUI = function() {
             bubbleCheckbox = highlightBubbleCheckboxes[highlight.getName()];
             if (bubbleCheckbox != null) {
               if (bubbleCheckbox.value === true) {
-                return bubbleCheckbox.sourcePage.bubbleUp(highlight);
+                return bubbleCheckbox.sourcePage.getPaperLayerGroup().assignControlLayer(highlight);
               }
             }
           };

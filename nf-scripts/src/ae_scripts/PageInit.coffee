@@ -32,7 +32,7 @@ presentUI = ->
 	# Warn and abort if we're trying to run the script on both initialized and uninitialized pages at the same time
 	orphans = 0
 	_.selectedPages.forEach (theLayer) =>
-		orphans++ unless theLayer.hasNullParent()
+		orphans++ unless theLayer.getPaperLayerGroup()?
 	if 0 < orphans < _.selectedPages.count()
 		throw new Error "Can't run this script on both initialized and uninitialized page layers at the same time"
 
@@ -51,16 +51,6 @@ presentUI = ->
 
 		initLayerTransformsCheckbox = optionsPanel.add "checkbox", undefined, "Init Size and Position"
 		initLayerTransformsCheckbox.value = yes
-
-		onlyBubbleUpCheckbox = optionsPanel.add "checkbox", undefined, "Bubbleup Only"
-		onlyBubbleUpCheckbox.value = no
-		onlyBubbleUpCheckbox.onClick = ->
-			if onlyBubbleUpCheckbox.value is yes
-				animatePageCheckbox.value = initLayerTransformsCheckbox.value = no
-				animatePageCheckbox.enabled = initLayerTransformsCheckbox.enabled = no
-			else
-				animatePageCheckbox.value = initLayerTransformsCheckbox.value = yes
-				animatePageCheckbox.enabled = initLayerTransformsCheckbox.enabled = yes
 
 		# Highlights
 		highlightPanel = initTab.add 'panel', undefined, 'Highlights', {borderStyle:'none'}
@@ -98,25 +88,26 @@ presentUI = ->
 				checkbox = highlightCheckboxes[highlight.getName()]
 				highlightChoices.add highlight if checkbox.value is true
 
-			if onlyBubbleUpCheckbox.value is no
-				curTime = _.mainComp.getTime()
-				topLayer = _.selectedPages.getTopmostLayer()
-				_.mainComp.setTime topLayer.layer.startTime
+			curTime = _.mainComp.getTime()
+			topLayer = _.selectedPages.getTopmostLayer()
+			_.mainComp.setTime topLayer.layer.startTime
 
-				_.selectedPages.initLayerTransforms() if initLayerTransformsCheckbox.value is yes
-				_.selectedPages.initLayers()
+			_.selectedPages.initLayerTransforms() if initLayerTransformsCheckbox.value is yes
+			_.selectedPages.initLayers()
 
-				newParent = _.selectedPages.assignPaperParentLayer(yes)
+			newParent = _.selectedPages.assignPaperParentLayer(yes)
+			group = new NFPaperLayerGroup newParent
 
-				_.mainComp.setTime curTime
 
-				if animatePageCheckbox.value
-					topLayer.slideIn()
-					_.selectedPages.forEach (layer) =>
-						layer.layer.startTime = topLayer.getInMarkerTime() unless layer.is topLayer
+			_.mainComp.setTime curTime
+
+			if animatePageCheckbox.value
+				topLayer.slideIn()
+				_.selectedPages.forEach (layer) =>
+					layer.layer.startTime = topLayer.getInMarkerTime() unless layer.is topLayer
 
 			highlightChoices.disconnectHighlights()
-			_.selectedPages.bubbleUpHighlights(highlightChoices)
+			group.assignControlLayer highlightChoices
 
 			w.hide()
 	else
@@ -155,7 +146,7 @@ presentUI = ->
 					bubbleCheckbox = highlightBubbleCheckboxes[highlight.getName()]
 					if bubbleCheckbox?
 						if bubbleCheckbox.value is true
-							bubbleCheckbox.sourcePage.bubbleUp(highlight)
+							bubbleCheckbox.sourcePage.getPaperLayerGroup().assignControlLayer highlight
 
 				w.hide()
 

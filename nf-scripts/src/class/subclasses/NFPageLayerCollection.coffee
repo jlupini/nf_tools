@@ -77,7 +77,7 @@ class NFPageLayerCollection extends NFLayerCollection
   @memberof NFPageLayerCollection
   @returns {NFPageLayerCollection} self
   @param {NFHighlightLayerCollection} highlightCollection - the highlights to bubble up
-  @deprecated replaced by NFPaperLayerGroup#bubbleUp
+  @deprecated replaced by NFPaperLayerGroup#assignControlLayer
   ###
   bubbleUpHighlights: (highlightCollection) ->
     @getPaperLayerGroup().bubbleUp highlightCollection
