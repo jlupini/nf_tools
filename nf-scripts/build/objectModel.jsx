@@ -3064,6 +3064,8 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
       }
       if (citeObj[pdfKey] != null) {
         return citeObj[pdfKey];
+      } else {
+        return "NO CITATION FOUND!";
       }
     }
     throw new Error("No citation found for PDF " + (thePDF.getPDFNumber()));
@@ -5709,7 +5711,9 @@ NFPartComp = (function(superClass) {
         group = new NFPaperLayerGroup(targetPageLayer.getPaperParentLayer());
         group.getCitationLayer().show(this.getTime() + 0.5);
         trimTime = targetPageLayer.getInMarkerTime();
-        prevGroup.trim(trimTime);
+        if (prevGroup != null) {
+          prevGroup.trim(trimTime);
+        }
         this.hideGaussy(trimTime + 1);
         if (model.highlight != null) {
           group.assignControlLayer(model.highlight, this.getTime() + 0.25);

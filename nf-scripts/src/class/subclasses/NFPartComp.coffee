@@ -139,7 +139,7 @@ class NFPartComp extends NFComp
 
         # Trim the old layer to the end of the page turn
         trimTime = targetPageLayer.getInMarkerTime()
-        prevGroup.trim trimTime
+        prevGroup.trim trimTime if prevGroup?
         @hideGaussy trimTime + 1
 
         if model.highlight?

@@ -117,6 +117,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
 
       if citeObj[pdfKey]?
         return citeObj[pdfKey]
+      else return "NO CITATION FOUND!"
 
     throw new Error "No citation found for PDF #{thePDF.getPDFNumber()}"
 

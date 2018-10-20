@@ -344,6 +344,7 @@ NFProject = {
           switch (layoutInstruction.instruction.behavior) {
             case NFLayoutBehavior.SHOW_TITLE:
               NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
+              targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
               thisPart.animateTo({
                 time: instructionTime,
                 page: targetPDF.getTitlePage()
