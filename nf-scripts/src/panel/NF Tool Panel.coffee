@@ -1,6 +1,6 @@
 `#include "runtimeLibraries.jsx"`
 _ = {}
-_.cacheFileName = "combinedTranscript.json"
+cacheFileName = "combinedTranscript.json"
 
 panelTest = this
 
@@ -63,11 +63,11 @@ toolRegistry =
                                      analysis gave messed up results.", true, "Detailed Analysis"
           parsedLines = NFTools.readAndCombineScriptAndInstructions shouldUseDetail
 
-          NFTools.editProjectFile _.cacheFileName, (theFileText) =>
+          NFTools.editProjectFile cacheName, (theFileText) =>
             return JSON.stringify parsedLines, null, 4
 
           alert "Import complete!\nImported data is located in the project
-                 directory in the file '#{_.cacheFileName}'. Edit the instruction
+                 directory in the file '#{cacheFileName}'. Edit the instruction
                  strings on this new file if you want to change
                  things without having to run Import again."
 
@@ -76,8 +76,8 @@ toolRegistry =
       validateInstructions:
         name: "Validate Instructions"
         callback: ->
-          if NFTools.testProjectFile _.cacheFileName
-            cacheJSON = NFTools.readProjectFile _.cacheFileName
+          if NFTools.testProjectFile cacheFileName
+            cacheJSON = NFTools.readProjectFile cacheFileName
             parsedLines = JSON.parse cacheJSON
 
             parsedInstructions = NFTools.parseInstructions parsedLines
@@ -113,8 +113,8 @@ toolRegistry =
         name: "Auto Layout"
         callback: ->
 
-          if NFTools.testProjectFile _.cacheFileName
-            cacheJSON = NFTools.readProjectFile _.cacheFileName
+          if NFTools.testProjectFile cacheFileName
+            cacheJSON = NFTools.readProjectFile cacheFileName
             parsedLines = JSON.parse cacheJSON
 
             parsedInstructions = NFTools.parseInstructions parsedLines
