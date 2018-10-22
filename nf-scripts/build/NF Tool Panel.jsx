@@ -1,9 +1,9 @@
 #include "runtimeLibraries.jsx";
-var _, getPanelUI, main, panelTest, toolRegistry;
+var _, cacheFileName, getPanelUI, main, panelTest, toolRegistry;
 
 _ = {};
 
-_.cacheFileName = "combinedTranscript.json";
+cacheFileName = "combinedTranscript.json";
 
 panelTest = this;
 
@@ -67,12 +67,12 @@ toolRegistry = {
           NFTools.logLine();
           shouldUseDetail = confirm("Would you like to do a detailed analysis on the script? Accuracy is higher but it takes twice as long to process. Only do this if standard analysis gave messed up results.", true, "Detailed Analysis");
           parsedLines = NFTools.readAndCombineScriptAndInstructions(shouldUseDetail);
-          NFTools.editProjectFile(_.cacheFileName, (function(_this) {
+          NFTools.editProjectFile(cacheName, (function(_this) {
             return function(theFileText) {
               return JSON.stringify(parsedLines, null, 4);
             };
           })(this));
-          alert("Import complete!\nImported data is located in the project directory in the file '" + _.cacheFileName + "'. Edit the instruction strings on this new file if you want to change things without having to run Import again.");
+          alert("Import complete!\nImported data is located in the project directory in the file '" + cacheFileName + "'. Edit the instruction strings on this new file if you want to change things without having to run Import again.");
           return null;
         }
       },
@@ -80,8 +80,8 @@ toolRegistry = {
         name: "Validate Instructions",
         callback: function() {
           var cacheJSON, errorString, i, j, parsedInstructions, parsedLines, ref, shouldFix, straddlers, thisIns, validationResult;
-          if (NFTools.testProjectFile(_.cacheFileName)) {
-            cacheJSON = NFTools.readProjectFile(_.cacheFileName);
+          if (NFTools.testProjectFile(cacheFileName)) {
+            cacheJSON = NFTools.readProjectFile(cacheFileName);
             parsedLines = JSON.parse(cacheJSON);
             parsedInstructions = NFTools.parseInstructions(parsedLines);
             validationResult = NFProject.validateInstructions(parsedInstructions);
@@ -117,8 +117,8 @@ toolRegistry = {
         name: "Auto Layout",
         callback: function() {
           var allParts, autoLayoutStatus, cacheJSON, ins, instructionLayer, j, k, len, len1, lineInstruction, lineLayer, lineText, lineWrap, parsedInstructions, parsedLines, part, validationResult;
-          if (NFTools.testProjectFile(_.cacheFileName)) {
-            cacheJSON = NFTools.readProjectFile(_.cacheFileName);
+          if (NFTools.testProjectFile(cacheFileName)) {
+            cacheJSON = NFTools.readProjectFile(cacheFileName);
             parsedLines = JSON.parse(cacheJSON);
             parsedInstructions = NFTools.parseInstructions(parsedLines);
             validationResult = NFProject.validateInstructions(parsedInstructions);

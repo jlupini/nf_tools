@@ -1,7 +1,5 @@
 ﻿// FIXME: Add a second or two of time before a marker in part comps
 
-app.beginUndoGroup("SetupMainComp");
-
 var audio = app.project.selection[0];
 var newName = audio.name.substr(0, audio.name.indexOf('.')) + " - MainComp";
 var compLength = audio.duration+3.5;
@@ -47,7 +45,7 @@ if (markerCount == 0)
             var duplicatedAudioLayer = audioLayer.duplicate();
             var duplicatedZoomerLayer = zoomer.duplicate();
             duplicatedZoomerLayer.name = "Zoomer";
-            
+
             // Set audio in and out points
             duplicatedAudioLayer.inPoint = prevTime;
 
@@ -60,27 +58,27 @@ if (markerCount == 0)
                     duplicatedAudioLayer.outPoint = currentTime;
                 }
 
-            var compName = "Part" + i;            
-            
+            var compName = "Part" + i;
+
             // Precompose and add to the folder
             newComp = mainComp.layers.precompose([duplicatedAudioLayer.index, duplicatedZoomerLayer.index], compName, true);
             newComps.push(newComp);
             newComp.parentFolder = newFolder;
-            
+
             // Set part comp in and out points, with a 10-second handle at the end
             var newCompLayer = mainComp.layers.byName(compName);
             newCompLayer.inPoint = prevTime - 3;
             newCompLayer.outPoint = currentTime + 10;
-            
+
             // Disable audio
             newCompLayer.audioEnabled = false;
-                
+
             // Change comp bg
             newComp.bgColor = [1.0,1.0,1.0];
-            
+
             // Move to top
             newCompLayer.moveToBeginning();
-            
+
             prevTime = currentTime;
     }
 
@@ -103,7 +101,3 @@ var fadeLayer = mainComp.layers.addSolid([1, 1, 1], "Fade Out", 1920, 1080, 1);
 fadeLayer.property("Transform").property("Opacity").setValueAtTime(endTime-2.5, 0);
 fadeLayer.property("Transform").property("Opacity").setValueAtTime(endTime-0.5, 100);
 fadeLayer.moveToBeginning;
-
-
-
-app.endUndoGroup();
