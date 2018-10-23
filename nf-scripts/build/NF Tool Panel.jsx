@@ -67,7 +67,7 @@ toolRegistry = {
           NFTools.logLine();
           shouldUseDetail = confirm("Would you like to do a detailed analysis on the script? Accuracy is higher but it takes twice as long to process. Only do this if standard analysis gave messed up results.", true, "Detailed Analysis");
           parsedLines = NFTools.readAndCombineScriptAndInstructions(shouldUseDetail);
-          NFTools.editProjectFile(cacheName, (function(_this) {
+          NFTools.editProjectFile(cacheFileName, (function(_this) {
             return function(theFileText) {
               return JSON.stringify(parsedLines, null, 4);
             };
@@ -158,6 +158,8 @@ toolRegistry = {
             }
             autoLayoutStatus = NFProject.autoLayout(validationResult.layoutInstructions);
             return alert(autoLayoutStatus);
+          } else {
+            return alert("No import data found!\nRun 'Import Script/Instructions' before validating or laying out.");
           }
         }
       }

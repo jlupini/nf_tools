@@ -63,7 +63,7 @@ toolRegistry =
                                      analysis gave messed up results.", true, "Detailed Analysis"
           parsedLines = NFTools.readAndCombineScriptAndInstructions shouldUseDetail
 
-          NFTools.editProjectFile cacheName, (theFileText) =>
+          NFTools.editProjectFile cacheFileName, (theFileText) =>
             return JSON.stringify parsedLines, null, 4
 
           alert "Import complete!\nImported data is located in the project
@@ -156,6 +156,9 @@ toolRegistry =
 
             autoLayoutStatus = NFProject.autoLayout validationResult.layoutInstructions
             alert autoLayoutStatus
+          else
+            alert "No import data found!\nRun 'Import Script/Instructions' before
+                   validating or laying out."
 
   render:
     name: "Render"
