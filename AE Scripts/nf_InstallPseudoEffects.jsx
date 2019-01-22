@@ -1,4 +1,4 @@
-﻿// Declare constants
+// Declare constants
 var avocadoBlockStart = "<!-- BEGIN AVOCADO PSEUDO-EFFECTS -->";
 var avocadoBlockEnd   = "<!-- END AVOCADO PSEUDO-EFFECTS -->";
 var versionFlag       = "AV-PE-Version";
@@ -64,19 +64,28 @@ function installPresetEffect() {
 
 	// Grab the latest version of the pseudo effects
 	var latestPseudoEffects = getLatestPseudoEffects();
-	
+
 	// Try to access the PresetEffects.xml file
 	var os = $.os;
+	var appVersion = parseFloat(app.version.substr(0, app.version.indexOf('x')));
 	var presetEffectFilePath;
 	var regexWin = "win";
 	var regexMac = "mac";
 	if (searchText("win", os) != null) {
-        var appFolder = new Folder(Folder.appPackage.parent.absoluteURI).toString();        
+		if (appVersion >= 16.0) {
+			alert("Sorry, CC 2019 on Windows is not yet supported");
+			return false;
+		}
+    var appFolder = new Folder(Folder.appPackage.parent.absoluteURI).toString();
 		presetEffectFilePath = (appFolder + "\\Support Files\\PresetEffects.xml");
-    } else if (searchText("mac", os) != null) {
-        var appFolder = new Folder(Folder.appPackage.absoluteURI).toString();
-		presetEffectFilePath = (appFolder + "/Contents/Resources/PresetEffects.xml");
-    } else {
+  } else if (searchText("mac", os) != null) {
+    var appFolder = new Folder(Folder.appPackage.absoluteURI).toString();
+		if (appVersion >= 16.0) {
+			presetEffectFilePath = (appFolder + "/Contents/Frameworks/aelib.framework/Versions/A/Resources/xml/PresetEffects.xml");
+		} else {
+			presetEffectFilePath = (appFolder + "/Contents/Resources/PresetEffects.xml");
+		}
+  } else {
 		alert("Sorry, your operating system is not supported");
 		return false;
 	}
@@ -86,7 +95,10 @@ function installPresetEffect() {
 
 	// Can we open it? Open with read permissions
 	var openCheck = presetEffectFile.open("r");
-	if (!openCheck) {return 0;}
+	if (!openCheck) {
+		alert("Error opening PresetEffects.xml at '" + presetEffectFilePath + "'");
+		return 0;
+	}
 
 	// Is it Empty?
 	var presetEffectFileText = presetEffectFile.read();
@@ -114,7 +126,10 @@ function installPresetEffect() {
 	var closeCheck = presetEffectFile.close();
 	if (!closeCheck) {return 0;}
 	openCheck = presetEffectFile.open("w");
-	if (!openCheck) {return 0;}
+	if (!openCheck) {
+		alert("Error. I need permission to write to: '" + presetEffectFilePath + "'\n Change permissions and try again.");
+		return 0;
+	}
 
 	// Get the new Preset Effect Text for either an upgrade or fresh install
 	var newPresetEffectText;
@@ -136,7 +151,7 @@ function installPresetEffect() {
 		var injectionPointIndex = presetEffectFileText.indexOf("</Effects>");
 		newPresetEffectText = injectString(presetEffectFileText, latestPseudoEffects[1] + "\n", injectionPointIndex);
 	}
-	
+
 	// Try writing the new PresetEffect Text to the file
 	var writeCheck = presetEffectFile.write(newPresetEffectText);
 	if (!writeCheck) {return 0;}
@@ -158,7 +173,7 @@ function getLatestPseudoEffects() {
 
 	// Get the Pseudo-Effects.xml folder from the same directory as this script file.
     var parentFolder = (new File($.fileName)).parent;
-	var pseudoEffectSourceFilePath = (parentFolder.toString() + "/lib/Pseudo-Effects.xml");
+	var pseudoEffectSourceFilePath = (parentFolder.toString() + "/../lib/Pseudo-Effects.xml");
 	var pseudoEffectSourceFile = new File(pseudoEffectSourceFilePath);
 
 	// Can we open it? Open with read permissions
