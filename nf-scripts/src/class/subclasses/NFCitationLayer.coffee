@@ -44,7 +44,7 @@ class NFCitationLayer extends NFLayer
             # So just extend the start of the existing one back
             delta = thisTime - time
             newDuration = thisMarker.duration + delta
-            thisMarker.remove()
+            markers.removeKey idx
             @addMarker
               time: time
               comment: "Citation"

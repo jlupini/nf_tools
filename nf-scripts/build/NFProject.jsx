@@ -226,6 +226,9 @@ NFProject = {
         targetPDF = NFPDF.fromPDFNumber(layoutInstruction.pdf);
         switch (layoutInstruction.instruction.behavior) {
           case NFLayoutBehavior.SHOW_TITLE:
+            if (targetPDF == null) {
+              targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
+            }
             NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
             activeComp.animateTo({
               time: layoutInstruction.time,
@@ -566,10 +569,11 @@ NFProject = {
   @returns {Item | null} the found item or null
    */
   followInstruction: function(input) {
-    var activePDF, instruction, lookString, result, valid;
+    var activePDF, instruction, lookString, result, thisType, valid;
     instruction = NFTools.parseInstructionString(input);
     instruction.time = NFProject.activeComp().getTime();
-    if ((instruction.pdf == null) && instruction.instruction.type === NFLayoutType.HIGHLIGHT || instruction.instruction.type === NFLayoutType.EXPAND) {
+    thisType = instruction.instruction.type;
+    if ((instruction.pdf == null) && thisType === NFLayoutType.HIGHLIGHT || thisType === NFLayoutType.EXPAND || thisType === NFLayoutType.INSTRUCTION) {
       activePDF = NFProject.activeComp().activePDF();
       if (activePDF != null) {
         instruction.pdf = activePDF.getPDFNumber();

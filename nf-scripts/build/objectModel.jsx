@@ -2974,7 +2974,7 @@ NFCitationLayer = (function(superClass) {
           if ((thisTime <= endTime && endTime < thisEndTime)) {
             delta = thisTime - time;
             newDuration = thisMarker.duration + delta;
-            thisMarker.remove();
+            markers.removeKey(idx);
             this.addMarker({
               time: time,
               comment: "Citation",

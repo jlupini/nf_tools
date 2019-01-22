@@ -182,6 +182,8 @@ NFProject =
         targetPDF = NFPDF.fromPDFNumber layoutInstruction.pdf # Use only explicit PDFs here
         switch layoutInstruction.instruction.behavior
           when NFLayoutBehavior.SHOW_TITLE
+            targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF() unless targetPDF?
+
             NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
             activeComp.animateTo
               time: layoutInstruction.time
@@ -483,7 +485,8 @@ NFProject =
     instruction.time = NFProject.activeComp().getTime()
 
     # Assign the instruction the current active PDF if none given
-    if not instruction.pdf? and instruction.instruction.type is NFLayoutType.HIGHLIGHT or instruction.instruction.type is NFLayoutType.EXPAND
+    thisType = instruction.instruction.type
+    if not instruction.pdf? and thisType is NFLayoutType.HIGHLIGHT or thisType is NFLayoutType.EXPAND or thisType is NFLayoutType.INSTRUCTION
        activePDF = NFProject.activeComp().activePDF()
        instruction.pdf = activePDF.getPDFNumber() if activePDF?
 
