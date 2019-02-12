@@ -173,7 +173,7 @@ function getLatestPseudoEffects() {
 
 	// Get the Pseudo-Effects.xml folder from the same directory as this script file.
     var parentFolder = (new File($.fileName)).parent;
-	var pseudoEffectSourceFilePath = (parentFolder.toString() + "/../lib/Pseudo-Effects.xml");
+	var pseudoEffectSourceFilePath = (parentFolder.toString() + "/lib/Pseudo-Effects.xml");
 	var pseudoEffectSourceFile = new File(pseudoEffectSourceFilePath);
 
 	// Can we open it? Open with read permissions
