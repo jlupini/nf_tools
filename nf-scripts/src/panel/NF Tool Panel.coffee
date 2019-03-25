@@ -256,10 +256,13 @@ toolRegistry =
             highlight.resetExpressionErrors()
             if highlight.isBroken()
               highlight.disconnect()
-              NFTools.log "Disconnected highlight: #{highlight.getName()} in page: #{highlight.getPageComp().comp.name}\n", "NFToolPanel#disconnectBrokenHighlights"
+              NFTools.log "Disconnected highlight: #{highlight.getName()} in
+                           page: #{highlight.getPageComp().comp.name}\n", "NFToolPanel#disconnectBrokenHighlights"
 
       updateSpotlightExpressions:
         name: "Update Spotlight Expressions"
+        description: "This script replaces all spotlight expressions with the
+                      latest versions from the expression files."
         callback: ->
 
           # Get our script segments
@@ -297,6 +300,46 @@ toolRegistry =
                   currExp = prop.expression
                   strippedExp = currExp.substring(0, currExp.indexOf("inFunc = function(mark)"))
                   prop.expression = strippedExp + newMaskOpacityExpSegment
+
+      toggleGuideLayers:
+        name: "Toggle Guide Layers"
+        description: "Toggles the guide layers on and off for highlights. if
+                      the guide layer reference comp hasn't been set up, this
+                      script does the initial setup and links all guide layers."
+        callback: ->
+          guideCompFolderName = "Precomps"
+          guideLayerName = "Guide Visibility"
+          guideCompName = "Guide Reference"
+          oldEffectName = "Guide Layer"
+
+          guideAVComp = NFProject.findItem guideCompName
+
+          # If this project doesn't use this guide layer method, upgrade it.
+          unless guideAVComp?
+            precompsFolder = NFProject.findItem guideCompFolderName
+            unless precompsFolder?
+              precompsFolder = NFProject.rootFolder.items.addFolder guideCompFolderName
+
+            guideAVComp = precompsFolder.items.addComp guideCompName, 100, 100, 1.0, 1, 30
+            newLayer = guideAVComp.layers.addNull()
+            newLayer.name = guideLayerName
+
+            for thePageComp in NFProject.allPageComps()
+              guideLayer = thePageComp.layerWithName "Annotation Guide"
+              if guideLayer?
+                guideEffect = guideLayer.effect oldEffectName
+                guideEffect?.remove()
+                opacityProp = guideLayer.property("Transform").property("Opacity")
+                opacityProp.expression = "comp(\"#{guideCompName}\")
+                                          .layer(\"#{guideLayerName}\")
+                                          .enabled * 60"
+
+            for thePartComp in NFProject.allPartComps()
+              thePartComp.allLayers().forEach (layer) =>
+                layer.effect(oldEffectName)?.remove()
+
+          guideAVComp.layers[1].enabled = !guideAVComp.layers[1].enabled
+
 
 main = ->
   _.panel = getPanelUI()

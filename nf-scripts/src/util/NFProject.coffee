@@ -39,6 +39,14 @@ NFProject =
     null
 
   ###*
+  Returns the root FolderItem
+  @memberof NFProject
+  @returns {Folderitem} the root folder item
+  ###
+  rootFolder: ->
+    return app.project.rootFolder
+
+  ###*
   Returns the MainComp
   @memberof NFProject
   @returns {NFComp} the MainComp
