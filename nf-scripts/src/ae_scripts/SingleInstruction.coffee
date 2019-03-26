@@ -1,7 +1,7 @@
-`#include "runtimeLibraries.jsx"`
+try `#include "runtimeLibraries.jsx"`
 
 NF = app.NF
-app.beginUndoGroup 'AutoLayout'
+app.beginUndoGroup 'Follow Single Instruction'
 
 main = ->
 	NFTools.clearLog()

@@ -1,9 +1,12 @@
-#include "runtimeLibraries.jsx";
 var NF, main;
+
+try {
+  #include "runtimeLibraries.jsx";
+} catch (undefined) {}
 
 NF = app.NF;
 
-app.beginUndoGroup('AutoLayout');
+app.beginUndoGroup('Follow Single Instruction');
 
 main = function() {
   var input;

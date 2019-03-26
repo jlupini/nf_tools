@@ -80,27 +80,20 @@ if (!String.prototype.startsWith) {
 /**
  * This is Prototypes.jsx
  */
-
-try {
-	Object.defineProperty({}, 'a', {value: 0});
-}
-catch(err) {
-	// failed: so we're in IE8
-	(function() {
-		var defineProperty = Object.defineProperty;
-		Object.defineProperty = function (object, property, descriptor) {
-			delete descriptor.configurable;
-			delete descriptor.enumerable;
-			delete descriptor.writable;
-			try {
-				return defineProperty(object, property, descriptor);
-			}
-			catch(err) {
-				object[property] = descriptor.value;
-			}
-		};
-	}());
-}
+(function() {
+	var defineProperty = Object.defineProperty;
+	Object.defineProperty = function (object, property, descriptor) {
+		delete descriptor.configurable;
+		delete descriptor.enumerable;
+		delete descriptor.writable;
+		try {
+			return defineProperty(object, property, descriptor);
+		}
+		catch(err) {
+			object[property] = descriptor.value;
+		}
+	};
+}());
 
 Object.defineProperties || (Object.defineProperties=function defineProperties(object, descriptors) {
 	var property;
@@ -113,32 +106,25 @@ Object.defineProperties || (Object.defineProperties=function defineProperties(ob
 /**
  * https://gist.github.com/WebReflection/10404826
  */
-
-try {
-	Object.assign({}, {foo: 'bar'})
-}
-catch(err) {
-	// failed: so we're in IE8
-	(function() {
-	  Object.assign = function(has){
-	    'use strict';
-	    return assign;
-	    function assign(target, source) {
-	      for (var i = 1; i < arguments.length; i++) {
-	        copy(target, arguments[i]);
-	      }
-	      return target;
-	    }
-	    function copy(target, source) {
-	      for (var key in source) {
-	        if (has.call(source, key)) {
-	          target[key] = source[key];
-	        }
-	      }
-	    }
-	  }({}.hasOwnProperty);
-	}());
-}
+(function() {
+  Object.assign = function(has){
+    'use strict';
+    return assign;
+    function assign(target, source) {
+      for (var i = 1; i < arguments.length; i++) {
+        copy(target, arguments[i]);
+      }
+      return target;
+    }
+    function copy(target, source) {
+      for (var key in source) {
+        if (has.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+  }({}.hasOwnProperty);
+}());
 
 var lambda = function (l) {
 	var fn = l.match(/\((.*)\)\s*=>\s*(.*)/);

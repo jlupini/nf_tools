@@ -1,11 +1,19 @@
 #include "runtimeLibraries.jsx";
-var _, cacheFileName, getPanelUI, main, panelTest, toolRegistry;
+var _, cacheFileName, getPanelUI, main, openScript, panelTest, toolRegistry;
 
 _ = {};
 
 cacheFileName = "combinedTranscript.json";
 
 panelTest = this;
+
+openScript = function(targetScript) {
+  var script, scriptFile, start_folder;
+  start_folder = new Folder(new File($.fileName).parent.fsName);
+  scriptFile = new File(start_folder.fsName + ("/" + targetScript));
+  script = "#include '" + scriptFile.fullName + "'";
+  return eval(script);
+};
 
 toolRegistry = {
   setup: {
@@ -14,11 +22,7 @@ toolRegistry = {
       setupMainComp: {
         name: "Setup Main Comp",
         callback: function() {
-          var script, scriptFile, start_folder;
-          start_folder = new Folder(new File($.fileName).parent.fsName);
-          scriptFile = new File(start_folder.fsName + '/nf_SetupMainComp.jsx');
-          script = "#include '" + scriptFile.fullName + "'";
-          return eval(script);
+          return openScript("nf_SetupMainComp.jsx");
         }
       },
       renamePDFPrecomps: {
@@ -235,6 +239,20 @@ toolRegistry = {
   animation: {
     name: "Animation",
     tools: {
+      singleInstruction: {
+        name: "Follow Single Instruction",
+        automaticUndo: false,
+        callback: function() {
+          return openScript("nf_SingleInstruction.jsx");
+        }
+      },
+      pageTools: {
+        name: "Page Tools",
+        automaticUndo: false,
+        callback: function() {
+          return openScript("nf_PageTools.jsx");
+        }
+      },
       toggleSpotlights: {
         name: "Toggle Spotlight Layers",
         callback: function() {
@@ -259,8 +277,16 @@ toolRegistry = {
       },
       addGaussyLayer: {
         name: "Add Gaussy",
+        automaticUndo: false,
         callback: function() {
-          return NFProject.activeComp().addGaussy();
+          return openScript("nf_Gaussy.jsx");
+        }
+      },
+      addEmphasis: {
+        name: "Emphasizer",
+        automaticUndo: false,
+        callback: function() {
+          return openScript("nf_Emphasizer.jsx");
         }
       },
       addSpotlightMarker: {
@@ -415,7 +441,7 @@ getPanelUI = function() {
   buttonPanel.alignChildren = 'left';
   buttonPanel.margins.top = 16;
   treeView = buttonPanel.add('treeview', void 0);
-  treeView.preferredSize = [220, 150];
+  treeView.preferredSize = [220, 200];
   for (key in toolRegistry) {
     category = toolRegistry[key];
     thisCategoryNode = treeView.add('node', category.name);
@@ -436,10 +462,14 @@ getPanelUI = function() {
     if (choice == null) {
       return alert("No Tool Selected!");
     }
-    app.beginUndoGroup("NF Tool: " + choice.name);
+    if (choice.automaticUndo !== false) {
+      app.beginUndoGroup("NF Tool: " + choice.name);
+    }
     choice.callback();
     this.active = false;
-    return app.endUndoGroup();
+    if (choice.automaticUndo !== false) {
+      return app.endUndoGroup();
+    }
   };
   panel.layout.layout(true);
   treeView.minimumSize = treeView.size;

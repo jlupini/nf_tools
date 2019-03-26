@@ -141,6 +141,13 @@ NFLayoutInstructionDict = {
     priority: 1,
     type: NFLayoutType.HIGHLIGHT
   },
+  blueDashedHighlight: {
+    code: ['bdashed', 'b dashed'],
+    look: "Blue Dashed",
+    display: "Blue Dashed Highlight",
+    priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
   greenHighlight: {
     code: ['g', 'gq'],
     look: "Green",
@@ -213,6 +220,12 @@ NFLayoutInstructionDict = {
     look: "Underline Strikethrough",
     display: "Underline Strikethrough Highlight",
     priority: 1,
+    type: NFLayoutType.HIGHLIGHT
+  },
+  brownHighlight: {
+    code: ['brown'],
+    look: "Brown",
+    display: "Brown Highlight",
     type: NFLayoutType.HIGHLIGHT
   },
   doNothing: {

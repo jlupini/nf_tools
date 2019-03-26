@@ -1,9 +1,9 @@
-`#include "runtimeLibraries.jsx"`
+try `#include "runtimeLibraries.jsx"`
 
 NF = app.NF
 _ =
 	mainComp: new NFPartComp(app.project.activeItem)
-	undoGroupName: 'initialize Pages'
+	undoGroupName: 'Page Tools'
 	animationDuration: 1.85
 
 presentUI = ->
@@ -12,9 +12,10 @@ presentUI = ->
 		_.selectedPages = _.mainComp.selectedPageLayers()
 	else
 		# FIXME: Support selecting a highlight control layer to remove it
-		throw new Error "Can't initialize non-page layers"
+		throw new Error "Can't run Page Tools on non-page layers"
+	# FIXME: Also support automatically picking all the layers in a PDF if children or control layer are selected
 
-	throw new Error "Can't initialize pages from different PDFs at the same time" unless _.selectedPages.fromSamePDF()
+	throw new Error "Can't run Page Tools on layers from different PDFs at the same time" unless _.selectedPages.fromSamePDF()
 
 	allHighlights = _.selectedPages.highlights()
 
@@ -22,7 +23,7 @@ presentUI = ->
 	throw new Error "Some highlights in the selected pages have the same name - Please ensure unique names" if allHighlights.duplicateNames()
 
 	# Present UI
-	w = new Window('dialog', 'Page Initialization')
+	w = new Window('dialog', 'Page Tools')
 	w.alignChildren = 'left'
 
 	tPanel = w.add ("tabbedpanel")
@@ -34,11 +35,11 @@ presentUI = ->
 	_.selectedPages.forEach (theLayer) =>
 		orphans++ unless theLayer.getPaperLayerGroup()?
 	if 0 < orphans < _.selectedPages.count()
-		throw new Error "Can't run this script on both initialized and uninitialized page layers at the same time"
+		throw new Error "Can't run this script on both connected and unconnected page layers at the same time"
 
 	# Only Show the Init tab if pages are ORPHANS (Not Initialized)
 	if orphans > 0
-		initTab = tPanel.add("tab", undefined, "Init Page")
+		initTab = tPanel.add("tab", undefined, "Connect Page")
 		initTab.alignChildren = "fill"
 
 		# Options Panel
@@ -198,6 +199,9 @@ getCancelFunction = (w) ->
 
 app.beginUndoGroup _.undoGroupName
 
-presentUI()
+try
+  presentUI()
+catch error
+	alert "ERROR\n#{error.message}"
 
 app.endUndoGroup()

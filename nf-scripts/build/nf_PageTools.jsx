@@ -1,11 +1,14 @@
-#include "runtimeLibraries.jsx";
-var NF, _, getCancelFunction, presentUI;
+var NF, _, error, error1, getCancelFunction, presentUI;
+
+try {
+  #include "runtimeLibraries.jsx";
+} catch (undefined) {}
 
 NF = app.NF;
 
 _ = {
   mainComp: new NFPartComp(app.project.activeItem),
-  undoGroupName: 'initialize Pages',
+  undoGroupName: 'Page Tools',
   animationDuration: 1.85
 };
 
@@ -14,16 +17,16 @@ presentUI = function() {
   if (_.mainComp.selectedLayers().onlyContainsPageLayers()) {
     _.selectedPages = _.mainComp.selectedPageLayers();
   } else {
-    throw new Error("Can't initialize non-page layers");
+    throw new Error("Can't run Page Tools on non-page layers");
   }
   if (!_.selectedPages.fromSamePDF()) {
-    throw new Error("Can't initialize pages from different PDFs at the same time");
+    throw new Error("Can't run Page Tools on layers from different PDFs at the same time");
   }
   allHighlights = _.selectedPages.highlights();
   if (allHighlights.duplicateNames()) {
     throw new Error("Some highlights in the selected pages have the same name - Please ensure unique names");
   }
-  w = new Window('dialog', 'Page Initialization');
+  w = new Window('dialog', 'Page Tools');
   w.alignChildren = 'left';
   tPanel = w.add("tabbedpanel");
   tPanel.alignChildren = ["fill", "fill"];
@@ -37,10 +40,10 @@ presentUI = function() {
     };
   })(this));
   if ((0 < orphans && orphans < _.selectedPages.count())) {
-    throw new Error("Can't run this script on both initialized and uninitialized page layers at the same time");
+    throw new Error("Can't run this script on both connected and unconnected page layers at the same time");
   }
   if (orphans > 0) {
-    initTab = tPanel.add("tab", void 0, "Init Page");
+    initTab = tPanel.add("tab", void 0, "Connect Page");
     initTab.alignChildren = "fill";
     optionsPanel = initTab.add('panel', void 0, 'Options', {
       borderStyle: 'none'
@@ -229,6 +232,11 @@ getCancelFunction = function(w) {
 
 app.beginUndoGroup(_.undoGroupName);
 
-presentUI();
+try {
+  presentUI();
+} catch (error1) {
+  error = error1;
+  alert("ERROR\n" + error.message);
+}
 
 app.endUndoGroup();

@@ -4,6 +4,12 @@ cacheFileName = "combinedTranscript.json"
 
 panelTest = this
 
+openScript = (targetScript) ->
+  start_folder = new Folder(new File($.fileName).parent.fsName)
+  scriptFile = new File(start_folder.fsName + "/#{targetScript}")
+  script = "#include '#{scriptFile.fullName}'"
+  eval script
+
 toolRegistry =
 
   setup:
@@ -14,10 +20,7 @@ toolRegistry =
       setupMainComp:
         name: "Setup Main Comp"
         callback: ->
-          start_folder = new Folder(new File($.fileName).parent.fsName)
-          scriptFile = new File(start_folder.fsName + '/nf_SetupMainComp.jsx')
-          script = "#include '#{scriptFile.fullName}'"
-          eval script
+          openScript "nf_SetupMainComp.jsx"
 
       renamePDFPrecomps:
         name: "Rename PDF Precomps"
@@ -220,6 +223,19 @@ toolRegistry =
     name: "Animation"
     tools:
 
+      singleInstruction:
+        name: "Follow Single Instruction"
+        automaticUndo: no
+        callback: ->
+          openScript "nf_SingleInstruction.jsx"
+
+      pageTools:
+        name: "Page Tools"
+        automaticUndo: no
+        callback: ->
+          openScript "nf_PageTools.jsx"
+
+
       toggleSpotlights:
         name: "Toggle Spotlight Layers"
         callback: ->
@@ -233,8 +249,15 @@ toolRegistry =
 
       addGaussyLayer:
         name: "Add Gaussy"
+        automaticUndo: no
         callback: ->
-          NFProject.activeComp().addGaussy()
+          openScript "nf_Gaussy.jsx"
+
+      addEmphasis:
+        name: "Emphasizer"
+        automaticUndo: no
+        callback: ->
+          openScript "nf_Emphasizer.jsx"
 
       addSpotlightMarker:
         name: "Add Spotlight Marker"
@@ -369,7 +392,7 @@ getPanelUI = ->
   buttonPanel.margins.top = 16
 
   treeView = buttonPanel.add 'treeview', undefined #[0, 0, 250, 150]
-  treeView.preferredSize = [220, 150]
+  treeView.preferredSize = [220, 200]
 
   for key of toolRegistry
     category = toolRegistry[key]
@@ -389,10 +412,10 @@ getPanelUI = ->
   goButton.onClick = (w) ->
     choice = treeView.selection.data if treeView.selection?.data && treeView.selection?.type is 'item'
     return alert "No Tool Selected!" unless choice?
-    app.beginUndoGroup "NF Tool: #{choice.name}"
+    app.beginUndoGroup "NF Tool: #{choice.name}" unless choice.automaticUndo is no
     choice.callback()
     @active = false
-    app.endUndoGroup()
+    app.endUndoGroup() unless choice.automaticUndo is no
 
   # Layout + Resize handling
   panel.layout.layout(true)
