@@ -552,7 +552,7 @@ NFTools = {
   'timecodes' keys
    */
   readAndCombineScriptAndInstructions: function(detailedAnalysis) {
-    var afterTC, averageTC, beforeTC, bestComparison, cleanLine, comparison, comprehensiveRangeTest, dirtyScriptArray, dummy, element, findBestRange, getMinSim, instructionArray, instructionFile, instructionString, l, lastWinner, len1, len2, lineObj, m, o, parsedLine, parsedLines, rangeComparison, ref, ref1, removeLineBreaks, scriptFile, scriptLines, scriptString, sentenceFromInstructionRange, splitElement, testChar, testEnd, testLine, testLineIdx, testStart, timecodes, toPercent, trimmed, winners, wordCount;
+    var afterTC, averageMatch, averageTC, beforeTC, bestComparison, bestComparisonMatch, bestMatchSentence, cleanLine, comparison, comprehensiveRangeTest, dirtyScriptArray, dummy, element, findBestRange, fullSnippet, getMinSim, input, inputInt, inputMessage, instructionArray, instructionFile, instructionString, l, lastWinner, len1, len2, lineAfterSentence, lineObj, lineSentence, lookAheadIdx, lookAheadSnippet, lookBackIdx, lookBackSnippet, m, matchSum, o, parsedLine, parsedLines, rangeComparison, ref, ref1, removeLineBreaks, scriptFile, scriptLines, scriptString, sentenceFromInstructionRange, shouldQuit, splitElement, testChar, testEnd, testLine, testLineIdx, testSentence, testStart, timecodes, toPercent, trimmed, winners, wordCount;
     if (detailedAnalysis == null) {
       detailedAnalysis = false;
     }
@@ -729,6 +729,7 @@ NFTools = {
     };
     NFTools.log("Comparing lines...\n", "readAndCombineScriptAndInstructions");
     winners = [];
+    matchSum = 0;
     for (testLineIdx = m = 0, ref1 = scriptLines.length - 1; 0 <= ref1 ? m <= ref1 : m >= ref1; testLineIdx = 0 <= ref1 ? ++m : --m) {
       testLine = scriptLines[testLineIdx];
       lastWinner = winners.length ? winners[winners.length - 1] : null;
@@ -750,19 +751,70 @@ NFTools = {
           testStart: testStart,
           testEnd: testEnd
         });
+        bestComparisonMatch = bestComparison.match;
+        if (bestComparisonMatch > 0.5) {
+          lineSentence = cleanLine(bestComparison.line.text);
+          if (!(testLineIdx + 1 >= scriptLines.length)) {
+            lineAfterSentence = cleanLine(scriptLines[testLineIdx + 1].text);
+          }
+          bestMatchSentence = cleanLine(sentenceFromInstructionRange(bestComparison.from, bestComparison.to));
+          lookBackIdx = bestComparison.from - 6;
+          if (lookBackIdx < 0) {
+            lookBackIdx = 0;
+          }
+          lookAheadIdx = bestComparison.to + 10;
+          if (lookAheadIdx >= instructionArray.length) {
+            lookAheadIdx = instructionArray.length - 1;
+          }
+          lookBackSnippet = cleanLine(sentenceFromInstructionRange(lookBackIdx, bestComparison.from - 1));
+          lookAheadSnippet = cleanLine(sentenceFromInstructionRange(bestComparison.to + 1, lookAheadIdx));
+          fullSnippet = lookBackSnippet + "\n<<< " + bestMatchSentence + " >>>\n" + lookAheadSnippet;
+          inputMessage = "Got a bad match score on this line.\nGenerally, some words will be missing from the matches. Enter an integer to move the end brackets by. So for example, entering '-12' means 12 words will be removed from the end. Entering '+4' means the next 4 words will be added on.\n\n\n Target Line: '" + lineSentence + "'\n\n Best Match: '" + fullSnippet + "'\n\n";
+          if (lineAfterSentence != null) {
+            inputMessage += "Line After: " + lineAfterSentence + "\n\n";
+          }
+          input = prompt(inputMessage, '', 'Manual Match');
+          inputInt = parseInt(input);
+          if (inputInt != null) {
+            bestComparison.to += inputInt;
+          }
+          testSentence = cleanLine(sentenceFromInstructionRange(bestComparison.from, bestComparison.to));
+          lineSentence = cleanLine(bestComparison.line.text);
+          bestComparison.match = NFTools.similarity(testSentence, lineSentence);
+          bestComparison.method = "Manual";
+        }
         winners.push(bestComparison);
+        matchSum += bestComparison.match;
         NFTools.log("Best result: '" + (cleanLine(sentenceFromInstructionRange(bestComparison.from, bestComparison.to))) + "'", "readAndCombineScriptAndInstructions");
-        NFTools.log("Method '" + bestComparison.method + "' is the winner, with range " + bestComparison.from + "-" + bestComparison.to, "readAndCombineScriptAndInstructions");
+        NFTools.log("Method '" + bestComparison.method + "' is the winner, with range " + bestComparison.from + "-" + bestComparison.to + " and score of <" + bestComparison.match + ">", "readAndCombineScriptAndInstructions");
         if ((lastWinner != null) && lastWinner.to >= bestComparison.from) {
           NFTools.logLine();
           NFTools.log("NOTE: last result shifted back, so we're moving the previous one...", "readAndCombineScriptAndInstructions");
           lastWinner.to = bestComparison.from - 1;
           NFTools.log("Prev test Line:   '" + (cleanLine(lastWinner.line.text)) + "'", "readAndCombineScriptAndInstructions");
           NFTools.log("Adjusted match:   '" + (cleanLine(sentenceFromInstructionRange(lastWinner.from, lastWinner.to))) + "'", "readAndCombineScriptAndInstructions");
+          matchSum -= lastWinner.match;
+          testSentence = cleanLine(sentenceFromInstructionRange(lastWinner.from, lastWinner.to));
+          lineSentence = cleanLine(lastWinner.line.text);
+          lastWinner.match = NFTools.similarity(testSentence, lineSentence);
+          matchSum += lastWinner.match;
           winners[winners.length - 2] = lastWinner;
         }
       }
+      averageMatch = matchSum / winners.length;
+      NFTools.log("Average match score is now <" + averageMatch + ">", "readAndCombineScriptAndInstructions");
+      if (averageMatch > 0.6 && lastWinner.method !== "Manual") {
+        shouldQuit = confirm("Average match score is not looking great (> 0.6), so something might be borked. Cancel?", false, "Whoops...");
+        NFTools.log("------\nABORTING!!!\n----------", "readAndCombineScriptAndInstructions");
+        NFTools.logLine();
+      }
+      if (shouldQuit) {
+        break;
+      }
       NFTools.logLine();
+    }
+    if (shouldQuit) {
+      return null;
     }
     parsedLines = [];
     for (o = 0, len2 = winners.length; o < len2; o++) {

@@ -354,7 +354,7 @@ toolRegistry = {
           if (guideAVComp == null) {
             precompsFolder = NFProject.findItem(guideCompFolderName);
             if (precompsFolder == null) {
-              precompsFolder = NFProject.rootFolder.items.addFolder(guideCompFolderName);
+              precompsFolder = NFProject.findItem("Assets").item.addFolder(guideCompFolderName);
             }
             guideAVComp = precompsFolder.items.addComp(guideCompName, 100, 100, 1.0, 1, 30);
             newLayer = guideAVComp.layers.addNull();

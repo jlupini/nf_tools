@@ -318,7 +318,7 @@ toolRegistry =
           unless guideAVComp?
             precompsFolder = NFProject.findItem guideCompFolderName
             unless precompsFolder?
-              precompsFolder = NFProject.rootFolder.items.addFolder guideCompFolderName
+              precompsFolder = NFProject.findItem("Assets").item.addFolder guideCompFolderName
 
             guideAVComp = precompsFolder.items.addComp guideCompName, 100, 100, 1.0, 1, 30
             newLayer = guideAVComp.layers.addNull()

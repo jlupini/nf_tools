@@ -653,6 +653,7 @@ NFTools =
 
     NFTools.log "Comparing lines...\n", "readAndCombineScriptAndInstructions"
     winners = []
+    matchSum = 0
     for testLineIdx in [0..scriptLines.length-1]
       testLine = scriptLines[testLineIdx]
       lastWinner = if winners.length then winners[winners.length-1] else null
@@ -676,9 +677,53 @@ NFTools =
         bestComparison = comprehensiveRangeTest
           testStart: testStart
           testEnd: testEnd
+
+        # Check if we need a manual intervention
+        bestComparisonMatch = bestComparison.match
+        if bestComparisonMatch > 0.5
+          lineSentence = cleanLine bestComparison.line.text
+          lineAfterSentence = cleanLine scriptLines[testLineIdx + 1].text unless testLineIdx + 1 >= scriptLines.length
+          bestMatchSentence = cleanLine sentenceFromInstructionRange(bestComparison.from, bestComparison.to)
+
+          lookBackIdx = bestComparison.from - 6
+          if lookBackIdx < 0 then lookBackIdx = 0
+          lookAheadIdx = bestComparison.to + 10
+          if lookAheadIdx >= instructionArray.length then lookAheadIdx = instructionArray.length - 1
+
+          lookBackSnippet = cleanLine sentenceFromInstructionRange(lookBackIdx, bestComparison.from - 1)
+          lookAheadSnippet = cleanLine sentenceFromInstructionRange(bestComparison.to + 1, lookAheadIdx)
+
+          fullSnippet = "#{lookBackSnippet}\n<<< #{bestMatchSentence} >>>\n#{lookAheadSnippet}"
+
+          inputMessage = "Got a bad match score on this line.\nGenerally, some
+                          words will be missing from the matches. Enter an
+                          integer to move the end brackets by. So for example,
+                          entering '-12' means 12 words will be removed from the
+                          end. Entering '+4' means the next 4 words will be
+                          added on.\n\n\n
+                          Target Line: '#{lineSentence}'\n\n
+                          Best Match: '#{fullSnippet}'\n\n"
+          if lineAfterSentence?
+            inputMessage += "Line After: #{lineAfterSentence}\n\n"
+
+          input = prompt(inputMessage, '', 'Manual Match');
+          inputInt = parseInt input
+
+          # Update the best comparison model
+          bestComparison.to += inputInt if inputInt?
+          testSentence = cleanLine sentenceFromInstructionRange(bestComparison.from, bestComparison.to)
+          lineSentence = cleanLine bestComparison.line.text
+          bestComparison.match = NFTools.similarity testSentence, lineSentence
+          bestComparison.method = "Manual"
+
+
         winners.push bestComparison
+        matchSum += bestComparison.match
+
         NFTools.log "Best result: '#{cleanLine sentenceFromInstructionRange(bestComparison.from, bestComparison.to)}'", "readAndCombineScriptAndInstructions"
-        NFTools.log "Method '#{bestComparison.method}' is the winner, with range #{bestComparison.from}-#{bestComparison.to}", "readAndCombineScriptAndInstructions"
+        NFTools.log "Method '#{bestComparison.method}' is the winner, with range #{bestComparison.from}-#{bestComparison.to} and score of <#{bestComparison.match}>", "readAndCombineScriptAndInstructions"
+
+
 
         if lastWinner? and lastWinner.to >= bestComparison.from
           NFTools.logLine()
@@ -686,9 +731,28 @@ NFTools =
           lastWinner.to = bestComparison.from - 1
           NFTools.log "Prev test Line:   '#{cleanLine lastWinner.line.text}'", "readAndCombineScriptAndInstructions"
           NFTools.log "Adjusted match:   '#{cleanLine sentenceFromInstructionRange(lastWinner.from, lastWinner.to)}'", "readAndCombineScriptAndInstructions"
+
+          matchSum -= lastWinner.match
+          testSentence = cleanLine sentenceFromInstructionRange(lastWinner.from, lastWinner.to)
+          lineSentence = cleanLine lastWinner.line.text
+          lastWinner.match = NFTools.similarity testSentence, lineSentence
+          matchSum += lastWinner.match
+
+          # Put the adjusted one back in the winners array
           winners[winners.length-2] = lastWinner
 
+      # Check if we're doing ok. If the average match score is above 0.5, then something is probably borked.
+      averageMatch = matchSum/winners.length
+      NFTools.log "Average match score is now <#{averageMatch}>", "readAndCombineScriptAndInstructions"
+      if averageMatch > 0.6 and lastWinner.method isnt "Manual"
+         shouldQuit = confirm("Average match score is not looking great (> 0.6), so something might be borked. Cancel?", false, "Whoops...")
+         NFTools.log "------\nABORTING!!!\n----------", "readAndCombineScriptAndInstructions"
+         NFTools.logLine()
+      break if shouldQuit
+
       NFTools.logLine()
+
+    return null if shouldQuit
 
     parsedLines = []
     for comparison in winners
