@@ -11,6 +11,8 @@ onlyInBlock = 252
 notFirstOrLastInBlock = 303
 nearestSpotlightMarkerOnThisControl = null
 
+# DO NOT EDIT ABOVE THIS LINE - It will break the update expressions tool
+
 inFunc = (mark) ->
   return mark.time
 outFunc = (mark) ->
@@ -18,45 +20,50 @@ outFunc = (mark) ->
 
 # Gets an array of the active markers at this time
 activeMarkersAtTime = ->
+  # Grab our relevant layers from the text data layer
+  dataLayer = thisComp.layer "SpotData"
+  dataLayerText = dataLayer("Text")("Source Text").valueAtTime 0
+  searchPointString = "PDF#{targetPDF}:["
+  preIndex = dataLayerText.indexOf searchPointString
+  endIndex = preIndex + dataLayerText.substring(preIndex).indexOf("]")
+  dataString = dataLayerText.substring(preIndex + searchPointString.length, endIndex)
+  dataArr = dataString.split(",")
+
   activeMarkers = []
   nearestMarker = null
-  numLayers = thisComp.numLayers
-  i = 1
-  while i <= numLayers
-    theLayer = thisComp.layer(i)
-    if theLayer.name.indexOf(targetPDF + " -") is 0 and theLayer.name.indexOf("Highlight Control") >= 0
 
-      if theLayer.marker.numKeys > 0
-        # For each marker, check if it's a spotlight marker. Also grab the nearest spotlight marker on this control when we find it.
-        for idx in [1..theLayer.marker.numKeys]
+  for i in dataArr
+    theLayer = thisComp.layer parseInt(i)
+    if theLayer.marker.numKeys > 0
+      # For each marker, check if it's a spotlight marker. Also grab the nearest spotlight marker on this control when we find it.
+      for idx in [1..theLayer.marker.numKeys]
 
-          testMarker = theLayer.marker.key(idx)
+        testMarker = theLayer.marker.key(idx)
 
-          if testMarker.comment is "Spotlight"
-            spotlightMarkers.push testMarker
+        if testMarker.comment is "Spotlight"
+          spotlightMarkers.push testMarker
 
-            adjIn = inFunc testMarker
-            adjOut = outFunc testMarker
-            activeMarkers.push testMarker if adjIn <= time < adjOut
+          adjIn = inFunc testMarker
+          adjOut = outFunc testMarker
+          activeMarkers.push testMarker if adjIn <= time < adjOut
 
-            if theLayer.name is controlLayer.name
-              if adjIn <= time <= adjOut
+          if theLayer.name is controlLayer.name
+            if adjIn <= time <= adjOut
+              nearestMarker = testMarker
+            else if nearestMarker?
+              timeToIn = Math.abs(time - adjIn)
+              timeToOut = Math.abs(time - adjOut)
+              prevTimeToIn = Math.abs(time - inFunc(nearestMarker))
+              prevTimeToOut = Math.abs(time - outFunc(nearestMarker))
+
+              min = Math.min timeToIn, timeToOut, prevTimeToIn, prevTimeToOut
+              if min is timeToIn or min is timeToOut
                 nearestMarker = testMarker
-              else if nearestMarker?
-                timeToIn = Math.abs(time - adjIn)
-                timeToOut = Math.abs(time - adjOut)
-                prevTimeToIn = Math.abs(time - inFunc(nearestMarker))
-                prevTimeToOut = Math.abs(time - outFunc(nearestMarker))
-
-                min = Math.min timeToIn, timeToOut, prevTimeToIn, prevTimeToOut
-                if min is timeToIn or min is timeToOut
-                  nearestMarker = testMarker
-              else
-                nearestMarker = testMarker
+            else
+              nearestMarker = testMarker
 
       nearestSpotlightMarkerOnThisControl = nearestMarker
 
-    i++
   return activeMarkers
 
 positionInBlock = ->

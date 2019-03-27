@@ -1,4 +1,4 @@
-var activeMarkers, adjIn, adjOut, babbies, blockChangeInMarker, blockChangeOutMarker, blockEndMarker, blockEndTime, blockStartMarker, blockStartTime, duration, i, iMarker, idx, inFunc, j, k, l, len, numLayers, outFunc, progress, ref, ref1, ref2, ref3, somethingElseEndsDuringTheOpening, somethingElseStartsDuringTheClosing, spMark, spotlightMarkers, targetPDF, testMarker, theLayer, timeIsWithinAllAnimation, timeIsWithinClosingAnimation, timeIsWithinOpeningAnimation;
+var activeMarkers, adjIn, adjOut, babbies, blockChangeInMarker, blockChangeOutMarker, blockEndMarker, blockEndTime, blockStartMarker, blockStartTime, dataArr, dataLayer, dataLayerText, dataString, duration, endIndex, i, iMarker, idx, inFunc, j, k, l, len, len1, m, nearestMarker, outFunc, preIndex, progress, ref, ref1, ref2, ref3, searchPointString, somethingElseEndsDuringTheOpening, somethingElseStartsDuringTheClosing, spMark, spotlightMarkers, targetPDF, testMarker, theLayer, timeIsWithinAllAnimation, timeIsWithinClosingAnimation, timeIsWithinOpeningAnimation;
 
 inFunc = function(mark) {
   return mark.time;
@@ -18,16 +18,31 @@ spotlightMarkers = [];
 
 activeMarkers = [];
 
-numLayers = thisComp.numLayers;
+dataLayer = thisComp.layer("SpotData");
 
-i = 1;
+dataLayerText = dataLayer("Text")("Source Text").valueAtTime(0);
 
-while (i <= numLayers) {
-  theLayer = thisComp.layer(i);
+searchPointString = "PDF" + targetPDF + ":[";
+
+preIndex = dataLayerText.indexOf(searchPointString);
+
+endIndex = preIndex + dataLayerText.substring(preIndex).indexOf("]");
+
+dataString = dataLayerText.substring(preIndex + searchPointString.length, endIndex);
+
+dataArr = dataString.split(",");
+
+activeMarkers = [];
+
+nearestMarker = null;
+
+for (j = 0, len = dataArr.length; j < len; j++) {
+  i = dataArr[j];
+  theLayer = thisComp.layer(parseInt(i));
   if (theLayer.name.indexOf(targetPDF + " -") === 0 && theLayer.name.indexOf("Highlight Control") >= 0) {
     babbies.push(theLayer);
     if (theLayer.marker.numKeys > 0) {
-      for (idx = j = 1, ref = theLayer.marker.numKeys; 1 <= ref ? j <= ref : j >= ref; idx = 1 <= ref ? ++j : --j) {
+      for (idx = k = 1, ref = theLayer.marker.numKeys; 1 <= ref ? k <= ref : k >= ref; idx = 1 <= ref ? ++k : --k) {
         testMarker = theLayer.marker.key(idx);
         if (testMarker.comment === "Spotlight") {
           spotlightMarkers.push(testMarker);
@@ -50,7 +65,7 @@ if (activeMarkers.length === 0) {
   blockEndTime = outFunc(activeMarkers[0]);
   blockStartMarker = blockEndMarker = activeMarkers[0];
   if (activeMarkers.length > 1) {
-    for (idx = k = 0, ref1 = activeMarkers.length - 1; 0 <= ref1 ? k <= ref1 : k >= ref1; idx = 0 <= ref1 ? ++k : --k) {
+    for (idx = l = 0, ref1 = activeMarkers.length - 1; 0 <= ref1 ? l <= ref1 : l >= ref1; idx = 0 <= ref1 ? ++l : --l) {
       iMarker = activeMarkers[idx];
       if (inFunc(iMarker) < blockStartTime) {
         blockStartTime = inFunc(iMarker);
@@ -68,8 +83,8 @@ blockChangeInMarker = null;
 
 blockChangeOutMarker = null;
 
-for (l = 0, len = spotlightMarkers.length; l < len; l++) {
-  spMark = spotlightMarkers[l];
+for (m = 0, len1 = spotlightMarkers.length; m < len1; m++) {
+  spMark = spotlightMarkers[m];
   if ((blockStartTime < (ref2 = outFunc(spMark)) && ref2 < blockStartTime + duration)) {
     blockChangeInMarker = spMark;
   }

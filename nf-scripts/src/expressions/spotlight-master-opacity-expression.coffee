@@ -12,10 +12,21 @@ targetPDF = "PDF_NUMBER"
 babbies = []
 spotlightMarkers = []
 activeMarkers = []
-numLayers = thisComp.numLayers
-i = 1
-while i <= numLayers
-  theLayer = thisComp.layer(i)
+
+# Grab our relevant layers from the text data layer
+dataLayer = thisComp.layer "SpotData"
+dataLayerText = dataLayer("Text")("Source Text").valueAtTime 0
+searchPointString = "PDF#{targetPDF}:["
+preIndex = dataLayerText.indexOf searchPointString
+endIndex = preIndex + dataLayerText.substring(preIndex).indexOf("]")
+dataString = dataLayerText.substring(preIndex + searchPointString.length, endIndex)
+dataArr = dataString.split(",")
+
+activeMarkers = []
+nearestMarker = null
+
+for i in dataArr
+  theLayer = thisComp.layer parseInt(i)
   if theLayer.name.indexOf(targetPDF + " -") is 0 and theLayer.name.indexOf("Highlight Control") >= 0
     babbies.push theLayer
 

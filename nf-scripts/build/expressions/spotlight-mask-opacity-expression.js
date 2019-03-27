@@ -29,46 +29,49 @@ outFunc = function(mark) {
 };
 
 activeMarkersAtTime = function() {
-  var activeMarkers, adjIn, adjOut, i, idx, j, min, nearestMarker, numLayers, prevTimeToIn, prevTimeToOut, ref, testMarker, theLayer, timeToIn, timeToOut;
+  var activeMarkers, adjIn, adjOut, dataArr, dataLayer, dataLayerText, dataString, endIndex, i, idx, j, k, len, min, nearestMarker, preIndex, prevTimeToIn, prevTimeToOut, ref, searchPointString, testMarker, theLayer, timeToIn, timeToOut;
+  dataLayer = thisComp.layer("SpotData");
+  dataLayerText = dataLayer("Text")("Source Text").valueAtTime(0);
+  searchPointString = "PDF" + targetPDF + ":[";
+  preIndex = dataLayerText.indexOf(searchPointString);
+  endIndex = preIndex + dataLayerText.substring(preIndex).indexOf("]");
+  dataString = dataLayerText.substring(preIndex + searchPointString.length, endIndex);
+  dataArr = dataString.split(",");
   activeMarkers = [];
   nearestMarker = null;
-  numLayers = thisComp.numLayers;
-  i = 1;
-  while (i <= numLayers) {
-    theLayer = thisComp.layer(i);
-    if (theLayer.name.indexOf(targetPDF + " -") === 0 && theLayer.name.indexOf("Highlight Control") >= 0) {
-      if (theLayer.marker.numKeys > 0) {
-        for (idx = j = 1, ref = theLayer.marker.numKeys; 1 <= ref ? j <= ref : j >= ref; idx = 1 <= ref ? ++j : --j) {
-          testMarker = theLayer.marker.key(idx);
-          if (testMarker.comment === "Spotlight") {
-            spotlightMarkers.push(testMarker);
-            adjIn = inFunc(testMarker);
-            adjOut = outFunc(testMarker);
-            if ((adjIn <= time && time < adjOut)) {
-              activeMarkers.push(testMarker);
-            }
-            if (theLayer.name === controlLayer.name) {
-              if ((adjIn <= time && time <= adjOut)) {
-                nearestMarker = testMarker;
-              } else if (nearestMarker != null) {
-                timeToIn = Math.abs(time - adjIn);
-                timeToOut = Math.abs(time - adjOut);
-                prevTimeToIn = Math.abs(time - inFunc(nearestMarker));
-                prevTimeToOut = Math.abs(time - outFunc(nearestMarker));
-                min = Math.min(timeToIn, timeToOut, prevTimeToIn, prevTimeToOut);
-                if (min === timeToIn || min === timeToOut) {
-                  nearestMarker = testMarker;
-                }
-              } else {
+  for (j = 0, len = dataArr.length; j < len; j++) {
+    i = dataArr[j];
+    theLayer = thisComp.layer(parseInt(i));
+    if (theLayer.marker.numKeys > 0) {
+      for (idx = k = 1, ref = theLayer.marker.numKeys; 1 <= ref ? k <= ref : k >= ref; idx = 1 <= ref ? ++k : --k) {
+        testMarker = theLayer.marker.key(idx);
+        if (testMarker.comment === "Spotlight") {
+          spotlightMarkers.push(testMarker);
+          adjIn = inFunc(testMarker);
+          adjOut = outFunc(testMarker);
+          if ((adjIn <= time && time < adjOut)) {
+            activeMarkers.push(testMarker);
+          }
+          if (theLayer.name === controlLayer.name) {
+            if ((adjIn <= time && time <= adjOut)) {
+              nearestMarker = testMarker;
+            } else if (nearestMarker != null) {
+              timeToIn = Math.abs(time - adjIn);
+              timeToOut = Math.abs(time - adjOut);
+              prevTimeToIn = Math.abs(time - inFunc(nearestMarker));
+              prevTimeToOut = Math.abs(time - outFunc(nearestMarker));
+              min = Math.min(timeToIn, timeToOut, prevTimeToIn, prevTimeToOut);
+              if (min === timeToIn || min === timeToOut) {
                 nearestMarker = testMarker;
               }
+            } else {
+              nearestMarker = testMarker;
             }
           }
         }
       }
       nearestSpotlightMarkerOnThisControl = nearestMarker;
     }
-    i++;
   }
   return activeMarkers;
 };

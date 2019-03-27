@@ -156,6 +156,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
     bgBlur.property('Blurriness').setValue 35
     bgBrightness = bgSolid.property('Effects').addProperty('ADBE Brightness & Contrast 2')
     bgBrightness.property('Brightness').setValue -148
+    bgBrightness.property("Use Legacy (supports HDR)").setValue 1
 
     # Create and format text layer
     fontSize = 37

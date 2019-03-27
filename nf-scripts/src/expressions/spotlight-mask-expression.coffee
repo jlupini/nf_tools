@@ -5,12 +5,15 @@ controlLayerEffect = highlightLayer.effect('AV_Highlighter')
 
 # Get our matching page layer
 activeBabby = null
+
+# DO NOT EDIT ABOVE THIS LINE - It will break the update expressions tool
 numLayers = thisComp.numLayers
 i = 1
 while i <= numLayers
   theLayer = thisComp.layer(i)
   if theLayer.name.indexOf(targetPage) >= 0 and theLayer.inPoint < time and time < theLayer.outPoint
     activeBabby = theLayer
+    break
   i++
 if activeBabby == null
   ori = [0, 0]

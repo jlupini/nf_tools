@@ -42,12 +42,30 @@ toolRegistry =
           audioLayer = NFProject.mainComp().audioLayers().getBottommostLayer()
           audioFile = audioLayer.layer.source.file
 
+          $.bp()
           cmdLineString = "sh '#{bashFile.fsName}' '#{sttFolder.fsName}' '#{audioFile.fsName}' '#{project_folder.fsName}'"
 
           termfile = new File(File($.fileName).parent.fsName + '/command.term')
           command = cmdLineString
           termfile.open 'w'
-          termfile.writeln '<?xml version="1.0" encoding="UTF-8"?>\n' + '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"' + '"http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' + '<plist version="1.0">\n' + '<dict>\n' + '<key>WindowSettings</key>\n' + '<array>\n' + ' <dict>\n' + '<key>CustomTitle</key>\n' + '<string>My first termfile</string>\n' + '<key>ExecutionString</key>\n' + '<string>' + command + '</string>\n' + '</dict>\n' + '</array>\n' + '</dict>\n' + '</plist>\n'
+          termfile.writeln '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                           '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"' +
+                           '"http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
+                           '<plist version="1.0">\n' +
+                           '<dict>\n' +
+                           '<key>WindowSettings</key>\n' +
+                           '<array>\n' +
+                           ' <dict>\n' +
+                           '<key>CustomTitle</key>\n' +
+                           '<string>My first termfile</string>\n' +
+                           '<key>ExecutionString</key>\n' +
+                           '<string>' +
+                           command +
+                           '</string>\n' +
+                           '</dict>\n' +
+                           '</array>\n' +
+                           '</dict>\n' +
+                           '</plist>\n'
           termfile.close()
           shouldContinue = confirm "This involves running a terminal instance to perform speech to text
                                     and line up timecodes. It may take a while and you'll have to check
@@ -296,7 +314,7 @@ toolRegistry =
           newMaskPathExpSegment = newMaskPathExpSegment.substring(newMaskPathExpSegment.indexOf("numLayers = thisComp.numLayers;"))
 
           newMasterOpacityExpSegment = NFTools.readExpression "spotlight-master-opacity-expression"
-          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("numLayers = thisComp.numLayers;"))
+          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("babbies = [];"))
 
           # Get all the spotlight layers...
           parts = NFProject.allPartComps()
@@ -310,7 +328,7 @@ toolRegistry =
                 if mask.name is "Dummy"
                   prop = mask.property("Mask Opacity")
                   currExp = prop.expression
-                  strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"))
+                  strippedExp = currExp.substring(0, currExp.indexOf("babbies = [];"))
                   prop.expression = strippedExp + newMasterOpacityExpSegment
                 else
                   prop = mask.property("Mask Path")
@@ -362,6 +380,12 @@ toolRegistry =
                 layer.effect(oldEffectName)?.remove()
 
           guideAVComp.layers[1].enabled = !guideAVComp.layers[1].enabled
+
+      scratch:
+        name: "Scratch Script"
+        automaticUndo: no
+        callback: ->
+          openScript "nf_Scratch.jsx"
 
 
 main = ->

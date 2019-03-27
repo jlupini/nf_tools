@@ -3104,6 +3104,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     bgBlur.property('Blurriness').setValue(35);
     bgBrightness = bgSolid.property('Effects').addProperty('ADBE Brightness & Contrast 2');
     bgBrightness.property('Brightness').setValue(-148);
+    bgBrightness.property("Use Legacy (supports HDR)").setValue(1);
     fontSize = 37;
     textLayer = citeComp.layers.addBoxText([(fontSize + 20) * citationString.length, fontSize + 20], citationString);
     textLayer_TextProp = textLayer.property('ADBE Text Properties').property('ADBE Text Document');
@@ -6406,13 +6407,14 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
   },
 
   /**
-  Creates a new Spotlight layer for the given NFPaperLayerGroup
+  Creates a new Spotlight layer for the given NFPaperLayerGroup. Also creates
+  a spotData layer if this part doesn't have one yet.
   @memberof NFSpotlightLayer
   @param {NFPaperLayerGroup} group - the paper layer group
   @returns {NFSpotlightLayer} the new spotlight layer
    */
   newSpotlightLayer: function(group) {
-    var controlLayers, existingSpot, expression, newMask, spotlightLayer;
+    var controlLayers, datasLayer, existingSpot, expression, newMask, spotlightLayer;
     if (!(group instanceof NFPaperLayerGroup)) {
       throw new Error("group must be an NFPaperLayerGroup");
     }
@@ -6441,6 +6443,14 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
       PDF_NUMBER: group.getPDFNumber()
     });
     newMask.maskOpacity.expression = expression;
+    if (group.containingComp().layerWithName("SpotData") == null) {
+      datasLayer = group.containingComp().addTextLayer({
+        at: 0
+      });
+      expression = NFTools.readExpression("spotlight-data-expression");
+      dataLayer.property("Text").property("Source Text").expression = expression;
+      dataLayer.layer.enabled = false;
+    }
     return spotlightLayer;
   }
 });

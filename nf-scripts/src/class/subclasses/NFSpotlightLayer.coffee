@@ -95,7 +95,8 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
     return num + " - Spotlight"
 
   ###*
-  Creates a new Spotlight layer for the given NFPaperLayerGroup
+  Creates a new Spotlight layer for the given NFPaperLayerGroup. Also creates
+  a spotData layer if this part doesn't have one yet.
   @memberof NFSpotlightLayer
   @param {NFPaperLayerGroup} group - the paper layer group
   @returns {NFSpotlightLayer} the new spotlight layer
@@ -131,5 +132,13 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
        PDF_NUMBER: group.getPDFNumber()
 
     newMask.maskOpacity.expression = expression
+
+    # Add the spotData layer if missing
+    unless group.containingComp().layerWithName("SpotData")?
+      datasLayer = group.containingComp().addTextLayer
+        at: 0
+      expression = NFTools.readExpression "spotlight-data-expression"
+      dataLayer.property("Text").property("Source Text").expression = expression
+      dataLayer.layer.enabled = no
 
     return spotlightLayer

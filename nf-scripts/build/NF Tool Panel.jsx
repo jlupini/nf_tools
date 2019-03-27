@@ -51,6 +51,7 @@ toolRegistry = {
           sttFolder = File(start_folder.fsName + '/lib/stt/');
           audioLayer = NFProject.mainComp().audioLayers().getBottommostLayer();
           audioFile = audioLayer.layer.source.file;
+          $.bp();
           cmdLineString = "sh '" + bashFile.fsName + "' '" + sttFolder.fsName + "' '" + audioFile.fsName + "' '" + project_folder.fsName + "'";
           termfile = new File(File($.fileName).parent.fsName + '/command.term');
           command = cmdLineString;
@@ -331,7 +332,7 @@ toolRegistry = {
           newMaskPathExpSegment = NFTools.readExpression("spotlight-mask-expression");
           newMaskPathExpSegment = newMaskPathExpSegment.substring(newMaskPathExpSegment.indexOf("numLayers = thisComp.numLayers;"));
           newMasterOpacityExpSegment = NFTools.readExpression("spotlight-master-opacity-expression");
-          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("numLayers = thisComp.numLayers;"));
+          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("babbies = [];"));
           parts = NFProject.allPartComps();
           spotlightLayers = new NFLayerCollection();
           results = [];
@@ -347,7 +348,7 @@ toolRegistry = {
                   if (mask.name === "Dummy") {
                     prop = mask.property("Mask Opacity");
                     currExp = prop.expression;
-                    strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"));
+                    strippedExp = currExp.substring(0, currExp.indexOf("babbies = [];"));
                     results1.push(prop.expression = strippedExp + newMasterOpacityExpSegment);
                   } else {
                     prop = mask.property("Mask Path");
@@ -410,6 +411,13 @@ toolRegistry = {
             }
           }
           return guideAVComp.layers[1].enabled = !guideAVComp.layers[1].enabled;
+        }
+      },
+      scratch: {
+        name: "Scratch Script",
+        automaticUndo: false,
+        callback: function() {
+          return openScript("nf_Scratch.jsx");
         }
       }
     }
