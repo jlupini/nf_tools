@@ -51,7 +51,6 @@ toolRegistry = {
           sttFolder = File(start_folder.fsName + '/lib/stt/');
           audioLayer = NFProject.mainComp().audioLayers().getBottommostLayer();
           audioFile = audioLayer.layer.source.file;
-          $.bp();
           cmdLineString = "sh '" + bashFile.fsName + "' '" + sttFolder.fsName + "' '" + audioFile.fsName + "' '" + project_folder.fsName + "'";
           termfile = new File(File($.fileName).parent.fsName + '/command.term');
           command = cmdLineString;
@@ -322,52 +321,6 @@ toolRegistry = {
           })(this));
         }
       },
-      updateSpotlightExpressions: {
-        name: "Update Spotlight Expressions",
-        description: "This script replaces all spotlight expressions with the latest versions from the expression files.",
-        callback: function() {
-          var j, len, newMaskOpacityExpSegment, newMaskPathExpSegment, newMasterOpacityExpSegment, part, parts, results, spotlightLayers;
-          newMaskOpacityExpSegment = NFTools.readExpression("spotlight-mask-opacity-expression");
-          newMaskOpacityExpSegment = newMaskOpacityExpSegment.substring(newMaskOpacityExpSegment.indexOf("inFunc = function(mark)"));
-          newMaskPathExpSegment = NFTools.readExpression("spotlight-mask-expression");
-          newMaskPathExpSegment = newMaskPathExpSegment.substring(newMaskPathExpSegment.indexOf("numLayers = thisComp.numLayers;"));
-          newMasterOpacityExpSegment = NFTools.readExpression("spotlight-master-opacity-expression");
-          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("babbies = [];"));
-          parts = NFProject.allPartComps();
-          spotlightLayers = new NFLayerCollection();
-          results = [];
-          for (j = 0, len = parts.length; j < len; j++) {
-            part = parts[j];
-            results.push(part.searchLayers("Spotlight").forEach((function(_this) {
-              return function(partSpotLayer) {
-                var currExp, i, k, mask, prop, ref, results1, spotMasks, strippedExp;
-                spotMasks = partSpotLayer.mask();
-                results1 = [];
-                for (i = k = 1, ref = spotMasks.numProperties; 1 <= ref ? k <= ref : k >= ref; i = 1 <= ref ? ++k : --k) {
-                  mask = spotMasks.property(i);
-                  if (mask.name === "Dummy") {
-                    prop = mask.property("Mask Opacity");
-                    currExp = prop.expression;
-                    strippedExp = currExp.substring(0, currExp.indexOf("babbies = [];"));
-                    results1.push(prop.expression = strippedExp + newMasterOpacityExpSegment);
-                  } else {
-                    prop = mask.property("Mask Path");
-                    currExp = prop.expression;
-                    strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"));
-                    strippedExp = prop.expression = strippedExp + newMaskPathExpSegment.replace("highlightComp.duration", "540");
-                    prop = mask.property("Mask Opacity");
-                    currExp = prop.expression;
-                    strippedExp = currExp.substring(0, currExp.indexOf("inFunc = function(mark)"));
-                    results1.push(prop.expression = strippedExp + newMaskOpacityExpSegment);
-                  }
-                }
-                return results1;
-              };
-            })(this)));
-          }
-          return results;
-        }
-      },
       toggleGuideLayers: {
         name: "Toggle Guide Layers",
         description: "Toggles the guide layers on and off for highlights. if the guide layer reference comp hasn't been set up, this script does the initial setup and links all guide layers.",
@@ -411,6 +364,98 @@ toolRegistry = {
             }
           }
           return guideAVComp.layers[1].enabled = !guideAVComp.layers[1].enabled;
+        }
+      }
+    }
+  },
+  development: {
+    name: "Dev",
+    tools: {
+      updateHighlightExpressions: {
+        name: "Update Highlight Expressions",
+        description: "This script replaces all highlight expressions with the latest versions from the expression files.",
+        callback: function() {
+          var highlights, j, len, newOpacitySegment, newPropertySegment, pageComp, pageComps, results;
+          newPropertySegment = NFTools.readExpression("highlight-property-expression");
+          newPropertySegment = newPropertySegment.substring(newPropertySegment.indexOf("activeBabby = null;"), newPropertySegment.indexOf("controlLayer.effect("));
+          newOpacitySegment = NFTools.readExpression("highlight-opacity-expression");
+          newOpacitySegment = newOpacitySegment.substring(newOpacitySegment.indexOf("controlIn = controlLayer.inPoint;"));
+          pageComps = NFProject.allPageComps();
+          results = [];
+          for (j = 0, len = pageComps.length; j < len; j++) {
+            pageComp = pageComps[j];
+            highlights = pageComp.highlights();
+            results.push(highlights.forEach((function(_this) {
+              return function(highlightLayer) {
+                var currExp, k, len1, property, propertyName, ref, results1, strippedExp, strippedExpEnd, strippedExpStart;
+                if (highlightLayer.isBubbled()) {
+                  ref = NFHighlightLayer.highlighterProperties;
+                  results1 = [];
+                  for (k = 0, len1 = ref.length; k < len1; k++) {
+                    propertyName = ref[k];
+                    property = highlightLayer.highlighterEffect().property(propertyName);
+                    currExp = property.expression;
+                    if (propertyName === 'Opacity') {
+                      strippedExp = currExp.substring(0, currExp.indexOf("controlIn = controlLayer.inPoint;"));
+                      results1.push(property.expression = strippedExp + newOpacitySegment);
+                    } else {
+                      strippedExpStart = currExp.substring(0, currExp.indexOf("activeBabby = null;"));
+                      strippedExpEnd = currExp.substring(currExp.indexOf("controlLayer.effect("));
+                      results1.push(property.expression = strippedExpStart + newPropertySegment + strippedExpEnd);
+                    }
+                  }
+                  return results1;
+                }
+              };
+            })(this)));
+          }
+          return results;
+        }
+      },
+      updateSpotlightExpressions: {
+        name: "Update Spotlight Expressions",
+        description: "This script replaces all spotlight expressions with the latest versions from the expression files.",
+        callback: function() {
+          var j, len, newMaskOpacityExpSegment, newMaskPathExpSegment, newMasterOpacityExpSegment, part, parts, results, spotlightLayers;
+          newMaskOpacityExpSegment = NFTools.readExpression("spotlight-mask-opacity-expression");
+          newMaskOpacityExpSegment = newMaskOpacityExpSegment.substring(newMaskOpacityExpSegment.indexOf("inFunc = function(mark)"));
+          newMaskPathExpSegment = NFTools.readExpression("spotlight-mask-expression");
+          newMaskPathExpSegment = newMaskPathExpSegment.substring(newMaskPathExpSegment.indexOf("numLayers = thisComp.numLayers;"));
+          newMasterOpacityExpSegment = NFTools.readExpression("spotlight-master-opacity-expression");
+          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("babbies = [];"));
+          parts = NFProject.allPartComps();
+          spotlightLayers = new NFLayerCollection();
+          results = [];
+          for (j = 0, len = parts.length; j < len; j++) {
+            part = parts[j];
+            results.push(part.searchLayers("Spotlight").forEach((function(_this) {
+              return function(partSpotLayer) {
+                var currExp, i, k, mask, prop, ref, results1, spotMasks, strippedExp;
+                spotMasks = partSpotLayer.mask();
+                results1 = [];
+                for (i = k = 1, ref = spotMasks.numProperties; 1 <= ref ? k <= ref : k >= ref; i = 1 <= ref ? ++k : --k) {
+                  mask = spotMasks.property(i);
+                  if (mask.name === "Dummy") {
+                    prop = mask.property("Mask Opacity");
+                    currExp = prop.expression;
+                    strippedExp = currExp.substring(0, currExp.indexOf("babbies = [];"));
+                    results1.push(prop.expression = strippedExp + newMasterOpacityExpSegment);
+                  } else {
+                    prop = mask.property("Mask Path");
+                    currExp = prop.expression;
+                    strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"));
+                    prop.expression = strippedExp + newMaskPathExpSegment.replace("highlightComp.duration", "540");
+                    prop = mask.property("Mask Opacity");
+                    currExp = prop.expression;
+                    strippedExp = currExp.substring(0, currExp.indexOf("inFunc = function(mark)"));
+                    results1.push(prop.expression = strippedExp + newMaskOpacityExpSegment);
+                  }
+                }
+                return results1;
+              };
+            })(this)));
+          }
+          return results;
         }
       },
       scratch: {

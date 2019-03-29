@@ -1,4 +1,4 @@
-var activeAtControlIn, activeAtControlOut, activeBabbies, controlIn, controlLayer, controlOut, duration, endless, highlightName, i, numLayers, progress, relControlIn, relControlOut, relInAnimPeak, relOutAnimPeak, targetComp, targetPage, targetValue, theLayer;
+var activeAtControlIn, activeAtControlOut, activeBabbies, controlIn, controlLayer, controlOut, dataArr, dataLayer, dataLayerText, dataString, duration, endIndex, endless, highlightName, i, j, len, preIndex, progress, relControlIn, relControlOut, relInAnimPeak, relOutAnimPeak, searchPointString, targetComp, targetPage, targetValue, theLayer;
 
 targetComp = comp('TARGET_COMP_NAME');
 
@@ -20,12 +20,23 @@ targetValue = controlLayer.effect(highlightName)("Opacity").value;
 
 activeBabbies = [];
 
-numLayers = targetComp.numLayers;
+dataLayer = thisComp.layer("HighData-" + targetComp.name);
 
-i = 1;
+dataLayerText = dataLayer("Text")("Source Text").valueAtTime(0);
 
-while (i <= numLayers) {
-  theLayer = targetComp.layer(i);
+searchPointString = "allMatchingLayers:[";
+
+preIndex = dataLayerText.indexOf(searchPointString);
+
+endIndex = preIndex + dataLayerText.substring(preIndex).indexOf("]");
+
+dataString = dataLayerText.substring(preIndex + searchPointString.length, endIndex);
+
+dataArr = dataString.split(",");
+
+for (j = 0, len = dataArr.length; j < len; j++) {
+  i = dataArr[j];
+  theLayer = targetComp.layer(parseInt(i));
   if (theLayer.name.indexOf(targetPage) >= 0) {
     activeBabbies.push(theLayer);
     if ((theLayer.inPoint < controlIn && controlIn < theLayer.outPoint)) {
@@ -35,7 +46,6 @@ while (i <= numLayers) {
       activeAtControlOut = theLayer;
     }
   }
-  i++;
 }
 
 if (activeAtControlIn == null) {

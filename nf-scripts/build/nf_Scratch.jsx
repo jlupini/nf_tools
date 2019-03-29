@@ -1,4 +1,4 @@
-var j, len, part, parts, spotlightLayers, targetValue;
+var dataLayer, expression, i, j, k, len, pageComp, pageComps;
 
 try {
   #include "runtimeLibraries.jsx";
@@ -6,35 +6,23 @@ try {
 
 app.beginUndoGroup('Run Scratch Script');
 
-parts = NFProject.allPartComps();
+pageComps = NFProject.allPageComps();
 
-targetValue = null;
-
-for (j = 0, len = parts.length; j < len; j++) {
-  part = parts[j];
-  spotlightLayers = part.searchLayers("Spotlight");
-  spotlightLayers.forEach((function(_this) {
-    return function(spotlight) {
-      var featherProp, i, k, mask, maskCount, masks, ref, results;
-      masks = spotlight.property("Masks");
-      maskCount = masks.numProperties;
-      results = [];
-      for (i = k = 1, ref = maskCount; 1 <= ref ? k <= ref : k >= ref; i = 1 <= ref ? ++k : --k) {
-        mask = masks.property(i);
-        if (mask.name !== "Dummy") {
-          featherProp = mask.property("Mask Feather");
-          if (featherProp.value[0] === 0) {
-            results.push(featherProp.setValue([80, 80]));
-          } else {
-            results.push(featherProp.setValue([0, 0]));
-          }
-        } else {
-          results.push(void 0);
-        }
-      }
-      return results;
-    };
-  })(this));
+for (j = 0, len = pageComps.length; j < len; j++) {
+  pageComp = pageComps[j];
+  for (i = k = 1; k <= 4; i = ++k) {
+    dataLayer = pageComp.addTextLayer({
+      at: pageComp.allLayers().count() - 1,
+      time: 0
+    });
+    expression = NFTools.readExpression("highlight-data-expression", {
+      TARGET_COMP_NAME: "Part" + i,
+      PAGE_BASE_NAME: pageComp.getPageBaseName()
+    });
+    dataLayer.property("Text").property("Source Text").expression = expression;
+    dataLayer.layer.enabled = false;
+    dataLayer.layer.name = "HighData-Part" + i;
+  }
 }
 
 app.endUndoGroup();

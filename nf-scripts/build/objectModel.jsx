@@ -2685,6 +2685,7 @@ NFPaperLayerGroup = (function(superClass) {
           });
           if (highlight.canBubbleUp()) {
             _this.log("Bubbling up highlight: " + (highlight.toString()));
+            highlight.containingComp().addHighlightDataLayerFor(targetComp);
             highlighterEffect = controlLayer.highlighterEffect();
             ref = NFHighlightLayer.highlighterProperties;
             for (i = 0, len = ref.length; i < len; i++) {
@@ -4199,6 +4200,32 @@ NFPageComp = (function(superClass) {
       };
     })(this));
     return foundHighlight;
+  };
+
+
+  /**
+  Adds a highlight data layer for a given part comp, or does nothing if
+  one already exists.
+  @memberof NFPageComp
+  @param {NFPartComp} the part comp for the data layer to target
+  @returns {NFPageComp} self
+   */
+
+  NFPageComp.prototype.addHighlightDataLayerFor = function(targetComp) {
+    var dataLayer, expression, targetCompName;
+    targetCompName = targetComp.comp.name;
+    dataLayer = this.addTextLayer({
+      at: this.allLayers().count() - 1,
+      time: 0
+    });
+    expression = NFTools.readExpression("highlight-data-expression", {
+      TARGET_COMP_NAME: targetCompName,
+      PAGE_BASE_NAME: this.getPageBaseName()
+    });
+    dataLayer.property("Text").property("Source Text").expression = expression;
+    dataLayer.layer.enabled = false;
+    dataLayer.layer.name = "HighData-" + targetCompName;
+    return this;
   };
 
   return NFPageComp;
@@ -6414,15 +6441,26 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
   @returns {NFSpotlightLayer} the new spotlight layer
    */
   newSpotlightLayer: function(group) {
-    var controlLayers, datasLayer, existingSpot, expression, newMask, spotlightLayer;
+    var containingComp, controlLayers, dataLayer, existingSpot, expression, newMask, spotlightLayer;
     if (!(group instanceof NFPaperLayerGroup)) {
       throw new Error("group must be an NFPaperLayerGroup");
+    }
+    containingComp = group.containingComp();
+    if (containingComp.layerWithName("SpotData") == null) {
+      dataLayer = containingComp.addTextLayer({
+        at: containingComp.allLayers().count() - 1,
+        time: 0
+      });
+      expression = NFTools.readExpression("spotlight-data-expression");
+      dataLayer.property("Text").property("Source Text").expression = expression;
+      dataLayer.layer.enabled = false;
+      dataLayer.layer.name = "SpotData";
     }
     existingSpot = group.getSpotlight();
     if (existingSpot != null) {
       return existingSpot;
     }
-    spotlightLayer = group.containingComp().addSolid({
+    spotlightLayer = containingComp.addSolid({
       color: [0.0078, 0, 0.1216],
       name: NFSpotlightLayer.nameForPDFNumber(group.getPDFNumber())
     });
@@ -6443,14 +6481,6 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
       PDF_NUMBER: group.getPDFNumber()
     });
     newMask.maskOpacity.expression = expression;
-    if (group.containingComp().layerWithName("SpotData") == null) {
-      datasLayer = group.containingComp().addTextLayer({
-        at: 0
-      });
-      expression = NFTools.readExpression("spotlight-data-expression");
-      dataLayer.property("Text").property("Source Text").expression = expression;
-      dataLayer.layer.enabled = false;
-    }
     return spotlightLayer;
   }
 });

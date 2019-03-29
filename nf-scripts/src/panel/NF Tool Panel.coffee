@@ -42,7 +42,6 @@ toolRegistry =
           audioLayer = NFProject.mainComp().audioLayers().getBottommostLayer()
           audioFile = audioLayer.layer.source.file
 
-          $.bp()
           cmdLineString = "sh '#{bashFile.fsName}' '#{sttFolder.fsName}' '#{audioFile.fsName}' '#{project_folder.fsName}'"
 
           termfile = new File(File($.fileName).parent.fsName + '/command.term')
@@ -253,7 +252,6 @@ toolRegistry =
         callback: ->
           openScript "nf_PageTools.jsx"
 
-
       toggleSpotlights:
         name: "Toggle Spotlight Layers"
         callback: ->
@@ -300,48 +298,6 @@ toolRegistry =
               NFTools.log "Disconnected highlight: #{highlight.getName()} in
                            page: #{highlight.getPageComp().comp.name}\n", "NFToolPanel#disconnectBrokenHighlights"
 
-      updateSpotlightExpressions:
-        name: "Update Spotlight Expressions"
-        description: "This script replaces all spotlight expressions with the
-                      latest versions from the expression files."
-        callback: ->
-
-          # Get our script segments
-          newMaskOpacityExpSegment = NFTools.readExpression "spotlight-mask-opacity-expression"
-          newMaskOpacityExpSegment = newMaskOpacityExpSegment.substring(newMaskOpacityExpSegment.indexOf("inFunc = function(mark)"))
-
-          newMaskPathExpSegment = NFTools.readExpression "spotlight-mask-expression"
-          newMaskPathExpSegment = newMaskPathExpSegment.substring(newMaskPathExpSegment.indexOf("numLayers = thisComp.numLayers;"))
-
-          newMasterOpacityExpSegment = NFTools.readExpression "spotlight-master-opacity-expression"
-          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("babbies = [];"))
-
-          # Get all the spotlight layers...
-          parts = NFProject.allPartComps()
-          spotlightLayers = new NFLayerCollection()
-          for part in parts
-            part.searchLayers("Spotlight").forEach (partSpotLayer) =>
-              spotMasks = partSpotLayer.mask()
-              for i in [1..spotMasks.numProperties]
-                mask = spotMasks.property(i)
-                # $.bp()
-                if mask.name is "Dummy"
-                  prop = mask.property("Mask Opacity")
-                  currExp = prop.expression
-                  strippedExp = currExp.substring(0, currExp.indexOf("babbies = [];"))
-                  prop.expression = strippedExp + newMasterOpacityExpSegment
-                else
-                  prop = mask.property("Mask Path")
-                  currExp = prop.expression
-                  strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"))
-                  strippedExp =
-                  prop.expression = strippedExp + newMaskPathExpSegment.replace("highlightComp.duration", "540")
-
-                  prop = mask.property("Mask Opacity")
-                  currExp = prop.expression
-                  strippedExp = currExp.substring(0, currExp.indexOf("inFunc = function(mark)"))
-                  prop.expression = strippedExp + newMaskOpacityExpSegment
-
       toggleGuideLayers:
         name: "Toggle Guide Layers"
         description: "Toggles the guide layers on and off for highlights. if
@@ -381,12 +337,86 @@ toolRegistry =
 
           guideAVComp.layers[1].enabled = !guideAVComp.layers[1].enabled
 
+  development:
+    name: "Dev"
+    tools:
+      updateHighlightExpressions:
+        name: "Update Highlight Expressions"
+        description: "This script replaces all highlight expressions with the
+                      latest versions from the expression files."
+        callback: ->
+
+          # Get our script segments
+          newPropertySegment = NFTools.readExpression "highlight-property-expression"
+          newPropertySegment = newPropertySegment.substring(newPropertySegment.indexOf("activeBabby = null;"), newPropertySegment.indexOf("controlLayer.effect("))
+
+          newOpacitySegment = NFTools.readExpression "highlight-opacity-expression"
+          newOpacitySegment = newOpacitySegment.substring(newOpacitySegment.indexOf("controlIn = controlLayer.inPoint;"))
+
+          # Get all the highlight layers...
+          pageComps = NFProject.allPageComps()
+          for pageComp in pageComps
+            highlights = pageComp.highlights()
+            highlights.forEach (highlightLayer) =>
+              if highlightLayer.isBubbled()
+                for propertyName in NFHighlightLayer.highlighterProperties
+                  property = highlightLayer.highlighterEffect().property(propertyName)
+                  currExp = property.expression
+                  if propertyName is 'Opacity'
+                    strippedExp = currExp.substring(0, currExp.indexOf("controlIn = controlLayer.inPoint;"))
+                    property.expression = strippedExp + newOpacitySegment
+                  else
+                    strippedExpStart = currExp.substring(0, currExp.indexOf("activeBabby = null;"))
+                    strippedExpEnd = currExp.substring(currExp.indexOf("controlLayer.effect("))
+
+                    property.expression = strippedExpStart + newPropertySegment + strippedExpEnd
+
+      updateSpotlightExpressions:
+        name: "Update Spotlight Expressions"
+        description: "This script replaces all spotlight expressions with the
+                      latest versions from the expression files."
+        callback: ->
+
+          # Get our script segments
+          newMaskOpacityExpSegment = NFTools.readExpression "spotlight-mask-opacity-expression"
+          newMaskOpacityExpSegment = newMaskOpacityExpSegment.substring(newMaskOpacityExpSegment.indexOf("inFunc = function(mark)"))
+
+          newMaskPathExpSegment = NFTools.readExpression "spotlight-mask-expression"
+          newMaskPathExpSegment = newMaskPathExpSegment.substring(newMaskPathExpSegment.indexOf("numLayers = thisComp.numLayers;"))
+
+          newMasterOpacityExpSegment = NFTools.readExpression "spotlight-master-opacity-expression"
+          newMasterOpacityExpSegment = newMasterOpacityExpSegment.substring(newMasterOpacityExpSegment.indexOf("babbies = [];"))
+
+          # Get all the spotlight layers...
+          parts = NFProject.allPartComps()
+          spotlightLayers = new NFLayerCollection()
+          for part in parts
+            part.searchLayers("Spotlight").forEach (partSpotLayer) =>
+              spotMasks = partSpotLayer.mask()
+              for i in [1..spotMasks.numProperties]
+                mask = spotMasks.property(i)
+                # $.bp()
+                if mask.name is "Dummy"
+                  prop = mask.property("Mask Opacity")
+                  currExp = prop.expression
+                  strippedExp = currExp.substring(0, currExp.indexOf("babbies = [];"))
+                  prop.expression = strippedExp + newMasterOpacityExpSegment
+                else
+                  prop = mask.property("Mask Path")
+                  currExp = prop.expression
+                  strippedExp = currExp.substring(0, currExp.indexOf("numLayers = thisComp.numLayers;"))
+                  prop.expression = strippedExp + newMaskPathExpSegment.replace("highlightComp.duration", "540")
+
+                  prop = mask.property("Mask Opacity")
+                  currExp = prop.expression
+                  strippedExp = currExp.substring(0, currExp.indexOf("inFunc = function(mark)"))
+                  prop.expression = strippedExp + newMaskOpacityExpSegment
+
       scratch:
         name: "Scratch Script"
         automaticUndo: no
         callback: ->
           openScript "nf_Scratch.jsx"
-
 
 main = ->
   _.panel = getPanelUI()

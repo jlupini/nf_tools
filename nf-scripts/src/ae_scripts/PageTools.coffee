@@ -147,8 +147,7 @@ presentUI = ->
 					bubbleCheckbox = highlightBubbleCheckboxes[highlight.getName()]
 					if bubbleCheckbox?
 						if bubbleCheckbox.value is true
-							bubbleCheckbox.sourcePage.getPaperLayerGroup().assignControlLayer highlight
-
+							bubbleCheckbox.sourcePage.getPaperLayerGroup().assignControlLayer(highlight)
 				w.hide()
 
 	unless allHighlights.isEmpty()

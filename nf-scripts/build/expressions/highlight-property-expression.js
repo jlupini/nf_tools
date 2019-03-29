@@ -1,4 +1,4 @@
-var activeBabby, controlLayer, i, numLayers, offsetTime, rightNow, targetComp, targetPage, theLayer;
+var activeBabby, controlLayer, dataArr, dataLayer, dataLayerText, dataString, endIndex, i, j, len, offsetTime, preIndex, rightNow, searchPointString, targetComp, targetPage, theLayer;
 
 targetComp = comp('TARGET_COMP_NAME');
 
@@ -8,12 +8,23 @@ targetPage = 'PAGE_BASE_NAME';
 
 activeBabby = null;
 
-numLayers = targetComp.numLayers;
+dataLayer = thisComp.layer("HighData-" + targetComp.name);
 
-i = 1;
+dataLayerText = dataLayer("Text")("Source Text").valueAtTime(0);
 
-while (i <= numLayers) {
-  theLayer = targetComp.layer(i);
+searchPointString = "allMatchingLayers:[";
+
+preIndex = dataLayerText.indexOf(searchPointString);
+
+endIndex = preIndex + dataLayerText.substring(preIndex).indexOf("]");
+
+dataString = dataLayerText.substring(preIndex + searchPointString.length, endIndex);
+
+dataArr = dataString.split(",");
+
+for (j = 0, len = dataArr.length; j < len; j++) {
+  i = dataArr[j];
+  theLayer = targetComp.layer(parseInt(i));
   if (theLayer.name.indexOf(targetPage) >= 0) {
     rightNow = theLayer.startTime + time;
     if ((theLayer.inPoint <= rightNow && rightNow <= theLayer.outPoint)) {
@@ -21,7 +32,6 @@ while (i <= numLayers) {
       break;
     }
   }
-  i++;
 }
 
 if (activeBabby != null) {

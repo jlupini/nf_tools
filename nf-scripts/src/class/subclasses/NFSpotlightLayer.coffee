@@ -104,10 +104,21 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
   newSpotlightLayer: (group) ->
     throw new Error "group must be an NFPaperLayerGroup" unless group instanceof NFPaperLayerGroup
 
+    # Add the spotData layer if missing
+    containingComp = group.containingComp()
+    unless containingComp.layerWithName("SpotData")?
+      dataLayer = containingComp.addTextLayer
+        at: containingComp.allLayers().count()-1
+        time: 0
+      expression = NFTools.readExpression "spotlight-data-expression"
+      dataLayer.property("Text").property("Source Text").expression = expression
+      dataLayer.layer.enabled = no
+      dataLayer.layer.name = "SpotData"
+
     existingSpot = group.getSpotlight()
     return existingSpot if existingSpot?
 
-    spotlightLayer = group.containingComp().addSolid
+    spotlightLayer = containingComp.addSolid
       color: [0.0078, 0, 0.1216]
       name: NFSpotlightLayer.nameForPDFNumber group.getPDFNumber()
 
@@ -132,13 +143,5 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
        PDF_NUMBER: group.getPDFNumber()
 
     newMask.maskOpacity.expression = expression
-
-    # Add the spotData layer if missing
-    unless group.containingComp().layerWithName("SpotData")?
-      datasLayer = group.containingComp().addTextLayer
-        at: 0
-      expression = NFTools.readExpression "spotlight-data-expression"
-      dataLayer.property("Text").property("Source Text").expression = expression
-      dataLayer.layer.enabled = no
 
     return spotlightLayer

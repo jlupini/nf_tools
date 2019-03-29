@@ -79,3 +79,23 @@ class NFPageComp extends NFComp
     @highlights().forEach (highlight) =>
       foundHighlight = highlight if highlight.getName() is name
     return foundHighlight
+
+  ###*
+  Adds a highlight data layer for a given part comp, or does nothing if
+  one already exists.
+  @memberof NFPageComp
+  @param {NFPartComp} the part comp for the data layer to target
+  @returns {NFPageComp} self
+  ###
+  addHighlightDataLayerFor: (targetComp) ->
+    targetCompName = targetComp.comp.name
+    dataLayer = @addTextLayer
+      at: @allLayers().count()-1
+      time: 0
+    expression = NFTools.readExpression "highlight-data-expression",
+      TARGET_COMP_NAME: targetCompName
+      PAGE_BASE_NAME: @getPageBaseName()
+    dataLayer.property("Text").property("Source Text").expression = expression
+    dataLayer.layer.enabled = no
+    dataLayer.layer.name = "HighData-#{targetCompName}"
+    @

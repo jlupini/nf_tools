@@ -261,9 +261,15 @@ class NFPaperLayerGroup extends NFObject
 
         if highlight.canBubbleUp()
           @log "Bubbling up highlight: #{highlight.toString()}"
+          # Before actually doing the bubble up, we need to make
+          # sure that there's a data layer for this part in the page comp
+          highlight.containingComp().addHighlightDataLayerFor targetComp
+
           highlighterEffect = controlLayer.highlighterEffect()
+
           # Iterate through the properties and connect each one
           for highlighterProperty in NFHighlightLayer.highlighterProperties
+
             sourceValue = sourceEffect.property(highlighterProperty).value
             highlighterEffect.property(highlighterProperty).setValue(sourceValue)
 
