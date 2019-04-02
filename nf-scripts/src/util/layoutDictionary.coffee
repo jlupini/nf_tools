@@ -46,79 +46,79 @@ NFLayoutInstructionNone =
 
 NFLayoutInstructionDict =
 	greenStrikethroughHighlight:
-		code: ['g strikethrough', 'gstrikethrough']
+		code: ['gstrikethrough', 'gstrikethroughq']
 		look: "Green Strikethrough"
 		display: "Green Strikethrough Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	yellowStrikethroughHighlight:
-		code: ['y strikethrough', 'ystrikethrough']
+		code: ['ystrikethrough', 'ystrikethroughq']
 		look: "Yellow Strikethrough"
 		display: "Yellow Strikethrough Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	orangeStrikethroughHighlight:
-		code: ['o strikethrough', 'ostrikethrough']
+		code: ['ostrikethrough', 'ostrikethroughq']
 		look: "Orange Strikethrough"
 		display: "Oran ge Strikethrough Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	blueStrikethroughHighlight:
-		code: ['b strikethrough', 'bstrikethrough']
+		code: ['bstrikethrough', 'bstrikethroughq']
 		look: "Blue Strikethrough"
 		display: "Blue Strikethrough Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	pinkStrikethroughHighlight:
-		code: ['i strikethrough', 'istrikethrough']
+		code: ['istrikethroughq', 'istrikethrough']
 		look: "Pink Strikethrough"
 		display: "Pink Strikethrough Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	purpleStrikethroughHighlight:
-		code: ['u strikethrough', 'ustrikethrough']
+		code: ['ustrikethroughq', 'ustrikethrough']
 		look: "Purple Strikethrough"
 		display: "Purple Strikethrough Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	yellowUnderlineHighlight:
-		code: ['yunderline', 'y underline']
+		code: ['yunderline', 'yunderlineq']
 		look: "Yellow Underline"
 		display: "Yellow Underline Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	greenUnderlineHighlight:
-		code: ['gunderline', 'g underline']
+		code: ['gunderline', 'gunderlineq']
 		look: "Green Underline"
 		display: "Green Underline Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	blueUnderlineHighlight:
-		code: ['bunderline', 'b underline']
+		code: ['bunderline', 'bunderlineq']
 		look: "Blue Underline"
 		display: "Blue Underline Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	orangeUnderlineHighlight:
-		code: ['ounderline', 'o underline']
+		code: ['ounderline', 'ounderlineq']
 		look: "Orange Underline"
 		display: "Orange Underline Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	pinkUnderlineHighlight:
-		code: ['iunderline', 'i underline']
+		code: ['iunderline', 'iunderlineq']
 		look: "Pink Underline"
 		display: "Pink Underline Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	purpleUnderlineHighlight:
-		code: ['uunderline', 'u underline']
+		code: ['uunderline', 'uunderlineq']
 		look: "Purple Underline"
 		display: "Purple Underline Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	blueDashedHighlight:
-		code: ['bdashed', 'b dashed']
+		code: ['bdashed', 'bdashedq']
 		look: "Blue Dashed"
 		display: "Blue Dashed Highlight"
 		priority: 1
@@ -164,29 +164,29 @@ NFLayoutInstructionDict =
 		display: "Black Highlight"
 		type: NFLayoutType.HIGHLIGHT
 	underlineHighlight:
-		code: ['underline']
+		code: ['underline', 'underlineq']
 		look: "Underline"
 		display: "Underline Highlight"
 		type: NFLayoutType.HIGHLIGHT
 	strikethroughHighlight:
-		code: ['strikethrough']
+		code: ['strikethrough', 'strikethroughq']
 		look: "Strikethrough"
 		display: "Strikethrough Highlight"
 		type: NFLayoutType.HIGHLIGHT
 	blueUnderlineStrikethroughHighlight:
-		code: ['b underline strikethrough', 'b strikethrough underline']
+		code: ['bunderline strikethrough', 'bstrikethroughunderline', 'bunderlinestrikethroughq', 'bstrikethroughunderlineq']
 		look: "Blue Underline Strikethrough"
 		display: "Blue Underline Strikethrough Highlight"
 		priority: 0.5
 		type: NFLayoutType.HIGHLIGHT
 	underlineStrikethroughHighlight:
-		code: ['underline strikethrough', 'strikethrough underline']
+		code: ['underlinestrikethrough', 'strikethroughunderline', 'underlinestrikethroughq', 'strikethroughunderlineq']
 		look: "Underline Strikethrough"
 		display: "Underline Strikethrough Highlight"
 		priority: 1
 		type: NFLayoutType.HIGHLIGHT
 	brownHighlight:
-		code: ['brown']
+		code: ['brown', 'brownq']
 		look: "Brown"
 		display: "Brown Highlight"
 		type: NFLayoutType.HIGHLIGHT

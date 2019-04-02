@@ -440,7 +440,8 @@ NFTools =
       for key of NFLayoutInstructionDict
         option = NFLayoutInstructionDict[key]
         for code in option.code
-          if instructionString is code
+          strippedString = instructionString.replace(/\s+/g, '')
+          if strippedString is code
             if instruction?
               # If there's already an instruction found found, get the highest priority one
               if option.priority? and instruction.priority? and option.priority < instruction.priority

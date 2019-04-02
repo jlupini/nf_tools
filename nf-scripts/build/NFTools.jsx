@@ -444,7 +444,7 @@ NFTools = {
   @returns {NFLayoutInstruction} the instruction object
    */
   parseInstructionString: function(input) {
-    var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, m, option, parsedObject, ref, ref1, regexResult, shouldBreak, strippedInput, targetPDFNumber;
+    var code, flagOption, flags, instruction, instructionString, key, l, len1, len2, m, option, parsedObject, ref, ref1, regexResult, shouldBreak, strippedInput, strippedString, targetPDFNumber;
     NFTools.log("Parsing instruction: '" + input + "'", "parseInstructionString");
     if (input[0] === "/") {
       NFTools.log("Ignoring instruction", "parseInstructionString");
@@ -496,7 +496,8 @@ NFTools = {
         ref1 = option.code;
         for (m = 0, len2 = ref1.length; m < len2; m++) {
           code = ref1[m];
-          if (instructionString === code) {
+          strippedString = instructionString.replace(/\s+/g, '');
+          if (strippedString === code) {
             if (instruction != null) {
               if ((option.priority != null) && (instruction.priority != null) && option.priority < instruction.priority) {
                 instruction = option;

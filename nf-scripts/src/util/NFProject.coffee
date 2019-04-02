@@ -233,97 +233,95 @@ NFProject =
   @returns {String} A message to display to the user
   ###
   autoLayout: (layoutInstructions) ->
+    try
+      # Check if there are existing pages in any parts
+      allParts = NFProject.allPartComps()
+      existingPages = no
+      for part in allParts
+        part.allLayers().forEach (layer) =>
+          existingPages = yes if layer instanceof NFPageLayer
 
-    # Check if there are existing pages in any parts
-    allParts = NFProject.allPartComps()
-    existingPages = no
-    for part in allParts
-      part.allLayers().forEach (layer) =>
-        existingPages = yes if layer instanceof NFPageLayer
+      if existingPages
+        return "Aborting AutoLayout!\nIt looks like there are already pages in
+                one or more part comps. Clean up and try again."
 
-    if existingPages
-      return "Aborting AutoLayout!\nIt looks like there are already pages in
-              one or more part comps. Clean up and try again."
+      if NFProject.containsBrokenHighlights()
+        return "Aborting AutoLayout!\nThere are broken highlights in some page
+                comps. Fix before running again."
 
-    if NFProject.containsBrokenHighlights()
-      return "Aborting AutoLayout!\nThere are broken highlights in some page
-              comps. Fix before running again."
+      NFTools.log "Beginning layout!", "autoLayout"
+      lastPart = null
+      for layoutInstruction in layoutInstructions
+        # Figure out which part to work in.
+        instructionTime = parseFloat layoutInstruction.time
+        thisPart = NFProject.partForTime instructionTime
+        # Trim the previous part if we're in a new one
+        if lastPart? and not thisPart.is lastPart
+          NFTools.logLine()
+          NFTools.log "New part - Trimming previous one.", "autoLayout"
+          lastPart.trimTo instructionTime + 10
 
-    NFTools.log "Beginning layout!", "autoLayout"
-    lastPart = null
-    for layoutInstruction in layoutInstructions
-      # Figure out which part to work in.
-      instructionTime = parseFloat layoutInstruction.time
-      thisPart = NFProject.partForTime instructionTime
-      # Trim the previous part if we're in a new one
-      if lastPart? and not thisPart.is lastPart
         NFTools.logLine()
-        NFTools.log "New part - Trimming previous one.", "autoLayout"
-        lastPart.trimTo instructionTime + 10
+        NFTools.logLine()
+        NFTools.log "Laying out instruction [#{layoutInstruction.raw}] in #{thisPart.getName()}", "autoLayout"
 
-      NFTools.logLine()
-      NFTools.logLine()
-      NFTools.log "Laying out instruction [#{layoutInstruction.raw}] in #{thisPart.getName()}", "autoLayout"
+        $.bp() if layoutInstruction.break
 
-      $.bp() if layoutInstruction.break
+        # if the instruction is a highlight, let's call animateTo
+        switch layoutInstruction.instruction.type
+          when NFLayoutType.HIGHLIGHT, NFLayoutType.EXPAND
+            # For highlights and expands we need a target PDF, so use this method instead of layoutInstruction.pdf
+            targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
+            lookString = layoutInstruction.expandLookString ? layoutInstruction.instruction.look
+            highlight = targetPDF.findHighlight lookString
+            throw new Error "Can't find highlight with name '#{lookString}' in PDF '#{targetPDF.toString()}'" unless highlight?
 
-      # if the instruction is a highlight, let's call animateTo
-      switch layoutInstruction.instruction.type
-        when NFLayoutType.HIGHLIGHT, NFLayoutType.EXPAND
-          # For highlights and expands we need a target PDF, so use this method instead of layoutInstruction.pdf
-          targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
-          lookString = layoutInstruction.expandLookString ? layoutInstruction.instruction.look
-          highlight = targetPDF.findHighlight lookString
-          throw new Error "Can't find highlight with name '#{lookString}' in PDF '#{targetPDF.toString()}'" unless highlight?
-
-          NFTools.log "Animating to highlight '#{lookString}'", "autoLayout"
-          thisPart.animateTo
-            highlight: highlight
-            time: instructionTime
-            skipTitle: layoutInstruction.flags.skipTitle
-            expand: layoutInstruction.flags.expand
-            expandUp: layoutInstruction.flags.expandUp
-        when NFLayoutType.INSTRUCTION
-          targetPDF = NFPDF.fromPDFNumber layoutInstruction.pdf # Use only explicit PDFs here
-          switch layoutInstruction.instruction.behavior
-            when NFLayoutBehavior.SHOW_TITLE
-              NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
-              targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
-              thisPart.animateTo
-                time: instructionTime
-                page: targetPDF.getTitlePage()
-            when NFLayoutBehavior.ICON_SEQUENCE, NFLayoutBehavior.GAUSSY, NFLayoutBehavior.FIGURE, NFLayoutBehavior.TABLE
-              NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
-              thisPart.addGaussy
-                placeholder: "[#{layoutInstruction.raw}]"
-                time: instructionTime
-            when NFLayoutBehavior.UNRECOGNIZED, NFLayoutBehavior.DO_NOTHING
-              if targetPDF?
-                NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
-                titlePage = targetPDF.getTitlePage()
+            NFTools.log "Animating to highlight '#{lookString}'", "autoLayout"
+            thisPart.animateTo
+              highlight: highlight
+              time: instructionTime
+              skipTitle: layoutInstruction.flags.skipTitle
+              expand: layoutInstruction.flags.expand
+              expandUp: layoutInstruction.flags.expandUp
+          when NFLayoutType.INSTRUCTION
+            targetPDF = NFPDF.fromPDFNumber layoutInstruction.pdf # Use only explicit PDFs here
+            switch layoutInstruction.instruction.behavior
+              when NFLayoutBehavior.SHOW_TITLE
+                NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
+                targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
                 thisPart.animateTo
                   time: instructionTime
-                  page: titlePage
-              NFTools.log "Adding placeholder for [#{layoutInstruction.raw}]", "autoLayout"
-              thisPart.addPlaceholder
-                text: "[#{layoutInstruction.raw}]"
-                time: instructionTime
-            when NFLayoutBehavior.NONE
-              if targetPDF?
-                NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
-                titlePage = targetPDF.getTitlePage()
-                thisPart.animateTo
+                  page: targetPDF.getTitlePage()
+              when NFLayoutBehavior.ICON_SEQUENCE, NFLayoutBehavior.GAUSSY, NFLayoutBehavior.FIGURE, NFLayoutBehavior.TABLE
+                NFTools.log "Following Instruction: #{layoutInstruction.instruction.display}", "autoLayout"
+                thisPart.addGaussy
+                  placeholder: "[#{layoutInstruction.raw}]"
                   time: instructionTime
-                  page: titlePage
+              when NFLayoutBehavior.UNRECOGNIZED, NFLayoutBehavior.DO_NOTHING
+                if targetPDF?
+                  NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
+                  titlePage = targetPDF.getTitlePage()
+                  thisPart.animateTo
+                    time: instructionTime
+                    page: titlePage
+                NFTools.log "Adding placeholder for [#{layoutInstruction.raw}]", "autoLayout"
+                thisPart.addPlaceholder
+                  text: "[#{layoutInstruction.raw}]"
+                  time: instructionTime
+              when NFLayoutBehavior.NONE
+                if targetPDF?
+                  NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"
+                  titlePage = targetPDF.getTitlePage()
+                  thisPart.animateTo
+                    time: instructionTime
+                    page: titlePage
 
-            else
-              throw new Error "There isn't a case for this instruction"
-        else
-          throw new Error "Instruction not found"
-      # catch error
-      #   return "Aborting AutoLayout!\nError Message: '#{error.message}'\nFailed Instruction: [#{layoutInstruction.raw}]"
-      #   break
-
+              else
+                throw new Error "There isn't a case for this instruction"
+          else
+            throw new Error "Instruction not found"
+    catch error
+      return "Aborting AutoLayout!\nError Message: '#{error.message}'\nFailed Instruction: [#{layoutInstruction.raw}]"
 
 
       lastPart = thisPart
@@ -494,7 +492,7 @@ NFProject =
 
     # Assign the instruction the current active PDF if none given
     thisType = instruction.instruction.type
-    if not instruction.pdf? and thisType is NFLayoutType.HIGHLIGHT or thisType is NFLayoutType.EXPAND or thisType is NFLayoutType.INSTRUCTION
+    if not instruction.pdf? and (thisType is NFLayoutType.HIGHLIGHT or thisType is NFLayoutType.EXPAND or thisType is NFLayoutType.INSTRUCTION)
        activePDF = NFProject.activeComp().activePDF()
        instruction.pdf = activePDF.getPDFNumber() if activePDF?
 
