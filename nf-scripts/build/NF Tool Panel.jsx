@@ -46,6 +46,9 @@ toolRegistry = {
         callback: function() {
           var audioFile, audioLayer, bashFile, cmdLineString, command, project_folder, shouldContinue, start_folder, sttFolder, termfile;
           start_folder = new Folder(new File($.fileName).parent.parent.fsName);
+          if (app.project.file == null) {
+            throw new Error("Can't find the location of the project file. This could be because the project is not saved.");
+          }
           project_folder = new Folder(app.project.file.parent.fsName);
           bashFile = new File(start_folder.fsName + '/lib/stt/systemcall.sh');
           sttFolder = File(start_folder.fsName + '/lib/stt/');

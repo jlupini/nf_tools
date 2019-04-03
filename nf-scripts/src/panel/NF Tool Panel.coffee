@@ -36,6 +36,8 @@ toolRegistry =
         name: "Create Instruction File (Mac Only)"
         callback: ->
           start_folder = new Folder(new File($.fileName).parent.parent.fsName)
+          unless app.project.file?
+            throw new Error "Can't find the location of the project file. This could be because the project is not saved."
           project_folder = new Folder(app.project.file.parent.fsName)
           bashFile = new File(start_folder.fsName + '/lib/stt/systemcall.sh')
           sttFolder = File(start_folder.fsName + '/lib/stt/')

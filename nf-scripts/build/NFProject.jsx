@@ -297,119 +297,114 @@ NFProject = {
   @returns {String} A message to display to the user
    */
   autoLayout: function(layoutInstructions) {
-    var allParts, error, error1, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, targetPDF, thisPart, titlePage;
-    try {
-      allParts = NFProject.allPartComps();
-      existingPages = false;
-      for (j = 0, len = allParts.length; j < len; j++) {
-        part = allParts[j];
-        part.allLayers().forEach((function(_this) {
-          return function(layer) {
-            if (layer instanceof NFPageLayer) {
-              return existingPages = true;
-            }
-          };
-        })(this));
-      }
-      if (existingPages) {
-        return "Aborting AutoLayout!\nIt looks like there are already pages in one or more part comps. Clean up and try again.";
-      }
-      if (NFProject.containsBrokenHighlights()) {
-        return "Aborting AutoLayout!\nThere are broken highlights in some page comps. Fix before running again.";
-      }
-      NFTools.log("Beginning layout!", "autoLayout");
-      lastPart = null;
-      for (k = 0, len1 = layoutInstructions.length; k < len1; k++) {
-        layoutInstruction = layoutInstructions[k];
-        instructionTime = parseFloat(layoutInstruction.time);
-        thisPart = NFProject.partForTime(instructionTime);
-        if ((lastPart != null) && !thisPart.is(lastPart)) {
-          NFTools.logLine();
-          NFTools.log("New part - Trimming previous one.", "autoLayout");
-          lastPart.trimTo(instructionTime + 10);
-        }
+    var allParts, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, targetPDF, thisPart, titlePage;
+    allParts = NFProject.allPartComps();
+    existingPages = false;
+    for (j = 0, len = allParts.length; j < len; j++) {
+      part = allParts[j];
+      part.allLayers().forEach((function(_this) {
+        return function(layer) {
+          if (layer instanceof NFPageLayer) {
+            return existingPages = true;
+          }
+        };
+      })(this));
+    }
+    if (existingPages) {
+      return "Aborting AutoLayout!\nIt looks like there are already pages in one or more part comps. Clean up and try again.";
+    }
+    if (NFProject.containsBrokenHighlights()) {
+      return "Aborting AutoLayout!\nThere are broken highlights in some page comps. Fix before running again.";
+    }
+    NFTools.log("Beginning layout!", "autoLayout");
+    lastPart = null;
+    for (k = 0, len1 = layoutInstructions.length; k < len1; k++) {
+      layoutInstruction = layoutInstructions[k];
+      instructionTime = parseFloat(layoutInstruction.time);
+      thisPart = NFProject.partForTime(instructionTime);
+      if ((lastPart != null) && !thisPart.is(lastPart)) {
         NFTools.logLine();
-        NFTools.logLine();
-        NFTools.log("Laying out instruction [" + layoutInstruction.raw + "] in " + (thisPart.getName()), "autoLayout");
-        if (layoutInstruction["break"]) {
-          $.bp();
-        }
-        switch (layoutInstruction.instruction.type) {
-          case NFLayoutType.HIGHLIGHT:
-          case NFLayoutType.EXPAND:
-            targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
-            lookString = (ref = layoutInstruction.expandLookString) != null ? ref : layoutInstruction.instruction.look;
-            highlight = targetPDF.findHighlight(lookString);
-            if (highlight == null) {
-              throw new Error("Can't find highlight with name '" + lookString + "' in PDF '" + (targetPDF.toString()) + "'");
-            }
-            NFTools.log("Animating to highlight '" + lookString + "'", "autoLayout");
-            thisPart.animateTo({
-              highlight: highlight,
-              time: instructionTime,
-              skipTitle: layoutInstruction.flags.skipTitle,
-              expand: layoutInstruction.flags.expand,
-              expandUp: layoutInstruction.flags.expandUp
-            });
-            break;
-          case NFLayoutType.INSTRUCTION:
-            targetPDF = NFPDF.fromPDFNumber(layoutInstruction.pdf);
-            switch (layoutInstruction.instruction.behavior) {
-              case NFLayoutBehavior.SHOW_TITLE:
-                NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
-                targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
+        NFTools.log("New part - Trimming previous one.", "autoLayout");
+        lastPart.trimTo(instructionTime + 10);
+      }
+      NFTools.logLine();
+      NFTools.logLine();
+      NFTools.log("Laying out instruction [" + layoutInstruction.raw + "] in " + (thisPart.getName()), "autoLayout");
+      if (layoutInstruction["break"]) {
+        $.bp();
+      }
+      switch (layoutInstruction.instruction.type) {
+        case NFLayoutType.HIGHLIGHT:
+        case NFLayoutType.EXPAND:
+          targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
+          lookString = (ref = layoutInstruction.expandLookString) != null ? ref : layoutInstruction.instruction.look;
+          highlight = targetPDF.findHighlight(lookString);
+          if (highlight == null) {
+            throw new Error("Can't find highlight with name '" + lookString + "' in PDF '" + (targetPDF.toString()) + "'");
+          }
+          NFTools.log("Animating to highlight '" + lookString + "'", "autoLayout");
+          thisPart.animateTo({
+            highlight: highlight,
+            time: instructionTime,
+            skipTitle: layoutInstruction.flags.skipTitle,
+            expand: layoutInstruction.flags.expand,
+            expandUp: layoutInstruction.flags.expandUp
+          });
+          break;
+        case NFLayoutType.INSTRUCTION:
+          targetPDF = NFPDF.fromPDFNumber(layoutInstruction.pdf);
+          switch (layoutInstruction.instruction.behavior) {
+            case NFLayoutBehavior.SHOW_TITLE:
+              NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
+              targetPDF = NFPDF.fromPDFNumber(layoutInstruction.getPDF());
+              thisPart.animateTo({
+                time: instructionTime,
+                page: targetPDF.getTitlePage()
+              });
+              break;
+            case NFLayoutBehavior.ICON_SEQUENCE:
+            case NFLayoutBehavior.GAUSSY:
+            case NFLayoutBehavior.FIGURE:
+            case NFLayoutBehavior.TABLE:
+              NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
+              thisPart.addGaussy({
+                placeholder: "[" + layoutInstruction.raw + "]",
+                time: instructionTime
+              });
+              break;
+            case NFLayoutBehavior.UNRECOGNIZED:
+            case NFLayoutBehavior.DO_NOTHING:
+              if (targetPDF != null) {
+                NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
+                titlePage = targetPDF.getTitlePage();
                 thisPart.animateTo({
                   time: instructionTime,
-                  page: targetPDF.getTitlePage()
+                  page: titlePage
                 });
-                break;
-              case NFLayoutBehavior.ICON_SEQUENCE:
-              case NFLayoutBehavior.GAUSSY:
-              case NFLayoutBehavior.FIGURE:
-              case NFLayoutBehavior.TABLE:
-                NFTools.log("Following Instruction: " + layoutInstruction.instruction.display, "autoLayout");
-                thisPart.addGaussy({
-                  placeholder: "[" + layoutInstruction.raw + "]",
-                  time: instructionTime
+              }
+              NFTools.log("Adding placeholder for [" + layoutInstruction.raw + "]", "autoLayout");
+              thisPart.addPlaceholder({
+                text: "[" + layoutInstruction.raw + "]",
+                time: instructionTime
+              });
+              break;
+            case NFLayoutBehavior.NONE:
+              if (targetPDF != null) {
+                NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
+                titlePage = targetPDF.getTitlePage();
+                thisPart.animateTo({
+                  time: instructionTime,
+                  page: titlePage
                 });
-                break;
-              case NFLayoutBehavior.UNRECOGNIZED:
-              case NFLayoutBehavior.DO_NOTHING:
-                if (targetPDF != null) {
-                  NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
-                  titlePage = targetPDF.getTitlePage();
-                  thisPart.animateTo({
-                    time: instructionTime,
-                    page: titlePage
-                  });
-                }
-                NFTools.log("Adding placeholder for [" + layoutInstruction.raw + "]", "autoLayout");
-                thisPart.addPlaceholder({
-                  text: "[" + layoutInstruction.raw + "]",
-                  time: instructionTime
-                });
-                break;
-              case NFLayoutBehavior.NONE:
-                if (targetPDF != null) {
-                  NFTools.log("PDF found but no instruction - animating to title page", "autoLayout");
-                  titlePage = targetPDF.getTitlePage();
-                  thisPart.animateTo({
-                    time: instructionTime,
-                    page: titlePage
-                  });
-                }
-                break;
-              default:
-                throw new Error("There isn't a case for this instruction");
-            }
-            break;
-          default:
-            throw new Error("Instruction not found");
-        }
+              }
+              break;
+            default:
+              throw new Error("There isn't a case for this instruction");
+          }
+          break;
+        default:
+          throw new Error("Instruction not found");
       }
-    } catch (error1) {
-      error = error1;
-      return "Aborting AutoLayout!\nError Message: '" + error.message + "'\nFailed Instruction: [" + layoutInstruction.raw + "]";
       lastPart = thisPart;
     }
     return "AutoLayout Complete";
@@ -513,9 +508,20 @@ NFProject = {
         testIns = ins;
         straddling = false;
         while ((testIns != null) && testIns.getPDF() === pdfBefore) {
-          if (testIns.instruction.type === NFLayoutType.HIGHLIGHT || testIns.instruction.type === NFLayoutType.EXPAND) {
-            straddling = true;
-            break;
+          switch (testIns.instruction.type) {
+            case NFLayoutType.HIGHLIGHT:
+            case NFLayoutType.EXPAND:
+              straddling = true;
+              break;
+            case NFLayoutType.INSTRUCTION:
+              switch (testIns.instruction.behavior) {
+                case NFLayoutBehavior.SHOW_TITLE:
+                case NFLayoutBehavior.ICON_SEQUENCE:
+                case NFLayoutBehavior.GAUSSY:
+                case NFLayoutBehavior.FIGURE:
+                case NFLayoutBehavior.TABLE:
+                  straddling = true;
+              }
           }
           testIns = testIns.next;
         }
@@ -541,9 +547,10 @@ NFProject = {
   @returns {null}
    */
   fixStraddlers: function(straddlers) {
-    var allComps, audioLayer, audioMarkers, j, k, keyPDF, len, len1, markerComment, markerValue, nearestKeyIndex, oldMarkerTime, oldOutPoint, ref, results, straddler, testIns, thisComp;
+    var allComps, audioLayer, audioMarkers, j, k, keyPDF, len, len1, mainComp, markerComment, markerValue, nearestKeyIndex, oldMarkerTime, oldOutPoint, outPoint, partLayer, ref, results, straddler, testIns, thisComp;
+    mainComp = NFProject.mainComp();
     allComps = NFProject.allPartComps();
-    allComps.push(NFProject.mainComp());
+    allComps.push(mainComp);
     results = [];
     for (j = 0, len = straddlers.length; j < len; j++) {
       straddler = straddlers[j];
@@ -569,6 +576,14 @@ NFProject = {
           oldOutPoint = audioLayer.layer.outPoint;
           audioLayer.layer.inPoint = testIns.time - thisComp.comp.frameDuration;
           audioLayer.layer.outPoint = oldOutPoint;
+          if (!thisComp.is(mainComp)) {
+            partLayer = NFProject.mainComp().layerWithName(thisComp.getName());
+            outPoint = partLayer.layer.outPoint;
+            if (testIns.time <= partLayer.layer.inPoint) {
+              partLayer.layer.inPoint = testIns.time - 1;
+            }
+            partLayer.layer.outPoint = outPoint;
+          }
         }
       }
       results.push(null);
