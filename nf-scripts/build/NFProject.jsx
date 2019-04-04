@@ -267,7 +267,7 @@ NFProject = {
             NFTools.log("Adding placeholder for [" + layoutInstruction.raw + "]", "autoLayout");
             activeComp.addPlaceholder({
               text: "[" + layoutInstruction.raw + "]",
-              time: instructionTime
+              time: layoutInstruction.time
             });
             break;
           case NFLayoutBehavior.NONE:

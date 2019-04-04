@@ -3044,7 +3044,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
       }
       startColumn = 0;
       if (!(citationArray[0].length > 0)) {
-        throw new Error("Not enough columns");
+        throw new Error("No columns found in citation file");
       }
       for (citeLineItemIdx = i = 0, ref = citationArray[0].length - 1; 0 <= ref ? i <= ref : i >= ref; citeLineItemIdx = 0 <= ref ? ++i : --i) {
         citeLineItem = citationArray[0][citeLineItemIdx];
@@ -3054,7 +3054,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
         }
       }
       if (!(citationArray[0].length >= startColumn)) {
-        throw new Error("Not enough columns");
+        throw new Error("Not enough columns in citation file");
       }
       citeObj = {};
       for (j = 0, len = citationArray.length; j < len; j++) {
@@ -3064,12 +3064,15 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
         citeObj[newKey] = newVal;
       }
       if (citeObj[pdfKey] != null) {
+        if (citeObj[pdfKey] === "") {
+          throw new Error("Found a citation for PDF " + (thePDF.getPDFNumber()) + " but it's blank. Check citation file formatting.");
+        }
         return citeObj[pdfKey];
       } else {
         return "NO CITATION FOUND!";
       }
     }
-    throw new Error("No citation found for PDF " + (thePDF.getPDFNumber()));
+    throw new Error("No citation file found!");
   },
 
   /**
@@ -4214,17 +4217,19 @@ NFPageComp = (function(superClass) {
   NFPageComp.prototype.addHighlightDataLayerFor = function(targetComp) {
     var dataLayer, expression, targetCompName;
     targetCompName = targetComp.comp.name;
-    dataLayer = this.addTextLayer({
-      at: this.allLayers().count() - 1,
-      time: 0
-    });
-    expression = NFTools.readExpression("highlight-data-expression", {
-      TARGET_COMP_NAME: targetCompName,
-      PAGE_BASE_NAME: this.getPageBaseName()
-    });
-    dataLayer.property("Text").property("Source Text").expression = expression;
-    dataLayer.layer.enabled = false;
-    dataLayer.layer.name = "HighData-" + targetCompName;
+    if (this.layerWithName(targetCompName) == null) {
+      dataLayer = this.addTextLayer({
+        at: this.allLayers().count() - 1,
+        time: 0
+      });
+      expression = NFTools.readExpression("highlight-data-expression", {
+        TARGET_COMP_NAME: targetCompName,
+        PAGE_BASE_NAME: this.getPageBaseName()
+      });
+      dataLayer.property("Text").property("Source Text").expression = expression;
+      dataLayer.layer.enabled = false;
+      dataLayer.layer.name = "HighData-" + targetCompName;
+    }
     return this;
   };
 

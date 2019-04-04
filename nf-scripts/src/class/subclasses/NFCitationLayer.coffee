@@ -100,14 +100,14 @@ NFCitationLayer = Object.assign NFCitationLayer,
 
       # Figure out our start column
       startColumn = 0
-      throw new Error "Not enough columns" unless citationArray[0].length > 0
+      throw new Error "No columns found in citation file" unless citationArray[0].length > 0
       for citeLineItemIdx in [0..citationArray[0].length-1]
         citeLineItem = citationArray[0][citeLineItemIdx]
         if citeLineItem isnt ""
           startColumn = citeLineItemIdx
           break
 
-      throw new Error "Not enough columns" unless citationArray[0].length >= startColumn
+      throw new Error "Not enough columns in citation file" unless citationArray[0].length >= startColumn
 
       citeObj = {}
       for citeLine in citationArray
@@ -116,10 +116,11 @@ NFCitationLayer = Object.assign NFCitationLayer,
         citeObj[newKey] = newVal
 
       if citeObj[pdfKey]?
+        throw new Error "Found a citation for PDF #{thePDF.getPDFNumber()} but it's blank. Check citation file formatting." if citeObj[pdfKey] is ""
         return citeObj[pdfKey]
       else return "NO CITATION FOUND!"
 
-    throw new Error "No citation found for PDF #{thePDF.getPDFNumber()}"
+    throw new Error "No citation file found!"
 
   ###*
   Returns the citation layer/comp name for a given PDF

@@ -163,6 +163,11 @@ NFLayoutInstructionDict =
 		look: "Black"
 		display: "Black Highlight"
 		type: NFLayoutType.HIGHLIGHT
+	redHighlight:
+		code: ['red', 'redq']
+		look: "Red"
+		display: "Red Highlight"
+		type: NFLayoutType.HIGHLIGHT
 	underlineHighlight:
 		code: ['underline', 'underlineq']
 		look: "Underline"

@@ -378,17 +378,19 @@ toolRegistry = {
         name: "Update Highlight Expressions",
         description: "This script replaces all highlight expressions with the latest versions from the expression files.",
         callback: function() {
-          var highlights, j, len, newOpacitySegment, newPropertySegment, pageComp, pageComps, results;
+          var dataLayers, highlights, j, len, newDataSegment, newOpacitySegment, newPropertySegment, pageComp, pageComps, results;
           newPropertySegment = NFTools.readExpression("highlight-property-expression");
           newPropertySegment = newPropertySegment.substring(newPropertySegment.indexOf("activeBabby = null;"), newPropertySegment.indexOf("controlLayer.effect("));
           newOpacitySegment = NFTools.readExpression("highlight-opacity-expression");
           newOpacitySegment = newOpacitySegment.substring(newOpacitySegment.indexOf("controlIn = controlLayer.inPoint;"));
+          newDataSegment = NFTools.readExpression("highlight-data-expression");
+          newDataSegment = newDataSegment.substring(newDataSegment.indexOf("MARK_TOP = null;"));
           pageComps = NFProject.allPageComps();
           results = [];
           for (j = 0, len = pageComps.length; j < len; j++) {
             pageComp = pageComps[j];
             highlights = pageComp.highlights();
-            results.push(highlights.forEach((function(_this) {
+            highlights.forEach((function(_this) {
               return function(highlightLayer) {
                 var currExp, k, len1, property, propertyName, ref, results1, strippedExp, strippedExpEnd, strippedExpStart;
                 if (highlightLayer.isBubbled()) {
@@ -409,6 +411,16 @@ toolRegistry = {
                   }
                   return results1;
                 }
+              };
+            })(this));
+            dataLayers = pageComp.searchLayers("HighData");
+            results.push(dataLayers.forEach((function(_this) {
+              return function(dataLayer) {
+                var currExp, property, strippedExp;
+                property = dataLayer.property("Text").property("Source Text");
+                currExp = property.expression;
+                strippedExp = currExp.substring(0, currExp.indexOf("MARK_TOP = null;"));
+                return property.expression = strippedExp + newDataSegment;
               };
             })(this)));
           }
@@ -497,7 +509,7 @@ getPanelUI = function() {
   buttonPanel.alignChildren = 'left';
   buttonPanel.margins.top = 16;
   treeView = buttonPanel.add('treeview', void 0);
-  treeView.preferredSize = [220, 200];
+  treeView.preferredSize = [220, 250];
   for (key in toolRegistry) {
     category = toolRegistry[key];
     thisCategoryNode = treeView.add('node', category.name);

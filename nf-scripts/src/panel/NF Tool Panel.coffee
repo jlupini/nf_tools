@@ -355,7 +355,10 @@ toolRegistry =
           newOpacitySegment = NFTools.readExpression "highlight-opacity-expression"
           newOpacitySegment = newOpacitySegment.substring(newOpacitySegment.indexOf("controlIn = controlLayer.inPoint;"))
 
-          # Get all the highlight layers...
+          newDataSegment = NFTools.readExpression "highlight-data-expression"
+          newDataSegment = newDataSegment.substring(newDataSegment.indexOf("MARK_TOP = null;"))
+
+          # Get all the highlight and data layers...
           pageComps = NFProject.allPageComps()
           for pageComp in pageComps
             highlights = pageComp.highlights()
@@ -373,11 +376,20 @@ toolRegistry =
 
                     property.expression = strippedExpStart + newPropertySegment + strippedExpEnd
 
+            dataLayers = pageComp.searchLayers "HighData"
+            dataLayers.forEach (dataLayer) =>
+              property = dataLayer.property("Text").property("Source Text")
+              currExp = property.expression
+              strippedExp = currExp.substring(0, currExp.indexOf("MARK_TOP = null;"))
+              property.expression = strippedExp + newDataSegment
+
       updateSpotlightExpressions:
         name: "Update Spotlight Expressions"
         description: "This script replaces all spotlight expressions with the
                       latest versions from the expression files."
         callback: ->
+
+          # FIXME: Have this update the data layers too
 
           # Get our script segments
           newMaskOpacityExpSegment = NFTools.readExpression "spotlight-mask-opacity-expression"
@@ -448,7 +460,7 @@ getPanelUI = ->
   buttonPanel.margins.top = 16
 
   treeView = buttonPanel.add 'treeview', undefined #[0, 0, 250, 150]
-  treeView.preferredSize = [220, 200]
+  treeView.preferredSize = [220, 250]
 
   for key of toolRegistry
     category = toolRegistry[key]

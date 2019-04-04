@@ -211,7 +211,7 @@ NFProject =
             NFTools.log "Adding placeholder for [#{layoutInstruction.raw}]", "autoLayout"
             activeComp.addPlaceholder
               text: "[#{layoutInstruction.raw}]"
-              time: instructionTime
+              time: layoutInstruction.time
           when NFLayoutBehavior.NONE
             if targetPDF?
               NFTools.log "PDF found but no instruction - animating to title page", "autoLayout"

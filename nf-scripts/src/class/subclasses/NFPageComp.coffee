@@ -89,13 +89,14 @@ class NFPageComp extends NFComp
   ###
   addHighlightDataLayerFor: (targetComp) ->
     targetCompName = targetComp.comp.name
-    dataLayer = @addTextLayer
-      at: @allLayers().count()-1
-      time: 0
-    expression = NFTools.readExpression "highlight-data-expression",
-      TARGET_COMP_NAME: targetCompName
-      PAGE_BASE_NAME: @getPageBaseName()
-    dataLayer.property("Text").property("Source Text").expression = expression
-    dataLayer.layer.enabled = no
-    dataLayer.layer.name = "HighData-#{targetCompName}"
+    unless @layerWithName(targetCompName)?
+      dataLayer = @addTextLayer
+        at: @allLayers().count()-1
+        time: 0
+      expression = NFTools.readExpression "highlight-data-expression",
+        TARGET_COMP_NAME: targetCompName
+        PAGE_BASE_NAME: @getPageBaseName()
+      dataLayer.property("Text").property("Source Text").expression = expression
+      dataLayer.layer.enabled = no
+      dataLayer.layer.name = "HighData-#{targetCompName}"
     @

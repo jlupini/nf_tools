@@ -6,22 +6,26 @@ targetPage = 'PAGE_BASE_NAME'
 # break the 'update highlight expressions' script.
 activeBabby = null
 
-# Grab our relevant layers from the text data layer
-dataLayer = thisComp.layer "HighData-#{targetComp.name}"
-dataLayerText = dataLayer("Text")("Source Text").valueAtTime 0
-searchPointString = "allMatchingLayers:["
-preIndex = dataLayerText.indexOf searchPointString
-endIndex = preIndex + dataLayerText.substring(preIndex).indexOf("]")
-dataString = dataLayerText.substring(preIndex + searchPointString.length, endIndex)
-dataArr = dataString.split(",")
+# For animating completion, we need to know the offset based on the start time
+# of the page layer. For everything else, we can assume it's fixed.
+if thisProperty.name is "Completion"
 
-for i in dataArr
-  theLayer = targetComp.layer parseInt(i)
-  if theLayer.name.indexOf(targetPage) >= 0
-    rightNow = theLayer.startTime + time
-    if theLayer.inPoint <= rightNow <= theLayer.outPoint
-      activeBabby = theLayer
-      break
+  # Grab our relevant layers from the text data layer
+  dataLayer = thisComp.layer "HighData-#{targetComp.name}"
+  dataLayerText = dataLayer("Text")("Source Text").valueAtTime 0
+  searchPointString = "allMatchingLayers:["
+  preIndex = dataLayerText.indexOf searchPointString
+  endIndex = preIndex + dataLayerText.substring(preIndex).indexOf("]")
+  dataString = dataLayerText.substring(preIndex + searchPointString.length, endIndex)
+  dataArr = dataString.split(",")
+
+  for i in dataArr
+    theLayer = targetComp.layer parseInt(i)
+    if theLayer.name.indexOf(targetPage) >= 0
+      rightNow = theLayer.startTime + time
+      if theLayer.inPoint <= rightNow <= theLayer.outPoint
+        activeBabby = theLayer
+        break
 
 if activeBabby?
   offsetTime = activeBabby.startTime
