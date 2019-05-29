@@ -339,7 +339,11 @@ class NFComp extends NFObject
     # Note: we're doing moveBefore with index + 2 to account for both
     #       the new layer that's been added AND the obnoxious 1-indexing
     #       of adobe's LayerCollections
-    newAVLayer.moveBefore @comp.layers[index+2] unless index is 0
+    unless index is 0
+      if index + 1 is @comp.layers.length
+        newAVLayer.moveAfter @comp.layers[index+1]
+      else
+        newAVLayer.moveBefore @comp.layers[index+2]
 
     # Convert back to an NFLayer for the return
     return NFLayer.getSpecializedLayerFromAVLayer newAVLayer

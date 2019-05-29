@@ -531,7 +531,11 @@ NFComp = (function(superClass) {
     newAVLayer = this.comp.layers.add(model.comp.comp);
     newAVLayer.startTime = (ref = model.time) != null ? ref : this.getTime();
     if (index !== 0) {
-      newAVLayer.moveBefore(this.comp.layers[index + 2]);
+      if (index + 1 === this.comp.layers.length) {
+        newAVLayer.moveAfter(this.comp.layers[index + 1]);
+      } else {
+        newAVLayer.moveBefore(this.comp.layers[index + 2]);
+      }
     }
     return NFLayer.getSpecializedLayerFromAVLayer(newAVLayer);
   };
