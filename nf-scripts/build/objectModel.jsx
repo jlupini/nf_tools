@@ -4141,7 +4141,7 @@ NFPageComp = (function(superClass) {
     searchIndex = this.getName().indexOf("pg");
     endIdx = this.getName().indexOf(" NFPage");
     if (searchIndex > 0) {
-      return this.getName().substr(searchIndex + 2, endIdx);
+      return this.getName().substring(searchIndex + 2, endIdx);
     }
     throw new Error("Could not get the Page Number from this NFPageComp");
   };
