@@ -284,6 +284,25 @@ NFTools =
     return file_contents
 
   ###*
+  Returns a general, 4-corner Shape object from a rect object
+  @memberof NFTools
+  @param {Object} [rect] - a rect object with .top, .left, .width, and .height properties
+  @returns {Shape} the Shape object
+  ###
+  shapeFromRect: (rect) ->
+    throw new Error "Invalid rect object" unless rect?.top? and rect.left? and rect.width? and rect.height?
+
+    lt = [rect.left, rect.top]
+    lb = [rect.left, rect.top + rect.height]
+    rt = [rect.left + rect.width, rect.top]
+    rb = [rect.left + rect.width, rect.top + rect.height]
+
+    newShape = new Shape()
+    newShape.vertices = [lt, rt, rb, lb]
+    newShape.closed = true
+    return newShape
+
+  ###*
   Logs a message to log.txt
   @memberof NFTools
   @param {String} message - The message to log

@@ -265,6 +265,17 @@ toolRegistry =
               targetValue = !spotlight.layer.enabled if targetValue is null
               spotlight.layer.enabled = targetValue
 
+      showCitation:
+        name: "Add Citation Marker"
+        callback: ->
+          selectedLayers = NFProject.selectedLayers()
+          if selectedLayers.count() is 1
+            theLayer = selectedLayers.get 0
+            if theLayer instanceof NFCitationLayer
+              theLayer.show()
+          else
+            alert "Error\nPlease select a single Citation Layer and try again"
+
       addGaussyLayer:
         name: "Add Gaussy"
         automaticUndo: no

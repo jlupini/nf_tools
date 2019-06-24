@@ -263,6 +263,28 @@ class NFPageLayer extends NFLayer
     return foundHighlight
 
   ###*
+  Duplicates the page layer and converts to a reference layer. Reference
+  layers can't be seen by Highlight Control Layers. New layer will be
+  immediately above the target layer. Returns new layer.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} the new reference layer
+  ###
+  duplicateAsReferenceLayer: ->
+    oldName = @getName()
+    refLayer = @duplicate()
+    refLayer.layer.name = oldName.replace("+", "ref")
+    return refLayer
+
+  ###*
+  Returns whether or not this layer is a reference layer
+  @memberof NFPageLayer
+  @returns {boolean} the result
+  ###
+  isReferenceLayer: ->
+    return @getName().indexOf("[ref]") >= 0
+
+
+  ###*
   Sets the start point of the layer to be the first frame of the page comp that
   we haven't seen before.
   @memberof NFPageLayer
@@ -282,9 +304,8 @@ class NFPageLayer extends NFLayer
           layerInstances.add theLayer
 
     # Get the last time we saw
+    latestInternalEndTime = 0
     unless layerInstances.isEmpty()
-      latestInternalEndTime = 0
-
       layerInstances.forEach (theInstance) =>
         unless theInstance.is @
           internalEndTime = theInstance.internalEndTime()

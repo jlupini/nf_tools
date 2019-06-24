@@ -278,6 +278,21 @@ toolRegistry = {
           return results;
         }
       },
+      showCitation: {
+        name: "Add Citation Marker",
+        callback: function() {
+          var selectedLayers, theLayer;
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            if (theLayer instanceof NFCitationLayer) {
+              return theLayer.show();
+            }
+          } else {
+            return alert("Error\nPlease select a single Citation Layer and try again");
+          }
+        }
+      },
       addGaussyLayer: {
         name: "Add Gaussy",
         automaticUndo: false,

@@ -303,6 +303,27 @@ NFTools = {
   },
 
   /**
+  Returns a general, 4-corner Shape object from a rect object
+  @memberof NFTools
+  @param {Object} [rect] - a rect object with .top, .left, .width, and .height properties
+  @returns {Shape} the Shape object
+   */
+  shapeFromRect: function(rect) {
+    var lb, lt, newShape, rb, rt;
+    if (!(((rect != null ? rect.top : void 0) != null) && (rect.left != null) && (rect.width != null) && (rect.height != null))) {
+      throw new Error("Invalid rect object");
+    }
+    lt = [rect.left, rect.top];
+    lb = [rect.left, rect.top + rect.height];
+    rt = [rect.left + rect.width, rect.top];
+    rb = [rect.left + rect.width, rect.top + rect.height];
+    newShape = new Shape();
+    newShape.vertices = [lt, rt, rb, lb];
+    newShape.closed = true;
+    return newShape;
+  },
+
+  /**
   Logs a message to log.txt
   @memberof NFTools
   @param {String} message - The message to log

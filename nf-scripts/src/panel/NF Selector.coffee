@@ -1,5 +1,6 @@
 `#include "runtimeLibraries.jsx"`
 _ = {}
+PADDING = 80
 
 panelTest = this
 
@@ -9,46 +10,36 @@ openScript = (targetScript) ->
   script = "#include '#{scriptFile.fullName}'"
   eval script
 
-getContentTree = () ->
-  # Build the content tree of pdfs and pages and highlights
-  tree = {}
+loadContentIntoView = (treeView) ->
+  treeView.removeAll()
+
+  # Make an object with all the PDFs
+  contentTree = {}
   allPageComps = NFProject.allPageComps()
   for pageComp in allPageComps
     pdfNumber = pageComp.getPDFNumber()
-    pageNumber = pageComp.getPageNumber()
 
-    tree[pdfNumber] = {} unless tree[pdfNumber]?
+    contentTree[pdfNumber] = [] unless contentTree[pdfNumber]?
+    contentTree[pdfNumber].push pageComp
 
-    singlePageTree = {}
-    pageHighlights = pageComp.highlights()
-    unless pageHighlights.isEmpty()
-      pageHighlights.forEach (highlight) =>
-        singlePageTree[highlight.layer.name] = highlight
-
-    tree[pdfNumber][pageNumber] = singlePageTree
-
-  return tree
-
-loadContentIntoView = (treeView) ->
-  treeView.removeAll()
-  contentTree = getContentTree()
   for key of contentTree
     thisPDFNode = treeView.add 'node', "PDF #{key}"
 
-    pdfTree = contentTree[key]
-    for pageKey of pdfTree
-      pageTree = pdfTree[pageKey]
-      if pageTree.isEmpty()
-        # Make an item instead of node
-        thisPageNode = thisPDFNode.add 'item', "Page #{pageKey}"
+    pageCompArr = contentTree[key]
+    # pdfTree = contentTree[key]
+    # for pageKey of pdfTree
+    for pageComp in pageCompArr
+      pageHighlights = pageComp.highlights()
+      pageNumber = pageComp.getPageNumber()
+      if pageHighlights.isEmpty()
+        thisPageNode = thisPDFNode.add 'item', "Page #{pageNumber}"
       else
-        thisPageNode = thisPDFNode.add 'node', "Page #{pageKey}"
+        thisPageNode = thisPDFNode.add 'node', "Page #{pageNumber}"
+        thisPageNode.data = pageComp
 
-        for highlightKey of pageTree
-          thisHighlightItem = thisPageNode.add 'item', highlightKey
-
-          thisHighlight = pageTree[highlightKey]
-          thisHighlightItem.data = thisHighlight
+        pageHighlights.forEach (highlight) =>
+          thisHighlightItem = thisPageNode.add 'item', highlight.layer.name
+          thisHighlightItem.data = highlight
 
         thisPageNode.expanded = no
 
@@ -88,20 +79,127 @@ getPanelUI = ->
 
   buttonGroup = buttonPanel.add 'group', undefined
 
-  goButton = buttonGroup.add('button', undefined, 'Do it!')
+  goButton = buttonGroup.add('button', undefined, 'Show')
   goButton.onClick = (w) ->
-    alert "doing it!"
-    return null
-    # choice = treeView.selection.data if treeView.selection?.data && treeView.selection?.type is 'item'
-    # return alert "No Tool Selected!" unless choice?
-    # app.beginUndoGroup "NF Tool: #{choice.name}" unless choice.automaticUndo is no
-    # choice.callback()
-    # @active = false
-    # app.endUndoGroup() unless choice.automaticUndo is no
+    choice = treeView.selection?.data
+
+    return alert "Invalid Selection!" unless choice?
+    app.beginUndoGroup "NF Selector"
+
+    pickedHighlight = choice instanceof NFHighlightLayer
+    pickedPage = choice instanceof NFPageComp
+
+    if pickedPage
+      choicePage = choice
+    else if pickedHighlight
+      choicePage = choice.containingComp()
+
+    # First, bring in a continuous version of the page.
+    thisPart = NFProject.activeComp()
+    throw new Error "This operation can only be performed in a part comp." unless thisPart instanceof NFPartComp
+    newPageLayer = thisPart.insertPage
+      page: choicePage
+      continuous: yes
+    group = newPageLayer.getPaperLayerGroup()
+    group.setConnectionToZoomer
+      connected: no
+    newPageLayer.transform('Scale').setValue [10,10,10]
+
+    if pickedHighlight
+      # Position it offscreen
+      newPageLayer.transform('Position').setValue [1260, -150]
+
+      # Duplicate and convert to reference layer
+      refLayer = newPageLayer.duplicateAsReferenceLayer()
+      refLayer.layer.name = "#{refLayer.getName()} (#{choice.getName()})"
+
+      # Frame up that baby
+      # FIXME: Allow multiple selections so you can show expands too and frame they up together with a 'combineRects' function
+      scaleFactor = refLayer.getScaleFactorToFrameUp
+        highlight: choice
+      scaleProp = refLayer.transform "Scale"
+      oldScale = scaleProp.value
+      newScale = oldScale[0] * scaleFactor
+      scaleProp.setValue [newScale, newScale]
+
+      positionDelta = refLayer.getPositionDeltaToFrameUp
+        highlight: choice
+      positionProp = refLayer.transform "Position"
+      oldPosition = positionProp.value
+      newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]]
+      positionProp.setValue newPosition
+
+      # Make a mask over the text
+      currTime = thisPart.getTime()
+      highlightRect = choice.sourceRect()
+      thisPart.setTime(currTime) unless thisPart.getTime() is currTime
+      highlightThickness = choice.highlighterEffect().property("Thickness").value
+      paddedHighlightRect =
+        left: highlightRect.left
+        top: highlightRect.top - (highlightThickness/2)
+        width: highlightRect.width
+        height: highlightRect.height + highlightThickness
+      newMask = refLayer.mask().addProperty "Mask"
+      newMask.maskShape.setValue NFTools.shapeFromRect(paddedHighlightRect)
+      newMask.maskFeather.setValue [20,20]
+      newMask.maskExpansion.setValue 3
+      refLayer.effect("Drop Shadow").remove()
+      refLayer.effects().addProperty("ADBE Brightness & Contrast 2").property("Contrast").setValue(99)
+      refLayer.layer.blendingMode = BlendingMode.DARKEN
+
+      # Create a white BG box and attach it to the ref layer
+      bgSolid = thisPart.addSolid
+        color: [1,1,1]
+        name: "^ Backing"
+      bgSolid.layer.inPoint = currTime
+      bgSolid.moveAfter refLayer
+      bgSolid.transform("Opacity").setValue 90
+      relRect = refLayer.relativeRect paddedHighlightRect
+      paddedRelRect =
+        left: relRect.left - (PADDING / 2)
+        top: relRect.top - (PADDING / 4)
+        width: relRect.width + PADDING
+        height: relRect.height + (PADDING / 2)
+      newMask = bgSolid.mask().addProperty "Mask"
+      newMask.maskShape.setValue NFTools.shapeFromRect(paddedRelRect)
+      bgSolid.setParent refLayer
+      shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow')
+      shadowProp.property('Opacity').setValue(76.5)
+      shadowProp.property('Direction').setValue(152)
+      shadowProp.property('Distance').setValue(20)
+      shadowProp.property('Softness').setValue(100)
+
+      # Move the whole thing to the bottom of the screen
+      boxBottom = paddedRelRect.top + paddedRelRect.height
+      compBottom = thisPart.comp.height
+      delta = compBottom - boxBottom
+      refPosition = refLayer.transform("Position").value
+      refLayer.transform("Position").setValue [refPosition[0], refPosition[1] + delta - PADDING]
+
+      # Add the HCL
+      newPageLayer.getPaperLayerGroup().assignControlLayer choice
+      controlLayer = choice.getControlLayer()
+      controlLayer.removeSpotlights()
+
+
+    else if pickedPage
+      # Position it onscreen and slide it in.
+      newPageLayer.transform('Position').setValue [525, -150]
+      newPageLayer.slideIn()
+
+      # Initialize it or whatever
+      # Position it in a sweet-as place.
+      # NF animate the thing in and out
+
+    # Rock that citation
+
+    @active = false
+    app.endUndoGroup()
 
   refreshButton = buttonGroup.add('button', undefined, 'Refresh')
   refreshButton.onClick = (w) ->
     loadContentIntoView treeView
+    @active = false
 
   # Layout + Resize handling
   panel.layout.layout(true)

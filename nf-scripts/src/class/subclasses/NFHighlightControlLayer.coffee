@@ -163,6 +163,15 @@ class NFHighlightControlLayer extends NFLayer
   spotlightEffect: ->
     return @layer.Effects.property("AV_Spotlight")
 
+  ###*
+  Removes Spotlight markers from this layer
+  @memberof NFHighlightControlLayer
+  @returns {NFHighlightControlLayer} self
+  ###
+  removeSpotlights: ->
+    @layer.removeMarker("Spotlight")
+    return @
+
 NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
 
   ###*

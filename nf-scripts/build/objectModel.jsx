@@ -776,13 +776,19 @@ NFLayer = (function(superClass) {
 
 
   /**
-  Returns the transform Property for the layer
+  Returns the transform Property for the layer. Can optionally specify a root
+  transform property like "Position" or "Scale" and return that property instead
   @memberof NFLayer
+  @param {String} [prop] - the optional name of a root transform property to return.
   @returns {Property} the transform property
    */
 
-  NFLayer.prototype.transform = function() {
-    return this.layer.transform;
+  NFLayer.prototype.transform = function(prop) {
+    if (prop != null) {
+      return this.layer.transform.property(prop);
+    } else {
+      return this.layer.transform;
+    }
   };
 
 
@@ -1262,9 +1268,21 @@ NFLayer = (function(superClass) {
 
 
   /**
+  Duplicates the current layer immediately above it
+  @memberof NFLayer
+  @returns {NFLayer} the new layer
+   */
+
+  NFLayer.prototype.duplicate = function() {
+    return NFLayer.getSpecializedLayerFromAVLayer(this.layer.duplicate());
+  };
+
+
+  /**
   Moves startTime of a layer without moving the inPoint such that the inPoint
   is the given time in the layer's composition
   @memberof NFLayer
+  @param {float} time
   @returns {NFLayer} self
    */
 
@@ -2385,6 +2403,31 @@ NFPaperLayerGroup = (function(superClass) {
       };
     })(this));
     return pageChildren;
+  };
+
+
+  /**
+  Connects or disconnects the group to the zoomer, at the specified time
+  @memberof NFPaperLayerGroup
+  @param {Object} model - the model
+  @param {boolean} model.connected=no  - whether or not to connect to zoomer
+  @param {float} model.time=currTime - the time in this comp to set or sever the connection at
+  @returns {NFPaperLayerGroup} self
+   */
+
+  NFPaperLayerGroup.prototype.setConnectionToZoomer = function() {
+    var container, model, newTime, oldTime, ref;
+    model = model != null ? model : {};
+    container = this.containingComp();
+    oldTime = container.getTime();
+    newTime = (ref = model.time) != null ? ref : oldTime;
+    container.setTime(newTime);
+    if (model.connected) {
+      this.paperParent.setParent(container.getZoomer());
+    } else {
+      this.paperParent.setParent();
+    }
+    return container.setTime(oldTime);
   };
 
 
@@ -3520,6 +3563,18 @@ NFHighlightControlLayer = (function(superClass) {
     return this.layer.Effects.property("AV_Spotlight");
   };
 
+
+  /**
+  Removes Spotlight markers from this layer
+  @memberof NFHighlightControlLayer
+  @returns {NFHighlightControlLayer} self
+   */
+
+  NFHighlightControlLayer.prototype.removeSpotlights = function() {
+    this.layer.removeMarker("Spotlight");
+    return this;
+  };
+
   return NFHighlightControlLayer;
 
 })(NFLayer);
@@ -4622,6 +4677,34 @@ NFPageLayer = (function(superClass) {
 
 
   /**
+  Duplicates the page layer and converts to a reference layer. Reference
+  layers can't be seen by Highlight Control Layers. New layer will be
+  immediately above the target layer. Returns new layer.
+  @memberof NFPageLayer
+  @returns {NFPageLayer} the new reference layer
+   */
+
+  NFPageLayer.prototype.duplicateAsReferenceLayer = function() {
+    var oldName, refLayer;
+    oldName = this.getName();
+    refLayer = this.duplicate();
+    refLayer.layer.name = oldName.replace("+", "ref");
+    return refLayer;
+  };
+
+
+  /**
+  Returns whether or not this layer is a reference layer
+  @memberof NFPageLayer
+  @returns {boolean} the result
+   */
+
+  NFPageLayer.prototype.isReferenceLayer = function() {
+    return this.getName().indexOf("[ref]") >= 0;
+  };
+
+
+  /**
   Sets the start point of the layer to be the first frame of the page comp that
   we haven't seen before.
   @memberof NFPageLayer
@@ -4645,8 +4728,8 @@ NFPageLayer = (function(superClass) {
         })(this));
       }
     }
+    latestInternalEndTime = 0;
     if (!layerInstances.isEmpty()) {
-      latestInternalEndTime = 0;
       layerInstances.forEach((function(_this) {
         return function(theInstance) {
           var internalEndTime;
@@ -6300,14 +6383,18 @@ NFPartComp = (function(superClass) {
 
   /**
   Returns an NFPageLayerCollection of NFPageLayers in this comp that
-  contain the given NFPageComp
+  contain the given NFPageComp. Does not include reference layers by default.
   @memberof NFPartComp
   @param {NFPageComp} page - the page to look for
+  @param {boolean} [includeReferenceLayers=no] - If this function should also return reference layers
   @returns {NFPageLayerCollection} The found page layers
    */
 
-  NFPartComp.prototype.layersForPage = function(page) {
+  NFPartComp.prototype.layersForPage = function(page, includeReferenceLayers) {
     var matchedPages;
+    if (includeReferenceLayers == null) {
+      includeReferenceLayers = false;
+    }
     if (!(page instanceof NFPageComp)) {
       throw new Error("given page is not an NFPageComp");
     }
@@ -6315,7 +6402,9 @@ NFPartComp = (function(superClass) {
     this.allLayers().forEach((function(_this) {
       return function(theLayer) {
         if (theLayer instanceof NFPageLayer && theLayer.getPageComp().is(page)) {
-          return matchedPages.add(theLayer);
+          if (includeReferenceLayers || !theLayer.isReferenceLayer()) {
+            return matchedPages.add(theLayer);
+          }
         }
       };
     })(this));

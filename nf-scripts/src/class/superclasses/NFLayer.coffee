@@ -148,12 +148,17 @@ class NFLayer extends NFObject
       return @layer.mask
 
   ###*
-  Returns the transform Property for the layer
+  Returns the transform Property for the layer. Can optionally specify a root
+  transform property like "Position" or "Scale" and return that property instead
   @memberof NFLayer
+  @param {String} [prop] - the optional name of a root transform property to return.
   @returns {Property} the transform property
   ###
-  transform: ->
-    return @layer.transform
+  transform: (prop) ->
+    if prop?
+      return @layer.transform.property(prop)
+    else
+      return @layer.transform
 
   ###*
   Returns the effect property with a given name, only one level under Effects.
@@ -522,9 +527,18 @@ class NFLayer extends NFObject
     return null
 
   ###*
+  Duplicates the current layer immediately above it
+  @memberof NFLayer
+  @returns {NFLayer} the new layer
+  ###
+  duplicate: ->
+    return NFLayer.getSpecializedLayerFromAVLayer @layer.duplicate()
+
+  ###*
   Moves startTime of a layer without moving the inPoint such that the inPoint
   is the given time in the layer's composition
   @memberof NFLayer
+  @param {float} time
   @returns {NFLayer} self
   ###
   beginAt: (time) ->

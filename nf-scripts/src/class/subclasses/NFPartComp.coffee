@@ -630,15 +630,17 @@ class NFPartComp extends NFComp
 
   ###*
   Returns an NFPageLayerCollection of NFPageLayers in this comp that
-  contain the given NFPageComp
+  contain the given NFPageComp. Does not include reference layers by default.
   @memberof NFPartComp
   @param {NFPageComp} page - the page to look for
+  @param {boolean} [includeReferenceLayers=no] - If this function should also return reference layers
   @returns {NFPageLayerCollection} The found page layers
   ###
-  layersForPage: (page) ->
+  layersForPage: (page, includeReferenceLayers = no) ->
     throw new Error "given page is not an NFPageComp" unless page instanceof NFPageComp
     matchedPages = new NFPageLayerCollection
     @allLayers().forEach (theLayer) =>
       if theLayer instanceof NFPageLayer and theLayer.getPageComp().is page
-        matchedPages.add theLayer
+        if includeReferenceLayers or not theLayer.isReferenceLayer()
+          matchedPages.add theLayer
     return matchedPages
