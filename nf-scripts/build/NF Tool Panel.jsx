@@ -323,6 +323,34 @@ toolRegistry = {
           }
         }
       },
+      autoSlideIn: {
+        name: "Auto Slide In",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.slideIn();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
+      autoSlideOut: {
+        name: "Auto Slide Out",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.slideOut();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
       disconnectBrokenHighlights: {
         name: "Disconnect Broken Highlights",
         callback: function() {
@@ -523,8 +551,10 @@ getPanelUI = function() {
   });
   buttonPanel.alignChildren = 'left';
   buttonPanel.margins.top = 16;
+  buttonPanel.alignment = ['fill', 'fill'];
   treeView = buttonPanel.add('treeview', void 0);
-  treeView.preferredSize = [220, 250];
+  treeView.preferredSize = [220, 300];
+  treeView.alignment = ['fill', 'fill'];
   for (key in toolRegistry) {
     category = toolRegistry[key];
     thisCategoryNode = treeView.add('node', category.name);
@@ -536,6 +566,7 @@ getPanelUI = function() {
     thisCategoryNode.expanded = false;
   }
   buttonGroup = buttonPanel.add('group', void 0);
+  buttonGroup.maximumSize = [200, 50];
   goButton = buttonGroup.add('button', void 0, 'Do it!');
   goButton.onClick = function(w) {
     var choice, ref, ref1;
@@ -555,7 +586,6 @@ getPanelUI = function() {
     }
   };
   panel.layout.layout(true);
-  treeView.minimumSize = treeView.size;
   panel.layout.resize();
   panel.onResizing = panel.onResize = function() {
     this.layout.resize();

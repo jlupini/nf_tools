@@ -38,6 +38,7 @@ loadContentIntoView = function(treeView) {
       pageNumber = pageComp.getPageNumber();
       if (pageHighlights.isEmpty()) {
         thisPageNode = thisPDFNode.add('item', "Page " + pageNumber);
+        thisPageNode.data = pageComp;
       } else {
         thisPageNode = thisPDFNode.add('node', "Page " + pageNumber);
         thisPageNode.data = pageComp;
@@ -51,7 +52,7 @@ loadContentIntoView = function(treeView) {
         thisPageNode.expanded = false;
       }
     }
-    results.push(thisPDFNode.expanded = true);
+    results.push(thisPDFNode.expanded = false);
   }
   return results;
 };
@@ -78,15 +79,18 @@ getPanelUI = function() {
   buttonPanel = panel.add('panel', void 0, 'Selector', {
     borderStyle: 'none'
   });
+  buttonPanel.alignment = ['fill', 'fill'];
   buttonPanel.alignChildren = 'left';
   buttonPanel.margins.top = 16;
   treeView = buttonPanel.add('treeview', void 0);
   treeView.preferredSize = [220, 250];
+  treeView.alignment = ['fill', 'fill'];
   loadContentIntoView(treeView);
   buttonGroup = buttonPanel.add('group', void 0);
+  buttonGroup.maximumSize = [200, 50];
   goButton = buttonGroup.add('button', void 0, 'Show');
   goButton.onClick = function(w) {
-    var bgSolid, boxBottom, choice, choicePage, compBottom, controlLayer, currTime, delta, group, highlightRect, highlightThickness, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedHighlightRect, paddedRelRect, pickedHighlight, pickedPage, positionDelta, positionProp, ref, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, thisPart;
+    var bgSolid, boxBottom, choice, choicePage, compBottom, controlLayer, currTime, delta, group, highlightRect, highlightThickness, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedHighlightRect, paddedRelRect, pickedHighlight, pickedPage, positionDelta, positionProp, ref, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, targetPageLayer, thisPart;
     choice = (ref = treeView.selection) != null ? ref.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -103,19 +107,39 @@ getPanelUI = function() {
     if (!(thisPart instanceof NFPartComp)) {
       throw new Error("This operation can only be performed in a part comp.");
     }
-    newPageLayer = thisPart.insertPage({
-      page: choicePage,
-      continuous: true
-    });
-    group = newPageLayer.getPaperLayerGroup();
-    group.setConnectionToZoomer({
-      connected: false
-    });
-    newPageLayer.transform('Scale').setValue([10, 10, 10]);
+    layersForPage = thisPart.layersForPage(choicePage);
+    targetPageLayer = null;
+    if (!layersForPage.isEmpty()) {
+      layersForPage.forEach((function(_this) {
+        return function(layer) {
+          if (layer.isActive()) {
+            return targetPageLayer = layer;
+          }
+        };
+      })(this));
+    }
+    if (targetPageLayer == null) {
+      newPageLayer = thisPart.insertPage({
+        page: choicePage,
+        continuous: true
+      });
+      group = newPageLayer.getPaperLayerGroup();
+      group.setConnectionToZoomer({
+        connected: false
+      });
+      newPageLayer.transform('Scale').setValue([20, 20, 20]);
+      newPageLayer.transform('Position').setValue([1560, -150]);
+      targetPageLayer = newPageLayer;
+    }
     if (pickedHighlight) {
-      newPageLayer.transform('Position').setValue([1260, -150]);
-      refLayer = newPageLayer.duplicateAsReferenceLayer();
+      refLayer = targetPageLayer.duplicateAsReferenceLayer();
       refLayer.layer.name = (refLayer.getName()) + " (" + (choice.getName()) + ")";
+      if (newPageLayer == null) {
+        refLayer.moveAfter(targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer());
+        refLayer.layer.inPoint = thisPart.getTime();
+        refLayer.transform("Position").expression = "";
+        refLayer.removeNFMarkers();
+      }
       scaleFactor = refLayer.getScaleFactorToFrameUp({
         highlight: choice
       });
@@ -166,6 +190,7 @@ getPanelUI = function() {
       newMask = bgSolid.mask().addProperty("Mask");
       newMask.maskShape.setValue(NFTools.shapeFromRect(paddedRelRect));
       bgSolid.setParent(refLayer);
+      bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression");
       shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow');
       shadowProp.property('Opacity').setValue(76.5);
       shadowProp.property('Direction').setValue(152);
@@ -176,12 +201,14 @@ getPanelUI = function() {
       delta = compBottom - boxBottom;
       refPosition = refLayer.transform("Position").value;
       refLayer.transform("Position").setValue([refPosition[0], refPosition[1] + delta - PADDING]);
-      newPageLayer.getPaperLayerGroup().assignControlLayer(choice);
+      group = targetPageLayer.getPaperLayerGroup();
+      group.assignControlLayer(choice);
+      group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false);
       controlLayer = choice.getControlLayer();
       controlLayer.removeSpotlights();
     } else if (pickedPage) {
-      newPageLayer.transform('Position').setValue([525, -150]);
-      newPageLayer.slideIn();
+      targetPageLayer.transform('Position').setValue([525, -150]);
+      targetPageLayer.slideIn();
     }
     this.active = false;
     return app.endUndoGroup();
@@ -192,7 +219,6 @@ getPanelUI = function() {
     return this.active = false;
   };
   panel.layout.layout(true);
-  treeView.minimumSize = treeView.size;
   panel.layout.resize();
   panel.onResizing = panel.onResize = function() {
     this.layout.resize();

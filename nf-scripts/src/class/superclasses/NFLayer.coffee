@@ -505,6 +505,21 @@ class NFLayer extends NFObject
     return null
 
   ###*
+  Removes the NF in and out markers. Does not clear expressions though. For now
+  you have to do that manually #FIXME: Add this functionality.
+  @memberof NFLayer
+  @returns {NFLayer} self
+  ###
+  removeNFMarkers: ->
+    inMarkerTime = @getInMarkerTime()
+    outMarkerTime = @getOutMarkerTime()
+    if inMarkerTime?
+      @markers().removeKey @markers().nearestKeyIndex(inMarkerTime)
+    if outMarkerTime?
+      @markers().removeKey @markers().nearestKeyIndex(outMarkerTime)
+    return null
+
+  ###*
   Creates and returns a slider effect on the layer
   @memberof NFLayer
   @param {string} name - the slider name

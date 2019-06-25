@@ -1239,6 +1239,27 @@ NFLayer = (function(superClass) {
 
 
   /**
+  Removes the NF in and out markers. Does not clear expressions though. For now
+  you have to do that manually #FIXME: Add this functionality.
+  @memberof NFLayer
+  @returns {NFLayer} self
+   */
+
+  NFLayer.prototype.removeNFMarkers = function() {
+    var inMarkerTime, outMarkerTime;
+    inMarkerTime = this.getInMarkerTime();
+    outMarkerTime = this.getOutMarkerTime();
+    if (inMarkerTime != null) {
+      this.markers().removeKey(this.markers().nearestKeyIndex(inMarkerTime));
+    }
+    if (outMarkerTime != null) {
+      this.markers().removeKey(this.markers().nearestKeyIndex(outMarkerTime));
+    }
+    return null;
+  };
+
+
+  /**
   Creates and returns a slider effect on the layer
   @memberof NFLayer
   @param {string} name - the slider name

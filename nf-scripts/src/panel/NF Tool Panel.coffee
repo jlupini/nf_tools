@@ -300,6 +300,27 @@ toolRegistry =
           else
             alert "Error\nPlease select a single Highlight Control Layer and try again"
 
+      autoSlideIn:
+        name: "Auto Slide In"
+        callback: ->
+          activeComp = NFProject.activeComp()
+          selectedLayers = NFProject.selectedLayers()
+          if selectedLayers.count() is 1
+            theLayer = selectedLayers.get 0
+            theLayer.slideIn()
+          else
+            alert "Error\nPlease select a single Layer and try again"
+      autoSlideOut:
+        name: "Auto Slide Out"
+        callback: ->
+          activeComp = NFProject.activeComp()
+          selectedLayers = NFProject.selectedLayers()
+          if selectedLayers.count() is 1
+            theLayer = selectedLayers.get 0
+            theLayer.slideOut()
+          else
+            alert "Error\nPlease select a single Layer and try again"
+
       disconnectBrokenHighlights:
         name: "Disconnect Broken Highlights"
         callback: ->
@@ -469,9 +490,11 @@ getPanelUI = ->
   buttonPanel = panel.add 'panel', undefined, 'Tools', {borderStyle:'none'}
   buttonPanel.alignChildren = 'left'
   buttonPanel.margins.top = 16
+  buttonPanel.alignment = ['fill','fill']
 
   treeView = buttonPanel.add 'treeview', undefined #[0, 0, 250, 150]
-  treeView.preferredSize = [220, 250]
+  treeView.preferredSize = [220, 300]
+  treeView.alignment = ['fill','fill']
 
   for key of toolRegistry
     category = toolRegistry[key]
@@ -485,6 +508,7 @@ getPanelUI = ->
     thisCategoryNode.expanded = no
 
   buttonGroup = buttonPanel.add 'group', undefined
+  buttonGroup.maximumSize = [200,50]
 
   goButton = buttonGroup.add('button', undefined, 'Do it!')
 
@@ -498,7 +522,6 @@ getPanelUI = ->
 
   # Layout + Resize handling
   panel.layout.layout(true)
-  treeView.minimumSize = treeView.size;
   panel.layout.resize()
   panel.onResizing = panel.onResize = ->
     @layout.resize()

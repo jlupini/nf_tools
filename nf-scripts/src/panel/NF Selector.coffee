@@ -33,6 +33,7 @@ loadContentIntoView = (treeView) ->
       pageNumber = pageComp.getPageNumber()
       if pageHighlights.isEmpty()
         thisPageNode = thisPDFNode.add 'item', "Page #{pageNumber}"
+        thisPageNode.data = pageComp
       else
         thisPageNode = thisPDFNode.add 'node', "Page #{pageNumber}"
         thisPageNode.data = pageComp
@@ -43,7 +44,7 @@ loadContentIntoView = (treeView) ->
 
         thisPageNode.expanded = no
 
-    thisPDFNode.expanded = yes
+    thisPDFNode.expanded = no
 
 main = ->
   _.panel = getPanelUI()
@@ -54,6 +55,7 @@ getPanelUI = ->
   return _.panel if _.panel?
 
   panel = undefined
+
   # check if this Obj is a panel (run from Window menu)
   if panelTest instanceof Panel
     # is a panel (called from Window menu)
@@ -69,15 +71,18 @@ getPanelUI = ->
   panel.alignChildren = 'left'
 
   buttonPanel = panel.add 'panel', undefined, 'Selector', {borderStyle:'none'}
+  buttonPanel.alignment = ['fill','fill']
   buttonPanel.alignChildren = 'left'
   buttonPanel.margins.top = 16
 
   treeView = buttonPanel.add 'treeview', undefined #[0, 0, 250, 150]
   treeView.preferredSize = [220, 250]
+  treeView.alignment = ['fill','fill']
 
   loadContentIntoView treeView
 
   buttonGroup = buttonPanel.add 'group', undefined
+  buttonGroup.maximumSize = [200,50]
 
   goButton = buttonGroup.add('button', undefined, 'Show')
   goButton.onClick = (w) ->
@@ -97,21 +102,37 @@ getPanelUI = ->
     # First, bring in a continuous version of the page.
     thisPart = NFProject.activeComp()
     throw new Error "This operation can only be performed in a part comp." unless thisPart instanceof NFPartComp
-    newPageLayer = thisPart.insertPage
-      page: choicePage
-      continuous: yes
-    group = newPageLayer.getPaperLayerGroup()
-    group.setConnectionToZoomer
-      connected: no
-    newPageLayer.transform('Scale').setValue [10,10,10]
+
+    # FIXME: Don't insert a new page if there's already a perfectly good one there ya dummy
+    # Check if this page already exists or not.
+    layersForPage = thisPart.layersForPage choicePage
+
+    targetPageLayer = null
+    unless layersForPage.isEmpty()
+      layersForPage.forEach (layer) =>
+        targetPageLayer = layer if layer.isActive()
+
+
+    if not targetPageLayer?
+      newPageLayer = thisPart.insertPage
+        page: choicePage
+        continuous: yes
+      group = newPageLayer.getPaperLayerGroup()
+      group.setConnectionToZoomer
+        connected: no
+      newPageLayer.transform('Scale').setValue [20,20,20]
+      newPageLayer.transform('Position').setValue [1560, -150]
+      targetPageLayer = newPageLayer
 
     if pickedHighlight
-      # Position it offscreen
-      newPageLayer.transform('Position').setValue [1260, -150]
-
       # Duplicate and convert to reference layer
-      refLayer = newPageLayer.duplicateAsReferenceLayer()
+      refLayer = targetPageLayer.duplicateAsReferenceLayer()
       refLayer.layer.name = "#{refLayer.getName()} (#{choice.getName()})"
+      unless newPageLayer?
+        refLayer.moveAfter targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()
+        refLayer.layer.inPoint = thisPart.getTime()
+        refLayer.transform("Position").expression = ""
+        refLayer.removeNFMarkers()
 
       # Frame up that baby
       # FIXME: Allow multiple selections so you can show expands too and frame they up together with a 'combineRects' function
@@ -163,6 +184,7 @@ getPanelUI = ->
       newMask = bgSolid.mask().addProperty "Mask"
       newMask.maskShape.setValue NFTools.shapeFromRect(paddedRelRect)
       bgSolid.setParent refLayer
+      bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression"
       shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow')
       shadowProp.property('Opacity').setValue(76.5)
       shadowProp.property('Direction').setValue(152)
@@ -177,21 +199,20 @@ getPanelUI = ->
       refLayer.transform("Position").setValue [refPosition[0], refPosition[1] + delta - PADDING]
 
       # Add the HCL
-      newPageLayer.getPaperLayerGroup().assignControlLayer choice
+      group = targetPageLayer.getPaperLayerGroup()
+      group.assignControlLayer choice
+      group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false)
       controlLayer = choice.getControlLayer()
       controlLayer.removeSpotlights()
 
 
     else if pickedPage
       # Position it onscreen and slide it in.
-      newPageLayer.transform('Position').setValue [525, -150]
-      newPageLayer.slideIn()
+      targetPageLayer.transform('Position').setValue [525, -150]
+      targetPageLayer.slideIn()
 
-      # Initialize it or whatever
-      # Position it in a sweet-as place.
-      # NF animate the thing in and out
 
-    # Rock that citation
+    # FIXME: Rock that citation
 
     @active = false
     app.endUndoGroup()
@@ -203,7 +224,6 @@ getPanelUI = ->
 
   # Layout + Resize handling
   panel.layout.layout(true)
-  treeView.minimumSize = treeView.size;
   panel.layout.resize()
 
   panel.onResizing = panel.onResize = ->
