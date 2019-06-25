@@ -464,6 +464,12 @@ toolRegistry =
         callback: ->
           openScript "nf_Scratch.jsx"
 
+      iconFromFile:
+        name: "Create Icon Data"
+        callback: ->
+          filepath = prompt("Please enter the absolute file path (without quotes).\ni.e. \"~/Desktop/refresh.png\"")
+          NFTools.graphicToText [File (filepath)]
+
 main = ->
   _.panel = getPanelUI()
 

@@ -1,4 +1,5 @@
 `#include "runtimeLibraries.jsx"`
+`#include "NFIcon.jsx"`
 _ = {}
 PADDING = 80
 
@@ -24,23 +25,38 @@ loadContentIntoView = (treeView) ->
 
   for key of contentTree
     thisPDFNode = treeView.add 'node', "PDF #{key}"
+    thisPDFNode.image = NFIcon.tree.pdf
 
     pageCompArr = contentTree[key]
     # pdfTree = contentTree[key]
     # for pageKey of pdfTree
     for pageComp in pageCompArr
-      pageHighlights = pageComp.highlights()
+      # Collect only the shape layers
+      pageLayers = pageComp.allLayers()
+      shapeLayers = new NFLayerCollection
+      pageLayers.forEach (layer) =>
+        shapeLayers.add layer if layer.layer instanceof ShapeLayer
       pageNumber = pageComp.getPageNumber()
-      if pageHighlights.isEmpty()
+
+      if shapeLayers.isEmpty()
         thisPageNode = thisPDFNode.add 'item', "Page #{pageNumber}"
         thisPageNode.data = pageComp
+        thisPageNode.image = NFIcon.tree.page
       else
         thisPageNode = thisPDFNode.add 'node', "Page #{pageNumber}"
         thisPageNode.data = pageComp
+        thisPageNode.image = NFIcon.tree.page
 
-        pageHighlights.forEach (highlight) =>
-          thisHighlightItem = thisPageNode.add 'item', highlight.layer.name
-          thisHighlightItem.data = highlight
+        shapeLayers.forEach (shapeLayer) =>
+          if shapeLayer instanceof NFHighlightLayer
+            itemName = shapeLayer.layer.name + " (HL)"
+            icon = NFIcon.tree.highlight
+          else
+            itemName = shapeLayer.layer.name + " (Shape)"
+            icon = NFIcon.tree.star
+          thisShapeItem = thisPageNode.add 'item', itemName
+          thisShapeItem.data = shapeLayer
+          thisShapeItem.image = icon
 
         thisPageNode.expanded = no
 
@@ -84,19 +100,20 @@ getPanelUI = ->
   buttonGroup = buttonPanel.add 'group', undefined
   buttonGroup.maximumSize = [200,50]
 
-  goButton = buttonGroup.add('button', undefined, 'Show')
-  goButton.onClick = (w) ->
+  addButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.add)
+  addButton.onClick = (w) ->
     choice = treeView.selection?.data
 
     return alert "Invalid Selection!" unless choice?
     app.beginUndoGroup "NF Selector"
 
     pickedHighlight = choice instanceof NFHighlightLayer
+    pickedShape = choice instanceof NFLayer and not pickedHighlight
     pickedPage = choice instanceof NFPageComp
 
     if pickedPage
       choicePage = choice
-    else if pickedHighlight
+    else
       choicePage = choice.containingComp()
 
     # First, bring in a continuous version of the page.
@@ -112,8 +129,12 @@ getPanelUI = ->
       layersForPage.forEach (layer) =>
         targetPageLayer = layer if layer.isActive()
 
+    # FIXME: All the positioning stuff fails if there's already a version of the
+    # group that's been used for normal page tracking
+
 
     if not targetPageLayer?
+      # Insert the page
       newPageLayer = thisPart.insertPage
         page: choicePage
         continuous: yes
@@ -124,44 +145,43 @@ getPanelUI = ->
       newPageLayer.transform('Position').setValue [1560, -150]
       targetPageLayer = newPageLayer
 
-    if pickedHighlight
+
+    if pickedHighlight or pickedShape
       # Duplicate and convert to reference layer
       refLayer = targetPageLayer.duplicateAsReferenceLayer()
       refLayer.layer.name = "#{refLayer.getName()} (#{choice.getName()})"
-      unless newPageLayer?
-        refLayer.moveAfter targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()
-        refLayer.layer.inPoint = thisPart.getTime()
-        refLayer.transform("Position").expression = ""
-        refLayer.removeNFMarkers()
 
       # Frame up that baby
+      currTime = thisPart.getTime()
+      choiceRect = choice.sourceRect()
+      thisPart.setTime(currTime) unless thisPart.getTime() is currTime
+
       # FIXME: Allow multiple selections so you can show expands too and frame they up together with a 'combineRects' function
       scaleFactor = refLayer.getScaleFactorToFrameUp
-        highlight: choice
+        # highlight: if pickedHighlight then choice else null
+        rect: refLayer.relativeRect choiceRect
       scaleProp = refLayer.transform "Scale"
       oldScale = scaleProp.value
       newScale = oldScale[0] * scaleFactor
       scaleProp.setValue [newScale, newScale]
 
       positionDelta = refLayer.getPositionDeltaToFrameUp
-        highlight: choice
+        # highlight: if pickedHighlight then choice else null
+        rect: refLayer.relativeRect choiceRect
       positionProp = refLayer.transform "Position"
       oldPosition = positionProp.value
       newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]]
       positionProp.setValue newPosition
 
       # Make a mask over the text
-      currTime = thisPart.getTime()
-      highlightRect = choice.sourceRect()
-      thisPart.setTime(currTime) unless thisPart.getTime() is currTime
-      highlightThickness = choice.highlighterEffect().property("Thickness").value
-      paddedHighlightRect =
-        left: highlightRect.left
-        top: highlightRect.top - (highlightThickness/2)
-        width: highlightRect.width
-        height: highlightRect.height + highlightThickness
+      highlightThickness = if pickedHighlight then choice.highlighterEffect().property("Thickness").value else 0
+      paddedChoiceRect =
+        left: choiceRect.left
+        top: choiceRect.top - (highlightThickness/2)
+        width: choiceRect.width
+        height: choiceRect.height + highlightThickness
       newMask = refLayer.mask().addProperty "Mask"
-      newMask.maskShape.setValue NFTools.shapeFromRect(paddedHighlightRect)
+      newMask.maskShape.setValue NFTools.shapeFromRect(paddedChoiceRect)
       newMask.maskFeather.setValue [20,20]
       newMask.maskExpansion.setValue 3
       refLayer.effect("Drop Shadow").remove()
@@ -173,9 +193,9 @@ getPanelUI = ->
         color: [1,1,1]
         name: "^ Backing"
       bgSolid.layer.inPoint = currTime
-      bgSolid.moveAfter refLayer
       bgSolid.transform("Opacity").setValue 90
-      relRect = refLayer.relativeRect paddedHighlightRect
+      bgSolid.layer.motionBlur = true
+      relRect = refLayer.relativeRect paddedChoiceRect
       paddedRelRect =
         left: relRect.left - (PADDING / 2)
         top: relRect.top - (PADDING / 4)
@@ -200,10 +220,19 @@ getPanelUI = ->
 
       # Add the HCL
       group = targetPageLayer.getPaperLayerGroup()
-      group.assignControlLayer choice
+      group.assignControlLayer choice if pickedHighlight
+      unless newPageLayer?
+        layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
+        refLayer.moveAfter layerAbove
+        refLayer.layer.inPoint = thisPart.getTime()
+        refLayer.transform("Position").expression = ""
+        refLayer.removeNFMarkers()
+      bgSolid.moveAfter refLayer
+
       group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false)
-      controlLayer = choice.getControlLayer()
-      controlLayer.removeSpotlights()
+      if pickedHighlight
+        controlLayer = choice.getControlLayer()
+        controlLayer.removeSpotlights()
 
 
     else if pickedPage
@@ -211,13 +240,69 @@ getPanelUI = ->
       targetPageLayer.transform('Position').setValue [525, -150]
       targetPageLayer.slideIn()
 
-
-    # FIXME: Rock that citation
+      # Show the citation
+      targetPageLayer.getPaperLayerGroup().getCitationLayer().show()
 
     @active = false
     app.endUndoGroup()
 
-  refreshButton = buttonGroup.add('button', undefined, 'Refresh')
+  linkButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.link)
+  linkButton.onClick = (w)  ->
+    choice = treeView.selection?.data
+
+    return alert "Invalid Selection!" unless choice?
+    app.beginUndoGroup "NF Selector"
+
+    pickedHighlight = choice instanceof NFHighlightLayer
+    return alert "Must select a highlight layer" unless pickedHighlight
+
+    # make sure the PDF group exists here to link to
+    thisPart = NFProject.activeComp()
+    return alert "This operation can only be performed in a part comp." unless thisPart instanceof NFPartComp
+    group = thisPart.groupFromPDF(choice.getPDF())
+    return alert "Can't find this PDF's group (##{choice.getPDFNumber()}) in this part"
+
+    group.assignControlLayer(choice)
+
+
+  goButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.play)
+  goButton.onClick = (w)  ->
+    choice = treeView.selection?.data
+
+    return alert "Invalid Selection!" unless choice?
+    app.beginUndoGroup "NF Selector"
+
+    pickedHighlight = choice instanceof NFHighlightLayer
+    pickedShape = choice instanceof NFLayer and not pickedHighlight
+    pickedPage = choice instanceof NFPageComp
+
+    return alert "Invalid Selection\nCan't go to a shape yet. Jesse should add this at some point..." if pickedShape
+
+    if pickedPage
+      choicePage = choice
+    else
+      choicePage = choice.containingComp()
+
+    # Find the dict instruction
+    if pickedPage
+      dictObject = NFLayoutInstructionDict.showTitle
+    else if choice.getName().indexOf("Expand") >= 0
+      dictObject = NFLayoutInstructionExpand
+      expandLookString = choice.getName()
+    else
+      for key of NFLayoutInstructionDict
+        option = NFLayoutInstructionDict[key]
+        if option.look? and option.look is choice.getName()
+          dictObject = option
+    return alert "Create a valid instruction from the selection" unless dictObject?
+
+    instruction = new NFLayoutInstruction
+      pdf: choicePage.getPDFNumber()
+      instruction: dictObject
+      expandLookString: expandLookString ? null
+    result = NFProject.layoutSingleInstruction instruction
+
+  refreshButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.refresh)
   refreshButton.onClick = (w) ->
     loadContentIntoView treeView
     @active = false

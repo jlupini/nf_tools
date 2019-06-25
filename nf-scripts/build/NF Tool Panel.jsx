@@ -522,6 +522,14 @@ toolRegistry = {
         callback: function() {
           return openScript("nf_Scratch.jsx");
         }
+      },
+      iconFromFile: {
+        name: "Create Icon Data",
+        callback: function() {
+          var filepath;
+          filepath = prompt("Please enter the absolute file path (without quotes).\ni.e. \"~/Desktop/refresh.png\"");
+          return NFTools.graphicToText([File(filepath)]);
+        }
       }
     }
   }

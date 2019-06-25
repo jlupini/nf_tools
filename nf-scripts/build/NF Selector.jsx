@@ -1,4 +1,5 @@
 #include "runtimeLibraries.jsx";
+#include "NFIcon.jsx";
 var PADDING, _, getPanelUI, loadContentIntoView, main, openScript, panelTest;
 
 _ = {};
@@ -16,7 +17,7 @@ openScript = function(targetScript) {
 };
 
 loadContentIntoView = function(treeView) {
-  var allPageComps, contentTree, i, j, key, len, len1, pageComp, pageCompArr, pageHighlights, pageNumber, pdfNumber, results, thisPDFNode, thisPageNode;
+  var allPageComps, contentTree, i, j, key, len, len1, pageComp, pageCompArr, pageLayers, pageNumber, pdfNumber, results, shapeLayers, thisPDFNode, thisPageNode;
   treeView.removeAll();
   contentTree = {};
   allPageComps = NFProject.allPageComps();
@@ -31,22 +32,41 @@ loadContentIntoView = function(treeView) {
   results = [];
   for (key in contentTree) {
     thisPDFNode = treeView.add('node', "PDF " + key);
+    thisPDFNode.image = NFIcon.tree.pdf;
     pageCompArr = contentTree[key];
     for (j = 0, len1 = pageCompArr.length; j < len1; j++) {
       pageComp = pageCompArr[j];
-      pageHighlights = pageComp.highlights();
+      pageLayers = pageComp.allLayers();
+      shapeLayers = new NFLayerCollection;
+      pageLayers.forEach((function(_this) {
+        return function(layer) {
+          if (layer.layer instanceof ShapeLayer) {
+            return shapeLayers.add(layer);
+          }
+        };
+      })(this));
       pageNumber = pageComp.getPageNumber();
-      if (pageHighlights.isEmpty()) {
+      if (shapeLayers.isEmpty()) {
         thisPageNode = thisPDFNode.add('item', "Page " + pageNumber);
         thisPageNode.data = pageComp;
+        thisPageNode.image = NFIcon.tree.page;
       } else {
         thisPageNode = thisPDFNode.add('node', "Page " + pageNumber);
         thisPageNode.data = pageComp;
-        pageHighlights.forEach((function(_this) {
-          return function(highlight) {
-            var thisHighlightItem;
-            thisHighlightItem = thisPageNode.add('item', highlight.layer.name);
-            return thisHighlightItem.data = highlight;
+        thisPageNode.image = NFIcon.tree.page;
+        shapeLayers.forEach((function(_this) {
+          return function(shapeLayer) {
+            var icon, itemName, thisShapeItem;
+            if (shapeLayer instanceof NFHighlightLayer) {
+              itemName = shapeLayer.layer.name + " (HL)";
+              icon = NFIcon.tree.highlight;
+            } else {
+              itemName = shapeLayer.layer.name + " (Shape)";
+              icon = NFIcon.tree.star;
+            }
+            thisShapeItem = thisPageNode.add('item', itemName);
+            thisShapeItem.data = shapeLayer;
+            return thisShapeItem.image = icon;
           };
         })(this));
         thisPageNode.expanded = false;
@@ -62,7 +82,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var buttonGroup, buttonPanel, goButton, panel, panelType, refreshButton, treeView;
+  var addButton, buttonGroup, buttonPanel, goButton, linkButton, panel, panelType, refreshButton, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -88,19 +108,20 @@ getPanelUI = function() {
   loadContentIntoView(treeView);
   buttonGroup = buttonPanel.add('group', void 0);
   buttonGroup.maximumSize = [200, 50];
-  goButton = buttonGroup.add('button', void 0, 'Show');
-  goButton.onClick = function(w) {
-    var bgSolid, boxBottom, choice, choicePage, compBottom, controlLayer, currTime, delta, group, highlightRect, highlightThickness, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedHighlightRect, paddedRelRect, pickedHighlight, pickedPage, positionDelta, positionProp, ref, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, targetPageLayer, thisPart;
+  addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
+  addButton.onClick = function(w) {
+    var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, paddedRelRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, targetPageLayer, thisPart;
     choice = (ref = treeView.selection) != null ? ref.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
     }
     app.beginUndoGroup("NF Selector");
     pickedHighlight = choice instanceof NFHighlightLayer;
+    pickedShape = choice instanceof NFLayer && !pickedHighlight;
     pickedPage = choice instanceof NFPageComp;
     if (pickedPage) {
       choicePage = choice;
-    } else if (pickedHighlight) {
+    } else {
       choicePage = choice.containingComp();
     }
     thisPart = NFProject.activeComp();
@@ -131,43 +152,37 @@ getPanelUI = function() {
       newPageLayer.transform('Position').setValue([1560, -150]);
       targetPageLayer = newPageLayer;
     }
-    if (pickedHighlight) {
+    if (pickedHighlight || pickedShape) {
       refLayer = targetPageLayer.duplicateAsReferenceLayer();
       refLayer.layer.name = (refLayer.getName()) + " (" + (choice.getName()) + ")";
-      if (newPageLayer == null) {
-        refLayer.moveAfter(targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer());
-        refLayer.layer.inPoint = thisPart.getTime();
-        refLayer.transform("Position").expression = "";
-        refLayer.removeNFMarkers();
+      currTime = thisPart.getTime();
+      choiceRect = choice.sourceRect();
+      if (thisPart.getTime() !== currTime) {
+        thisPart.setTime(currTime);
       }
       scaleFactor = refLayer.getScaleFactorToFrameUp({
-        highlight: choice
+        rect: refLayer.relativeRect(choiceRect)
       });
       scaleProp = refLayer.transform("Scale");
       oldScale = scaleProp.value;
       newScale = oldScale[0] * scaleFactor;
       scaleProp.setValue([newScale, newScale]);
       positionDelta = refLayer.getPositionDeltaToFrameUp({
-        highlight: choice
+        rect: refLayer.relativeRect(choiceRect)
       });
       positionProp = refLayer.transform("Position");
       oldPosition = positionProp.value;
       newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]];
       positionProp.setValue(newPosition);
-      currTime = thisPart.getTime();
-      highlightRect = choice.sourceRect();
-      if (thisPart.getTime() !== currTime) {
-        thisPart.setTime(currTime);
-      }
-      highlightThickness = choice.highlighterEffect().property("Thickness").value;
-      paddedHighlightRect = {
-        left: highlightRect.left,
-        top: highlightRect.top - (highlightThickness / 2),
-        width: highlightRect.width,
-        height: highlightRect.height + highlightThickness
+      highlightThickness = pickedHighlight ? choice.highlighterEffect().property("Thickness").value : 0;
+      paddedChoiceRect = {
+        left: choiceRect.left,
+        top: choiceRect.top - (highlightThickness / 2),
+        width: choiceRect.width,
+        height: choiceRect.height + highlightThickness
       };
       newMask = refLayer.mask().addProperty("Mask");
-      newMask.maskShape.setValue(NFTools.shapeFromRect(paddedHighlightRect));
+      newMask.maskShape.setValue(NFTools.shapeFromRect(paddedChoiceRect));
       newMask.maskFeather.setValue([20, 20]);
       newMask.maskExpansion.setValue(3);
       refLayer.effect("Drop Shadow").remove();
@@ -178,9 +193,9 @@ getPanelUI = function() {
         name: "^ Backing"
       });
       bgSolid.layer.inPoint = currTime;
-      bgSolid.moveAfter(refLayer);
       bgSolid.transform("Opacity").setValue(90);
-      relRect = refLayer.relativeRect(paddedHighlightRect);
+      bgSolid.layer.motionBlur = true;
+      relRect = refLayer.relativeRect(paddedChoiceRect);
       paddedRelRect = {
         left: relRect.left - (PADDING / 2),
         top: relRect.top - (PADDING / 4),
@@ -202,18 +217,93 @@ getPanelUI = function() {
       refPosition = refLayer.transform("Position").value;
       refLayer.transform("Position").setValue([refPosition[0], refPosition[1] + delta - PADDING]);
       group = targetPageLayer.getPaperLayerGroup();
-      group.assignControlLayer(choice);
+      if (pickedHighlight) {
+        group.assignControlLayer(choice);
+      }
+      if (newPageLayer == null) {
+        layerAbove = (ref1 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref1 : targetPageLayer.getPaperLayerGroup().paperParent;
+        refLayer.moveAfter(layerAbove);
+        refLayer.layer.inPoint = thisPart.getTime();
+        refLayer.transform("Position").expression = "";
+        refLayer.removeNFMarkers();
+      }
+      bgSolid.moveAfter(refLayer);
       group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false);
-      controlLayer = choice.getControlLayer();
-      controlLayer.removeSpotlights();
+      if (pickedHighlight) {
+        controlLayer = choice.getControlLayer();
+        controlLayer.removeSpotlights();
+      }
     } else if (pickedPage) {
       targetPageLayer.transform('Position').setValue([525, -150]);
       targetPageLayer.slideIn();
+      targetPageLayer.getPaperLayerGroup().getCitationLayer().show();
     }
     this.active = false;
     return app.endUndoGroup();
   };
-  refreshButton = buttonGroup.add('button', void 0, 'Refresh');
+  linkButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.link);
+  linkButton.onClick = function(w) {
+    var choice, group, pickedHighlight, ref, thisPart;
+    choice = (ref = treeView.selection) != null ? ref.data : void 0;
+    if (choice == null) {
+      return alert("Invalid Selection!");
+    }
+    app.beginUndoGroup("NF Selector");
+    pickedHighlight = choice instanceof NFHighlightLayer;
+    if (!pickedHighlight) {
+      return alert("Must select a highlight layer");
+    }
+    thisPart = NFProject.activeComp();
+    if (!(thisPart instanceof NFPartComp)) {
+      return alert("This operation can only be performed in a part comp.");
+    }
+    group = thisPart.groupFromPDF(choice.getPDF());
+    return alert("Can't find this PDF's group (#" + (choice.getPDFNumber()) + ") in this part");
+    return group.assignControlLayer(choice);
+  };
+  goButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.play);
+  goButton.onClick = function(w) {
+    var choice, choicePage, dictObject, expandLookString, instruction, key, option, pickedHighlight, pickedPage, pickedShape, ref, result;
+    choice = (ref = treeView.selection) != null ? ref.data : void 0;
+    if (choice == null) {
+      return alert("Invalid Selection!");
+    }
+    app.beginUndoGroup("NF Selector");
+    pickedHighlight = choice instanceof NFHighlightLayer;
+    pickedShape = choice instanceof NFLayer && !pickedHighlight;
+    pickedPage = choice instanceof NFPageComp;
+    if (pickedShape) {
+      return alert("Invalid Selection\nCan't go to a shape yet. Jesse should add this at some point...");
+    }
+    if (pickedPage) {
+      choicePage = choice;
+    } else {
+      choicePage = choice.containingComp();
+    }
+    if (pickedPage) {
+      dictObject = NFLayoutInstructionDict.showTitle;
+    } else if (choice.getName().indexOf("Expand") >= 0) {
+      dictObject = NFLayoutInstructionExpand;
+      expandLookString = choice.getName();
+    } else {
+      for (key in NFLayoutInstructionDict) {
+        option = NFLayoutInstructionDict[key];
+        if ((option.look != null) && option.look === choice.getName()) {
+          dictObject = option;
+        }
+      }
+    }
+    if (dictObject == null) {
+      return alert("Create a valid instruction from the selection");
+    }
+    instruction = new NFLayoutInstruction({
+      pdf: choicePage.getPDFNumber(),
+      instruction: dictObject,
+      expandLookString: expandLookString != null ? expandLookString : null
+    });
+    return result = NFProject.layoutSingleInstruction(instruction);
+  };
+  refreshButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.refresh);
   refreshButton.onClick = function(w) {
     loadContentIntoView(treeView);
     return this.active = false;

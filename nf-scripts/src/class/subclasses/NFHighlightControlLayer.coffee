@@ -26,13 +26,14 @@ class NFHighlightControlLayer extends NFLayer
   spotlightMarkers: ->
     spotMarkers = []
     markers = @markers()
-    for idx in [1..markers.numKeys]
-      thisMarkerValue = markers.keyValue idx
-      if thisMarkerValue.comment is "Spotlight"
-        markerObject =
-          value: @markers().keyValue idx
-          time: @markers().keyTime idx
-        spotMarkers.push markerObject
+    if markers.numKeys isnt 0
+      for idx in [1..markers.numKeys]
+        thisMarkerValue = markers.keyValue idx
+        if thisMarkerValue.comment is "Spotlight"
+          markerObject =
+            value: @markers().keyValue idx
+            time: @markers().keyTime idx
+          spotMarkers.push markerObject
 
     return spotMarkers
 

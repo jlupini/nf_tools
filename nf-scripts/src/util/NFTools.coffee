@@ -851,3 +851,24 @@ NFTools =
         j++
       i++
     matrix[b.length][a.length]
+
+  graphicToText: (infiles) ->
+    outfile = undefined
+    s = undefined
+    re1 = /^\(new String\(/
+    re2 = /\)\)$/
+    i = 0
+    while i < infiles.length
+      if infiles[i].exists
+        outfile = File(infiles[i].fullName.replace(/\.(png|idrc)$/, '.txt'))
+        outfile.open 'w'
+        infiles[i].encoding = 'BINARY'
+        infiles[i].open 'r'
+        s = infiles[i].read()
+        outfile.write 'var ' + outfile.name.replace('.txt', '') + ' = '
+        outfile.write s.toSource().replace(re1, '').replace(re2, '')
+        outfile.write ';'
+        infiles[i].close()
+        outfile.close()
+      i++
+    return

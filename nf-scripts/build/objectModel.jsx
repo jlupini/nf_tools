@@ -3421,14 +3421,16 @@ NFHighlightControlLayer = (function(superClass) {
     var idx, j, markerObject, markers, ref, spotMarkers, thisMarkerValue;
     spotMarkers = [];
     markers = this.markers();
-    for (idx = j = 1, ref = markers.numKeys; 1 <= ref ? j <= ref : j >= ref; idx = 1 <= ref ? ++j : --j) {
-      thisMarkerValue = markers.keyValue(idx);
-      if (thisMarkerValue.comment === "Spotlight") {
-        markerObject = {
-          value: this.markers().keyValue(idx),
-          time: this.markers().keyTime(idx)
-        };
-        spotMarkers.push(markerObject);
+    if (markers.numKeys !== 0) {
+      for (idx = j = 1, ref = markers.numKeys; 1 <= ref ? j <= ref : j >= ref; idx = 1 <= ref ? ++j : --j) {
+        thisMarkerValue = markers.keyValue(idx);
+        if (thisMarkerValue.comment === "Spotlight") {
+          markerObject = {
+            value: this.markers().keyValue(idx),
+            time: this.markers().keyTime(idx)
+          };
+          spotMarkers.push(markerObject);
+        }
       }
     }
     return spotMarkers;
