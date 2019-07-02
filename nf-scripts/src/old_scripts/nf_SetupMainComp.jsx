@@ -14,6 +14,17 @@ var audioLayer = mainComp.layers[1];
 var markerStream = audioLayer.property("Marker");
 var markerCount = markerStream.numKeys;
 
+// If we're dealing with a comp instead of audio file...
+if (markerCount == 0 && audio instanceof CompItem) {
+  compMarkerStream = audio.markerProperty;
+  markerCount = compMarkerStream.numKeys;
+  for (var i = 1; i <= markerCount; i++)
+  {
+    thisMarkerTime = compMarkerStream.keyTime(i);
+    markerStream.setValueAtTime(thisMarkerTime, new MarkerValue("Marker " + i));
+  }
+}
+
 var endTime = mainComp.duration;
 
 // create new background layer
