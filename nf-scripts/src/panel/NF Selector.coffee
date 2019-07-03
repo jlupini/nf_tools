@@ -260,7 +260,7 @@ getPanelUI = ->
     thisPart = NFProject.activeComp()
     return alert "This operation can only be performed in a part comp." unless thisPart instanceof NFPartComp
     group = thisPart.groupFromPDF(choice.getPDF())
-    return alert "Can't find this PDF's group (##{choice.getPDFNumber()}) in this part"
+    return alert "Can't find this PDF's group (##{choice.getPDFNumber()}) in this part"  unless group?
 
     group.assignControlLayer(choice)
 

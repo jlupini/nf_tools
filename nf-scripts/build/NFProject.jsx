@@ -194,7 +194,7 @@ NFProject = {
   @returns {String} A message to display to the user
    */
   layoutSingleInstruction: function(layoutInstruction) {
-    var activeComp, highlight, lookString, targetPDF, titlePage;
+    var activeComp, highlight, lookString, ref, targetPDF, titlePage;
     activeComp = NFProject.activeComp();
     if (!(activeComp instanceof NFPartComp)) {
       return "Cannot layout an instruction in a non-part comp.";
@@ -214,7 +214,7 @@ NFProject = {
         activeComp.animateTo({
           highlight: highlight,
           time: layoutInstruction.time,
-          skipTitle: layoutInstruction.flags.skipTitle
+          skipTitle: (ref = layoutInstruction.flags) != null ? ref.skipTitle : void 0
         });
         break;
       case NFLayoutType.EXPAND:

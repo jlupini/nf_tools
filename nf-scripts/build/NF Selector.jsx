@@ -258,7 +258,9 @@ getPanelUI = function() {
       return alert("This operation can only be performed in a part comp.");
     }
     group = thisPart.groupFromPDF(choice.getPDF());
-    return alert("Can't find this PDF's group (#" + (choice.getPDFNumber()) + ") in this part");
+    if (group == null) {
+      return alert("Can't find this PDF's group (#" + (choice.getPDFNumber()) + ") in this part");
+    }
     return group.assignControlLayer(choice);
   };
   goButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.play);

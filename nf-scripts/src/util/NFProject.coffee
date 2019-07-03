@@ -173,7 +173,7 @@ NFProject =
         activeComp.animateTo
           highlight: highlight
           time: layoutInstruction.time
-          skipTitle: layoutInstruction.flags.skipTitle
+          skipTitle: layoutInstruction.flags?.skipTitle
       when NFLayoutType.EXPAND
         # For highlights and expands we need a target PDF, so use this method instead of layoutInstruction.pdf
         targetPDF = NFPDF.fromPDFNumber layoutInstruction.getPDF()
