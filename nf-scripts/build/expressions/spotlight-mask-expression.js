@@ -16,7 +16,7 @@ i = 1;
 
 while (i <= numLayers) {
   theLayer = thisComp.layer(i);
-  if (theLayer.name.indexOf(targetPage) >= 0 && theLayer.inPoint < time && time < theLayer.outPoint) {
+  if (theLayer.name.indexOf(targetPage) === 0 && theLayer.inPoint < time && time < theLayer.outPoint) {
     activeBabby = theLayer;
     break;
   }

@@ -11,7 +11,7 @@ numLayers = thisComp.numLayers
 i = 1
 while i <= numLayers
   theLayer = thisComp.layer(i)
-  if theLayer.name.indexOf(targetPage) >= 0 and theLayer.inPoint < time and time < theLayer.outPoint
+  if theLayer.name.indexOf(targetPage) == 0 and theLayer.inPoint < time and time < theLayer.outPoint
     activeBabby = theLayer
     break
   i++
