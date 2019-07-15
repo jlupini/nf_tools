@@ -148,8 +148,11 @@ getPanelUI = function() {
       group.setConnectionToZoomer({
         connected: false
       });
-      newPageLayer.transform('Scale').setValue([20, 20, 20]);
+      newPageLayer.transform('Scale').setValue([23, 23, 23]);
       newPageLayer.transform('Position').setValue([1560, -150]);
+      if (newPageLayer.effect('Drop Shadow') != null) {
+        newPageLayer.effect('Drop Shadow').enabled = false;
+      }
       targetPageLayer = newPageLayer;
     }
     if (pickedHighlight || pickedShape) {
@@ -234,7 +237,7 @@ getPanelUI = function() {
         controlLayer.removeSpotlights();
       }
     } else if (pickedPage) {
-      targetPageLayer.transform('Position').setValue([525, -150]);
+      targetPageLayer.transform('Position').setValue([439, 202]);
       targetPageLayer.slideIn();
       targetPageLayer.getPaperLayerGroup().getCitationLayer().show();
     }

@@ -141,8 +141,9 @@ getPanelUI = ->
       group = newPageLayer.getPaperLayerGroup()
       group.setConnectionToZoomer
         connected: no
-      newPageLayer.transform('Scale').setValue [20,20,20]
+      newPageLayer.transform('Scale').setValue [23,23,23]
       newPageLayer.transform('Position').setValue [1560, -150]
+      newPageLayer.effect('Drop Shadow').enabled = no if newPageLayer.effect('Drop Shadow')?
       targetPageLayer = newPageLayer
 
 
@@ -237,7 +238,7 @@ getPanelUI = ->
 
     else if pickedPage
       # Position it onscreen and slide it in.
-      targetPageLayer.transform('Position').setValue [525, -150]
+      targetPageLayer.transform('Position').setValue [439, 202]
       targetPageLayer.slideIn()
 
       # Show the citation
