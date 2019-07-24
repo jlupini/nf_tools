@@ -2,7 +2,6 @@ app.NF ?= {}
 app.NF.Util ?= {}
 
 dev = yes
-$.level = 2
 
 if dev
   $.write ">> Dev mode: loading libraries!\n"

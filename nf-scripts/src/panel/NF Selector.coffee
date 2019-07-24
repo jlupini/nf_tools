@@ -1,5 +1,5 @@
-`#include "runtimeLibraries.jsx"`
-`#include "NFIcon.jsx"`
+$.evalFile "runtimeLibraries.jsx"
+$.evalFile "NFIcon.jsx"
 _ = {}
 PADDING = 80
 
@@ -8,8 +8,7 @@ panelTest = this
 openScript = (targetScript) ->
   start_folder = new Folder(new File($.fileName).parent.fsName)
   scriptFile = new File(start_folder.fsName + "/#{targetScript}")
-  script = "#include '#{scriptFile.fullName}'"
-  eval script
+  $.evalFile scriptFile.fullName
 
 loadContentIntoView = (treeView) ->
   treeView.removeAll()

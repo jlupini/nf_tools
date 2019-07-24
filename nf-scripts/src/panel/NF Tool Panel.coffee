@@ -1,4 +1,5 @@
-`#include "runtimeLibraries.jsx"`
+$.evalFile "runtimeLibraries.jsx"
+
 _ = {}
 cacheFileName = "combinedTranscript.json"
 
@@ -7,14 +8,13 @@ panelTest = this
 openScript = (targetScript) ->
   start_folder = new Folder(new File($.fileName).parent.fsName)
   scriptFile = new File(start_folder.fsName + "/#{targetScript}")
-  script = "#include '#{scriptFile.fullName}'"
-  eval script
+  $.evalFile scriptFile.fullName
 
 toolRegistry =
 
-  setup:
+  prep:
 
-    name: "Setup"
+    name: "Prep"
     tools:
 
       setupMainComp:
@@ -22,8 +22,25 @@ toolRegistry =
         callback: ->
           openScript "nf_SetupMainComp.jsx"
 
+      setupHighlightLayer:
+        name: "Setup Highlight Layer"
+        automaticUndo: no
+        callback: ->
+          openScript "nf_SetupHighlightLayer.jsx"
+
+      precomposePDFs:
+        name: "Precompose PDFs"
+        automaticUndo: no
+        callback: ->
+          openScript "nf_Precompose PDF Pages.jsx"
+
+  layout:
+
+    name: "Layout"
+    tools:
+
       renamePDFPrecomps:
-        name: "Rename PDF Precomps"
+        name: "Rename PDF Precomps (Deprecated)"
         callback: ->
           precompFolder = NFProject.findItem "PDF Precomps"
           unless precompFolder?.typeName is "Folder"
@@ -241,6 +258,12 @@ toolRegistry =
   animation:
     name: "Animation"
     tools:
+
+      nullify:
+        name: "Nullify"
+        automaticUndo: no
+        callback: ->
+          openScript "nf_Nullify.jsx"
 
       singleInstruction:
         name: "Follow Single Instruction"
@@ -463,6 +486,11 @@ toolRegistry =
         automaticUndo: no
         callback: ->
           openScript "nf_Scratch.jsx"
+
+        name: "Debug"
+        automaticUndo: no
+        callback: ->
+          openScript "nf_debug.jsx"
 
       iconFromFile:
         name: "Create Icon Data"

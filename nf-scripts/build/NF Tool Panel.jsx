@@ -1,5 +1,6 @@
-#include "runtimeLibraries.jsx";
 var _, cacheFileName, getPanelUI, main, openScript, panelTest, toolRegistry;
+
+$.evalFile("runtimeLibraries.jsx");
 
 _ = {};
 
@@ -8,16 +9,15 @@ cacheFileName = "combinedTranscript.json";
 panelTest = this;
 
 openScript = function(targetScript) {
-  var script, scriptFile, start_folder;
+  var scriptFile, start_folder;
   start_folder = new Folder(new File($.fileName).parent.fsName);
   scriptFile = new File(start_folder.fsName + ("/" + targetScript));
-  script = "#include '" + scriptFile.fullName + "'";
-  return eval(script);
+  return $.evalFile(scriptFile.fullName);
 };
 
 toolRegistry = {
-  setup: {
-    name: "Setup",
+  prep: {
+    name: "Prep",
     tools: {
       setupMainComp: {
         name: "Setup Main Comp",
@@ -25,8 +25,27 @@ toolRegistry = {
           return openScript("nf_SetupMainComp.jsx");
         }
       },
+      setupHighlightLayer: {
+        name: "Setup Highlight Layer",
+        automaticUndo: false,
+        callback: function() {
+          return openScript("nf_SetupHighlightLayer.jsx");
+        }
+      },
+      precomposePDFs: {
+        name: "Precompose PDFs",
+        automaticUndo: false,
+        callback: function() {
+          return openScript("nf_Precompose PDF Pages.jsx");
+        }
+      }
+    }
+  },
+  layout: {
+    name: "Layout",
+    tools: {
       renamePDFPrecomps: {
-        name: "Rename PDF Precomps",
+        name: "Rename PDF Precomps (Deprecated)",
         callback: function() {
           var i, item, j, precompFolder, ref, results;
           precompFolder = NFProject.findItem("PDF Precomps");
@@ -242,6 +261,13 @@ toolRegistry = {
   animation: {
     name: "Animation",
     tools: {
+      nullify: {
+        name: "Nullify",
+        automaticUndo: false,
+        callback: function() {
+          return openScript("nf_Nullify.jsx");
+        }
+      },
       singleInstruction: {
         name: "Follow Single Instruction",
         automaticUndo: false,
@@ -521,6 +547,11 @@ toolRegistry = {
         automaticUndo: false,
         callback: function() {
           return openScript("nf_Scratch.jsx");
+        },
+        name: "Debug",
+        automaticUndo: false,
+        callback: function() {
+          return openScript("nf_debug.jsx");
         }
       },
       iconFromFile: {

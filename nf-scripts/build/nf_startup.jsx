@@ -1,1 +1,2 @@
-#include "nf_InstallPseudoEffects.jsx";
+$.evalFile("nf_InstallPseudoEffects.jsx");
+$.evalFile("runtimeLibraries.jsx");

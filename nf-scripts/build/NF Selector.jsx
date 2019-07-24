@@ -1,6 +1,8 @@
-#include "runtimeLibraries.jsx";
-#include "NFIcon.jsx";
 var PADDING, _, getPanelUI, loadContentIntoView, main, openScript, panelTest;
+
+$.evalFile("runtimeLibraries.jsx");
+
+$.evalFile("NFIcon.jsx");
 
 _ = {};
 
@@ -9,11 +11,10 @@ PADDING = 80;
 panelTest = this;
 
 openScript = function(targetScript) {
-  var script, scriptFile, start_folder;
+  var scriptFile, start_folder;
   start_folder = new Folder(new File($.fileName).parent.fsName);
   scriptFile = new File(start_folder.fsName + ("/" + targetScript));
-  script = "#include '" + scriptFile.fullName + "'";
-  return eval(script);
+  return $.evalFile(scriptFile.fullName);
 };
 
 loadContentIntoView = function(treeView) {

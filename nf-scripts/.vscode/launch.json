@@ -4,6 +4,22 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+        {
+            "type": "extendscript-debug",
+            "request": "launch",
+            "name": "Tool Panel",
+            "program": "${workspaceFolder}/build/NF Tool Panel.jsx",
+            "stopOnEntry": false
+        },
+        {
+            "type": "extendscript-debug",
+            "request": "launch",
+            "name": "Test",
+            "trace": true,
+            "program": "${workspaceFolder}/test.jsx",
+            "stopOnEntry": true
+        },
         {
             "type": "extendscript-debug",
             "request": "launch",

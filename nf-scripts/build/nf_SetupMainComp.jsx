@@ -3,7 +3,7 @@
 var audio = app.project.selection[0];
 var newName = audio.name.substr(0, audio.name.indexOf('.')) + " - MainComp";
 var compLength = audio.duration+3.5;
-var newComp = app.project.items.addComp(newName, 1920, 1080, 1.0, compLength, 30);
+var newComp = app.project.items.addComp(newName, 1920, 1080, 1.0, compLength, 29.9700012207031);
 newComp.layers.add(audio);
 
 var mainComp = newComp;
