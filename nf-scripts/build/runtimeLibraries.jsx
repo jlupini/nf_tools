@@ -10,6 +10,8 @@ if ((base = app.NF).Util == null) {
 
 dev = true;
 
+$.level = 2;
+
 if (dev) {
   $.write(">> Dev mode: loading libraries!\n");
   eval('#include "../lib/extendscript.prototypes.js"');
