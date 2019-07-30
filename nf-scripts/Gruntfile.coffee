@@ -53,6 +53,15 @@ module.exports = (grunt) ->
         ext: '.jsx'
         options:
           bare: yes
+      compilePDFTools:
+        expand: true
+        flatten: true
+        cwd: 'src/pdf_tools'
+        src: ['*']
+        dest: 'build/pdf_tools'
+        ext: '.js'
+        options:
+          bare: yes
       compileObjectModel:
         options:
           bare: true

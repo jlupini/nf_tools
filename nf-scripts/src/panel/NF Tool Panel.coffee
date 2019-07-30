@@ -487,10 +487,17 @@ toolRegistry =
         callback: ->
           openScript "nf_Scratch.jsx"
 
+      debug:
         name: "Debug"
         automaticUndo: no
         callback: ->
           openScript "nf_debug.jsx"
+
+      pdfConnect:
+        name: "PDF Connect"
+        automaticUndo: yes
+        callback: ->
+          openScript "nf_pdfConnect.jsx"
 
       iconFromFile:
         name: "Create Icon Data"

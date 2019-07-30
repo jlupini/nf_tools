@@ -373,6 +373,21 @@ NFComp = (function(superClass) {
 
 
   /**
+  Creates and returns a new shape layer with a rectangle in the comp
+  @memberof NFComp
+  @returns {NFShapeLayer} The newly created shape layer
+   */
+
+  NFComp.prototype.addShapeLayer = function() {
+    var shapeAVLayer, shapeLayer;
+    shapeAVLayer = this.comp.layers.addShape();
+    shapeLayer = NFLayer.getSpecializedLayerFromAVLayer(shapeAVLayer);
+    shapeLayer.transform("Position").setValue([0, 0]);
+    return shapeLayer;
+  };
+
+
+  /**
   Creates and returns a new text layer in this comp
   @memberof NFComp
   @param {Object} model
@@ -689,6 +704,10 @@ NFLayer = (function(superClass) {
     return NFGaussyLayer.isGaussyLayer(this.layer);
   };
 
+  NFLayer.prototype.isShapeLayer = function() {
+    return NFShapeLayer.isShapeLayer(this.layer);
+  };
+
 
   /**
   Returns a new layer of a specialized type for the contents of this layer
@@ -711,6 +730,8 @@ NFLayer = (function(superClass) {
       return new NFCitationLayer(this.layer);
     } else if (this.isGaussyLayer()) {
       return new NFGaussyLayer(this.layer);
+    } else if (this.isShapeLayer()) {
+      return new NFShapeLayer(this.layer);
     } else {
       return this;
     }
@@ -4315,6 +4336,17 @@ NFPageComp = (function(superClass) {
     return this;
   };
 
+
+  /**
+  Returns the actual PDF layer in the comp
+  @memberof NFPageComp
+  @returns {NFLayer | null} The found layer or null
+   */
+
+  NFPageComp.prototype.getPDFLayer = function() {
+    return this.layerWithName(this.getName().replace(" NFPage", ".pdf"));
+  };
+
   return NFPageComp;
 
 })(NFComp);
@@ -6437,6 +6469,81 @@ NFPartComp = (function(superClass) {
   return NFPartComp;
 
 })(NFComp);
+
+
+/**
+Creates a new NFShapeLayer from a given AVLayer
+@class NFShapeLayer
+@classdesc Subclass of {@link NFLayer} for a gaussy layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
+ */
+var NFShapeLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+NFShapeLayer = (function(superClass) {
+  extend(NFShapeLayer, superClass);
+
+  function NFShapeLayer(layer) {
+    NFLayer.call(this, layer);
+    this;
+  }
+
+  NFShapeLayer.prototype.toString = function() {
+    return "NFShapeLayer: '" + this.layer.name + "'";
+  };
+
+
+  /**
+  Adds a new rectangle to the shape layer
+  @memberof NFShapeLayer
+  @param {Object} model
+  @param {float[]} [model.color=[1,1,1]] - the solid color. Three-value array of floats
+  from 0.0-1.0 in the form [R, G, B]
+  @param {rect} model.rect - the rect object
+  @returns {NFShapeLayer} self
+   */
+
+  NFShapeLayer.prototype.addRectangle = function(model) {
+    var rectPath, ref, ref1, ref2, vectorGroup;
+    model = {
+      color: (ref = model.color) != null ? ref : [1, 1, 1],
+      rect: (function() {
+        if ((ref1 = model.rect) != null) {
+          return ref1;
+        } else {
+          throw new Error("Rect required");
+        }
+      })(),
+      name: (ref2 = model.name) != null ? ref2 : "New Rectangle"
+    };
+    vectorGroup = this.property("Contents").addProperty("ADBE Vector Group");
+    vectorGroup.name = model.name;
+    rectPath = vectorGroup.property("Contents").addProperty("ADBE Vector Shape - Rect");
+    rectPath.property("Size").setValue([model.rect.width, model.rect.height]);
+    rectPath.property("Position").setValue([model.rect.left, model.rect.top]);
+    vectorGroup.property("Transform").property("Anchor Point").setValue([-model.rect.width / 2, -model.rect.height / 2]);
+    return this;
+  };
+
+  return NFShapeLayer;
+
+})(NFLayer);
+
+NFShapeLayer = Object.assign(NFShapeLayer, {
+
+  /**
+  Returns whether or not the given AVLayer is a valid shape Layer
+  @memberof NFShapeLayer
+  @param {AVLayer} the layer to check
+  @returns {boolean} whether the AV layer is a valid shape layer
+   */
+  isShapeLayer: function(theLayer) {
+    return theLayer instanceof ShapeLayer;
+  }
+});
 
 
 /**

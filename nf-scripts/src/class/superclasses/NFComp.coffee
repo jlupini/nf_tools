@@ -210,6 +210,18 @@ class NFComp extends NFObject
     solidAVLayer = @comp.layers.addSolid(model.color, model.name, model.width, model.height, 1)
     return NFLayer.getSpecializedLayerFromAVLayer solidAVLayer
 
+
+  ###*
+  Creates and returns a new shape layer with a rectangle in the comp
+  @memberof NFComp
+  @returns {NFShapeLayer} The newly created shape layer
+  ###
+  addShapeLayer: ->
+    shapeAVLayer = @comp.layers.addShape()
+    shapeLayer = NFLayer.getSpecializedLayerFromAVLayer shapeAVLayer
+    shapeLayer.transform("Position").setValue([0,0])
+    return shapeLayer
+
   ###*
   Creates and returns a new text layer in this comp
   @memberof NFComp

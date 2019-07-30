@@ -100,3 +100,11 @@ class NFPageComp extends NFComp
       dataLayer.layer.enabled = no
       dataLayer.layer.name = "HighData-#{targetCompName}"
     @
+
+  ###*
+  Returns the actual PDF layer in the comp
+  @memberof NFPageComp
+  @returns {NFLayer | null} The found layer or null
+  ###
+  getPDFLayer: ->
+    return @layerWithName @getName().replace(" NFPage", ".pdf")

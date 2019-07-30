@@ -547,11 +547,20 @@ toolRegistry = {
         automaticUndo: false,
         callback: function() {
           return openScript("nf_Scratch.jsx");
-        },
+        }
+      },
+      debug: {
         name: "Debug",
         automaticUndo: false,
         callback: function() {
           return openScript("nf_debug.jsx");
+        }
+      },
+      pdfConnect: {
+        name: "PDF Connect",
+        automaticUndo: true,
+        callback: function() {
+          return openScript("nf_pdfConnect.jsx");
         }
       },
       iconFromFile: {
