@@ -1,28 +1,16 @@
-var dataLayer, expression, i, j, k, len, pageComp, pageComps;
+var lines, shapeLayer;
 
-try {
-  #include "runtimeLibraries.jsx";
-} catch (undefined) {}
+$.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
 app.beginUndoGroup('Run Scratch Script');
 
-pageComps = NFProject.allPageComps();
+shapeLayer = NFProject.activeComp().selectedLayers().get(0);
 
-for (j = 0, len = pageComps.length; j < len; j++) {
-  pageComp = pageComps[j];
-  for (i = k = 1; k <= 4; i = ++k) {
-    dataLayer = pageComp.addTextLayer({
-      at: pageComp.allLayers().count() - 1,
-      time: 0
-    });
-    expression = NFTools.readExpression("highlight-data-expression", {
-      TARGET_COMP_NAME: "Part" + i,
-      PAGE_BASE_NAME: pageComp.getPageBaseName()
-    });
-    dataLayer.property("Text").property("Source Text").expression = expression;
-    dataLayer.layer.enabled = false;
-    dataLayer.layer.name = "HighData-Part" + i;
-  }
-}
+lines = 4;
+
+NFProject.activeComp().createHighlight({
+  shapeLayer: shapeLayer,
+  lines: lines
+});
 
 app.endUndoGroup();

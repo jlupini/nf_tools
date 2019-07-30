@@ -30,6 +30,16 @@ class NFLayer extends NFObject
     return @layer.name
 
   ###*
+  Sets the name of the layer
+  @memberof NFLayer
+  @param {String} newName - the new layer name
+  @returns {NFLayer} self
+  ###
+  setName: (newName) ->
+    @layer.name = newName
+    return @
+
+  ###*
   Checks if this layer is an AVLayer and ALWAYS RETURNS FALSE
   @memberof NFLayer
   @returns {boolean} if this is a valid AVLayer... so no.
