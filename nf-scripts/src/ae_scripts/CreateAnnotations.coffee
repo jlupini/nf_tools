@@ -42,15 +42,11 @@ convertColorArray = (arr) ->
 
 # Accepts PDF coordiates in array of points and spits out a rect object
 convertCartesian = (points, viewport) ->
-  pageCenterX = viewport[2]/2
-  pageCenterY = viewport[3]/2
   width = points[2]-points[0]
   height = points[3]-points[1]
-  rectX = points[0]-pageCenterX+width/2
-  rectY = -(points[1]-pageCenterY+height/2)
   rect =
-    left: rectX
-    top: rectY
+    left: points[0]
+    top: viewport[3]-points[1]-height
     width: width
     height: height
   return rect
@@ -84,31 +80,56 @@ textContent = {
         width: 488.74872636,
         height: 15.9403,
         left: 39.9685,
-        top: 136.97040000000004
+        top: 121.03010000000003
       },
       {
         str: 'anti-inflammatory effects in a population of US adults',
+        tx: [ 15.9403, 0, 0, -15.9403, 39.9685, 154.88570000000004 ],
+        fontHeight: 15.9403,
         width: 386.46300932,
         height: 15.9403,
         left: 39.9685,
-        top: 154.88570000000004
-      },
+        top: 138.94540000000003 },
       {
-        str: 'We used an inflammation score (IS) that integrated 12',
-        width: 201.88700406000007,
-        height: 8.9663,
-        left: 83.11165,
-        top: 343.78659999999996
-      },
+        str: '1',
+        tx: [ 11.9551, 0, 0, -10.6257, 426.444, 147.79869999999994 ],
+        fontHeight: 10.6257,
+        width: 6.599215200000001,
+        height: 11.9551,
+        left: 426.444,
+        top: 137.17299999999994 },
       {
-        str: '0.01), respectively. Results remained significant after additional ad-',
-        tx: [ 8.9663, 0, 0, -8.9663, 39.9676, 500.09069999999997 ],
-        fontHeight: 8.9663,
-        width: 245.04359922000006,
-        height: 8.9663,
-        left: 39.9676,
-        top: 500.09069999999997
-      }
+        str: 'Aedin Cassidy,',
+        tx: [ 9.9626, 0, 0, -9.9626, 39.9685, 178.8098 ],
+        fontHeight: 9.9626,
+        width: 60.25978236,
+        height: 9.9626,
+        left: 39.9685,
+        top: 168.8472 },
+      {
+        str: '2',
+        tx: [ 7.4718, 0, 0, -6.641, 100.233, 174.3877 ],
+        fontHeight: 6.641,
+        width: 3.7359,
+        height: 7.4718,
+        left: 100.233,
+        top: 167.7467 },
+      {
+        str: 'Gail Rogers,',
+        tx: [ 9.9626, 0, 0, -9.9626, 107.263, 178.8098 ],
+        fontHeight: 9.9626,
+        width: 51.79754992,
+        height: 9.9626,
+        left: 107.263,
+        top: 168.8472 },
+      {
+        str: '3',
+        tx: [ 7.4718, 0, 0, -6.641, 159.0803, 174.3877 ],
+        fontHeight: 6.641,
+        width: 3.7359,
+        height: 7.4718,
+        left: 159.0803,
+        top: 167.7467 }
 
   ]
 }

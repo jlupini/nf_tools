@@ -39,7 +39,7 @@ loadingTask.promise.then(function(doc) {
             width: item.width,
             height: item.height / fontHeight,
             left: tx[4],
-            top: tx[5]
+            top: tx[5] - fontHeight
           });
         });
         return textContent = textItems;

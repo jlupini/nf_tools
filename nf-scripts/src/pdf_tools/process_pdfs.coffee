@@ -49,7 +49,8 @@ loadingTask.promise.then((doc) ->
             width: item.width
             height: item.height/fontHeight
             left: tx[4]
-            top: tx[5]
+            top: tx[5] - fontHeight
+            #fullItem: item.transform
           # xs.push tx[4]
           # ys.push tx[5]
           return
