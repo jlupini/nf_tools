@@ -2,7 +2,7 @@ var annotations, loadingTask, pdfPath, pdfjsLib, textContent, viewport;
 
 pdfjsLib = require('pdfjs-dist');
 
-pdfPath = process.argv[2] || '1_pg01.pdf';
+pdfPath = process.argv[2] || '1000_pg01.pdf';
 
 viewport = 1;
 

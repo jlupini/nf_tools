@@ -242,21 +242,34 @@ class NFComp extends NFObject
     rect = model.shapeLayer.sourceRect()
     @setTime currTime
 
+    # Determine line height and paddings
+    lineHeight = rect.height / model.lines
+    xPadding = lineHeight / 5
+    yPadding = lineHeight / 7 / model.lines
+    paddedLineHeight = lineHeight + yPadding
+
     # Boom done. Now we'll make a new Shape Layer and Build the Highlight
     highlightLayer = new NFLayer @comp.layers.addShape()
     highlightLayer.setName "#{model.shapeLayer.getName()} Highlight"
     highlightLayer.transform().property("Position").setValue [0,0]
     highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]'
     highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY
-    highlightLayer.effects().addProperty 'AV_Highlighter'
+
+    # Setup AV Highlighter
+    highlightProperty = highlightLayer.effects().addProperty('AV_Highlighter')
+    highlightProperty.property("Spacing").setValue paddedLineHeight
+    highlightProperty.property("Thickness").setValue paddedLineHeight + 4
+    highlightProperty.property("Offset").setValue [0, paddedLineHeight / 2 - yPadding * 2]
+
     highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")'
 
+    # Build the Lines
     mainContents = highlightLayer.property("ADBE Root Vectors Group")
 
     lineShape = new Shape()
     lineShape.vertices = [
-      [rect.left, rect.top],
-      [rect.left + rect.width, rect.top]
+      [rect.left - xPadding, rect.top],
+      [rect.left + rect.width + xPadding, rect.top]
     ]
     lineShape.inTangents = []
     lineShape.outTangents = []

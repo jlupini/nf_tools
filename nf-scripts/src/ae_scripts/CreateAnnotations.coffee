@@ -1,4 +1,4 @@
-`#include "runtimeLibraries.jsx"`
+$.evalFile File($.fileName).path + "/runtimeLibraries.jsx"
 
 AnnotationType =
   TEXT: 1
@@ -64,13 +64,25 @@ app.beginUndoGroup 'Create Annotations'
 viewport = [0,0,584.957,782.986]
 annotationData = [
   {
-    color: [124, 200, 104]
-    id: '21R'
-    rect: [39.15884, 100.3647, 285.8416, 143.5545]
-    subtype: 'Highlight'
-    annotationType: 9
+    annotationFlags: 4,
+    color: [ 250, 205, 90 ],
+    hasAppearance: true,
+    id: '24R',
+    rect: [ 299.9625, 264.4351, 545.1307, 430.6619 ],
+    subtype: 'Highlight',
+    annotationType: 9,
+    hasPopup: false,
+    title: '',
     contents: ''
   }
+  # {
+  #   color: [124, 200, 104]
+  #   id: '21R'
+  #   rect: [39.15884, 100.3647, 285.8416, 143.5545]
+  #   subtype: 'Highlight'
+  #   annotationType: 9
+  #   contents: ''
+  # }
 ]
 textContent = {
    "items":[
@@ -152,7 +164,7 @@ for testAnnotation in annotationData
   annotationLayer = activeComp.addShapeLayer()
 
   annotationLayer.addRectangle
-    fill: convertColorArray(testAnnotation.color)
+    fillColor: convertColorArray(testAnnotation.color)
     rect: convertCartesian(testAnnotation.rect, viewport)
     name: "Test Annotation"
 

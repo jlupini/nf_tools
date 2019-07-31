@@ -7,7 +7,7 @@
 pdfjsLib = require('pdfjs-dist')
 # Loading file from file system into typed array
 
-pdfPath = process.argv[2] or '1_pg01.pdf'
+pdfPath = process.argv[2] or '1000_pg01.pdf'
 # Will be using promises to load document, pages and misc data instead of
 # callback.
 

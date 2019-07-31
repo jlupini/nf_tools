@@ -487,6 +487,12 @@ toolRegistry =
         callback: ->
           openScript "nf_Scratch.jsx"
 
+      createAnnotations:
+        name: "Create Annotations"
+        automaticUndo: yes
+        callback: ->
+          openScript "nf_CreateAnnotations.jsx"
+
       debug:
         name: "Debug"
         automaticUndo: no

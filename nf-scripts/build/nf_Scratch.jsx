@@ -6,7 +6,7 @@ app.beginUndoGroup('Run Scratch Script');
 
 shapeLayer = NFProject.activeComp().selectedLayers().get(0);
 
-lines = 4;
+lines = 15;
 
 NFProject.activeComp().createHighlight({
   shapeLayer: shapeLayer,

@@ -398,7 +398,7 @@ NFComp = (function(superClass) {
    */
 
   NFComp.prototype.createHighlight = function(model) {
-    var currTime, group, highlightLayer, i, j, lineGroup, linePathProp, lineShape, lineStrokeProp, lineTrimProp, mainContents, rect, ref, ref1, ref2;
+    var currTime, group, highlightLayer, highlightProperty, i, j, lineGroup, lineHeight, linePathProp, lineShape, lineStrokeProp, lineTrimProp, mainContents, paddedLineHeight, rect, ref, ref1, ref2, xPadding, yPadding;
     model = {
       shapeLayer: (function() {
         if ((ref = model.shapeLayer) != null) {
@@ -421,16 +421,23 @@ NFComp = (function(superClass) {
     currTime = this.getTime();
     rect = model.shapeLayer.sourceRect();
     this.setTime(currTime);
+    lineHeight = rect.height / model.lines;
+    xPadding = lineHeight / 5;
+    yPadding = lineHeight / 7 / model.lines;
+    paddedLineHeight = lineHeight + yPadding;
     highlightLayer = new NFLayer(this.comp.layers.addShape());
     highlightLayer.setName((model.shapeLayer.getName()) + " Highlight");
     highlightLayer.transform().property("Position").setValue([0, 0]);
     highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]';
     highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY;
-    highlightLayer.effects().addProperty('AV_Highlighter');
+    highlightProperty = highlightLayer.effects().addProperty('AV_Highlighter');
+    highlightProperty.property("Spacing").setValue(paddedLineHeight);
+    highlightProperty.property("Thickness").setValue(paddedLineHeight + 4);
+    highlightProperty.property("Offset").setValue([0, paddedLineHeight / 2 - yPadding * 2]);
     highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")';
     mainContents = highlightLayer.property("ADBE Root Vectors Group");
     lineShape = new Shape();
-    lineShape.vertices = [[rect.left, rect.top], [rect.left + rect.width, rect.top]];
+    lineShape.vertices = [[rect.left - xPadding, rect.top], [rect.left + rect.width + xPadding, rect.top]];
     lineShape.inTangents = [];
     lineShape.outTangents = [];
     lineShape.closed = false;
@@ -6585,16 +6592,16 @@ NFShapeLayer = (function(superClass) {
   Adds a new rectangle to the shape layer
   @memberof NFShapeLayer
   @param {Object} model
-  @param {float[]} [model.color=[1,1,1]] - the solid color. Three-value array of floats
+  @param {float[]} [model.fillColor=[1,1,1]] - the solid color. Three-value array of floats
   from 0.0-1.0 in the form [R, G, B]
   @param {rect} model.rect - the rect object
   @returns {NFShapeLayer} self
    */
 
   NFShapeLayer.prototype.addRectangle = function(model) {
-    var rectPath, ref, ref1, ref2, vectorGroup;
+    var fillProp, rectPath, ref, ref1, ref2, vectorGroup;
     model = {
-      color: (ref = model.color) != null ? ref : [1, 1, 1],
+      fillColor: (ref = model.fillColor) != null ? ref : [1, 1, 1],
       rect: (function() {
         if ((ref1 = model.rect) != null) {
           return ref1;
@@ -6610,6 +6617,8 @@ NFShapeLayer = (function(superClass) {
     rectPath.property("Size").setValue([model.rect.width, model.rect.height]);
     rectPath.property("Position").setValue([model.rect.left, model.rect.top]);
     vectorGroup.property("Transform").property("Anchor Point").setValue([-model.rect.width / 2, -model.rect.height / 2]);
+    fillProp = vectorGroup.property("Contents").addProperty("ADBE Vector Graphic - Fill");
+    fillProp.property("Color").setValue(model.fillColor);
     return this;
   };
 

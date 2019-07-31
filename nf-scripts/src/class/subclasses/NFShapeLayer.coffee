@@ -17,14 +17,14 @@ class NFShapeLayer extends NFLayer
   Adds a new rectangle to the shape layer
   @memberof NFShapeLayer
   @param {Object} model
-  @param {float[]} [model.color=[1,1,1]] - the solid color. Three-value array of floats
+  @param {float[]} [model.fillColor=[1,1,1]] - the solid color. Three-value array of floats
   from 0.0-1.0 in the form [R, G, B]
   @param {rect} model.rect - the rect object
   @returns {NFShapeLayer} self
   ###
   addRectangle: (model) ->
     model =
-      color: model.color ? [1,1,1]
+      fillColor: model.fillColor ? [1,1,1]
       rect: model.rect ? throw new Error "Rect required"
       name: model.name ? "New Rectangle"
     vectorGroup = @property("Contents").addProperty("ADBE Vector Group")
@@ -34,6 +34,9 @@ class NFShapeLayer extends NFLayer
     rectPath.property("Size").setValue([model.rect.width, model.rect.height])
     rectPath.property("Position").setValue([model.rect.left, model.rect.top])
     vectorGroup.property("Transform").property("Anchor Point").setValue([-model.rect.width/2, -model.rect.height/2])
+    fillProp = vectorGroup.property("Contents").addProperty("ADBE Vector Graphic - Fill")
+    fillProp.property("Color").setValue model.fillColor
+
     # $.level = 2
     # debugger
 

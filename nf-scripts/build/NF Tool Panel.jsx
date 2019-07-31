@@ -549,6 +549,13 @@ toolRegistry = {
           return openScript("nf_Scratch.jsx");
         }
       },
+      createAnnotations: {
+        name: "Create Annotations",
+        automaticUndo: true,
+        callback: function() {
+          return openScript("nf_CreateAnnotations.jsx");
+        }
+      },
       debug: {
         name: "Debug",
         automaticUndo: false,
