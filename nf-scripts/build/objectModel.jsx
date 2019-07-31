@@ -388,6 +388,78 @@ NFComp = (function(superClass) {
 
 
   /**
+  Given a shape layer and number of lines, creates a new NFHighlightLayer
+  highlight.
+  @memberof NFComp
+  @param {Object} model
+  @param {NFLayer} model.shapeLayer the shape layer with target shape
+  @param {int} model.lines the number of lines
+  @returns {NFHighlightLayer} the new highlight
+   */
+
+  NFComp.prototype.createHighlight = function(model) {
+    var currTime, group, highlightLayer, i, j, lineGroup, linePathProp, lineShape, lineStrokeProp, lineTrimProp, mainContents, rect, ref, ref1, ref2;
+    model = {
+      shapeLayer: (function() {
+        if ((ref = model.shapeLayer) != null) {
+          return ref;
+        } else {
+          throw new Error("Must specify a shape layer");
+        }
+      })(),
+      lines: (function() {
+        if ((ref1 = model.lines) != null) {
+          return ref1;
+        } else {
+          throw new Error("Must include number of lines");
+        }
+      })()
+    };
+    if (!model.shapeLayer.isShapeLayer()) {
+      throw new Error("model.shapeLayer must be a valid shape layer");
+    }
+    currTime = this.getTime();
+    rect = model.shapeLayer.sourceRect();
+    this.setTime(currTime);
+    highlightLayer = new NFLayer(this.comp.layers.addShape());
+    highlightLayer.setName((model.shapeLayer.getName()) + " Highlight");
+    highlightLayer.transform().property("Position").setValue([0, 0]);
+    highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]';
+    highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY;
+    highlightLayer.effects().addProperty('AV_Highlighter');
+    highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")';
+    mainContents = highlightLayer.property("ADBE Root Vectors Group");
+    lineShape = new Shape();
+    lineShape.vertices = [[rect.left, rect.top], [rect.left + rect.width, rect.top]];
+    lineShape.inTangents = [];
+    lineShape.outTangents = [];
+    lineShape.closed = false;
+    group = mainContents.addProperty("ADBE Vector Group");
+    group.name = "Highlight Lines";
+    for (i = j = 1, ref2 = model.lines; 1 <= ref2 ? j <= ref2 : j >= ref2; i = 1 <= ref2 ? ++j : --j) {
+      lineGroup = group.property("Contents").addProperty("ADBE Vector Group");
+      lineGroup.name = "Line " + i;
+      lineGroup.property('Transform').property('Position').expression = '[0, effect("AV Highlighter")("Spacing")*' + (i - 1) + ']';
+      linePathProp = lineGroup.property("Contents").addProperty("ADBE Vector Shape - Group");
+      linePathProp.name = "Line " + i + " Path";
+      linePathProp.property("ADBE Vector Shape").setValue(lineShape);
+      lineTrimProp = lineGroup.property("Contents").addProperty('ADBE Vector Filter - Trim');
+      if (i === 1) {
+        lineTrimProp.property('Start').expression = 'effect("AV Highlighter")("Start Offset")';
+      }
+      lineTrimProp.property('End').expression = NFTools.readExpression("highlight-trim-end-expression", {
+        LINE_COUNT: model.lines,
+        THIS_LINE: i
+      });
+      lineStrokeProp = lineGroup.property("Contents").addProperty("ADBE Vector Graphic - Stroke");
+      lineStrokeProp.property("Color").expression = NFTools.readExpression("highlight-stroke-color-expression");
+      lineStrokeProp.property('Stroke Width').expression = 'effect("AV Highlighter")("Thickness")';
+    }
+    return null;
+  };
+
+
+  /**
   Creates and returns a new text layer in this comp
   @memberof NFComp
   @param {Object} model
@@ -4288,11 +4360,11 @@ NFPageComp = (function(superClass) {
    */
 
   NFPageComp.prototype.highlights = function() {
-    var highlightLayers, j, len, sourceLayers, theLayer;
+    var highlightLayers, i, len, sourceLayers, theLayer;
     sourceLayers = NF.Util.collectionToArray(this.comp.layers);
     highlightLayers = new NFHighlightLayerCollection();
-    for (j = 0, len = sourceLayers.length; j < len; j++) {
-      theLayer = sourceLayers[j];
+    for (i = 0, len = sourceLayers.length; i < len; i++) {
+      theLayer = sourceLayers[i];
       if (NFHighlightLayer.isHighlightLayer(theLayer)) {
         highlightLayers.add(theLayer);
       }
@@ -4358,71 +4430,6 @@ NFPageComp = (function(superClass) {
 
   NFPageComp.prototype.getPDFLayer = function() {
     return this.layerWithName(this.getName().replace(" NFPage", ".pdf"));
-  };
-
-
-  /**
-  Given a shape layer and number of lines, creates a new NFHighlightLayer
-  highlight.
-  @memberof NFPageComp
-  @param {Object} model
-  @param {NFLayer} model.shapeLayer the shape layer with target shape
-  @param {int} model.lines the number of lines
-  @returns {NFHighlightLayer} the new highlight
-   */
-
-  NFPageComp.prototype.createHighlight = function(model) {
-    var currTime, group, highlightLayer, i, j, lineGroup, linePathProp, lineShape, lineStrokeProp, lineTrimProp, mainContents, rect, ref, ref1, ref2;
-    model = {
-      shapeLayer: (function() {
-        if ((ref = model.shapeLayer) != null) {
-          return ref;
-        } else {
-          throw new Error("Must specify a shape layer");
-        }
-      })(),
-      lines: (function() {
-        if ((ref1 = model.lines) != null) {
-          return ref1;
-        } else {
-          throw new Error("Must include number of lines");
-        }
-      })()
-    };
-    if (!model.shapeLayer.isShapeLayer()) {
-      throw new Error("model.shapeLayer must be a valid shape layer");
-    }
-    currTime = this.getTime();
-    rect = model.shapeLayer.sourceRect();
-    this.setTime(currTime);
-    highlightLayer = new NFLayer(this.comp.layers.addShape());
-    highlightLayer.setName((model.shapeLayer.getName()) + " Highlight");
-    highlightLayer.transform().property("Position").setValue([0, 0]);
-    highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]';
-    highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY;
-    highlightLayer.effects().addProperty('AV_Highlighter');
-    highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")';
-    mainContents = highlightLayer.property("ADBE Root Vectors Group");
-    lineShape = new Shape();
-    lineShape.vertices = [[rect.left, rect.top], [rect.left + rect.width, rect.top]];
-    lineShape.inTangents = [];
-    lineShape.outTangents = [];
-    lineShape.closed = false;
-    group = mainContents.addProperty("ADBE Vector Group");
-    group.name = "Highlight Lines";
-    for (i = j = 1, ref2 = model.lines; 1 <= ref2 ? j <= ref2 : j >= ref2; i = 1 <= ref2 ? ++j : --j) {
-      lineGroup = group.property("Contents").addProperty("ADBE Vector Group");
-      lineGroup.name = "Line " + i;
-      linePathProp = lineGroup.property("Contents").addProperty("ADBE Vector Shape - Group");
-      linePathProp.name = "Line " + i + " Path";
-      linePathProp.property("ADBE Vector Shape").setValue(lineShape);
-      lineTrimProp = lineGroup.property("Contents").addProperty('ADBE Vector Filter - Trim');
-      lineTrimProp.property('Start').expression = 'effect("AV Highlighter")("Start Offset")';
-      lineStrokeProp = lineGroup.property("Contents").addProperty("ADBE Vector Graphic - Stroke");
-      lineStrokeProp.property("Color").expression = NFTools.readExpression("highlight-stroke-color-expression");
-      lineStrokeProp.property('Stroke Width').expression = 'effect("AV Highlighter")("Thickness")';
-    }
-    return null;
   };
 
   return NFPageComp;

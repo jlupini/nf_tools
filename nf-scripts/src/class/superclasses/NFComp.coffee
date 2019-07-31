@@ -223,6 +223,72 @@ class NFComp extends NFObject
     return shapeLayer
 
   ###*
+  Given a shape layer and number of lines, creates a new NFHighlightLayer
+  highlight.
+  @memberof NFComp
+  @param {Object} model
+  @param {NFLayer} model.shapeLayer the shape layer with target shape
+  @param {int} model.lines the number of lines
+  @returns {NFHighlightLayer} the new highlight
+  ###
+  createHighlight: (model) ->
+    model =
+      shapeLayer: model.shapeLayer ? throw new Error "Must specify a shape layer"
+      lines: model.lines ? throw new Error "Must include number of lines"
+    throw new Error "model.shapeLayer must be a valid shape layer" unless model.shapeLayer.isShapeLayer()
+
+    # First, let's get the source rect
+    currTime = @getTime()
+    rect = model.shapeLayer.sourceRect()
+    @setTime currTime
+
+    # Boom done. Now we'll make a new Shape Layer and Build the Highlight
+    highlightLayer = new NFLayer @comp.layers.addShape()
+    highlightLayer.setName "#{model.shapeLayer.getName()} Highlight"
+    highlightLayer.transform().property("Position").setValue [0,0]
+    highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]'
+    highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY
+    highlightLayer.effects().addProperty 'AV_Highlighter'
+    highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")'
+
+    mainContents = highlightLayer.property("ADBE Root Vectors Group")
+
+    lineShape = new Shape()
+    lineShape.vertices = [
+      [rect.left, rect.top],
+      [rect.left + rect.width, rect.top]
+    ]
+    lineShape.inTangents = []
+    lineShape.outTangents = []
+    lineShape.closed = no
+
+    # Add Group
+    group = mainContents.addProperty("ADBE Vector Group")
+    group.name = "Highlight Lines"
+    for i in [1..model.lines]
+      lineGroup = group.property("Contents").addProperty("ADBE Vector Group")
+      lineGroup.name = "Line #{i}"
+      lineGroup.property('Transform').property('Position').expression = '[0, effect("AV Highlighter")("Spacing")*' + (i - 1) + ']'
+      linePathProp = lineGroup.property("Contents").addProperty("ADBE Vector Shape - Group")
+      linePathProp.name = "Line #{i} Path"
+      linePathProp.property("ADBE Vector Shape").setValue(lineShape)
+      lineTrimProp = lineGroup.property("Contents").addProperty('ADBE Vector Filter - Trim')
+      lineTrimProp.property('Start').expression = 'effect("AV Highlighter")("Start Offset")' if i is 1
+      lineTrimProp.property('End').expression = NFTools.readExpression "highlight-trim-end-expression",
+        LINE_COUNT: model.lines
+        THIS_LINE: i
+      lineStrokeProp = lineGroup.property("Contents").addProperty("ADBE Vector Graphic - Stroke")
+
+      lineStrokeProp.property("Color").expression = NFTools.readExpression "highlight-stroke-color-expression"
+      lineStrokeProp.property('Stroke Width').expression = 'effect("AV Highlighter")("Thickness")'
+
+
+    # FIXME: Add in the meat of the expression logic here
+
+
+    return null
+
+  ###*
   Creates and returns a new text layer in this comp
   @memberof NFComp
   @param {Object} model

@@ -267,7 +267,7 @@ NFTools =
   @param {String} expName - The name of the script. No path or extension.
   @param {Object} [replacementDict] - a dictionary of search/replace keys in the
   file.
-  @example fileString = readExpression "expressionfile"
+  @example fileString = readExpression "expressionfile",\nEXAMPLE_PLACEHOLDER: new_value
   @throw Throws error if search value could not be found
   @throw Throws error if file cannot be found
   @throw Throws error if file cannot be read
