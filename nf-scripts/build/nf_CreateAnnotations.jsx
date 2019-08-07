@@ -1,4 +1,4 @@
-var AnnotationBorderStyleType, AnnotationType, activeComp, annotationData, annotationLayer, convertCartesian, convertColorArray, getRectFromTextItem, i, item, j, len, len1, pdfLayer, ref, scaleFactor, testAnnotation, textContent, viewport;
+var AnnotationBorderStyleType, AnnotationType, activeComp, alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationLayer, annotationRect, annotationsOverlap, convertCartesian, convertColorJSON, getRectFromTextItem, i, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, overlapExists, parsedData, pdfData, pdfDataFile, pdfFile, pdfLayer, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, viewport;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
@@ -39,7 +39,9 @@ AnnotationBorderStyleType = {
   UNDERLINE: 5
 };
 
-convertColorArray = function(arr) {
+convertColorJSON = function(obj) {
+  var arr;
+  arr = [obj["0"], obj["1"], obj["2"]];
   return [arr[0] / 256, arr[1] / 256, arr[2] / 256];
 };
 
@@ -68,107 +70,87 @@ getRectFromTextItem = function(textItem) {
 
 app.beginUndoGroup('Create Annotations');
 
-viewport = [0, 0, 584.957, 782.986];
-
-annotationData = [
-  {
-    annotationFlags: 4,
-    color: [250, 205, 90],
-    hasAppearance: true,
-    id: '24R',
-    rect: [299.9625, 264.4351, 545.1307, 430.6619],
-    subtype: 'Highlight',
-    annotationType: 9,
-    hasPopup: false,
-    title: '',
-    contents: ''
-  }
-];
-
-textContent = {
-  "items": [
-    {
-      str: 'Higher dietary anthocyanin and flavonol intakes are associated with',
-      fontHeight: 15.9403,
-      width: 488.74872636,
-      height: 15.9403,
-      left: 39.9685,
-      top: 121.03010000000003
-    }, {
-      str: 'anti-inflammatory effects in a population of US adults',
-      tx: [15.9403, 0, 0, -15.9403, 39.9685, 154.88570000000004],
-      fontHeight: 15.9403,
-      width: 386.46300932,
-      height: 15.9403,
-      left: 39.9685,
-      top: 138.94540000000003
-    }, {
-      str: '1',
-      tx: [11.9551, 0, 0, -10.6257, 426.444, 147.79869999999994],
-      fontHeight: 10.6257,
-      width: 6.599215200000001,
-      height: 11.9551,
-      left: 426.444,
-      top: 137.17299999999994
-    }, {
-      str: 'Aedin Cassidy,',
-      tx: [9.9626, 0, 0, -9.9626, 39.9685, 178.8098],
-      fontHeight: 9.9626,
-      width: 60.25978236,
-      height: 9.9626,
-      left: 39.9685,
-      top: 168.8472
-    }, {
-      str: '2',
-      tx: [7.4718, 0, 0, -6.641, 100.233, 174.3877],
-      fontHeight: 6.641,
-      width: 3.7359,
-      height: 7.4718,
-      left: 100.233,
-      top: 167.7467
-    }, {
-      str: 'Gail Rogers,',
-      tx: [9.9626, 0, 0, -9.9626, 107.263, 178.8098],
-      fontHeight: 9.9626,
-      width: 51.79754992,
-      height: 9.9626,
-      left: 107.263,
-      top: 168.8472
-    }, {
-      str: '3',
-      tx: [7.4718, 0, 0, -6.641, 159.0803, 174.3877],
-      fontHeight: 6.641,
-      width: 3.7359,
-      height: 7.4718,
-      left: 159.0803,
-      top: 167.7467
-    }
-  ]
-};
-
 activeComp = NFProject.activeComp();
 
 pdfLayer = activeComp != null ? activeComp.getPDFLayer() : void 0;
 
+pdfFile = (ref = pdfLayer.$.source) != null ? ref.file : void 0;
+
+pdfDataFile = pdfFile.fsName.replace(".pdf", ".json");
+
+pdfData = NFTools.readFile(pdfDataFile, true, false);
+
+parsedData = JSON.parse(pdfData);
+
+annotationData = parsedData["annotations"];
+
+viewport = parsedData["viewport"].viewBox;
+
+textContent = parsedData["textContent"];
+
 scaleFactor = pdfLayer.transform().scale.value;
 
-for (i = 0, len = annotationData.length; i < len; i++) {
-  testAnnotation = annotationData[i];
-  annotationLayer = activeComp.addShapeLayer();
-  annotationLayer.addRectangle({
-    fillColor: convertColorArray(testAnnotation.color),
-    rect: convertCartesian(testAnnotation.rect, viewport),
-    name: "Test Annotation"
-  });
-  ref = textContent.items;
-  for (j = 0, len1 = ref.length; j < len1; j++) {
-    item = ref[j];
-    annotationLayer.addRectangle({
-      name: item.str,
-      rect: item
-    });
+trimmedAnnotationData = [];
+
+for (j = 0, len = annotationData.length; j < len; j++) {
+  testAnnotation = annotationData[j];
+  if (testAnnotation.subtype === "StrikeOut" || testAnnotation.subtype === "Highlight" || testAnnotation.subtype === "Underline") {
+    testAnnotationRect = new Rect(convertCartesian(testAnnotation.rect, viewport));
+    annotationsOverlap = false;
+    if (trimmedAnnotationData.length !== 0) {
+      for (k = 0, len1 = trimmedAnnotationData.length; k < len1; k++) {
+        alreadyAddedAnnotation = trimmedAnnotationData[k];
+        alreadyAddedAnnotationRect = new Rect(convertCartesian(alreadyAddedAnnotation.rect, viewport));
+        if (testAnnotationRect.contains(alreadyAddedAnnotationRect)) {
+          annotationsOverlap = true;
+        }
+      }
+    }
+    if (!annotationsOverlap) {
+      trimmedAnnotationData.push(testAnnotation);
+    }
   }
+}
+
+for (i = l = 0, len2 = trimmedAnnotationData.length; l < len2; i = ++l) {
+  testAnnotation = trimmedAnnotationData[i];
+  annotationRect = new Rect(convertCartesian(testAnnotation.rect, viewport));
+  matchingLines = [];
+  for (m = 0, len3 = textContent.length; m < len3; m++) {
+    textItem = textContent[m];
+    textRect = new Rect(textItem);
+    if (annotationRect.contains(textRect)) {
+      overlapExists = false;
+      if (matchingLines.length !== 0) {
+        for (n = 0, len4 = matchingLines.length; n < len4; n++) {
+          matchedLine = matchingLines[n];
+          if (matchedLine.yOverlapWith(textRect) !== 0) {
+            overlapExists = true;
+          }
+        }
+      }
+      if (!overlapExists) {
+        matchingLines.push(textRect);
+      }
+    }
+  }
+  lineCount = matchingLines.length;
+  if (lineCount === 0) {
+    lineCount = 1;
+  }
+  annotationLayer = activeComp.addShapeLayer();
+  annotationLayer.setName("Imported Shape " + i + " - n=" + lineCount);
+  annotationLayer.addRectangle({
+    fillColor: convertColorJSON(testAnnotation.color),
+    rect: annotationRect
+  });
   annotationLayer.transform().scale.setValue(scaleFactor);
+  activeComp.createHighlight({
+    shapeLayer: annotationLayer,
+    lines: lineCount,
+    name: "Auto Highlight " + i
+  });
+  annotationLayer.remove();
 }
 
 app.endUndoGroup();

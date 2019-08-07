@@ -53,10 +53,23 @@ loadingTask.promise.then(function(doc) {
   }
   return lastPromise;
 }).then((function() {
+  var dataObject, fs;
   console.log('# End of Document');
   console.log(annotations);
   console.log(viewport);
   console.log(textContent);
+  dataObject = {
+    annotations: annotations,
+    viewport: viewport,
+    textContent: textContent
+  };
+  fs = require('fs');
+  fs.writeFile('annotations.json', JSON.stringify(dataObject, null, "  "), function(err) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log('The file was saved!');
+  });
 }), function(err) {
   console.error('Error: ' + err);
 });

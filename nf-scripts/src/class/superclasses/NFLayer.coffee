@@ -4,6 +4,7 @@ Creates a new NFLayer from a given AVLayer
 @classdesc NF Wrapper object for an AVLayer
 @param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer (in which case we use it's AVLayer)
 @property {AVLayer} layer - the wrapped AVLayer
+@property {AVLayer} $ - the wrapped AVLayer (alternative access)
 @throws Will throw an error if not given a valid AVLayer object
 ###
 class NFLayer extends NFObject
@@ -11,8 +12,10 @@ class NFLayer extends NFObject
     NFObject.call(this)
     if layer.isAVLayer()
       @layer = layer
+      @$ = @layer
     else if layer instanceof NFLayer
       @layer  = layer.layer
+      @$ = @layer
     else
       throw new Error "Can only create a new NFLayer with a valid AVLayer or NFLayer object"
     @

@@ -15,10 +15,8 @@
         {
             "type": "extendscript-debug",
             "request": "launch",
-            "name": "Test",
-            "trace": true,
-            "program": "${workspaceFolder}/test.jsx",
-            "stopOnEntry": true
+            "name": "Current File",
+            "program": "${file}"
         },
         {
             "type": "extendscript-debug",

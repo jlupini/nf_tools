@@ -14,5 +14,6 @@ if dev
   eval '#include "layoutDictionary.jsx"'
   eval '#include "NFProject.jsx"'
   eval '#include "NFTools.jsx"'
+  eval '#include "Rect.jsx"'
 else
   $.write ">> Prod mode: not loading libraries!\n"

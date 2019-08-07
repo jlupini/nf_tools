@@ -234,13 +234,15 @@ NFTools =
   slashes are necessary
   @param {boolean} [fixLineBreaks=true] replace file line breaks with standard
   js line breaks
+  @param {boolean} [relativeToScriptFile=true] the file path is relative to the script file
   @example fileString = readFile "expressions/expressionfile.js"
   @returns {String} the file contents
   ###
-  readFile: (filename, fixLineBreaks = true) ->
+  readFile: (filename, fixLineBreaks = true, relativeToScriptFile = true) ->
     file_contents = undefined
     start_folder = new Folder(new File($.fileName).parent.fsName)
-    file_handle = new File(start_folder.fsName + '/' + filename)
+    startPath = if relativeToScriptFile then start_folder.fsName + '/' else ""
+    file_handle = new File(startPath + filename)
     if !file_handle.exists
       throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + start_folder.fsName + '\'.')
     try
@@ -301,6 +303,34 @@ NFTools =
     newShape.vertices = [lt, rt, rb, lb]
     newShape.closed = true
     return newShape
+
+  ###*
+  Returns whether or not two rect objects intersect
+  @memberof NFTools
+  @param {Object} [rectA] - a rect object with .top, .left, .width, and .height properties
+  @param {Object} [rectB] - a rect object with .top, .left, .width, and .height properties
+  @returns {Shape} the Shape object
+  ###
+  rectsIntersect: (rectA, rectB) ->
+    unless rectA?.top? and rectA.left? and rectA.width? and rectA.height? and rectB?.top? and rectB.left? and rectB.width? and rectB.height?
+      throw new Error "Invalid rect object"
+
+    minAx = rectA.left
+    minAy = rectA.top
+    maxAx = rectA.left + rectA.width
+    maxAy = rectA.top + rectA.height
+
+    minBx = rectB.left
+    minBy = rectB.top
+    maxBx = rectB.left + rectB.width
+    maxBy = rectB.top + rectB.height
+
+    aLeftOfB = maxAx < minBx;
+    aRightOfB = minAx > maxBx;
+    aAboveB = minAy > maxBy;
+    aBelowB = maxAy < minBy;
+
+    return !( aLeftOfB or aRightOfB or aAboveB or aBelowB )
 
   ###*
   Logs a message to log.txt

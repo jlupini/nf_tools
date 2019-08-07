@@ -393,12 +393,13 @@ NFComp = (function(superClass) {
   @memberof NFComp
   @param {Object} model
   @param {NFLayer} model.shapeLayer the shape layer with target shape
+  @param {String} [model.name="OLD_NAME Highlight"] the new name
   @param {int} model.lines the number of lines
   @returns {NFHighlightLayer} the new highlight
    */
 
   NFComp.prototype.createHighlight = function(model) {
-    var currTime, group, highlightLayer, highlightProperty, i, j, lineGroup, lineHeight, linePathProp, lineShape, lineStrokeProp, lineTrimProp, mainContents, paddedLineHeight, rect, ref, ref1, ref2, xPadding, yPadding;
+    var currTime, group, highlightLayer, highlightProperty, i, j, lineGroup, lineHeight, linePathProp, lineShape, lineStrokeProp, lineTrimProp, mainContents, paddedLineHeight, rect, ref, ref1, ref2, ref3, xPadding, yOffset, yPadding;
     model = {
       shapeLayer: (function() {
         if ((ref = model.shapeLayer) != null) {
@@ -413,7 +414,8 @@ NFComp = (function(superClass) {
         } else {
           throw new Error("Must include number of lines");
         }
-      })()
+      })(),
+      name: (ref2 = model.name) != null ? ref2 : (model.shapeLayer.getName()) + " Highlight"
     };
     if (!model.shapeLayer.isShapeLayer()) {
       throw new Error("model.shapeLayer must be a valid shape layer");
@@ -426,14 +428,15 @@ NFComp = (function(superClass) {
     yPadding = lineHeight / 7 / model.lines;
     paddedLineHeight = lineHeight + yPadding;
     highlightLayer = new NFLayer(this.comp.layers.addShape());
-    highlightLayer.setName((model.shapeLayer.getName()) + " Highlight");
+    highlightLayer.setName(model.name);
     highlightLayer.transform().property("Position").setValue([0, 0]);
     highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]';
     highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY;
     highlightProperty = highlightLayer.effects().addProperty('AV_Highlighter');
     highlightProperty.property("Spacing").setValue(paddedLineHeight);
     highlightProperty.property("Thickness").setValue(paddedLineHeight + 4);
-    highlightProperty.property("Offset").setValue([0, paddedLineHeight / 2 - yPadding * 2]);
+    yOffset = model.lines === 1 ? paddedLineHeight / 2 - yPadding : paddedLineHeight / 2 - yPadding * 2;
+    highlightProperty.property("Offset").setValue([0, yOffset]);
     highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")';
     mainContents = highlightLayer.property("ADBE Root Vectors Group");
     lineShape = new Shape();
@@ -443,7 +446,7 @@ NFComp = (function(superClass) {
     lineShape.closed = false;
     group = mainContents.addProperty("ADBE Vector Group");
     group.name = "Highlight Lines";
-    for (i = j = 1, ref2 = model.lines; 1 <= ref2 ? j <= ref2 : j >= ref2; i = 1 <= ref2 ? ++j : --j) {
+    for (i = j = 1, ref3 = model.lines; 1 <= ref3 ? j <= ref3 : j >= ref3; i = 1 <= ref3 ? ++j : --j) {
       lineGroup = group.property("Contents").addProperty("ADBE Vector Group");
       lineGroup.name = "Line " + i;
       lineGroup.property('Transform').property('Position').expression = '[0, effect("AV Highlighter")("Spacing")*' + (i - 1) + ']';
@@ -669,6 +672,7 @@ Creates a new NFLayer from a given AVLayer
 @classdesc NF Wrapper object for an AVLayer
 @param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer (in which case we use it's AVLayer)
 @property {AVLayer} layer - the wrapped AVLayer
+@property {AVLayer} $ - the wrapped AVLayer (alternative access)
 @throws Will throw an error if not given a valid AVLayer object
  */
 var NFLayer,
@@ -682,8 +686,10 @@ NFLayer = (function(superClass) {
     NFObject.call(this);
     if (layer.isAVLayer()) {
       this.layer = layer;
+      this.$ = this.layer;
     } else if (layer instanceof NFLayer) {
       this.layer = layer.layer;
+      this.$ = this.layer;
     } else {
       throw new Error("Can only create a new NFLayer with a valid AVLayer or NFLayer object");
     }

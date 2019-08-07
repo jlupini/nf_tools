@@ -244,17 +244,22 @@ NFTools = {
   slashes are necessary
   @param {boolean} [fixLineBreaks=true] replace file line breaks with standard
   js line breaks
+  @param {boolean} [relativeToScriptFile=true] the file path is relative to the script file
   @example fileString = readFile "expressions/expressionfile.js"
   @returns {String} the file contents
    */
-  readFile: function(filename, fixLineBreaks) {
-    var e, error, file_contents, file_handle, start_folder;
+  readFile: function(filename, fixLineBreaks, relativeToScriptFile) {
+    var e, error, file_contents, file_handle, startPath, start_folder;
     if (fixLineBreaks == null) {
       fixLineBreaks = true;
     }
+    if (relativeToScriptFile == null) {
+      relativeToScriptFile = true;
+    }
     file_contents = void 0;
     start_folder = new Folder(new File($.fileName).parent.fsName);
-    file_handle = new File(start_folder.fsName + '/' + filename);
+    startPath = relativeToScriptFile ? start_folder.fsName + '/' : "";
+    file_handle = new File(startPath + filename);
     if (!file_handle.exists) {
       throw new Error('I can\'t find this file: \'' + filename + '\'. \n\nI looked in here: \'' + start_folder.fsName + '\'.');
     }
@@ -321,6 +326,33 @@ NFTools = {
     newShape.vertices = [lt, rt, rb, lb];
     newShape.closed = true;
     return newShape;
+  },
+
+  /**
+  Returns whether or not two rect objects intersect
+  @memberof NFTools
+  @param {Object} [rectA] - a rect object with .top, .left, .width, and .height properties
+  @param {Object} [rectB] - a rect object with .top, .left, .width, and .height properties
+  @returns {Shape} the Shape object
+   */
+  rectsIntersect: function(rectA, rectB) {
+    var aAboveB, aBelowB, aLeftOfB, aRightOfB, maxAx, maxAy, maxBx, maxBy, minAx, minAy, minBx, minBy;
+    if (!(((rectA != null ? rectA.top : void 0) != null) && (rectA.left != null) && (rectA.width != null) && (rectA.height != null) && ((rectB != null ? rectB.top : void 0) != null) && (rectB.left != null) && (rectB.width != null) && (rectB.height != null))) {
+      throw new Error("Invalid rect object");
+    }
+    minAx = rectA.left;
+    minAy = rectA.top;
+    maxAx = rectA.left + rectA.width;
+    maxAy = rectA.top + rectA.height;
+    minBx = rectB.left;
+    minBy = rectB.top;
+    maxBx = rectB.left + rectB.width;
+    maxBy = rectB.top + rectB.height;
+    aLeftOfB = maxAx < minBx;
+    aRightOfB = minAx > maxBx;
+    aAboveB = minAy > maxBy;
+    aBelowB = maxAy < minBy;
+    return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
   },
 
   /**

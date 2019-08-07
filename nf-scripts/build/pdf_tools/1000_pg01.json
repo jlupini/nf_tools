@@ -1,0 +1,2873 @@
+{
+  "annotations": [
+    {
+      "annotationFlags": 0,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "hasAppearance": true,
+      "id": "22R",
+      "rect": [
+        559,
+        388.008,
+        569,
+        449.144
+      ],
+      "subtype": "Link",
+      "annotationType": 2,
+      "url": "http://ajcn.nutrition.org/",
+      "unsafeUrl": "http://ajcn.nutrition.org/"
+    },
+    {
+      "annotationFlags": 4,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 124,
+        "1": 200,
+        "2": 104
+      },
+      "hasAppearance": true,
+      "id": "23R",
+      "rect": [
+        39.15884,
+        100.3647,
+        285.8416,
+        143.5545
+      ],
+      "subtype": "Highlight",
+      "annotationType": 9,
+      "hasPopup": false,
+      "title": "Michael",
+      "contents": ""
+    },
+    {
+      "annotationFlags": 4,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 250,
+        "1": 205,
+        "2": 90
+      },
+      "hasAppearance": true,
+      "id": "24R",
+      "rect": [
+        299.9625,
+        264.4351,
+        545.1307,
+        430.6619
+      ],
+      "subtype": "Highlight",
+      "annotationType": 9,
+      "hasPopup": false,
+      "title": "",
+      "contents": ""
+    },
+    {
+      "annotationFlags": 4,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 200,
+        "1": 133,
+        "2": 218
+      },
+      "hasAppearance": true,
+      "id": "25R",
+      "rect": [
+        39.9685,
+        415.1105,
+        284.9987,
+        446.2021
+      ],
+      "subtype": "Highlight",
+      "annotationType": 9,
+      "hasPopup": false,
+      "title": "",
+      "contents": ""
+    },
+    {
+      "annotationFlags": 4,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 236,
+        "1": 40,
+        "2": 20
+      },
+      "hasAppearance": true,
+      "id": "26R",
+      "rect": [
+        39.9685,
+        415.1105,
+        284.9987,
+        446.2021
+      ],
+      "subtype": "Underline",
+      "annotationType": 10,
+      "hasPopup": false,
+      "title": "",
+      "contents": ""
+    },
+    {
+      "annotationFlags": 4,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 236,
+        "1": 40,
+        "2": 20
+      },
+      "hasAppearance": true,
+      "id": "27R",
+      "rect": [
+        39.9676,
+        224.6762,
+        285.0193,
+        289.898
+      ],
+      "subtype": "Underline",
+      "annotationType": 10,
+      "hasPopup": false,
+      "title": "",
+      "contents": ""
+    },
+    {
+      "annotationFlags": 4,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 105,
+        "1": 176,
+        "2": 241
+      },
+      "hasAppearance": true,
+      "id": "28R",
+      "rect": [
+        154.3731,
+        359.3814,
+        241.9496,
+        368.2491
+      ],
+      "subtype": "Highlight",
+      "annotationType": 9,
+      "hasPopup": false,
+      "title": "",
+      "contents": ""
+    },
+    {
+      "annotationFlags": 4,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 236,
+        "1": 40,
+        "2": 20
+      },
+      "hasAppearance": true,
+      "id": "29R",
+      "rect": [
+        154.3731,
+        359.3814,
+        241.9496,
+        368.2491
+      ],
+      "subtype": "StrikeOut",
+      "annotationType": 12,
+      "hasPopup": false,
+      "title": "",
+      "contents": ""
+    },
+    {
+      "annotationFlags": 4,
+      "borderStyle": {
+        "width": 0,
+        "style": 1,
+        "dashArray": [
+          3
+        ],
+        "horizontalCornerRadius": 0,
+        "verticalCornerRadius": 0
+      },
+      "color": {
+        "0": 236,
+        "1": 40,
+        "2": 20
+      },
+      "hasAppearance": true,
+      "id": "30R",
+      "rect": [
+        307.9566,
+        88.93763,
+        523.1959,
+        96.82016
+      ],
+      "subtype": "StrikeOut",
+      "annotationType": 12,
+      "hasPopup": false,
+      "title": "",
+      "contents": ""
+    }
+  ],
+  "viewport": {
+    "viewBox": [
+      0,
+      0,
+      584.957,
+      782.986
+    ],
+    "scale": 1,
+    "rotation": 0,
+    "offsetX": 0,
+    "offsetY": 0,
+    "transform": [
+      1,
+      0,
+      0,
+      -1,
+      0,
+      782.986
+    ],
+    "width": 584.957,
+    "height": 782.986
+  },
+  "textContent": [
+    {
+      "str": "Higher dietary anthocyanin and flavonol intakes are associated with",
+      "tx": [
+        15.9403,
+        0,
+        0,
+        -15.9403,
+        39.9685,
+        136.97040000000004
+      ],
+      "fontHeight": 15.9403,
+      "width": 488.74872636,
+      "height": 15.9403,
+      "left": 39.9685,
+      "top": 121.03010000000003
+    },
+    {
+      "str": "anti-inflammatory effects in a population of US adults",
+      "tx": [
+        15.9403,
+        0,
+        0,
+        -15.9403,
+        39.9685,
+        154.88570000000004
+      ],
+      "fontHeight": 15.9403,
+      "width": 386.46300932,
+      "height": 15.9403,
+      "left": 39.9685,
+      "top": 138.94540000000003
+    },
+    {
+      "str": "1",
+      "tx": [
+        11.9551,
+        0,
+        0,
+        -10.6257,
+        426.444,
+        147.79869999999994
+      ],
+      "fontHeight": 10.6257,
+      "width": 6.599215200000001,
+      "height": 11.9551,
+      "left": 426.444,
+      "top": 137.17299999999994
+    },
+    {
+      "str": "Aedin Cassidy,",
+      "tx": [
+        9.9626,
+        0,
+        0,
+        -9.9626,
+        39.9685,
+        178.8098
+      ],
+      "fontHeight": 9.9626,
+      "width": 60.25978236,
+      "height": 9.9626,
+      "left": 39.9685,
+      "top": 168.8472
+    },
+    {
+      "str": "2",
+      "tx": [
+        7.4718,
+        0,
+        0,
+        -6.641,
+        100.233,
+        174.3877
+      ],
+      "fontHeight": 6.641,
+      "width": 3.7359,
+      "height": 7.4718,
+      "left": 100.233,
+      "top": 167.7467
+    },
+    {
+      "str": "Gail Rogers,",
+      "tx": [
+        9.9626,
+        0,
+        0,
+        -9.9626,
+        107.263,
+        178.8098
+      ],
+      "fontHeight": 9.9626,
+      "width": 51.79754992,
+      "height": 9.9626,
+      "left": 107.263,
+      "top": 168.8472
+    },
+    {
+      "str": "3",
+      "tx": [
+        7.4718,
+        0,
+        0,
+        -6.641,
+        159.0803,
+        174.3877
+      ],
+      "fontHeight": 6.641,
+      "width": 3.7359,
+      "height": 7.4718,
+      "left": 159.0803,
+      "top": 167.7467
+    },
+    {
+      "str": "Julia J Peterson,",
+      "tx": [
+        9.9626,
+        0,
+        0,
+        -9.9626,
+        166.1102,
+        178.8098
+      ],
+      "fontHeight": 9.9626,
+      "width": 68.05651312,
+      "height": 9.9626,
+      "left": 166.1102,
+      "top": 168.8472
+    },
+    {
+      "str": "4",
+      "tx": [
+        7.4718,
+        0,
+        0,
+        -6.641,
+        234.255,
+        174.3877
+      ],
+      "fontHeight": 6.641,
+      "width": 3.7359,
+      "height": 7.4718,
+      "left": 234.255,
+      "top": 167.7467
+    },
+    {
+      "str": "Johanna T Dwyer,",
+      "tx": [
+        9.9626,
+        0,
+        0,
+        -9.9626,
+        241.285,
+        178.8098
+      ],
+      "fontHeight": 9.9626,
+      "width": 74.37579029999999,
+      "height": 9.9626,
+      "left": 241.285,
+      "top": 168.8472
+    },
+    {
+      "str": "3–5",
+      "tx": [
+        7.4718,
+        0,
+        0,
+        -6.641,
+        315.6661,
+        174.3877
+      ],
+      "fontHeight": 6.641,
+      "width": 11.207699999999999,
+      "height": 7.4718,
+      "left": 315.6661,
+      "top": 167.7467
+    },
+    {
+      "str": "Honghuang Lin,",
+      "tx": [
+        9.9626,
+        0,
+        0,
+        -9.9626,
+        330.1794,
+        178.8098
+      ],
+      "fontHeight": 9.9626,
+      "width": 66.11380612,
+      "height": 9.9626,
+      "left": 330.1794,
+      "top": 168.8472
+    },
+    {
+      "str": "6",
+      "tx": [
+        7.4718,
+        0,
+        0,
+        -6.641,
+        396.3401,
+        174.3877
+      ],
+      "fontHeight": 6.641,
+      "width": 3.7359,
+      "height": 7.4718,
+      "left": 396.3401,
+      "top": 167.7467
+    },
+    {
+      "str": "and Paul F Jacques",
+      "tx": [
+        9.9626,
+        0,
+        0,
+        -9.9626,
+        403.37,
+        178.8098
+      ],
+      "fontHeight": 9.9626,
+      "width": 81.03279962,
+      "height": 9.9626,
+      "left": 403.37,
+      "top": 168.8472
+    },
+    {
+      "str": "3,4*",
+      "tx": [
+        7.4718,
+        0,
+        0,
+        -6.641,
+        484.4408,
+        174.3877
+      ],
+      "fontHeight": 6.641,
+      "width": 13.07565,
+      "height": 7.4718,
+      "left": 484.4408,
+      "top": 167.7467
+    },
+    {
+      "str": "2",
+      "tx": [
+        5.9774,
+        0,
+        0,
+        -5.3127,
+        39.9685,
+        198.14210000000003
+      ],
+      "fontHeight": 5.3127,
+      "width": 2.9887,
+      "height": 5.9774,
+      "left": 39.9685,
+      "top": 192.82940000000002
+    },
+    {
+      "str": "Department of Nutrition, Norwich Medical School, University of East Anglia, Norwich, United Kingdom;",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        42.9165,
+        201.71370000000002
+      ],
+      "fontHeight": 7.9702,
+      "width": 341.72870116,
+      "height": 7.9702,
+      "left": 42.9165,
+      "top": 193.7435
+    },
+    {
+      "str": "3",
+      "tx": [
+        5.9774,
+        0,
+        0,
+        -5.3127,
+        386.8156,
+        198.14210000000003
+      ],
+      "fontHeight": 5.3127,
+      "width": 2.9887,
+      "height": 5.9774,
+      "left": 386.8156,
+      "top": 192.82940000000002
+    },
+    {
+      "str": "Jean Mayer USDA Human Nutrition Research",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        389.7637,
+        201.71370000000002
+      ],
+      "fontHeight": 7.9702,
+      "width": 149.3376374,
+      "height": 7.9702,
+      "left": 389.7637,
+      "top": 193.7435
+    },
+    {
+      "str": "Center on Aging and",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        39.96756,
+        211.6916
+      ],
+      "fontHeight": 7.9702,
+      "width": 69.52803970000001,
+      "height": 7.9702,
+      "left": 39.96756,
+      "top": 203.7214
+    },
+    {
+      "str": "4",
+      "tx": [
+        5.9774,
+        0,
+        0,
+        -5.3127,
+        112.4787,
+        208.12
+      ],
+      "fontHeight": 5.3127,
+      "width": 2.9887,
+      "height": 5.9774,
+      "left": 112.4787,
+      "top": 202.8073
+    },
+    {
+      "str": "The Friedman School of Nutrition Science and Policy, Tufts University, Boston, MA;",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        115.4267,
+        211.69169999999997
+      ],
+      "fontHeight": 7.9702,
+      "width": 282.59858438,
+      "height": 7.9702,
+      "left": 115.4267,
+      "top": 203.72149999999996
+    },
+    {
+      "str": "5",
+      "tx": [
+        5.9774,
+        0,
+        0,
+        -5.3127,
+        400.9889,
+        208.12
+      ],
+      "fontHeight": 5.3127,
+      "width": 2.9887,
+      "height": 5.9774,
+      "left": 400.9889,
+      "top": 202.8073
+    },
+    {
+      "str": "Tufts University School of Medicine and",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        403.9936,
+        211.69169999999997
+      ],
+      "fontHeight": 7.9702,
+      "width": 135.12039464,
+      "height": 7.9702,
+      "left": 403.9936,
+      "top": 203.72149999999996
+    },
+    {
+      "str": "Frances Stern Nutrition Center, Tufts Medical Center, Boston, MA; and",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        39.96747,
+        221.61299999999994
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.38492356000003,
+      "height": 7.9702,
+      "left": 39.96747,
+      "top": 213.64279999999994
+    },
+    {
+      "str": "6",
+      "tx": [
+        5.9774,
+        0,
+        0,
+        -5.3127,
+        289.1905,
+        218.09789999999998
+      ],
+      "fontHeight": 5.3127,
+      "width": 2.9887,
+      "height": 5.9774,
+      "left": 289.1905,
+      "top": 212.78519999999997
+    },
+    {
+      "str": "Section of Computational Biomedicine, Department of Medicine, Boston",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        292.1952,
+        221.61289999999997
+      ],
+      "fontHeight": 7.9702,
+      "width": 246.89766752000003,
+      "height": 7.9702,
+      "left": 292.1952,
+      "top": 213.64269999999996
+    },
+    {
+      "str": "University School of Medicine, Boston, MA",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        39.96786,
+        231.59079999999994
+      ],
+      "fontHeight": 7.9702,
+      "width": 144.6392045,
+      "height": 7.9702,
+      "left": 39.96786,
+      "top": 223.62059999999994
+    },
+    {
+      "str": "ABSTRACT",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        254.49479999999994
+      ],
+      "fontHeight": 8.9663,
+      "width": 48.18130968,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 245.52849999999995
+    },
+    {
+      "str": "Background:",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        265.49289999999996
+      ],
+      "fontHeight": 8.9663,
+      "width": 50.113547329999996,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 256.5266
+    },
+    {
+      "str": "Although growing evidence from trials and popula-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        93.48655,
+        265.49289999999996
+      ],
+      "fontHeight": 8.9663,
+      "width": 191.51120169999996,
+      "height": 8.9663,
+      "left": 93.48655,
+      "top": 256.5266
+    },
+    {
+      "str": "tion-based studies has supported a protective role for flavonoids in",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        276.4344
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.04897899999997,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 267.4681
+    },
+    {
+      "str": "relation to risk of certain chronic diseases, the underlying mecha-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        287.7167
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.04090933000003,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 278.7504
+    },
+    {
+      "str": "nisms remain unclear. Several previous studies focused on individ-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        298.99899999999997
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.03373629,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 290.0327
+    },
+    {
+      "str": "ual inflammatory biomarkers, but because of the limited specificity",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        310.2813
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.11981276999998,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 301.315
+    },
+    {
+      "str": "of any individual marker, an assessment of a combination of bio-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        321.5636
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.03642618,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 312.5973
+    },
+    {
+      "str": "markers may be more informative.",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        332.7885
+      ],
+      "fontHeight": 8.9663,
+      "width": 127.34208249000001,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 323.8222
+    },
+    {
+      "str": "Objective:",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        343.78659999999996
+      ],
+      "fontHeight": 8.9663,
+      "width": 39.935900200000006,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 334.8203
+    },
+    {
+      "str": "We used an inflammation score (IS) that integrated 12",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        83.11165,
+        343.78659999999996
+      ],
+      "fontHeight": 8.9663,
+      "width": 201.88700406000007,
+      "height": 8.9663,
+      "left": 83.11165,
+      "top": 334.8203
+    },
+    {
+      "str": "individual inflammatory biomarkers for the examination of associ-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        354.7282
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.04090932999998,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 345.7619
+    },
+    {
+      "str": "ations with intakes of different flavonoid classes.",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        366.0105
+      ],
+      "fontHeight": 8.9663,
+      "width": 179.97964327000003,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 357.0442
+    },
+    {
+      "str": "Design:",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        376.952
+      ],
+      "fontHeight": 8.9663,
+      "width": 28.835620800000004,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 367.9857
+    },
+    {
+      "str": "The study was a cross-sectional analysis of 2375 Framing-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        71.43304,
+        376.952
+      ],
+      "fontHeight": 8.9663,
+      "width": 213.58174915000004,
+      "height": 8.9663,
+      "left": 71.43304,
+      "top": 367.9857
+    },
+    {
+      "str": "ham Heart Study Offspring Cohort participants. Intakes of total",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        387.95009999999996
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.02656325,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 378.9838
+    },
+    {
+      "str": "flavonoids and their classes (anthocyanins, flavonols, flavanones,",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        399.2324
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.02028684000004,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 390.2661
+    },
+    {
+      "str": "flavan-3-ols, polymers, and flavones) were calculated from validated",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        410.4573
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.14760830000006,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 401.491
+    },
+    {
+      "str": "food-frequency questionnaires. Individual inflammatory biomarkers",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        421.7396
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.06960149,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 412.7733
+    },
+    {
+      "str": "were ranked, standardized, and summed to derive an overall IS and",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        433.0219
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.12608917999998,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 424.0556
+    },
+    {
+      "str": "subgroup scores of functionally related biomarkers.",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        444.3042
+      ],
+      "fontHeight": 8.9663,
+      "width": 186.48290066,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 435.3379
+    },
+    {
+      "str": "Results:",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        455.2458
+      ],
+      "fontHeight": 8.9663,
+      "width": 30.79027420000001,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 446.2795
+    },
+    {
+      "str": "In multivariate analyses, an inverse association between",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        74.60801,
+        455.2458
+      ],
+      "fontHeight": 8.9663,
+      "width": 210.39512613000005,
+      "height": 8.9663,
+      "left": 74.60801,
+      "top": 446.2795
+    },
+    {
+      "str": "higher anthocyanin and flavonol intakes and IS was observed with",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        466.24379999999996
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.04808237,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 457.2775
+    },
+    {
+      "str": "a mean",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9685,
+        477.5261
+      ],
+      "fontHeight": 8.9663,
+      "width": 27.495158949999997,
+      "height": 8.9663,
+      "left": 39.9685,
+      "top": 468.5598
+    },
+    {
+      "str": "6",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        71.48953,
+        477.5261
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 71.48953,
+      "top": 468.5598
+    },
+    {
+      "str": "SE difference between quintile categories 5 and 1 of",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        82.94129,
+        477.5261
+      ],
+      "fontHeight": 8.9663,
+      "width": 202.08964244,
+      "height": 8.9663,
+      "left": 82.94129,
+      "top": 468.5598
+    },
+    {
+      "str": "2",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 479.8421
+    },
+    {
+      "str": "1.48",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        47.39439,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 15.691025,
+      "height": 8.9663,
+      "left": 47.39439,
+      "top": 479.8421
+    },
+    {
+      "str": "6",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        67.06735,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 67.06735,
+      "top": 479.8421
+    },
+    {
+      "str": "0.32 (",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        78.57649,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 22.6578401,
+      "height": 8.9663,
+      "left": 78.57649,
+      "top": 479.8421
+    },
+    {
+      "str": "P",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        101.1967,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 5.5053082,
+      "height": 8.9663,
+      "left": 101.1967,
+      "top": 479.8421
+    },
+    {
+      "str": "-trend",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        106.6957,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 21.465322200000003,
+      "height": 8.9663,
+      "left": 106.6957,
+      "top": 479.8421
+    },
+    {
+      "str": "#",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        132.2075,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 132.2075,
+      "top": 479.8421
+    },
+    {
+      "str": "0.001) and",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        143.6593,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 40.07218796000001,
+      "height": 8.9663,
+      "left": 143.6593,
+      "top": 479.8421
+    },
+    {
+      "str": "2",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        187.7663,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 187.7663,
+      "top": 479.8421
+    },
+    {
+      "str": "0.72",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        195.1931,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 15.691025,
+      "height": 8.9663,
+      "left": 195.1931,
+      "top": 479.8421
+    },
+    {
+      "str": "6",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        214.866,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 214.866,
+      "top": 479.8421
+    },
+    {
+      "str": "0.33 (",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        226.3752,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 22.6578401,
+      "height": 8.9663,
+      "left": 226.3752,
+      "top": 479.8421
+    },
+    {
+      "str": "P",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        248.9954,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 5.5053082,
+      "height": 8.9663,
+      "left": 248.9954,
+      "top": 479.8421
+    },
+    {
+      "str": "-trend =",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        254.4944,
+        488.8084
+      ],
+      "fontHeight": 8.9663,
+      "width": 30.549977360000007,
+      "height": 8.9663,
+      "left": 254.4944,
+      "top": 479.8421
+    },
+    {
+      "str": "0.01), respectively. Results remained significant after additional ad-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        500.09069999999997
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.04359922000006,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 491.1244
+    },
+    {
+      "str": "justment for physical activity and vitamin C and fruit and vegetable",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        511.3156
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.02835651,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 502.3493
+    },
+    {
+      "str": "intakes. Higher anthocyanin intake was inversely associated with all",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        522.5979
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.05166889000003,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 513.6315999999999
+    },
+    {
+      "str": "biomarker subgroups, whereas higher flavonol intake was associated",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        533.8802000000001
+      ],
+      "fontHeight": 8.9663,
+      "width": 244.99697446000002,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 524.9139
+    },
+    {
+      "str": "only with lower cytokine and oxidative stress biomarker concentra-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        545.1625
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.00863065000001,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 536.1962
+    },
+    {
+      "str": "tions. In food-based analyses, higher intakes of apples and pears,",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        556.4448
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.05077226,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 547.4784999999999
+    },
+    {
+      "str": "red wine, and strawberries were associated with a lower IS with",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        567.7271
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.04987563000003,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 558.7607999999999
+    },
+    {
+      "str": "differences between quintiles 5 and 1 of",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.9676,
+        579.0094
+      ],
+      "fontHeight": 8.9663,
+      "width": 145.00210696999997,
+      "height": 8.9663,
+      "left": 39.9676,
+      "top": 570.0431
+    },
+    {
+      "str": "2",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        187.4265,
+        579.0094
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 187.4265,
+      "top": 570.0431
+    },
+    {
+      "str": "1.02",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        194.9098,
+        579.0094
+      ],
+      "fontHeight": 8.9663,
+      "width": 15.691025,
+      "height": 8.9663,
+      "left": 194.9098,
+      "top": 570.0431
+    },
+    {
+      "str": "6",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        213.0513,
+        579.0094
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 213.0513,
+      "top": 570.0431
+    },
+    {
+      "str": "0.43 (",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        222.9725,
+        579.0094
+      ],
+      "fontHeight": 8.9663,
+      "width": 21.18378038,
+      "height": 8.9663,
+      "left": 222.9725,
+      "top": 570.0431
+    },
+    {
+      "str": "P",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        244.1186,
+        579.0094
+      ],
+      "fontHeight": 8.9663,
+      "width": 5.5053082,
+      "height": 8.9663,
+      "left": 244.1186,
+      "top": 570.0431
+    },
+    {
+      "str": "= 0.006),",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        252.1121,
+        579.0094
+      ],
+      "fontHeight": 8.9663,
+      "width": 32.94128957,
+      "height": 8.9663,
+      "left": 252.1121,
+      "top": 570.0431
+    },
+    {
+      "str": "2",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96671,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 39.96671,
+      "top": 581.3254
+    },
+    {
+      "str": "1.73",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        47.39349,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 15.691025,
+      "height": 8.9663,
+      "left": 47.39349,
+      "top": 581.3254
+    },
+    {
+      "str": "6",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        65.9887,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 65.9887,
+      "top": 581.3254
+    },
+    {
+      "str": "0.39 (",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        76.36361,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 21.580987470000004,
+      "height": 8.9663,
+      "left": 76.36361,
+      "top": 581.3254
+    },
+    {
+      "str": "P",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        97.96343,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 5.5053082,
+      "height": 8.9663,
+      "left": 97.96343,
+      "top": 581.3254
+    },
+    {
+      "str": ",",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        106.3541,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 106.3541,
+      "top": 581.3254
+    },
+    {
+      "str": "0.001), and",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        116.729,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 41.26291260000001,
+      "height": 8.9663,
+      "left": 116.729,
+      "top": 581.3254
+    },
+    {
+      "str": "2",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        160.8925,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 160.8925,
+      "top": 581.3254
+    },
+    {
+      "str": "0.44",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        168.3758,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 15.691025,
+      "height": 8.9663,
+      "left": 168.3758,
+      "top": 581.3254
+    },
+    {
+      "str": "6",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        186.971,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 7.4689279,
+      "height": 8.9663,
+      "left": 186.971,
+      "top": 581.3254
+    },
+    {
+      "str": "0.88 (",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        197.3459,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 21.580987470000004,
+      "height": 8.9663,
+      "left": 197.3459,
+      "top": 581.3254
+    },
+    {
+      "str": "P",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        218.8892,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 5.5053082,
+      "height": 8.9663,
+      "left": 218.8892,
+      "top": 581.3254
+    },
+    {
+      "str": "= 0.02), respec-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        227.3364,
+        590.2917
+      ],
+      "fontHeight": 8.9663,
+      "width": 57.67751801000001,
+      "height": 8.9663,
+      "left": 227.3364,
+      "top": 581.3254
+    },
+    {
+      "str": "tively. Although intakes of other classes were not associated with",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        601.574
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.04987563000006,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 592.6076999999999
+    },
+    {
+      "str": "a reduction in overall IS, higher intakes of flavan-3-ols and their",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        612.8562999999999
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.03821943999992,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 603.8899999999999
+    },
+    {
+      "str": "polymers were associated with a significant reduction in oxidative",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        624.1386
+      ],
+      "fontHeight": 8.9663,
+      "width": 245.11981276999998,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 615.1723
+    },
+    {
+      "str": "stress biomarkers.",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        635.4209
+      ],
+      "fontHeight": 8.9663,
+      "width": 65.4988215,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 626.4545999999999
+    },
+    {
+      "str": "Conclusion:",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        646.3625
+      ],
+      "fontHeight": 8.9663,
+      "width": 45.73709630000001,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 637.3961999999999
+    },
+    {
+      "str": "These findings provide evidence to suggest that an anti-",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        88.77835,
+        646.3625
+      ],
+      "fontHeight": 8.9663,
+      "width": 195.98448877,
+      "height": 8.9663,
+      "left": 88.77835,
+      "top": 637.3961999999999
+    },
+    {
+      "str": "inflammatory effect may be a key component underlying the reduction",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        657.304
+      ],
+      "fontHeight": 8.9663,
+      "width": 244.85261703,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 648.3376999999999
+    },
+    {
+      "str": "in risk of certain chronic disease",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        668.5862999999999
+      ],
+      "fontHeight": 8.9663,
+      "width": 118.97921448,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 659.6199999999999
+    },
+    {
+      "str": "sassociatedwithhigherintakesof",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        159.0212,
+        668.5862999999999
+      ],
+      "fontHeight": 8.9663,
+      "width": 129.74236100000005,
+      "height": 8.9663,
+      "left": 159.0212,
+      "top": 659.6199999999999
+    },
+    {
+      "str": "anthocyanins and flavonols. The Framingham Offspring Study was",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        679.8686
+      ],
+      "fontHeight": 8.9663,
+      "width": 244.82123497999999,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 670.9023
+    },
+    {
+      "str": "registered at clinic",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        691.15092
+      ],
+      "fontHeight": 8.9663,
+      "width": 66.61243596,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 682.18462
+    },
+    {
+      "str": "altrials.gov as NCT00005121 (Framingham Heart",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        106.5809,
+        691.15092
+      ],
+      "fontHeight": 8.9663,
+      "width": 178.23480129000004,
+      "height": 8.9663,
+      "left": 106.5809,
+      "top": 682.18462
+    },
+    {
+      "str": "Study).",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        39.96581,
+        702.43322
+      ],
+      "fontHeight": 8.9663,
+      "width": 24.582904710000005,
+      "height": 8.9663,
+      "left": 39.96581,
+      "top": 693.46692
+    },
+    {
+      "str": "Am J Clin Nutr",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        82.4858,
+        702.43322
+      ],
+      "fontHeight": 8.9663,
+      "width": 54.35371060000001,
+      "height": 8.9663,
+      "left": 82.4858,
+      "top": 693.46692
+    },
+    {
+      "str": "2015;102:172–81.",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        139.8594,
+        702.43322
+      ],
+      "fontHeight": 8.9663,
+      "width": 61.93202736000002,
+      "height": 8.9663,
+      "left": 139.8594,
+      "top": 693.46692
+    },
+    {
+      "str": "Keywords:",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        299.9607,
+        254.50109999999995
+      ],
+      "fontHeight": 8.9663,
+      "width": 41.60990841000001,
+      "height": 8.9663,
+      "left": 299.9607,
+      "top": 245.53479999999996
+    },
+    {
+      "str": "anthocyanins, dietary intake, flavonoids, flavonols,",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        350.588,
+        254.50109999999995
+      ],
+      "fontHeight": 8.9663,
+      "width": 194.68347864000003,
+      "height": 8.9663,
+      "left": 350.588,
+      "top": 245.53479999999996
+    },
+    {
+      "str": "inflammation",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        299.9607,
+        265.4991
+      ],
+      "fontHeight": 8.9663,
+      "width": 50.79050298,
+      "height": 8.9663,
+      "left": 299.9607,
+      "top": 256.5328
+    },
+    {
+      "str": "INTRODUCTION",
+      "tx": [
+        8.9663,
+        0,
+        0,
+        -8.9663,
+        299.9607,
+        300.8757
+      ],
+      "fontHeight": 8.9663,
+      "width": 71.34664236,
+      "height": 8.9663,
+      "left": 299.9607,
+      "top": 291.9094
+    },
+    {
+      "str": "Evidence from population-based studies and randomized",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        309.9401,
+        314.8727
+      ],
+      "fontHeight": 9.4646,
+      "width": 235.08362771999998,
+      "height": 9.4646,
+      "left": 309.9401,
+      "top": 305.4081
+    },
+    {
+      "str": "controlled trials has supported a protective role for several dietary",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        326.0977
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.05742320000002,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 316.63309999999996
+    },
+    {
+      "str": "flavonoids in relation to a number of age-related chronic con-",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        337.2659
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.09054930000008,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 327.80129999999997
+    },
+    {
+      "str": "ditions including cardiovascular disease, diabetes, some cancers,",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        348.491
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.05647674000002,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 339.02639999999997
+    },
+    {
+      "str": "Parkinson disease, and cognitive decline (1–8). One shared",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        359.716
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.08487054000003,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 350.2514
+    },
+    {
+      "str": "mechanism for these conditions is low-grade systemic chronic",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        370.88419999999996
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.09054930000005,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 361.41959999999995
+    },
+    {
+      "str": "inflammation or metaflammation. A wealth of data from exper-",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        382.1092
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.11705018,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 372.64459999999997
+    },
+    {
+      "str": "imental, clinical, and epidemiologic research links inflammation",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        393.3342
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.10853204000003,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 383.8696
+    },
+    {
+      "str": "and the biological networks integral to the inflammatory re-",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        404.5592
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.18519529999998,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 395.09459999999996
+    },
+    {
+      "str": "sponse to their pathophysiology (9–11). Many dietary factors",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        415.72749999999996
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.1321935400001,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 406.26289999999995
+    },
+    {
+      "str": "influence various aspects of inflammation (11), and emerging",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        426.9525
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.13503291999996,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 417.48789999999997
+    },
+    {
+      "str": "data support the potential for several flavonoids to reduce a pre-",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        438.1775
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.21264264000007,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 428.7129
+    },
+    {
+      "str": "disposition to chronic inflammation with particular interest in the",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        449.34569999999997
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.05836965999998,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 439.88109999999995
+    },
+    {
+      "str": "anthocyanin, flavonol, and flavan-3-ol subclasses. Specifically,",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        460.57079999999996
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.06783426000007,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 451.10619999999994
+    },
+    {
+      "str": "these bioactive compounds and their metabolites decrease in-",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        471.7958
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.19560636000006,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 462.33119999999997
+    },
+    {
+      "str": "flammatory mediator production through effects on endogenous",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        482.964
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.09812098000003,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 473.4994
+    },
+    {
+      "str": "cell signaling pathways, gene expression, and gut microbiota and",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        494.18899999999996
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.16815902,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 484.72439999999995
+    },
+    {
+      "str": "by exerting anti-inflammatory and neuroprotective effects (12–",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        505.414
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.13503292000004,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 495.94939999999997
+    },
+    {
+      "str": "15). Inflammation plays a key role in a range of different diseases",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        516.5823
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.13408646000005,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 507.1177
+    },
+    {
+      "str": "and conditions, and although resulting clinical signs and symp-",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        527.8072999999999
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.14071168000007,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 518.3426999999999
+    },
+    {
+      "str": "toms are different, many of the processes, cells, and molecules",
+      "tx": [
+        9.4646,
+        0,
+        0,
+        -9.4646,
+        299.9625,
+        539.0323
+      ],
+      "fontHeight": 9.4646,
+      "width": 245.09717452,
+      "height": 9.4646,
+      "left": 299.9625,
+      "top": 529.5677
+    },
+    {
+      "str": "1",
+      "tx": [
+        5.9774,
+        0,
+        0,
+        -5.3127,
+        307.9558,
+        559.3892
+      ],
+      "fontHeight": 5.3127,
+      "width": 2.9887,
+      "height": 5.9774,
+      "left": 307.9558,
+      "top": 554.0765
+    },
+    {
+      "str": "Supported by grants from the International Life Sciences Institute North",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        312.2645,
+        562.9609
+      ],
+      "fontHeight": 7.9702,
+      "width": 232.82309134000002,
+      "height": 7.9702,
+      "left": 312.2645,
+      "top": 554.9907000000001
+    },
+    {
+      "str": "America; the National Heart, Lung, and Blood Institute (contracts N01-HC-",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        572.9388
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.06531854000002,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 564.9686
+    },
+    {
+      "str": "25195, R01 HL064753, R01 HL076784, and R21 HL87217); the National",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        582.8601
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.11712484000006,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 574.8899
+    },
+    {
+      "str": "Institute for Aging (R01 AG028321); the Biotechnology and Biological",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        592.838
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.14581756,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 584.8678
+    },
+    {
+      "str": "Sciences Research Council, United Kingdom (reference BB/J004545/1);",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        602.8159
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.17690134,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 594.8457000000001
+    },
+    {
+      "str": "and the USDA Agricultural Research Service (agreement 58-1950-0-014).",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        612.7372
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.09002615999998,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 604.767
+    },
+    {
+      "str": "AC is a Royal Society Wolfson Research Merit Award Holder. This is a free",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        622.7151
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.17849538000007,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 614.7449
+    },
+    {
+      "str": "access article, distributed under terms (http://www.nutrition.org/publications/",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        632.693
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.11234272000002,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 624.7228
+    },
+    {
+      "str": "guidelines-and-policies/license/) that permit unrestricted non-commercial use,",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        642.6709
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.19443578000008,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 634.7007
+    },
+    {
+      "str": "distribution, and reproduction in any medium, provided the original work is",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        652.5922
+      ],
+      "fontHeight": 7.9702,
+      "width": 245.17769835999994,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 644.6220000000001
+    },
+    {
+      "str": "properly cited.",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        662.5701
+      ],
+      "fontHeight": 7.9702,
+      "width": 46.22955106,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 654.5999
+    },
+    {
+      "str": "*Towhom correspondence should be addressed. E-mail: paul.jacques@",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        307.9566,
+        672.548
+      ],
+      "fontHeight": 7.9702,
+      "width": 237.07678708000003,
+      "height": 7.9702,
+      "left": 307.9566,
+      "top": 664.5778
+    },
+    {
+      "str": "tufts.edu.",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9625,
+        682.5259
+      ],
+      "fontHeight": 7.9702,
+      "width": 29.704935400000004,
+      "height": 7.9702,
+      "left": 299.9625,
+      "top": 674.5557
+    },
+    {
+      "str": "Received February 3, 2015. Accepte",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        307.9566,
+        692.39057
+      ],
+      "fontHeight": 7.9702,
+      "width": 112.92976380000002,
+      "height": 7.9702,
+      "left": 307.9566,
+      "top": 684.42037
+    },
+    {
+      "str": "d for publication April 28, 2015.",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        420.8896,
+        692.39057
+      ],
+      "fontHeight": 7.9702,
+      "width": 102.84825782000004,
+      "height": 7.9702,
+      "left": 420.8896,
+      "top": 684.42037
+    },
+    {
+      "str": "First published online May 27, 2015; doi: 10.3945/ajcn.115.108555.",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        307.9566,
+        702.36847
+      ],
+      "fontHeight": 7.9702,
+      "width": 220.73867410000003,
+      "height": 7.9702,
+      "left": 307.9566,
+      "top": 694.39827
+    },
+    {
+      "str": "172",
+      "tx": [
+        9.9626,
+        0,
+        0,
+        -9.9626,
+        39.9685,
+        723.345
+      ],
+      "fontHeight": 9.9626,
+      "width": 14.9439,
+      "height": 9.9626,
+      "left": 39.9685,
+      "top": 713.3824000000001
+    },
+    {
+      "str": "Am J Clin Nutr",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        246.8409,
+        723.345
+      ],
+      "fontHeight": 7.9702,
+      "width": 50.48643488,
+      "height": 7.9702,
+      "left": 246.8409,
+      "top": 715.3748
+    },
+    {
+      "str": "2015;102:172–81. Printed in USA.",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        299.9623,
+        723.345
+      ],
+      "fontHeight": 7.9702,
+      "width": 113.13459793999999,
+      "height": 7.9702,
+      "left": 299.9623,
+      "top": 715.3748
+    },
+    {
+      "str": "Ó",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        415.7294,
+        723.345
+      ],
+      "fontHeight": 7.9702,
+      "width": 6.3044282,
+      "height": 7.9702,
+      "left": 415.7294,
+      "top": 715.3748
+    },
+    {
+      "str": "2015 American Society for Nutrition",
+      "tx": [
+        7.9702,
+        0,
+        0,
+        -7.9702,
+        424.6871,
+        723.345
+      ],
+      "fontHeight": 7.9702,
+      "width": 120.44885048,
+      "height": 7.9702,
+      "left": 424.6871,
+      "top": 715.3748
+    },
+    {
+      "str": " by guest on November 11, 2017",
+      "tx": [
+        0,
+        8,
+        8,
+        0,
+        561,
+        393.9779
+      ],
+      "fontHeight": 8,
+      "width": 116.06400000000008,
+      "height": 8,
+      "left": 561,
+      "top": 385.9779
+    },
+    {
+      "str": "ajcn.nutrition.org",
+      "tx": [
+        0,
+        8,
+        8,
+        0,
+        561,
+        334.8421
+      ],
+      "fontHeight": 8,
+      "width": 59.13600000000001,
+      "height": 8,
+      "left": 561,
+      "top": 326.8421
+    },
+    {
+      "str": "Downloaded from ",
+      "tx": [
+        0,
+        8,
+        8,
+        0,
+        561,
+        269.9302
+      ],
+      "fontHeight": 8,
+      "width": 64.912,
+      "height": 8,
+      "left": 561,
+      "top": 261.9302
+    }
+  ]
+}

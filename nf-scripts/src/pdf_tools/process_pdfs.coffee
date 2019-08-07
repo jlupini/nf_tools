@@ -76,6 +76,21 @@ loadingTask.promise.then((doc) ->
   console.log viewport
   console.log textContent
   # I need to access all the data here
+
+  dataObject =
+    annotations: annotations
+    viewport: viewport
+    textContent: textContent
+
+
+  # Write to a file
+  fs = require('fs')
+  fs.writeFile 'annotations.json', JSON.stringify(dataObject, null, "  "), (err) ->
+    if err
+      return console.log(err)
+    console.log 'The file was saved!'
+    return
+
   return
 ), (err) ->
   console.error 'Error: ' + err

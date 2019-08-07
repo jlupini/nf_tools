@@ -228,6 +228,7 @@ class NFComp extends NFObject
   @memberof NFComp
   @param {Object} model
   @param {NFLayer} model.shapeLayer the shape layer with target shape
+  @param {String} [model.name="OLD_NAME Highlight"] the new name
   @param {int} model.lines the number of lines
   @returns {NFHighlightLayer} the new highlight
   ###
@@ -235,6 +236,7 @@ class NFComp extends NFObject
     model =
       shapeLayer: model.shapeLayer ? throw new Error "Must specify a shape layer"
       lines: model.lines ? throw new Error "Must include number of lines"
+      name: model.name ? "#{model.shapeLayer.getName()} Highlight"
     throw new Error "model.shapeLayer must be a valid shape layer" unless model.shapeLayer.isShapeLayer()
 
     # First, let's get the source rect
@@ -250,7 +252,7 @@ class NFComp extends NFObject
 
     # Boom done. Now we'll make a new Shape Layer and Build the Highlight
     highlightLayer = new NFLayer @comp.layers.addShape()
-    highlightLayer.setName "#{model.shapeLayer.getName()} Highlight"
+    highlightLayer.setName model.name
     highlightLayer.transform().property("Position").setValue [0,0]
     highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]'
     highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY
@@ -259,7 +261,8 @@ class NFComp extends NFObject
     highlightProperty = highlightLayer.effects().addProperty('AV_Highlighter')
     highlightProperty.property("Spacing").setValue paddedLineHeight
     highlightProperty.property("Thickness").setValue paddedLineHeight + 4
-    highlightProperty.property("Offset").setValue [0, paddedLineHeight / 2 - yPadding * 2]
+    yOffset = if model.lines is 1 then paddedLineHeight / 2 - yPadding else paddedLineHeight / 2 - yPadding * 2
+    highlightProperty.property("Offset").setValue [0, yOffset]
 
     highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")'
 
