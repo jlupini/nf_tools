@@ -85,7 +85,30 @@ getPanelUI = ->
 
   panel.alignChildren = 'left'
 
-  buttonPanel = panel.add 'panel', undefined, 'Selector', {borderStyle:'none'}
+  # Tabs
+  tPanel = panel.add ("tabbedpanel")
+  tPanel.alignment = ['fill','fill']
+  tPanel.alignChildren = ["fill", "fill"]
+
+  # Prep Tab
+  prepTab = tPanel.add("tab", undefined, "Prep")
+  prepTab.alignment = ['fill','fill']
+  prepTab.alignChildren = "fill"
+
+  buttonPanel = prepTab.add 'panel', undefined, undefined, {borderStyle:'none'}
+  buttonPanel.alignment = ['fill','fill']
+  buttonPanel.alignChildren = 'left'
+  buttonPanel.margins.top = 16
+
+  # FIXME: Pickup here and add a tree with a refresh button to load in highlights and let you pick which to create
+
+
+  # Animate Tab
+  animateTab = tPanel.add("tab", undefined, "Animate")
+  animateTab.alignChildren = "fill"
+  animateTab.alignment = ['fill','fill']
+
+  buttonPanel = animateTab.add 'panel', undefined, undefined, {borderStyle:'none'}
   buttonPanel.alignment = ['fill','fill']
   buttonPanel.alignChildren = 'left'
   buttonPanel.margins.top = 16

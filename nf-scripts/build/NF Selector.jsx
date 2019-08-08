@@ -83,7 +83,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, buttonGroup, buttonPanel, goButton, linkButton, panel, panelType, refreshButton, treeView;
+  var addButton, animateTab, buttonGroup, buttonPanel, goButton, linkButton, panel, panelType, prepTab, refreshButton, tPanel, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -97,7 +97,22 @@ getPanelUI = function() {
     _.isUIPanel = false;
   }
   panel.alignChildren = 'left';
-  buttonPanel = panel.add('panel', void 0, 'Selector', {
+  tPanel = panel.add("tabbedpanel");
+  tPanel.alignment = ['fill', 'fill'];
+  tPanel.alignChildren = ["fill", "fill"];
+  prepTab = tPanel.add("tab", void 0, "Prep");
+  prepTab.alignment = ['fill', 'fill'];
+  prepTab.alignChildren = "fill";
+  buttonPanel = prepTab.add('panel', void 0, void 0, {
+    borderStyle: 'none'
+  });
+  buttonPanel.alignment = ['fill', 'fill'];
+  buttonPanel.alignChildren = 'left';
+  buttonPanel.margins.top = 16;
+  animateTab = tPanel.add("tab", void 0, "Animate");
+  animateTab.alignChildren = "fill";
+  animateTab.alignment = ['fill', 'fill'];
+  buttonPanel = animateTab.add('panel', void 0, void 0, {
     borderStyle: 'none'
   });
   buttonPanel.alignment = ['fill', 'fill'];
