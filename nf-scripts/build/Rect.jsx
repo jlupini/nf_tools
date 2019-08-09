@@ -15,11 +15,13 @@ Rect = (function() {
     if (model == null) {
       throw new Error("No rect model supplied");
     }
-    if (!((model.left != null) && (model.top != null) && (model.width != null) && (model.height != null))) {
-      throw new Error("Must specify all values for a rect on init");
-    }
-    if (model.width < 0 || model.height < 0) {
-      throw new Error("Width and height must be positive numbers");
+    if (!(model instanceof Rect)) {
+      if (!((model.left != null) && (model.top != null) && (model.width != null) && (model.height != null))) {
+        throw new Error("Must specify all values for a rect on init");
+      }
+      if (model.width < 0 || model.height < 0) {
+        throw new Error("Width and height must be positive numbers");
+      }
     }
     this.left = model.left;
     this.top = model.top;

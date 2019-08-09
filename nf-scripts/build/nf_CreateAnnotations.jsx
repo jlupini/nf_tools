@@ -1,4 +1,4 @@
-var AnnotationBorderStyleType, AnnotationBorderStyleTypeName, AnnotationType, AnnotationTypeName, activeComp, alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationLayer, annotationRect, annotationsOverlap, convertCartesian, convertColorJSON, getRectFromTextItem, i, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, overlapExists, parsedData, pdfData, pdfDataFile, pdfFile, pdfLayer, recognizedAnnotationTypes, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, viewport;
+var AnnotationBorderStyleType, AnnotationBorderStyleTypeName, AnnotationType, AnnotationTypeName, activeComp, convertCartesian, convertColorJSON, getRectFromTextItem, importAnnotationDataForPageComp, recognizedAnnotationTypes;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
@@ -76,6 +76,8 @@ AnnotationBorderStyleTypeName = {
   5: "Underline"
 };
 
+recognizedAnnotationTypes = [annotationType.STRIKEOUT, annotationType.HIGHLIGHT, annotationType.UNDERLINE, annotationType.CIRCLE, annotationType.POLYGON];
+
 convertColorJSON = function(obj) {
   var arr;
   arr = [obj["0"], obj["1"], obj["2"]];
@@ -92,7 +94,7 @@ convertCartesian = function(points, viewport) {
     width: width,
     height: height
   };
-  return rect;
+  return new Rect(rect);
 };
 
 getRectFromTextItem = function(textItem) {
@@ -105,91 +107,79 @@ getRectFromTextItem = function(textItem) {
   };
 };
 
-app.beginUndoGroup('Create Annotations');
-
-recognizedAnnotationTypes = [annotationType.STRIKEOUT, annotationType.HIGHLIGHT, annotationType.UNDERLINE, annotationType.CIRCLE, annotationType.POLYGON];
-
-activeComp = NFProject.activeComp();
-
-pdfLayer = activeComp != null ? activeComp.getPDFLayer() : void 0;
-
-pdfFile = (ref = pdfLayer.$.source) != null ? ref.file : void 0;
-
-pdfDataFile = pdfFile.fsName.replace(".pdf", ".json");
-
-pdfData = NFTools.readFile(pdfDataFile, true, false);
-
-parsedData = JSON.parse(pdfData);
-
-annotationData = parsedData["annotations"];
-
-viewport = parsedData["viewport"].viewBox;
-
-textContent = parsedData["textContent"];
-
-scaleFactor = pdfLayer.transform().scale.value;
-
-trimmedAnnotationData = [];
-
-for (j = 0, len = annotationData.length; j < len; j++) {
-  testAnnotation = annotationData[j];
-  if (recognizedAnnotationTypes.indexOf(testAnnotation.annotationType) > -1) {
-    testAnnotationRect = new Rect(convertCartesian(testAnnotation.rect, viewport));
-    annotationsOverlap = false;
-    if (trimmedAnnotationData.length !== 0) {
-      for (k = 0, len1 = trimmedAnnotationData.length; k < len1; k++) {
-        alreadyAddedAnnotation = trimmedAnnotationData[k];
-        alreadyAddedAnnotationRect = new Rect(convertCartesian(alreadyAddedAnnotation.rect, viewport));
-        if (testAnnotationRect.contains(alreadyAddedAnnotationRect)) {
-          annotationsOverlap = true;
-        }
-      }
-    }
-    if (!annotationsOverlap) {
-      trimmedAnnotationData.push(testAnnotation);
-    }
-  }
-}
-
-for (i = l = 0, len2 = trimmedAnnotationData.length; l < len2; i = ++l) {
-  testAnnotation = trimmedAnnotationData[i];
-  annotationRect = new Rect(convertCartesian(testAnnotation.rect, viewport));
-  matchingLines = [];
-  for (m = 0, len3 = textContent.length; m < len3; m++) {
-    textItem = textContent[m];
-    textRect = new Rect(textItem);
-    if (annotationRect.contains(textRect)) {
-      overlapExists = false;
-      if (matchingLines.length !== 0) {
-        for (n = 0, len4 = matchingLines.length; n < len4; n++) {
-          matchedLine = matchingLines[n];
-          if (matchedLine.yOverlapWith(textRect) !== 0) {
-            overlapExists = true;
+importAnnotationDataForPageComp = function(targetComp) {
+  var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, exportData, i, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, overlapExists, parsedData, pdfData, pdfDataFile, pdfFile, pdfLayer, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, viewport;
+  pdfLayer = targetComp != null ? targetComp.getPDFLayer() : void 0;
+  pdfFile = (ref = pdfLayer.$.source) != null ? ref.file : void 0;
+  pdfDataFile = pdfFile.fsName.replace(".pdf", ".json");
+  pdfData = NFTools.readFile(pdfDataFile, true, false);
+  parsedData = JSON.parse(pdfData);
+  annotationData = parsedData["annotations"];
+  viewport = parsedData["viewport"].viewBox;
+  textContent = parsedData["textContent"];
+  scaleFactor = pdfLayer.transform().scale.value;
+  trimmedAnnotationData = [];
+  for (j = 0, len = annotationData.length; j < len; j++) {
+    testAnnotation = annotationData[j];
+    if (recognizedAnnotationTypes.indexOf(testAnnotation.annotationType) > -1) {
+      testAnnotationRect = convertCartesian(testAnnotation.rect, viewport);
+      annotationsOverlap = false;
+      if (trimmedAnnotationData.length !== 0) {
+        for (k = 0, len1 = trimmedAnnotationData.length; k < len1; k++) {
+          alreadyAddedAnnotation = trimmedAnnotationData[k];
+          alreadyAddedAnnotationRect = new Rect(convertCartesian(alreadyAddedAnnotation.rect, viewport));
+          if (testAnnotationRect.contains(alreadyAddedAnnotationRect)) {
+            annotationsOverlap = true;
           }
         }
       }
-      if (!overlapExists) {
-        matchingLines.push(textRect);
+      if (!annotationsOverlap) {
+        trimmedAnnotationData.push(testAnnotation);
       }
     }
   }
-  lineCount = matchingLines.length;
-  if (lineCount === 0) {
-    lineCount = 1;
+  exportData = [];
+  for (i = l = 0, len2 = trimmedAnnotationData.length; l < len2; i = ++l) {
+    testAnnotation = trimmedAnnotationData[i];
+    annotationRect = convertCartesian(testAnnotation.rect, viewport);
+    matchingLines = [];
+    for (m = 0, len3 = textContent.length; m < len3; m++) {
+      textItem = textContent[m];
+      textRect = new Rect(textItem);
+      if (annotationRect.contains(textRect)) {
+        overlapExists = false;
+        if (matchingLines.length !== 0) {
+          for (n = 0, len4 = matchingLines.length; n < len4; n++) {
+            matchedLine = matchingLines[n];
+            if (matchedLine.yOverlapWith(textRect) !== 0) {
+              overlapExists = true;
+            }
+          }
+        }
+        if (!overlapExists) {
+          matchingLines.push(textRect);
+        }
+      }
+    }
+    lineCount = matchingLines.length;
+    if (lineCount === 0) {
+      lineCount = 1;
+    }
+    exportData.push({
+      rect: annotationRect,
+      lineCount: lineCount,
+      color: convertColorJSON(testAnnotation.color),
+      colorName: testAnnotation.colorName,
+      type: AnnotationTypeName[testAnnotation.annotationType]
+    });
   }
-  annotationLayer = activeComp.addShapeLayer();
-  annotationLayer.setName("Imported Shape " + i + " - n=" + lineCount);
-  annotationLayer.addRectangle({
-    fillColor: convertColorJSON(testAnnotation.color),
-    rect: annotationRect
-  });
-  annotationLayer.transform().scale.setValue(scaleFactor);
-  activeComp.createHighlight({
-    shapeLayer: annotationLayer,
-    lines: lineCount,
-    name: "Auto Highlight " + i
-  });
-  annotationLayer.remove();
-}
+  return exportData;
+};
+
+app.beginUndoGroup('Create Annotations');
+
+activeComp = NFProject.activeComp();
+
+importAnnotationDataForPageComp(activeComp);
 
 app.endUndoGroup();

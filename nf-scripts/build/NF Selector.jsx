@@ -1,8 +1,8 @@
 var PADDING, _, getPanelUI, loadAutoHighlightDataIntoView, loadContentIntoView, main, openScript, panelTest;
 
-$.evalFile("runtimeLibraries.jsx");
+$.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
-$.evalFile("NFIcon.jsx");
+$.evalFile(File($.fileName).path + "/NFIcon.jsx");
 
 _ = {};
 
@@ -18,9 +18,19 @@ openScript = function(targetScript) {
 };
 
 loadAutoHighlightDataIntoView = function(treeView) {
-  var contentTree;
+  var activeComp, annotation, annotationData, colorName, contentTree, i, len, results, thisPDFNode, typeList;
   treeView.removeAll();
-  return contentTree = {};
+  contentTree = {};
+  activeComp = NFProject.activeComp();
+  annotationData = NFPDFManager.importAnnotationDataForPageComp(activeComp);
+  results = [];
+  for (i = 0, len = annotationData.length; i < len; i++) {
+    annotation = annotationData[i];
+    colorName = annotation.colorName.replace("Highlight ", "");
+    typeList = annotation.type;
+    results.push(thisPDFNode = treeView.add('item', colorName + " " + typeList));
+  }
+  return results;
 };
 
 loadContentIntoView = function(treeView) {

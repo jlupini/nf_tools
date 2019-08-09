@@ -70,7 +70,13 @@ AnnotationBorderStyleTypeName =
   4: "Inset"
   5: "Underline"
 
-
+recognizedAnnotationTypes = [
+  annotationType.STRIKEOUT
+  annotationType.HIGHLIGHT
+  annotationType.UNDERLINE
+  annotationType.CIRCLE
+  annotationType.POLYGON
+]
 
 
 # Takes a array of rgb values between 0 and 256. Spits out as 0-1. Borks with anything but 3-length array
@@ -87,7 +93,7 @@ convertCartesian = (points, viewport) ->
     top: viewport[3]-points[1]-height
     width: width
     height: height
-  return rect
+  return new Rect rect
 
 getRectFromTextItem = (textItem) ->
   rect =
@@ -96,87 +102,81 @@ getRectFromTextItem = (textItem) ->
     left: textItem.left
     top: viewport[3] - textItem.bottom
 
+importAnnotationDataForPageComp = (targetComp) ->
+  pdfLayer = targetComp?.getPDFLayer()
+
+  pdfFile = pdfLayer.$.source?.file
+  pdfDataFile = pdfFile.fsName.replace(".pdf", ".json")
+  pdfData = NFTools.readFile pdfDataFile, true, false
+  parsedData = JSON.parse pdfData
+
+  annotationData = parsedData["annotations"]
+  viewport = parsedData["viewport"].viewBox
+  textContent = parsedData["textContent"]
+
+  # Let's get the scale factor for the PDF Layer.
+  scaleFactor = pdfLayer.transform().scale.value
+
+  # Remove all the annotations that take up the same space
+  trimmedAnnotationData = []
+  for testAnnotation in annotationData
+    if (recognizedAnnotationTypes.indexOf(testAnnotation.annotationType) > -1)
+      testAnnotationRect = convertCartesian(testAnnotation.rect, viewport)
+      annotationsOverlap = no
+      if trimmedAnnotationData.length isnt 0
+        for alreadyAddedAnnotation in trimmedAnnotationData
+          alreadyAddedAnnotationRect = new Rect convertCartesian(alreadyAddedAnnotation.rect, viewport)
+          annotationsOverlap = yes if testAnnotationRect.contains alreadyAddedAnnotationRect
+
+      trimmedAnnotationData.push testAnnotation unless annotationsOverlap
+
+  exportData = []
+  for testAnnotation, i in trimmedAnnotationData
+
+    annotationRect = convertCartesian(testAnnotation.rect, viewport)
+
+    matchingLines = []
+    for textItem in textContent
+      textRect = new Rect textItem
+      if annotationRect.contains textRect
+        overlapExists = no
+        if matchingLines.length isnt 0
+          for matchedLine in matchingLines
+            overlapExists = yes if matchedLine.yOverlapWith(textRect) isnt 0
+        matchingLines.push textRect unless overlapExists
+
+    lineCount = matchingLines.length
+    lineCount = 1 if lineCount is 0
+
+    exportData.push
+      rect: annotationRect
+      lineCount: lineCount
+      color: convertColorJSON(testAnnotation.color)
+      colorName: testAnnotation.colorName
+      type: AnnotationTypeName[testAnnotation.annotationType]
+
+
+    # # Actually add the shapes and stuff
+    # annotationLayer = targetComp.addShapeLayer()
+    # annotationLayer.setName "Imported Shape #{i} - n=#{lineCount}"
+    # annotationLayer.addRectangle
+    #   fillColor: convertColorJSON(testAnnotation.color)
+    #   rect: annotationRect
+    # annotationLayer.transform().scale.setValue scaleFactor
+    #
+    # # Create the highlight effect
+    # targetComp.createHighlight
+    #   shapeLayer: annotationLayer
+    #   lines: lineCount
+    #   name: "Auto Highlight #{i}"
+    #
+    # annotationLayer.remove()
+  return exportData
+
 
 app.beginUndoGroup 'Create Annotations'
 
-recognizedAnnotationTypes = [
-  annotationType.STRIKEOUT
-  annotationType.HIGHLIGHT
-  annotationType.UNDERLINE
-  annotationType.CIRCLE
-  annotationType.POLYGON
-]
-
 activeComp = NFProject.activeComp()
-pdfLayer = activeComp?.getPDFLayer()
-
-pdfFile = pdfLayer.$.source?.file
-pdfDataFile = pdfFile.fsName.replace(".pdf", ".json")
-pdfData = NFTools.readFile pdfDataFile, true, false
-parsedData = JSON.parse pdfData
-
-annotationData = parsedData["annotations"]
-viewport = parsedData["viewport"].viewBox
-textContent = parsedData["textContent"]
-
-# Let's get the scale factor for the PDF Layer.
-scaleFactor = pdfLayer.transform().scale.value
-
-trimmedAnnotationData = []
-for testAnnotation in annotationData
-  if (recognizedAnnotationTypes.indexOf(testAnnotation.annotationType) > -1)
-    testAnnotationRect = new Rect convertCartesian(testAnnotation.rect, viewport)
-    annotationsOverlap = no
-    if trimmedAnnotationData.length isnt 0
-      for alreadyAddedAnnotation in trimmedAnnotationData
-        alreadyAddedAnnotationRect = new Rect convertCartesian(alreadyAddedAnnotation.rect, viewport)
-        annotationsOverlap = yes if testAnnotationRect.contains alreadyAddedAnnotationRect
-
-    trimmedAnnotationData.push testAnnotation unless annotationsOverlap
-
-
-for testAnnotation, i in trimmedAnnotationData
-  # refLayer = activeComp.addRectangleShapeLayer
-  #   fill: [.5,1,1]
-  #   rect: [0,0,595.276,779.528]
-  #   name: "Viewport Ref"
-  annotationRect = new Rect convertCartesian(testAnnotation.rect, viewport)
-
-  # $.level = 2
-  # debugger
-
-  matchingLines = []
-  for textItem in textContent
-    textRect = new Rect textItem
-    if annotationRect.contains textRect
-      overlapExists = no
-      if matchingLines.length isnt 0
-        for matchedLine in matchingLines
-          overlapExists = yes if matchedLine.yOverlapWith(textRect) isnt 0
-      matchingLines.push textRect unless overlapExists
-
-  lineCount = matchingLines.length
-  lineCount = 1 if lineCount is 0
-
-  annotationLayer = activeComp.addShapeLayer()
-  annotationLayer.setName "Imported Shape #{i} - n=#{lineCount}"
-
-
-  annotationLayer.addRectangle
-    fillColor: convertColorJSON(testAnnotation.color)
-    rect: annotationRect
-
-  annotationLayer.transform().scale.setValue scaleFactor
-
-  # Create the highlight effect
-  activeComp.createHighlight
-    shapeLayer: annotationLayer
-    lines: lineCount
-    name: "Auto Highlight #{i}"
-
-  annotationLayer.remove()
-
-
-
+importAnnotationDataForPageComp activeComp
 
 app.endUndoGroup()

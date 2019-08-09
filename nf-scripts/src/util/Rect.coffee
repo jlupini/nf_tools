@@ -10,8 +10,10 @@ Creates a new Rect
 class Rect
   constructor: (model) ->
     throw new Error "No rect model supplied" unless model?
-    throw new Error "Must specify all values for a rect on init" unless model.left? and model.top? and model.width? and model.height?
-    throw new Error "Width and height must be positive numbers" if model.width < 0 or model.height < 0
+    unless model instanceof Rect
+      throw new Error "Must specify all values for a rect on init" unless model.left? and model.top? and model.width? and model.height?
+      throw new Error "Width and height must be positive numbers" if model.width < 0 or model.height < 0
+
     @left = model.left
     @top = model.top
     @width = model.width

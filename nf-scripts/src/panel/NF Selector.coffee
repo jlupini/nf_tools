@@ -1,5 +1,5 @@
-$.evalFile "runtimeLibraries.jsx"
-$.evalFile "NFIcon.jsx"
+$.evalFile File($.fileName).path + "/runtimeLibraries.jsx"
+$.evalFile File($.fileName).path + "/NFIcon.jsx"
 _ = {}
 PADDING = 80
 
@@ -16,6 +16,28 @@ loadAutoHighlightDataIntoView = (treeView) ->
   contentTree = {}
 
 
+  activeComp = NFProject.activeComp()
+  annotationData = NFPDFManager.importAnnotationDataForPageComp activeComp
+  for annotation in annotationData
+    colorName = annotation.colorName.replace("Highlight ", "")
+    typeList = annotation.type
+
+    thisPDFNode = treeView.add 'item', "#{colorName} #{typeList}"
+  # pdfLayer = activeComp?.getPDFLayer()
+  #
+  # unless pdfLayer?
+  #   throw new Error "No PDF Layer found. Ensure a Page comp is active"
+  #
+  # pdfFile = pdfLayer.$.source?.file
+  # pdfDataFile = pdfFile.fsName.replace(".pdf", ".json")
+  # pdfData = NFTools.readFile pdfDataFile, true, false
+  # parsedData = JSON.parse pdfData
+  #
+  # annotationData = parsedData["annotations"]
+  # viewport = parsedData["viewport"].viewBox
+  # textContent = parsedData["textContent"]
+  #
+  #
 
 loadContentIntoView = (treeView) ->
   treeView.removeAll()
