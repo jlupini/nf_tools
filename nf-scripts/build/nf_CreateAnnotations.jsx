@@ -1,6 +1,35 @@
-var AnnotationBorderStyleType, AnnotationType, activeComp, alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationLayer, annotationRect, annotationsOverlap, convertCartesian, convertColorJSON, getRectFromTextItem, i, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, overlapExists, parsedData, pdfData, pdfDataFile, pdfFile, pdfLayer, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, viewport;
+var AnnotationBorderStyleType, AnnotationBorderStyleTypeName, AnnotationType, AnnotationTypeName, activeComp, alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationLayer, annotationRect, annotationsOverlap, convertCartesian, convertColorJSON, getRectFromTextItem, i, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, overlapExists, parsedData, pdfData, pdfDataFile, pdfFile, pdfLayer, recognizedAnnotationTypes, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, viewport;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
+
+AnnotationTypeName = {
+  1: "Text",
+  2: "Link",
+  3: "Free Text",
+  4: "Line",
+  5: "Square",
+  6: "Circle",
+  7: "Polygon",
+  8: "Polyline",
+  9: "Highlight",
+  10: "Underline",
+  11: "Squiggly",
+  12: "Strikeout",
+  13: "Stamp",
+  14: "Caret",
+  15: "Ink",
+  16: "Popup",
+  17: "File Attachment",
+  18: "Sound",
+  19: "Movie",
+  20: "Widget",
+  21: "Screen",
+  22: "Printer Mark",
+  23: "Trap Net",
+  24: "Watermark",
+  25: "3D",
+  26: "Redaction"
+};
 
 AnnotationType = {
   TEXT: 1,
@@ -39,6 +68,14 @@ AnnotationBorderStyleType = {
   UNDERLINE: 5
 };
 
+AnnotationBorderStyleTypeName = {
+  1: "Solid",
+  2: "Dashed",
+  3: "Beveled",
+  4: "Inset",
+  5: "Underline"
+};
+
 convertColorJSON = function(obj) {
   var arr;
   arr = [obj["0"], obj["1"], obj["2"]];
@@ -70,6 +107,8 @@ getRectFromTextItem = function(textItem) {
 
 app.beginUndoGroup('Create Annotations');
 
+recognizedAnnotationTypes = [annotationType.STRIKEOUT, annotationType.HIGHLIGHT, annotationType.UNDERLINE, annotationType.CIRCLE, annotationType.POLYGON];
+
 activeComp = NFProject.activeComp();
 
 pdfLayer = activeComp != null ? activeComp.getPDFLayer() : void 0;
@@ -94,7 +133,7 @@ trimmedAnnotationData = [];
 
 for (j = 0, len = annotationData.length; j < len; j++) {
   testAnnotation = annotationData[j];
-  if (testAnnotation.subtype === "StrikeOut" || testAnnotation.subtype === "Highlight" || testAnnotation.subtype === "Underline") {
+  if (recognizedAnnotationTypes.indexOf(testAnnotation.annotationType) > -1) {
     testAnnotationRect = new Rect(convertCartesian(testAnnotation.rect, viewport));
     annotationsOverlap = false;
     if (trimmedAnnotationData.length !== 0) {

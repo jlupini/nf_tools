@@ -19,5 +19,9 @@
     "grunt-jsdoc": "^2.2.1",
     "jsdoc-template": "^1.2.0",
     "minami": "^1.2.3"
+  },
+  "dependencies": {
+    "color-name-list": "^4.10.0",
+    "nearest-color": "^0.4.4"
   }
 }

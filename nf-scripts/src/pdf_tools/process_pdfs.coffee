@@ -7,6 +7,36 @@
 pdfjsLib = require('pdfjs-dist')
 # Loading file from file system into typed array
 
+
+nearestColor = require 'nearest-color'
+namedColors = require 'color-name-list'
+# colors = {}
+# for color in namedColors
+#   colors[color.name] = color.hex
+colors =
+  "Highlight Yellow": "#facd5a"
+  "Highlight Green": "#7dc768"
+  "Highlight Pink": "#fb5c89"
+  "Highlight Purple": "#c885da"
+  "Highlight Blue": "#69b0f1"
+  "Yellow": "#ffff00"
+  "Red": "#ff0000"
+  "Brown": "#aa7942"
+  "Blue": "#0088ff"
+  "Orange": "#ff8800"
+  "Purple": "#942192"
+  "Pink": "#ff40ff"
+  "Black": "#000000"
+  "Grey": "#919191"
+  "White": "#ffffff"
+# console.log colors
+nearest = nearestColor.from(colors)
+componentToHex = (c) ->
+  hex = c.toString(16)
+  if hex.length == 1 then '0' + hex else hex
+rgbToHex = (r, g, b) ->
+  '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
+
 pdfPath = process.argv[2] or '1000_pg01.pdf'
 # Will be using promises to load document, pages and misc data instead of
 # callback.
@@ -31,13 +61,13 @@ loadingTask.promise.then((doc) ->
       # Get the annotations
       page.getAnnotations().then (content) ->
         annotations = content
+        for annotation, i in annotations
+          annotations[i]["colorName"] = nearest(rgbToHex(annotation.color["0"], annotation.color["1"], annotation.color["2"])).name
+          console.log "#{annotation.subtype} color: " + nearest(rgbToHex(annotation.color["0"], annotation.color["1"], annotation.color["2"])).name
 
       # Get the text content
       page.getTextContent().then (content) ->
 
-        # find all text start points
-        # xs = []
-        # ys = []
         textItems = []
         content.items.forEach (item) ->
           tx = pdfjsLib.Util.transform(viewport.transform, item.transform)
@@ -50,16 +80,7 @@ loadingTask.promise.then((doc) ->
             height: item.height/fontHeight
             left: tx[4]
             top: tx[5] - fontHeight
-            #fullItem: item.transform
-          # xs.push tx[4]
-          # ys.push tx[5]
           return
-        # boundsOfStartPoints = [
-        #   Math.min.apply(null, xs)
-        #   Math.min.apply(null, ys)
-        #   Math.max.apply(null, xs)
-        #   Math.max.apply(null, ys)
-        # ]
 
         textContent = textItems
 
@@ -72,9 +93,9 @@ loadingTask.promise.then((doc) ->
   lastPromise
 ).then (->
   console.log '# End of Document'
-  console.log annotations
-  console.log viewport
-  console.log textContent
+  # console.log annotations
+  # console.log viewport
+  # console.log textContent
   # I need to access all the data here
 
   dataObject =
@@ -85,7 +106,7 @@ loadingTask.promise.then((doc) ->
 
   # Write to a file
   fs = require('fs')
-  fs.writeFile 'annotations.json', JSON.stringify(dataObject, null, "  "), (err) ->
+  fs.writeFile '1000_pg01.json', JSON.stringify(dataObject, null, "  "), (err) ->
     if err
       return console.log(err)
     console.log 'The file was saved!'

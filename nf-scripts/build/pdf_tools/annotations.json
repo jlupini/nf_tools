@@ -16,8 +16,8 @@
         "1": 0,
         "2": 0
       },
-      "hasAppearance": true,
-      "id": "22R",
+      "hasAppearance": false,
+      "id": "121R",
       "rect": [
         559,
         388.008,
@@ -27,8 +27,7 @@
       "subtype": "Link",
       "annotationType": 2,
       "url": "http://ajcn.nutrition.org/",
-      "unsafeUrl": "http://ajcn.nutrition.org/",
-      "colorName": "Black"
+      "unsafeUrl": "http://ajcn.nutrition.org/"
     },
     {
       "annotationFlags": 4,
@@ -47,7 +46,7 @@
         "2": 104
       },
       "hasAppearance": true,
-      "id": "23R",
+      "id": "122R",
       "rect": [
         39.15884,
         100.3647,
@@ -58,8 +57,7 @@
       "annotationType": 9,
       "hasPopup": false,
       "title": "Michael",
-      "contents": "",
-      "colorName": "Highlight Green"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -78,7 +76,7 @@
         "2": 90
       },
       "hasAppearance": true,
-      "id": "24R",
+      "id": "123R",
       "rect": [
         299.9625,
         264.4351,
@@ -89,8 +87,7 @@
       "annotationType": 9,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Highlight Yellow"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -109,7 +106,7 @@
         "2": 218
       },
       "hasAppearance": true,
-      "id": "25R",
+      "id": "124R",
       "rect": [
         39.9685,
         415.1105,
@@ -120,8 +117,7 @@
       "annotationType": 9,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Highlight Purple"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -140,7 +136,7 @@
         "2": 20
       },
       "hasAppearance": true,
-      "id": "26R",
+      "id": "125R",
       "rect": [
         39.9685,
         415.1105,
@@ -151,8 +147,7 @@
       "annotationType": 10,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Red"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -171,7 +166,7 @@
         "2": 20
       },
       "hasAppearance": true,
-      "id": "27R",
+      "id": "126R",
       "rect": [
         39.9676,
         224.6762,
@@ -182,8 +177,7 @@
       "annotationType": 10,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Red"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -202,7 +196,7 @@
         "2": 241
       },
       "hasAppearance": true,
-      "id": "28R",
+      "id": "127R",
       "rect": [
         154.3731,
         359.3814,
@@ -213,8 +207,7 @@
       "annotationType": 9,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Highlight Blue"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -233,7 +226,7 @@
         "2": 20
       },
       "hasAppearance": true,
-      "id": "29R",
+      "id": "128R",
       "rect": [
         154.3731,
         359.3814,
@@ -244,8 +237,7 @@
       "annotationType": 12,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Red"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -264,7 +256,7 @@
         "2": 20
       },
       "hasAppearance": true,
-      "id": "30R",
+      "id": "129R",
       "rect": [
         307.9566,
         88.93763,
@@ -275,8 +267,7 @@
       "annotationType": 12,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Red"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -295,7 +286,7 @@
         "2": 0
       },
       "hasAppearance": true,
-      "id": "31R",
+      "id": "130R",
       "rect": [
         81.49739,
         692.6443,
@@ -306,8 +297,7 @@
       "annotationType": 5,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Black"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -326,10 +316,10 @@
         "2": 255
       },
       "hasAppearance": true,
-      "id": "32R",
+      "id": "131R",
       "rect": [
         336.7902,
-        648.0204,
+        648.0205,
         489.8293,
         764.2207
       ],
@@ -337,8 +327,7 @@
       "annotationType": 5,
       "hasPopup": false,
       "title": "",
-      "contents": "",
-      "colorName": "Blue"
+      "contents": ""
     },
     {
       "annotationFlags": 4,
@@ -357,325 +346,14 @@
         "2": 0
       },
       "hasAppearance": true,
-      "id": "33R",
+      "id": "132R",
       "rect": [
         535.3455,
         669.807,
         572.7223,
         696.7541
       ],
-      "subtype": "FreeText",
-      "colorName": "Black"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 15,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 145,
-        "1": 145,
-        "2": 145
-      },
-      "hasAppearance": true,
-      "id": "34R",
-      "rect": [
-        295.2685,
-        176.125,
-        483.3181,
-        209.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "Grey"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 255,
-        "1": 255,
-        "2": 255
-      },
-      "hasAppearance": true,
-      "id": "35R",
-      "rect": [
-        312.2685,
-        173.125,
-        486.3181,
-        192.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "White"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 170,
-        "1": 121,
-        "2": 66
-      },
-      "hasAppearance": true,
-      "id": "36R",
-      "rect": [
-        322.2685,
-        163.125,
-        496.3181,
-        182.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "Brown"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 148,
-        "1": 33,
-        "2": 146
-      },
-      "hasAppearance": true,
-      "id": "37R",
-      "rect": [
-        332.2685,
-        153.125,
-        506.3181,
-        172.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "Purple"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 255,
-        "1": 64,
-        "2": 255
-      },
-      "hasAppearance": true,
-      "id": "38R",
-      "rect": [
-        342.2685,
-        143.125,
-        516.3182,
-        162.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "Pink"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 250,
-        "1": 205,
-        "2": 90
-      },
-      "hasAppearance": true,
-      "id": "39R",
-      "rect": [
-        312.2645,
-        218.3673,
-        345.0459,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Yellow"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 124,
-        "1": 200,
-        "2": 104
-      },
-      "hasAppearance": true,
-      "id": "40R",
-      "rect": [
-        346.2789,
-        218.3673,
-        354.2491,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Green"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 105,
-        "1": 176,
-        "2": 241
-      },
-      "hasAppearance": true,
-      "id": "41R",
-      "rect": [
-        356.6537,
-        218.3673,
-        376.1488,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Blue"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 251,
-        "1": 92,
-        "2": 137
-      },
-      "hasAppearance": true,
-      "id": "42R",
-      "rect": [
-        378.5367,
-        218.3673,
-        394.0547,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Pink"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
-        ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
-      },
-      "color": {
-        "0": 200,
-        "1": 133,
-        "2": 218
-      },
-      "hasAppearance": true,
-      "id": "43R",
-      "rect": [
-        396.4513,
-        218.3673,
-        406.2387,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Purple"
+      "subtype": "FreeText"
     }
   ],
   "viewport": {

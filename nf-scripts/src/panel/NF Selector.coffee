@@ -10,6 +10,13 @@ openScript = (targetScript) ->
   scriptFile = new File(start_folder.fsName + "/#{targetScript}")
   $.evalFile scriptFile.fullName
 
+loadAutoHighlightDataIntoView = (treeView) ->
+  treeView.removeAll()
+
+  contentTree = {}
+
+
+
 loadContentIntoView = (treeView) ->
   treeView.removeAll()
 
@@ -95,13 +102,17 @@ getPanelUI = ->
   prepTab.alignment = ['fill','fill']
   prepTab.alignChildren = "fill"
 
-  buttonPanel = prepTab.add 'panel', undefined, undefined, {borderStyle:'none'}
-  buttonPanel.alignment = ['fill','fill']
-  buttonPanel.alignChildren = 'left'
-  buttonPanel.margins.top = 16
+  buttonPrepPanel = prepTab.add 'panel', undefined, undefined, {borderStyle:'none'}
+  buttonPrepPanel.alignment = ['fill','fill']
+  buttonPrepPanel.alignChildren = 'left'
+  buttonPrepPanel.margins.top = 16
+
+  treePrepView = buttonPrepPanel.add 'treeview', undefined #[0, 0, 250, 150]
+  treePrepView.preferredSize = [220, 250]
+  treePrepView.alignment = ['fill','fill']
 
   # FIXME: Pickup here and add a tree with a refresh button to load in highlights and let you pick which to create
-
+  loadAutoHighlightDataIntoView treePrepView
 
   # Animate Tab
   animateTab = tPanel.add("tab", undefined, "Animate")

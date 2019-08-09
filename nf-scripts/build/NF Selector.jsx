@@ -1,4 +1,4 @@
-var PADDING, _, getPanelUI, loadContentIntoView, main, openScript, panelTest;
+var PADDING, _, getPanelUI, loadAutoHighlightDataIntoView, loadContentIntoView, main, openScript, panelTest;
 
 $.evalFile("runtimeLibraries.jsx");
 
@@ -15,6 +15,12 @@ openScript = function(targetScript) {
   start_folder = new Folder(new File($.fileName).parent.fsName);
   scriptFile = new File(start_folder.fsName + ("/" + targetScript));
   return $.evalFile(scriptFile.fullName);
+};
+
+loadAutoHighlightDataIntoView = function(treeView) {
+  var contentTree;
+  treeView.removeAll();
+  return contentTree = {};
 };
 
 loadContentIntoView = function(treeView) {
@@ -83,7 +89,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, animateTab, buttonGroup, buttonPanel, goButton, linkButton, panel, panelType, prepTab, refreshButton, tPanel, treeView;
+  var addButton, animateTab, buttonGroup, buttonPanel, buttonPrepPanel, goButton, linkButton, panel, panelType, prepTab, refreshButton, tPanel, treePrepView, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -103,12 +109,16 @@ getPanelUI = function() {
   prepTab = tPanel.add("tab", void 0, "Prep");
   prepTab.alignment = ['fill', 'fill'];
   prepTab.alignChildren = "fill";
-  buttonPanel = prepTab.add('panel', void 0, void 0, {
+  buttonPrepPanel = prepTab.add('panel', void 0, void 0, {
     borderStyle: 'none'
   });
-  buttonPanel.alignment = ['fill', 'fill'];
-  buttonPanel.alignChildren = 'left';
-  buttonPanel.margins.top = 16;
+  buttonPrepPanel.alignment = ['fill', 'fill'];
+  buttonPrepPanel.alignChildren = 'left';
+  buttonPrepPanel.margins.top = 16;
+  treePrepView = buttonPrepPanel.add('treeview', void 0);
+  treePrepView.preferredSize = [220, 250];
+  treePrepView.alignment = ['fill', 'fill'];
+  loadAutoHighlightDataIntoView(treePrepView);
   animateTab = tPanel.add("tab", void 0, "Animate");
   animateTab.alignChildren = "fill";
   animateTab.alignment = ['fill', 'fill'];
