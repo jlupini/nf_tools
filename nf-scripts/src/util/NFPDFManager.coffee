@@ -16,7 +16,7 @@ NFPDFManager =
     9: "Highlight"
     10: "Underline"
     11: "Squiggly"
-    12: "Strikeout"
+    12: "Strikethrough"
     13: "Stamp"
     14: "Caret"
     15: "Ink"
@@ -175,21 +175,6 @@ NFPDFManager =
         color: convertColorJSON(testAnnotation.color)
         colorName: testAnnotation.colorName
         type: typeList
+        cleanName: "#{testAnnotation.colorName.replace("Highlight ", "")} #{typeList}"
 
-
-      # # Actually add the shapes and stuff
-      # annotationLayer = targetComp.addShapeLayer()
-      # annotationLayer.setName "Imported Shape #{i} - n=#{lineCount}"
-      # annotationLayer.addRectangle
-      #   fillColor: convertColorJSON(testAnnotation.color)
-      #   rect: annotationRect
-      # annotationLayer.transform().scale.setValue scaleFactor
-      #
-      # # Create the highlight effect
-      # targetComp.createHighlight
-      #   shapeLayer: annotationLayer
-      #   lines: lineCount
-      #   name: "Auto Highlight #{i}"
-      #
-      # annotationLayer.remove()
     return exportData

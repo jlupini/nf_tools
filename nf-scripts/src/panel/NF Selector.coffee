@@ -19,25 +19,10 @@ loadAutoHighlightDataIntoView = (treeView) ->
   activeComp = NFProject.activeComp()
   annotationData = NFPDFManager.importAnnotationDataForPageComp activeComp
   for annotation in annotationData
-    colorName = annotation.colorName.replace("Highlight ", "")
-    typeList = annotation.type
 
-    thisPDFNode = treeView.add 'item', "#{colorName} #{typeList}"
-  # pdfLayer = activeComp?.getPDFLayer()
-  #
-  # unless pdfLayer?
-  #   throw new Error "No PDF Layer found. Ensure a Page comp is active"
-  #
-  # pdfFile = pdfLayer.$.source?.file
-  # pdfDataFile = pdfFile.fsName.replace(".pdf", ".json")
-  # pdfData = NFTools.readFile pdfDataFile, true, false
-  # parsedData = JSON.parse pdfData
-  #
-  # annotationData = parsedData["annotations"]
-  # viewport = parsedData["viewport"].viewBox
-  # textContent = parsedData["textContent"]
-  #
-  #
+    thisPDFNode = treeView.add 'item', annotation.cleanName
+    thisPDFNode.data = annotation
+
 
 loadContentIntoView = (treeView) ->
   treeView.removeAll()
@@ -120,7 +105,7 @@ getPanelUI = ->
   tPanel.alignChildren = ["fill", "fill"]
 
   # Prep Tab
-  prepTab = tPanel.add("tab", undefined, "Prep")
+  prepTab = tPanel.add("tab", undefined, "Highlight Importer")
   prepTab.alignment = ['fill','fill']
   prepTab.alignChildren = "fill"
 
@@ -133,11 +118,47 @@ getPanelUI = ->
   treePrepView.preferredSize = [220, 250]
   treePrepView.alignment = ['fill','fill']
 
+  buttonPrepGroup = buttonPrepPanel.add 'group', undefined
+  buttonPrepGroup.maximumSize = [200,50]
+
+  refreshPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.refresh)
+  refreshPrepButton.onClick = (w) ->
+    loadAutoHighlightDataIntoView treePrepView
+    @active = false
+
+  addPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.add)
+  addPrepButton.onClick = (w) ->
+    choice = treePrepView.selection?.data
+
+    return alert "Invalid Selection!" unless choice?
+    app.beginUndoGroup "NF Selector"
+
+    targetComp = NFProject.activeComp()
+
+    # Actually add the shapes and stuff
+    annotationLayer = targetComp.addShapeLayer()
+    annotationLayer.setName "Imported Shape"
+    annotationLayer.addRectangle
+      fillColor: choice.color
+      rect: choice.rect
+
+    annotationLayer.transform().scale.setValue targetComp?.getPDFLayer().transform().scale.value
+
+    # Create the highlight effect
+    targetComp.createHighlight
+      shapeLayer: annotationLayer
+      lines: choice.lineCount
+      name: choice.cleanName
+
+    annotationLayer.remove()
+
+    app.endUndoGroup()
+
   # FIXME: Pickup here and add a tree with a refresh button to load in highlights and let you pick which to create
   loadAutoHighlightDataIntoView treePrepView
 
   # Animate Tab
-  animateTab = tPanel.add("tab", undefined, "Animate")
+  animateTab = tPanel.add("tab", undefined, "Animator")
   animateTab.alignChildren = "fill"
   animateTab.alignment = ['fill','fill']
 

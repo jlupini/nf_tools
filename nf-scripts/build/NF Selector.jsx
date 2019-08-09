@@ -18,7 +18,7 @@ openScript = function(targetScript) {
 };
 
 loadAutoHighlightDataIntoView = function(treeView) {
-  var activeComp, annotation, annotationData, colorName, contentTree, i, len, results, thisPDFNode, typeList;
+  var activeComp, annotation, annotationData, contentTree, i, len, results, thisPDFNode;
   treeView.removeAll();
   contentTree = {};
   activeComp = NFProject.activeComp();
@@ -26,9 +26,8 @@ loadAutoHighlightDataIntoView = function(treeView) {
   results = [];
   for (i = 0, len = annotationData.length; i < len; i++) {
     annotation = annotationData[i];
-    colorName = annotation.colorName.replace("Highlight ", "");
-    typeList = annotation.type;
-    results.push(thisPDFNode = treeView.add('item', colorName + " " + typeList));
+    thisPDFNode = treeView.add('item', annotation.cleanName);
+    results.push(thisPDFNode.data = annotation);
   }
   return results;
 };
@@ -99,7 +98,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, animateTab, buttonGroup, buttonPanel, buttonPrepPanel, goButton, linkButton, panel, panelType, prepTab, refreshButton, tPanel, treePrepView, treeView;
+  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, goButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -116,7 +115,7 @@ getPanelUI = function() {
   tPanel = panel.add("tabbedpanel");
   tPanel.alignment = ['fill', 'fill'];
   tPanel.alignChildren = ["fill", "fill"];
-  prepTab = tPanel.add("tab", void 0, "Prep");
+  prepTab = tPanel.add("tab", void 0, "Highlight Importer");
   prepTab.alignment = ['fill', 'fill'];
   prepTab.alignChildren = "fill";
   buttonPrepPanel = prepTab.add('panel', void 0, void 0, {
@@ -128,8 +127,39 @@ getPanelUI = function() {
   treePrepView = buttonPrepPanel.add('treeview', void 0);
   treePrepView.preferredSize = [220, 250];
   treePrepView.alignment = ['fill', 'fill'];
+  buttonPrepGroup = buttonPrepPanel.add('group', void 0);
+  buttonPrepGroup.maximumSize = [200, 50];
+  refreshPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.refresh);
+  refreshPrepButton.onClick = function(w) {
+    loadAutoHighlightDataIntoView(treePrepView);
+    return this.active = false;
+  };
+  addPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.add);
+  addPrepButton.onClick = function(w) {
+    var annotationLayer, choice, ref, targetComp;
+    choice = (ref = treePrepView.selection) != null ? ref.data : void 0;
+    if (choice == null) {
+      return alert("Invalid Selection!");
+    }
+    app.beginUndoGroup("NF Selector");
+    targetComp = NFProject.activeComp();
+    annotationLayer = targetComp.addShapeLayer();
+    annotationLayer.setName("Imported Shape");
+    annotationLayer.addRectangle({
+      fillColor: choice.color,
+      rect: choice.rect
+    });
+    annotationLayer.transform().scale.setValue(targetComp != null ? targetComp.getPDFLayer().transform().scale.value : void 0);
+    targetComp.createHighlight({
+      shapeLayer: annotationLayer,
+      lines: choice.lineCount,
+      name: choice.cleanName
+    });
+    annotationLayer.remove();
+    return app.endUndoGroup();
+  };
   loadAutoHighlightDataIntoView(treePrepView);
-  animateTab = tPanel.add("tab", void 0, "Animate");
+  animateTab = tPanel.add("tab", void 0, "Animator");
   animateTab.alignChildren = "fill";
   animateTab.alignment = ['fill', 'fill'];
   buttonPanel = animateTab.add('panel', void 0, void 0, {

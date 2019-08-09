@@ -156,21 +156,21 @@ importAnnotationDataForPageComp = (targetComp) ->
       type: AnnotationTypeName[testAnnotation.annotationType]
 
 
-    # # Actually add the shapes and stuff
-    # annotationLayer = targetComp.addShapeLayer()
-    # annotationLayer.setName "Imported Shape #{i} - n=#{lineCount}"
-    # annotationLayer.addRectangle
-    #   fillColor: convertColorJSON(testAnnotation.color)
-    #   rect: annotationRect
-    # annotationLayer.transform().scale.setValue scaleFactor
-    #
-    # # Create the highlight effect
-    # targetComp.createHighlight
-    #   shapeLayer: annotationLayer
-    #   lines: lineCount
-    #   name: "Auto Highlight #{i}"
-    #
-    # annotationLayer.remove()
+    # Actually add the shapes and stuff
+    annotationLayer = targetComp.addShapeLayer()
+    annotationLayer.setName "Imported Shape #{i} - n=#{lineCount}"
+    annotationLayer.addRectangle
+      fillColor: convertColorJSON(testAnnotation.color)
+      rect: annotationRect
+    annotationLayer.transform().scale.setValue scaleFactor
+
+    # Create the highlight effect
+    targetComp.createHighlight
+      shapeLayer: annotationLayer
+      lines: lineCount
+      name: "Auto Highlight #{i}"
+
+    annotationLayer.remove()
   return exportData
 
 

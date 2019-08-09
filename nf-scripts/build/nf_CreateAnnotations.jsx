@@ -108,7 +108,7 @@ getRectFromTextItem = function(textItem) {
 };
 
 importAnnotationDataForPageComp = function(targetComp) {
-  var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, exportData, i, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, overlapExists, parsedData, pdfData, pdfDataFile, pdfFile, pdfLayer, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, viewport;
+  var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationLayer, annotationRect, annotationsOverlap, exportData, i, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, overlapExists, parsedData, pdfData, pdfDataFile, pdfFile, pdfLayer, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, viewport;
   pdfLayer = targetComp != null ? targetComp.getPDFLayer() : void 0;
   pdfFile = (ref = pdfLayer.$.source) != null ? ref.file : void 0;
   pdfDataFile = pdfFile.fsName.replace(".pdf", ".json");
@@ -172,6 +172,19 @@ importAnnotationDataForPageComp = function(targetComp) {
       colorName: testAnnotation.colorName,
       type: AnnotationTypeName[testAnnotation.annotationType]
     });
+    annotationLayer = targetComp.addShapeLayer();
+    annotationLayer.setName("Imported Shape " + i + " - n=" + lineCount);
+    annotationLayer.addRectangle({
+      fillColor: convertColorJSON(testAnnotation.color),
+      rect: annotationRect
+    });
+    annotationLayer.transform().scale.setValue(scaleFactor);
+    targetComp.createHighlight({
+      shapeLayer: annotationLayer,
+      lines: lineCount,
+      name: "Auto Highlight " + i
+    });
+    annotationLayer.remove();
   }
   return exportData;
 };

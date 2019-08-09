@@ -18,7 +18,7 @@ NFPDFManager = {
     9: "Highlight",
     10: "Underline",
     11: "Squiggly",
-    12: "Strikeout",
+    12: "Strikethrough",
     13: "Stamp",
     14: "Caret",
     15: "Ink",
@@ -182,7 +182,8 @@ NFPDFManager = {
         lineCount: lineCount,
         color: convertColorJSON(testAnnotation.color),
         colorName: testAnnotation.colorName,
-        type: typeList
+        type: typeList,
+        cleanName: (testAnnotation.colorName.replace("Highlight ", "")) + " " + typeList
       });
     }
     return exportData;
