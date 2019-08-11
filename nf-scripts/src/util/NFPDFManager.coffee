@@ -2,6 +2,7 @@
 NFPDFManager Namespace
 @namespace NFPDFManager
 ###
+NFPDFManagerImportedData = {} unless NFPDFManagerImportedData?
 NFPDFManager =
 
   AnnotationTypeName:
@@ -75,13 +76,12 @@ NFPDFManager =
     5: "Underline"
 
   ###*
-  Returns the annotation Data for a given page comp
+  Returns the annotation Data for a given page comp. Does NOT import that data
   @memberof NFPDFManager
   @param {NFPageComp} the target comp
   @returns {Object} the annotation data
   ###
-  importAnnotationDataForPageComp: (targetComp) ->
-
+  getAnnotationDataForPageComp: (targetComp) ->
     recognizedAnnotationTypes = [
       NFPDFManager.AnnotationType.STRIKEOUT
       NFPDFManager.AnnotationType.HIGHLIGHT
@@ -91,8 +91,7 @@ NFPDFManager =
     ]
 
     # Takes a array of rgb values between 0 and 256. Spits out as 0-1. Borks with anything but 3-length array
-    convertColorJSON = (obj) ->
-      arr = [obj["0"], obj["1"], obj["2"]]
+    convertColorJSON = (arr) ->
       return [arr[0]/256, arr[1]/256, arr[2]/256]
 
     # Accepts PDF coordiates in array of points and spits out a rect object
@@ -114,21 +113,23 @@ NFPDFManager =
         top: viewport[3] - textItem.bottom
 
     pdfLayer = targetComp?.getPDFLayer()
+    dataFile = pdfLayer.$.source?.file
+    pdfDataKey = dataFile.name
+    # pdfData = NFTools.readFile dataFile.path + "/annotationData.json", true, false
+    # parsedData = JSON.parse(pdfData)
+    # parsedData = parsedData[pdfDataKey]
+    importedData = NFPDFManagerImportedData[app.project.file.name]
+    return null unless importedData?
 
-    pdfFile = pdfLayer.$.source?.file
-    pdfDataFile = pdfFile.fsName.replace(".pdf", ".json")
-    pdfData = NFTools.readFile pdfDataFile, true, false
-    parsedData = JSON.parse pdfData
-
+    parsedData = importedData[pdfDataKey]
     annotationData = parsedData["annotations"]
-    viewport = parsedData["viewport"].viewBox
+    viewport = parsedData["viewport"]
     textContent = parsedData["textContent"]
 
     # Let's get the scale factor for the PDF Layer.
     scaleFactor = pdfLayer.transform().scale.value
 
     # Remove all the annotations that take up the same space, or aren't the right type
-    # FIXME: Add a flag each time one takes up the same space as another so we can stack color/strikethroughs/etc
     trimmedAnnotationData = []
     for testAnnotation, i in annotationData
       if (recognizedAnnotationTypes.indexOf(testAnnotation.annotationType) > -1)
@@ -178,3 +179,20 @@ NFPDFManager =
         cleanName: "#{testAnnotation.colorName.replace("Highlight ", "")} #{typeList}"
 
     return exportData
+
+  ###*
+  Imports the annotation Data for a given page comp from a json file in the pdf pages directory
+  @memberof NFPDFManager
+  @returns {boolean} whether the import succeeded
+  ###
+  importAnnotationData: ->
+    pdfPagesFolder = NFProject.findItem "PDF Pages"
+    pdfFile = pdfPagesFolder.items[1].mainSource.file
+
+    pdfData = NFTools.readFile pdfFile.path + "/annotationData.json", true, false
+    parsedData = JSON.parse(pdfData)
+    if parsedData?
+      NFPDFManagerImportedData[app.project.file.name] = parsedData
+      return true
+    else
+      return false

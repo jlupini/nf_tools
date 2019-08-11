@@ -10,6 +10,9 @@ openScript = (targetScript) ->
   scriptFile = new File(start_folder.fsName + "/#{targetScript}")
   $.evalFile scriptFile.fullName
 
+importPDFAnnotationData = ->
+  NFPDFManager.importAnnotationData()
+
 loadAutoHighlightDataIntoView = (treeView) ->
   treeView.removeAll()
 
@@ -17,7 +20,8 @@ loadAutoHighlightDataIntoView = (treeView) ->
 
 
   activeComp = NFProject.activeComp()
-  annotationData = NFPDFManager.importAnnotationDataForPageComp activeComp
+  annotationData = NFPDFManager.getAnnotationDataForPageComp activeComp
+  return alert "No PDF Annotation Data Found\nTry the Import button below first" unless annotationData?
   for annotation in annotationData
 
     thisPDFNode = treeView.add 'item', annotation.cleanName
@@ -121,11 +125,6 @@ getPanelUI = ->
   buttonPrepGroup = buttonPrepPanel.add 'group', undefined
   buttonPrepGroup.maximumSize = [200,50]
 
-  refreshPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.refresh)
-  refreshPrepButton.onClick = (w) ->
-    loadAutoHighlightDataIntoView treePrepView
-    @active = false
-
   addPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.add)
   addPrepButton.onClick = (w) ->
     choice = treePrepView.selection?.data
@@ -154,8 +153,22 @@ getPanelUI = ->
 
     app.endUndoGroup()
 
-  # FIXME: Pickup here and add a tree with a refresh button to load in highlights and let you pick which to create
-  loadAutoHighlightDataIntoView treePrepView
+  refreshPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.refresh)
+  refreshPrepButton.onClick = (w) ->
+    loadAutoHighlightDataIntoView treePrepView
+    @active = false
+
+  importPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.import)
+  importPrepButton.onClick = (w) ->
+    alert "Importing Auto Highlight Data\nThis can take a little while, so be patient."
+    result = importPDFAnnotationData()
+    if result
+      alert "Success\nNow hit the refresh button with a PDF Comp active."
+    else
+      alert "Failed\nLook for annotationData.json file in the PDF Pages directory"
+    @active = false
+
+  # loadAutoHighlightDataIntoView treePrepView
 
   # Animate Tab
   animateTab = tPanel.add("tab", undefined, "Animator")

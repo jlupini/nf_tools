@@ -1,4 +1,4 @@
-var PADDING, _, getPanelUI, loadAutoHighlightDataIntoView, loadContentIntoView, main, openScript, panelTest;
+var PADDING, _, getPanelUI, importPDFAnnotationData, loadAutoHighlightDataIntoView, loadContentIntoView, main, openScript, panelTest;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
@@ -17,12 +17,19 @@ openScript = function(targetScript) {
   return $.evalFile(scriptFile.fullName);
 };
 
+importPDFAnnotationData = function() {
+  return NFPDFManager.importAnnotationData();
+};
+
 loadAutoHighlightDataIntoView = function(treeView) {
   var activeComp, annotation, annotationData, contentTree, i, len, results, thisPDFNode;
   treeView.removeAll();
   contentTree = {};
   activeComp = NFProject.activeComp();
-  annotationData = NFPDFManager.importAnnotationDataForPageComp(activeComp);
+  annotationData = NFPDFManager.getAnnotationDataForPageComp(activeComp);
+  if (annotationData == null) {
+    return alert("No PDF Annotation Data Found\nTry the Import button below first");
+  }
   results = [];
   for (i = 0, len = annotationData.length; i < len; i++) {
     annotation = annotationData[i];
@@ -98,7 +105,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, goButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
+  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, goButton, importPrepButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -129,11 +136,6 @@ getPanelUI = function() {
   treePrepView.alignment = ['fill', 'fill'];
   buttonPrepGroup = buttonPrepPanel.add('group', void 0);
   buttonPrepGroup.maximumSize = [200, 50];
-  refreshPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.refresh);
-  refreshPrepButton.onClick = function(w) {
-    loadAutoHighlightDataIntoView(treePrepView);
-    return this.active = false;
-  };
   addPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.add);
   addPrepButton.onClick = function(w) {
     var annotationLayer, choice, ref, targetComp;
@@ -158,7 +160,23 @@ getPanelUI = function() {
     annotationLayer.remove();
     return app.endUndoGroup();
   };
-  loadAutoHighlightDataIntoView(treePrepView);
+  refreshPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.refresh);
+  refreshPrepButton.onClick = function(w) {
+    loadAutoHighlightDataIntoView(treePrepView);
+    return this.active = false;
+  };
+  importPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button["import"]);
+  importPrepButton.onClick = function(w) {
+    var result;
+    alert("Importing Auto Highlight Data\nThis can take a little while, so be patient.");
+    result = importPDFAnnotationData();
+    if (result) {
+      alert("Success\nNow hit the refresh button with a PDF Comp active.");
+    } else {
+      alert("Failed\nLook for annotationData.json file in the PDF Pages directory");
+    }
+    return this.active = false;
+  };
   animateTab = tPanel.add("tab", void 0, "Animator");
   animateTab.alignChildren = "fill";
   animateTab.alignment = ['fill', 'fill'];

@@ -3,7 +3,11 @@
 NFPDFManager Namespace
 @namespace NFPDFManager
  */
-var NFPDFManager;
+var NFPDFManager, NFPDFManagerImportedData;
+
+if (typeof NFPDFManagerImportedData === "undefined" || NFPDFManagerImportedData === null) {
+  NFPDFManagerImportedData = {};
+}
 
 NFPDFManager = {
   AnnotationTypeName: {
@@ -78,17 +82,15 @@ NFPDFManager = {
   },
 
   /**
-  Returns the annotation Data for a given page comp
+  Returns the annotation Data for a given page comp. Does NOT import that data
   @memberof NFPDFManager
   @param {NFPageComp} the target comp
   @returns {Object} the annotation data
    */
-  importAnnotationDataForPageComp: function(targetComp) {
-    var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, convertCartesian, convertColorJSON, exportData, getRectFromTextItem, i, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, o, overlapExists, parsedData, pdfData, pdfDataFile, pdfFile, pdfLayer, recognizedAnnotationTypes, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
+  getAnnotationDataForPageComp: function(targetComp) {
+    var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, convertCartesian, convertColorJSON, dataFile, exportData, getRectFromTextItem, i, importedData, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, o, overlapExists, parsedData, pdfDataKey, pdfLayer, recognizedAnnotationTypes, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
     recognizedAnnotationTypes = [NFPDFManager.AnnotationType.STRIKEOUT, NFPDFManager.AnnotationType.HIGHLIGHT, NFPDFManager.AnnotationType.UNDERLINE, NFPDFManager.AnnotationType.CIRCLE, NFPDFManager.AnnotationType.POLYGON];
-    convertColorJSON = function(obj) {
-      var arr;
-      arr = [obj["0"], obj["1"], obj["2"]];
+    convertColorJSON = function(arr) {
       return [arr[0] / 256, arr[1] / 256, arr[2] / 256];
     };
     convertCartesian = function(points) {
@@ -113,12 +115,15 @@ NFPDFManager = {
       };
     };
     pdfLayer = targetComp != null ? targetComp.getPDFLayer() : void 0;
-    pdfFile = (ref = pdfLayer.$.source) != null ? ref.file : void 0;
-    pdfDataFile = pdfFile.fsName.replace(".pdf", ".json");
-    pdfData = NFTools.readFile(pdfDataFile, true, false);
-    parsedData = JSON.parse(pdfData);
+    dataFile = (ref = pdfLayer.$.source) != null ? ref.file : void 0;
+    pdfDataKey = dataFile.name;
+    importedData = NFPDFManagerImportedData[app.project.file.name];
+    if (importedData == null) {
+      return null;
+    }
+    parsedData = importedData[pdfDataKey];
     annotationData = parsedData["annotations"];
-    viewport = parsedData["viewport"].viewBox;
+    viewport = parsedData["viewport"];
     textContent = parsedData["textContent"];
     scaleFactor = pdfLayer.transform().scale.value;
     trimmedAnnotationData = [];
@@ -187,5 +192,24 @@ NFPDFManager = {
       });
     }
     return exportData;
+  },
+
+  /**
+  Imports the annotation Data for a given page comp from a json file in the pdf pages directory
+  @memberof NFPDFManager
+  @returns {boolean} whether the import succeeded
+   */
+  importAnnotationData: function() {
+    var parsedData, pdfData, pdfFile, pdfPagesFolder;
+    pdfPagesFolder = NFProject.findItem("PDF Pages");
+    pdfFile = pdfPagesFolder.items[1].mainSource.file;
+    pdfData = NFTools.readFile(pdfFile.path + "/annotationData.json", true, false);
+    parsedData = JSON.parse(pdfData);
+    if (parsedData != null) {
+      NFPDFManagerImportedData[app.project.file.name] = parsedData;
+      return true;
+    } else {
+      return false;
+    }
   }
 };

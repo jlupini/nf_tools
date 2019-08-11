@@ -1,3281 +1,2415 @@
 {
-  "annotations": [
-    {
-      "annotationFlags": 0,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+  "800_pg02.pdf": {
+    "annotations": [
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "105R",
+        "rect": [
+          134.9234,
+          834.403,
+          141.3049,
+          839.569
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "http://mobile.nytimes.com/2014/02/12/business/rival-industries-sweet-talk-the-public.html",
+        "unsafeUrl": "http://mobile.nytimes.com/2014/02/12/business/rival-industries-sweet-talk-the-public.html",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 0,
-        "1": 0,
-        "2": 0
-      },
-      "hasAppearance": true,
-      "id": "22R",
-      "rect": [
-        559,
-        388.008,
-        569,
-        449.144
-      ],
-      "subtype": "Link",
-      "annotationType": 2,
-      "url": "http://ajcn.nutrition.org/",
-      "unsafeUrl": "http://ajcn.nutrition.org/",
-      "colorName": "Black"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 4,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 105,
+          "1": 176,
+          "2": 241
+        },
+        "hasAppearance": true,
+        "id": "106R",
+        "rect": [
+          149.0078,
+          146.3188,
+          307.4231,
+          160.2454
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Highlight",
+        "annotationType": 9,
+        "hasPopup": false,
+        "title": "Michael",
+        "contents": "",
+        "colorName": "Highlight Blue"
       },
-      "color": {
-        "0": 124,
-        "1": 200,
-        "2": 104
-      },
-      "hasAppearance": true,
-      "id": "23R",
-      "rect": [
-        39.15884,
-        100.3647,
-        285.8416,
-        143.5545
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "Michael",
-      "contents": "",
-      "colorName": "Highlight Green"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 4,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 250,
+          "1": 205,
+          "2": 90
+        },
+        "hasAppearance": true,
+        "id": "107R",
+        "rect": [
+          149.0078,
+          204.0564,
+          322.9209,
+          225.8839
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Highlight",
+        "annotationType": 9,
+        "hasPopup": false,
+        "title": "Michael",
+        "contents": "",
+        "colorName": "Highlight Yellow"
       },
-      "color": {
-        "0": 250,
-        "1": 205,
-        "2": 90
-      },
-      "hasAppearance": true,
-      "id": "24R",
-      "rect": [
-        299.9625,
-        264.4351,
-        545.1307,
-        430.6619
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Yellow"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 4,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 124,
+          "1": 200,
+          "2": 104
+        },
+        "hasAppearance": true,
+        "id": "108R",
+        "rect": [
+          234.7607,
+          285.4968,
+          296.563,
+          291.5224
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Highlight",
+        "annotationType": 9,
+        "hasPopup": false,
+        "title": "Michael",
+        "contents": "",
+        "colorName": "Highlight Green"
       },
-      "color": {
-        "0": 200,
-        "1": 133,
-        "2": 218
-      },
-      "hasAppearance": true,
-      "id": "25R",
-      "rect": [
-        39.9685,
-        415.1105,
-        284.9987,
-        446.2021
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Purple"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "109R",
+        "rect": [
+          260.1226,
+          830.4525,
+          316.6446,
+          838.6573
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/",
+        "unsafeUrl": "https://www.nytimes.com/",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 236,
-        "1": 40,
-        "2": 20
-      },
-      "hasAppearance": true,
-      "id": "26R",
-      "rect": [
-        39.9685,
-        415.1105,
-        284.9987,
-        446.2021
-      ],
-      "subtype": "Underline",
-      "annotationType": 10,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Red"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "110R",
+        "rect": [
+          430.904,
+          830.4525,
+          464.9387,
+          839.2651
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/subscription/multiproduct/lp8HYKU.html?campaignId=67LXL",
+        "unsafeUrl": "https://www.nytimes.com/subscription/multiproduct/lp8HYKU.html?campaignId=67LXL",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 236,
-        "1": 40,
-        "2": 20
-      },
-      "hasAppearance": true,
-      "id": "27R",
-      "rect": [
-        39.9676,
-        224.6762,
-        285.0193,
-        289.898
-      ],
-      "subtype": "Underline",
-      "annotationType": 10,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Red"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "111R",
+        "rect": [
+          55.00255,
+          804.3187,
+          127.9341,
+          827.1099
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/2018/01/12/technology/facebook-news-feed-overhaul.html?ribbon-ad-idx=5&rref=business",
+        "unsafeUrl": "https://www.nytimes.com/2018/01/12/technology/facebook-news-feed-overhaul.html?ribbon-ad-idx=5&rref=business",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 105,
-        "1": 176,
-        "2": 241
-      },
-      "hasAppearance": true,
-      "id": "28R",
-      "rect": [
-        154.3731,
-        359.3814,
-        241.9496,
-        368.2491
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Blue"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "112R",
+        "rect": [
+          130.6691,
+          804.3187,
+          203.6006,
+          827.1099
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/2018/01/11/business/media/facebook-news-feed-media.html?ribbon-ad-idx=5&rref=business",
+        "unsafeUrl": "https://www.nytimes.com/2018/01/11/business/media/facebook-news-feed-media.html?ribbon-ad-idx=5&rref=business",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 236,
-        "1": 40,
-        "2": 20
-      },
-      "hasAppearance": true,
-      "id": "29R",
-      "rect": [
-        154.3731,
-        359.3814,
-        241.9496,
-        368.2491
-      ],
-      "subtype": "StrikeOut",
-      "annotationType": 12,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Red"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "113R",
+        "rect": [
+          206.3355,
+          804.3187,
+          279.2671,
+          827.1099
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/2018/01/12/technology/facebook-news-feed-changes.html?ribbon-ad-idx=5&rref=business",
+        "unsafeUrl": "https://www.nytimes.com/2018/01/12/technology/facebook-news-feed-changes.html?ribbon-ad-idx=5&rref=business",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 236,
-        "1": 40,
-        "2": 20
-      },
-      "hasAppearance": true,
-      "id": "30R",
-      "rect": [
-        307.9566,
-        88.93763,
-        523.1959,
-        96.82016
-      ],
-      "subtype": "StrikeOut",
-      "annotationType": 12,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Red"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "114R",
+        "rect": [
+          282.002,
+          804.3187,
+          354.9336,
+          827.1099
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/2018/01/12/technology/uber-hacker-payment-100000.html?ribbon-ad-idx=5&rref=business",
+        "unsafeUrl": "https://www.nytimes.com/2018/01/12/technology/uber-hacker-payment-100000.html?ribbon-ad-idx=5&rref=business",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 0,
-        "1": 0,
-        "2": 0
-      },
-      "hasAppearance": true,
-      "id": "31R",
-      "rect": [
-        81.49739,
-        692.6443,
-        256.6008,
-        753.5375
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Black"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "115R",
+        "rect": [
+          357.6685,
+          804.3187,
+          430.6001,
+          827.1099
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/2018/01/12/business/sams-club-walmart-closures.html?ribbon-ad-idx=5&rref=business",
+        "unsafeUrl": "https://www.nytimes.com/2018/01/12/business/sams-club-walmart-closures.html?ribbon-ad-idx=5&rref=business",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 4,
-        "1": 51,
-        "2": 255
-      },
-      "hasAppearance": true,
-      "id": "32R",
-      "rect": [
-        336.7902,
-        648.0204,
-        489.8293,
-        764.2207
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Blue"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "116R",
+        "rect": [
+          509.0015,
+          804.3187,
+          581.9331,
+          827.1099
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/2018/01/12/business/media/live-nation-songkick.html?ribbon-ad-idx=5&rref=business",
+        "unsafeUrl": "https://www.nytimes.com/2018/01/12/business/media/live-nation-songkick.html?ribbon-ad-idx=5&rref=business",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 0,
-        "1": 0,
-        "2": 0
-      },
-      "hasAppearance": true,
-      "id": "33R",
-      "rect": [
-        535.3455,
-        669.807,
-        572.7223,
-        696.7541
-      ],
-      "subtype": "FreeText",
-      "colorName": "Black"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 15,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "117R",
+        "rect": [
+          584.668,
+          804.3187,
+          595,
+          827.1099
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/2018/01/12/business/holiday-retail-sales.html?ribbon-ad-idx=5&rref=business",
+        "unsafeUrl": "https://www.nytimes.com/2018/01/12/business/holiday-retail-sales.html?ribbon-ad-idx=5&rref=business",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 145,
-        "1": 145,
-        "2": 145
-      },
-      "hasAppearance": true,
-      "id": "34R",
-      "rect": [
-        295.2685,
-        176.125,
-        483.3181,
-        209.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "Grey"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "118R",
+        "rect": [
+          126.7186,
+          757.217,
+          159.2339,
+          762.3831
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/pages/business/index.html",
+        "unsafeUrl": "https://www.nytimes.com/pages/business/index.html",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 255,
-        "1": 255,
-        "2": 255
-      },
-      "hasAppearance": true,
-      "id": "35R",
-      "rect": [
-        312.2685,
-        173.125,
-        486.3181,
-        192.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "White"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "119R",
+        "rect": [
+          131.5807,
+          720.1435,
+          152.8524,
+          725.6133
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/by/eric-lipton",
+        "unsafeUrl": "https://www.nytimes.com/by/eric-lipton",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 170,
-        "1": 121,
-        "2": 66
-      },
-      "hasAppearance": true,
-      "id": "36R",
-      "rect": [
-        322.2685,
-        163.125,
-        496.3181,
-        182.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "Brown"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "120R",
+        "rect": [
+          382.2829,
+          718.0164,
+          389.88,
+          726.525
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "unsafeUrl": "javascript:;",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 148,
-        "1": 33,
-        "2": 146
-      },
-      "hasAppearance": true,
-      "id": "37R",
-      "rect": [
-        332.2685,
-        153.125,
-        506.3181,
-        172.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "Purple"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 1,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "121R",
+        "rect": [
+          394.4382,
+          718.0164,
+          402.0352,
+          726.525
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "unsafeUrl": "javascript:;",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 255,
-        "1": 64,
-        "2": 255
-      },
-      "hasAppearance": true,
-      "id": "38R",
-      "rect": [
-        342.2685,
-        143.125,
-        516.3182,
-        162.3162
-      ],
-      "subtype": "Square",
-      "annotationType": 5,
-      "hasPopup": false,
-      "title": "Jesse Lupini",
-      "contents": "",
-      "colorName": "Pink"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "122R",
+        "rect": [
+          406.5935,
+          718.0164,
+          414.1905,
+          726.525
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "unsafeUrl": "javascript:;",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 250,
-        "1": 205,
-        "2": 90
-      },
-      "hasAppearance": true,
-      "id": "39R",
-      "rect": [
-        312.2645,
-        218.3673,
-        345.0459,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Yellow"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "123R",
+        "rect": [
+          418.7487,
+          718.0164,
+          426.3458,
+          726.525
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "unsafeUrl": "javascript:;",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 124,
-        "1": 200,
-        "2": 104
-      },
-      "hasAppearance": true,
-      "id": "40R",
-      "rect": [
-        346.2789,
-        218.3673,
-        354.2491,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Green"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "124R",
+        "rect": [
+          430.904,
+          718.0164,
+          438.501,
+          726.525
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "unsafeUrl": "javascript:;",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 105,
-        "1": 176,
-        "2": 241
-      },
-      "hasAppearance": true,
-      "id": "41R",
-      "rect": [
-        356.6537,
-        218.3673,
-        376.1488,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Blue"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "125R",
+        "rect": [
+          447.6175,
+          718.0164,
+          452.4796,
+          726.525
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "unsafeUrl": "javascript:;",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 251,
-        "1": 92,
-        "2": 137
-      },
-      "hasAppearance": true,
-      "id": "42R",
-      "rect": [
-        378.5367,
-        218.3673,
-        394.0547,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Pink"
-    },
-    {
-      "annotationFlags": 4,
-      "borderStyle": {
-        "width": 0,
-        "style": 1,
-        "dashArray": [
-          3
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "126R",
+        "rect": [
+          221.8335,
+          425.6823,
+          275.3167,
+          431.7599
         ],
-        "horizontalCornerRadius": 0,
-        "verticalCornerRadius": 0
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "http://ajcn.nutrition.org/content/79/4/537.full",
+        "unsafeUrl": "http://ajcn.nutrition.org/content/79/4/537.full",
+        "colorName": "Black"
       },
-      "color": {
-        "0": 200,
-        "1": 133,
-        "2": 218
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "127R",
+        "rect": [
+          359.188,
+          656.3284,
+          468.5853,
+          676.0807
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "https://www.nytimes.com/interactive/2014/02/12/business/sugardoc.html",
+        "unsafeUrl": "https://www.nytimes.com/interactive/2014/02/12/business/sugardoc.html",
+        "colorName": "Black"
       },
-      "hasAppearance": true,
-      "id": "43R",
-      "rect": [
-        396.4513,
-        218.3673,
-        406.2387,
-        227.9979
-      ],
-      "subtype": "Highlight",
-      "annotationType": 9,
-      "hasPopup": false,
-      "title": "",
-      "contents": "",
-      "colorName": "Highlight Purple"
-    }
-  ],
-  "viewport": {
-    "viewBox": [
-      0,
-      0,
-      584.957,
-      782.986
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "128R",
+        "rect": [
+          214.2365,
+          241.2263,
+          260.7303,
+          247.3039
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "http://adage.com/article/news/major-brands-longer-sweet-high-fructose-corn-syrup/142788/",
+        "unsafeUrl": "http://adage.com/article/news/major-brands-longer-sweet-high-fructose-corn-syrup/142788/",
+        "colorName": "Black"
+      },
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "129R",
+        "rect": [
+          263.7692,
+          204.4566,
+          300.5388,
+          210.5342
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "http://www.nature.com/ijo/journal/v37/n6/full/ijo2012157a.html",
+        "unsafeUrl": "http://www.nature.com/ijo/journal/v37/n6/full/ijo2012157a.html",
+        "colorName": "Black"
+      },
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "130R",
+        "rect": [
+          149.5097,
+          196.5557,
+          263.4653,
+          202.6333
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "url": "http://www.foodnavigator-usa.com/R-D/Study-provides-compelling-evidence-that-HFCS-and-sucrose-do-not-increase-liver-fat-in-real-world-conditions",
+        "unsafeUrl": "http://www.foodnavigator-usa.com/R-D/Study-provides-compelling-evidence-that-HFCS-and-sucrose-do-not-increase-liver-fat-in-real-world-conditions",
+        "colorName": "Black"
+      },
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "131R",
+        "rect": [
+          134.9234,
+          834.403,
+          141.3049,
+          839.569
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "dest": [
+          {
+            "num": 2,
+            "gen": 0
+          },
+          {
+            "name": "XYZ"
+          },
+          126,
+          762,
+          null
+        ],
+        "colorName": "Black"
+      },
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "132R",
+        "rect": [
+          134.9234,
+          834.403,
+          141.3049,
+          839.569
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "dest": [
+          {
+            "num": 225,
+            "gen": 0
+          },
+          {
+            "name": "XYZ"
+          },
+          137,
+          645,
+          null
+        ],
+        "colorName": "Black"
+      },
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "133R",
+        "rect": [
+          381.9791,
+          726.525,
+          382.283,
+          726.8289
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "dest": [
+          {
+            "num": 2,
+            "gen": 0
+          },
+          {
+            "name": "XYZ"
+          },
+          149,
+          343,
+          null
+        ],
+        "colorName": "Black"
+      },
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "134R",
+        "rect": [
+          126.4147,
+          298.6599,
+          126.7186,
+          298.9637
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "dest": [
+          {
+            "num": 2,
+            "gen": 0
+          },
+          {
+            "name": "XYZ"
+          },
+          126,
+          298,
+          null
+        ],
+        "colorName": "Black"
+      },
+      {
+        "annotationFlags": 0,
+        "borderStyle": {
+          "width": 0,
+          "style": 1,
+          "dashArray": [
+            3
+          ],
+          "horizontalCornerRadius": 0,
+          "verticalCornerRadius": 0
+        },
+        "color": {
+          "0": 0,
+          "1": 0,
+          "2": 0
+        },
+        "hasAppearance": true,
+        "id": "135R",
+        "rect": [
+          126.4147,
+          298.6599,
+          126.7186,
+          298.9637
+        ],
+        "subtype": "Link",
+        "annotationType": 2,
+        "dest": [
+          {
+            "num": 2,
+            "gen": 0
+          },
+          {
+            "name": "XYZ"
+          },
+          149,
+          292,
+          null
+        ],
+        "colorName": "Black"
+      }
     ],
-    "scale": 1,
-    "rotation": 0,
-    "offsetX": 0,
-    "offsetY": 0,
-    "transform": [
-      1,
-      0,
-      0,
-      -1,
-      0,
-      782.986
-    ],
-    "width": 584.957,
-    "height": 782.986
-  },
-  "textContent": [
-    {
-      "str": "Higher dietary anthocyanin and flavonol intakes are associated with",
-      "tx": [
-        15.9403,
-        0,
-        0,
-        -15.9403,
-        39.9685,
-        136.97040000000004
-      ],
-      "fontHeight": 15.9403,
-      "width": 488.74872636,
-      "height": 15.9403,
-      "left": 39.9685,
-      "top": 121.03010000000003
-    },
-    {
-      "str": "anti-inflammatory effects in a population of US adults",
-      "tx": [
-        15.9403,
-        0,
-        0,
-        -15.9403,
-        39.9685,
-        154.88570000000004
-      ],
-      "fontHeight": 15.9403,
-      "width": 386.46300932,
-      "height": 15.9403,
-      "left": 39.9685,
-      "top": 138.94540000000003
-    },
-    {
-      "str": "1",
-      "tx": [
-        11.9551,
-        0,
-        0,
-        -10.6257,
-        426.444,
-        147.79869999999994
-      ],
-      "fontHeight": 10.6257,
-      "width": 6.599215200000001,
-      "height": 11.9551,
-      "left": 426.444,
-      "top": 137.17299999999994
-    },
-    {
-      "str": "Aedin Cassidy,",
-      "tx": [
-        9.9626,
-        0,
-        0,
-        -9.9626,
-        39.9685,
-        178.8098
-      ],
-      "fontHeight": 9.9626,
-      "width": 60.25978236,
-      "height": 9.9626,
-      "left": 39.9685,
-      "top": 168.8472
-    },
-    {
-      "str": "2",
-      "tx": [
-        7.4718,
-        0,
-        0,
-        -6.641,
-        100.233,
-        174.3877
-      ],
-      "fontHeight": 6.641,
-      "width": 3.7359,
-      "height": 7.4718,
-      "left": 100.233,
-      "top": 167.7467
-    },
-    {
-      "str": "Gail Rogers,",
-      "tx": [
-        9.9626,
-        0,
-        0,
-        -9.9626,
-        107.263,
-        178.8098
-      ],
-      "fontHeight": 9.9626,
-      "width": 51.79754992,
-      "height": 9.9626,
-      "left": 107.263,
-      "top": 168.8472
-    },
-    {
-      "str": "3",
-      "tx": [
-        7.4718,
-        0,
-        0,
-        -6.641,
-        159.0803,
-        174.3877
-      ],
-      "fontHeight": 6.641,
-      "width": 3.7359,
-      "height": 7.4718,
-      "left": 159.0803,
-      "top": 167.7467
-    },
-    {
-      "str": "Julia J Peterson,",
-      "tx": [
-        9.9626,
-        0,
-        0,
-        -9.9626,
-        166.1102,
-        178.8098
-      ],
-      "fontHeight": 9.9626,
-      "width": 68.05651312,
-      "height": 9.9626,
-      "left": 166.1102,
-      "top": 168.8472
-    },
-    {
-      "str": "4",
-      "tx": [
-        7.4718,
-        0,
-        0,
-        -6.641,
-        234.255,
-        174.3877
-      ],
-      "fontHeight": 6.641,
-      "width": 3.7359,
-      "height": 7.4718,
-      "left": 234.255,
-      "top": 167.7467
-    },
-    {
-      "str": "Johanna T Dwyer,",
-      "tx": [
-        9.9626,
-        0,
-        0,
-        -9.9626,
-        241.285,
-        178.8098
-      ],
-      "fontHeight": 9.9626,
-      "width": 74.37579029999999,
-      "height": 9.9626,
-      "left": 241.285,
-      "top": 168.8472
-    },
-    {
-      "str": "3–5",
-      "tx": [
-        7.4718,
-        0,
-        0,
-        -6.641,
-        315.6661,
-        174.3877
-      ],
-      "fontHeight": 6.641,
-      "width": 11.207699999999999,
-      "height": 7.4718,
-      "left": 315.6661,
-      "top": 167.7467
-    },
-    {
-      "str": "Honghuang Lin,",
-      "tx": [
-        9.9626,
-        0,
-        0,
-        -9.9626,
-        330.1794,
-        178.8098
-      ],
-      "fontHeight": 9.9626,
-      "width": 66.11380612,
-      "height": 9.9626,
-      "left": 330.1794,
-      "top": 168.8472
-    },
-    {
-      "str": "6",
-      "tx": [
-        7.4718,
-        0,
-        0,
-        -6.641,
-        396.3401,
-        174.3877
-      ],
-      "fontHeight": 6.641,
-      "width": 3.7359,
-      "height": 7.4718,
-      "left": 396.3401,
-      "top": 167.7467
-    },
-    {
-      "str": "and Paul F Jacques",
-      "tx": [
-        9.9626,
-        0,
-        0,
-        -9.9626,
-        403.37,
-        178.8098
-      ],
-      "fontHeight": 9.9626,
-      "width": 81.03279962,
-      "height": 9.9626,
-      "left": 403.37,
-      "top": 168.8472
-    },
-    {
-      "str": "3,4*",
-      "tx": [
-        7.4718,
-        0,
-        0,
-        -6.641,
-        484.4408,
-        174.3877
-      ],
-      "fontHeight": 6.641,
-      "width": 13.07565,
-      "height": 7.4718,
-      "left": 484.4408,
-      "top": 167.7467
-    },
-    {
-      "str": "2",
-      "tx": [
-        5.9774,
-        0,
-        0,
-        -5.3127,
-        39.9685,
-        198.14210000000003
-      ],
-      "fontHeight": 5.3127,
-      "width": 2.9887,
-      "height": 5.9774,
-      "left": 39.9685,
-      "top": 192.82940000000002
-    },
-    {
-      "str": "Department of Nutrition, Norwich Medical School, University of East Anglia, Norwich, United Kingdom;",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        42.9165,
-        201.71370000000002
-      ],
-      "fontHeight": 7.9702,
-      "width": 341.72870116,
-      "height": 7.9702,
-      "left": 42.9165,
-      "top": 193.7435
-    },
-    {
-      "str": "3",
-      "tx": [
-        5.9774,
-        0,
-        0,
-        -5.3127,
-        386.8156,
-        198.14210000000003
-      ],
-      "fontHeight": 5.3127,
-      "width": 2.9887,
-      "height": 5.9774,
-      "left": 386.8156,
-      "top": 192.82940000000002
-    },
-    {
-      "str": "Jean Mayer USDA Human Nutrition Research",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        389.7637,
-        201.71370000000002
-      ],
-      "fontHeight": 7.9702,
-      "width": 149.3376374,
-      "height": 7.9702,
-      "left": 389.7637,
-      "top": 193.7435
-    },
-    {
-      "str": "Center on Aging and",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        39.96756,
-        211.6916
-      ],
-      "fontHeight": 7.9702,
-      "width": 69.52803970000001,
-      "height": 7.9702,
-      "left": 39.96756,
-      "top": 203.7214
-    },
-    {
-      "str": "4",
-      "tx": [
-        5.9774,
-        0,
-        0,
-        -5.3127,
-        112.4787,
-        208.12
-      ],
-      "fontHeight": 5.3127,
-      "width": 2.9887,
-      "height": 5.9774,
-      "left": 112.4787,
-      "top": 202.8073
-    },
-    {
-      "str": "The Friedman School of Nutrition Science and Policy, Tufts University, Boston, MA;",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        115.4267,
-        211.69169999999997
-      ],
-      "fontHeight": 7.9702,
-      "width": 282.59858438,
-      "height": 7.9702,
-      "left": 115.4267,
-      "top": 203.72149999999996
-    },
-    {
-      "str": "5",
-      "tx": [
-        5.9774,
-        0,
-        0,
-        -5.3127,
-        400.9889,
-        208.12
-      ],
-      "fontHeight": 5.3127,
-      "width": 2.9887,
-      "height": 5.9774,
-      "left": 400.9889,
-      "top": 202.8073
-    },
-    {
-      "str": "Tufts University School of Medicine and",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        403.9936,
-        211.69169999999997
-      ],
-      "fontHeight": 7.9702,
-      "width": 135.12039464,
-      "height": 7.9702,
-      "left": 403.9936,
-      "top": 203.72149999999996
-    },
-    {
-      "str": "Frances Stern Nutrition Center, Tufts Medical Center, Boston, MA; and",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        39.96747,
-        221.61299999999994
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.38492356000003,
-      "height": 7.9702,
-      "left": 39.96747,
-      "top": 213.64279999999994
-    },
-    {
-      "str": "6",
-      "tx": [
-        5.9774,
-        0,
-        0,
-        -5.3127,
-        289.1905,
-        218.09789999999998
-      ],
-      "fontHeight": 5.3127,
-      "width": 2.9887,
-      "height": 5.9774,
-      "left": 289.1905,
-      "top": 212.78519999999997
-    },
-    {
-      "str": "Section of Computational Biomedicine, Department of Medicine, Boston",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        292.1952,
-        221.61289999999997
-      ],
-      "fontHeight": 7.9702,
-      "width": 246.89766752000003,
-      "height": 7.9702,
-      "left": 292.1952,
-      "top": 213.64269999999996
-    },
-    {
-      "str": "University School of Medicine, Boston, MA",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        39.96786,
-        231.59079999999994
-      ],
-      "fontHeight": 7.9702,
-      "width": 144.6392045,
-      "height": 7.9702,
-      "left": 39.96786,
-      "top": 223.62059999999994
-    },
-    {
-      "str": "ABSTRACT",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        254.49479999999994
-      ],
-      "fontHeight": 8.9663,
-      "width": 48.18130968,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 245.52849999999995
-    },
-    {
-      "str": "Background:",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        265.49289999999996
-      ],
-      "fontHeight": 8.9663,
-      "width": 50.113547329999996,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 256.5266
-    },
-    {
-      "str": "Although growing evidence from trials and popula-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        93.48655,
-        265.49289999999996
-      ],
-      "fontHeight": 8.9663,
-      "width": 191.51120169999996,
-      "height": 8.9663,
-      "left": 93.48655,
-      "top": 256.5266
-    },
-    {
-      "str": "tion-based studies has supported a protective role for flavonoids in",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        276.4344
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.04897899999997,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 267.4681
-    },
-    {
-      "str": "relation to risk of certain chronic diseases, the underlying mecha-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        287.7167
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.04090933000003,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 278.7504
-    },
-    {
-      "str": "nisms remain unclear. Several previous studies focused on individ-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        298.99899999999997
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.03373629,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 290.0327
-    },
-    {
-      "str": "ual inflammatory biomarkers, but because of the limited specificity",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        310.2813
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.11981276999998,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 301.315
-    },
-    {
-      "str": "of any individual marker, an assessment of a combination of bio-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        321.5636
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.03642618,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 312.5973
-    },
-    {
-      "str": "markers may be more informative.",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        332.7885
-      ],
-      "fontHeight": 8.9663,
-      "width": 127.34208249000001,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 323.8222
-    },
-    {
-      "str": "Objective:",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        343.78659999999996
-      ],
-      "fontHeight": 8.9663,
-      "width": 39.935900200000006,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 334.8203
-    },
-    {
-      "str": "We used an inflammation score (IS) that integrated 12",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        83.11165,
-        343.78659999999996
-      ],
-      "fontHeight": 8.9663,
-      "width": 201.88700406000007,
-      "height": 8.9663,
-      "left": 83.11165,
-      "top": 334.8203
-    },
-    {
-      "str": "individual inflammatory biomarkers for the examination of associ-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        354.7282
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.04090932999998,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 345.7619
-    },
-    {
-      "str": "ations with intakes of different flavonoid classes.",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        366.0105
-      ],
-      "fontHeight": 8.9663,
-      "width": 179.97964327000003,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 357.0442
-    },
-    {
-      "str": "Design:",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        376.952
-      ],
-      "fontHeight": 8.9663,
-      "width": 28.835620800000004,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 367.9857
-    },
-    {
-      "str": "The study was a cross-sectional analysis of 2375 Framing-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        71.43304,
-        376.952
-      ],
-      "fontHeight": 8.9663,
-      "width": 213.58174915000004,
-      "height": 8.9663,
-      "left": 71.43304,
-      "top": 367.9857
-    },
-    {
-      "str": "ham Heart Study Offspring Cohort participants. Intakes of total",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        387.95009999999996
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.02656325,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 378.9838
-    },
-    {
-      "str": "flavonoids and their classes (anthocyanins, flavonols, flavanones,",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        399.2324
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.02028684000004,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 390.2661
-    },
-    {
-      "str": "flavan-3-ols, polymers, and flavones) were calculated from validated",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        410.4573
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.14760830000006,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 401.491
-    },
-    {
-      "str": "food-frequency questionnaires. Individual inflammatory biomarkers",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        421.7396
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.06960149,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 412.7733
-    },
-    {
-      "str": "were ranked, standardized, and summed to derive an overall IS and",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        433.0219
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.12608917999998,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 424.0556
-    },
-    {
-      "str": "subgroup scores of functionally related biomarkers.",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        444.3042
-      ],
-      "fontHeight": 8.9663,
-      "width": 186.48290066,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 435.3379
-    },
-    {
-      "str": "Results:",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        455.2458
-      ],
-      "fontHeight": 8.9663,
-      "width": 30.79027420000001,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 446.2795
-    },
-    {
-      "str": "In multivariate analyses, an inverse association between",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        74.60801,
-        455.2458
-      ],
-      "fontHeight": 8.9663,
-      "width": 210.39512613000005,
-      "height": 8.9663,
-      "left": 74.60801,
-      "top": 446.2795
-    },
-    {
-      "str": "higher anthocyanin and flavonol intakes and IS was observed with",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        466.24379999999996
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.04808237,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 457.2775
-    },
-    {
-      "str": "a mean",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9685,
-        477.5261
-      ],
-      "fontHeight": 8.9663,
-      "width": 27.495158949999997,
-      "height": 8.9663,
-      "left": 39.9685,
-      "top": 468.5598
-    },
-    {
-      "str": "6",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        71.48953,
-        477.5261
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 71.48953,
-      "top": 468.5598
-    },
-    {
-      "str": "SE difference between quintile categories 5 and 1 of",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        82.94129,
-        477.5261
-      ],
-      "fontHeight": 8.9663,
-      "width": 202.08964244,
-      "height": 8.9663,
-      "left": 82.94129,
-      "top": 468.5598
-    },
-    {
-      "str": "2",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 479.8421
-    },
-    {
-      "str": "1.48",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        47.39439,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 15.691025,
-      "height": 8.9663,
-      "left": 47.39439,
-      "top": 479.8421
-    },
-    {
-      "str": "6",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        67.06735,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 67.06735,
-      "top": 479.8421
-    },
-    {
-      "str": "0.32 (",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        78.57649,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 22.6578401,
-      "height": 8.9663,
-      "left": 78.57649,
-      "top": 479.8421
-    },
-    {
-      "str": "P",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        101.1967,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 5.5053082,
-      "height": 8.9663,
-      "left": 101.1967,
-      "top": 479.8421
-    },
-    {
-      "str": "-trend",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        106.6957,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 21.465322200000003,
-      "height": 8.9663,
-      "left": 106.6957,
-      "top": 479.8421
-    },
-    {
-      "str": "#",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        132.2075,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 132.2075,
-      "top": 479.8421
-    },
-    {
-      "str": "0.001) and",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        143.6593,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 40.07218796000001,
-      "height": 8.9663,
-      "left": 143.6593,
-      "top": 479.8421
-    },
-    {
-      "str": "2",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        187.7663,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 187.7663,
-      "top": 479.8421
-    },
-    {
-      "str": "0.72",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        195.1931,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 15.691025,
-      "height": 8.9663,
-      "left": 195.1931,
-      "top": 479.8421
-    },
-    {
-      "str": "6",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        214.866,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 214.866,
-      "top": 479.8421
-    },
-    {
-      "str": "0.33 (",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        226.3752,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 22.6578401,
-      "height": 8.9663,
-      "left": 226.3752,
-      "top": 479.8421
-    },
-    {
-      "str": "P",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        248.9954,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 5.5053082,
-      "height": 8.9663,
-      "left": 248.9954,
-      "top": 479.8421
-    },
-    {
-      "str": "-trend =",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        254.4944,
-        488.8084
-      ],
-      "fontHeight": 8.9663,
-      "width": 30.549977360000007,
-      "height": 8.9663,
-      "left": 254.4944,
-      "top": 479.8421
-    },
-    {
-      "str": "0.01), respectively. Results remained significant after additional ad-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        500.09069999999997
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.04359922000006,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 491.1244
-    },
-    {
-      "str": "justment for physical activity and vitamin C and fruit and vegetable",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        511.3156
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.02835651,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 502.3493
-    },
-    {
-      "str": "intakes. Higher anthocyanin intake was inversely associated with all",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        522.5979
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.05166889000003,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 513.6315999999999
-    },
-    {
-      "str": "biomarker subgroups, whereas higher flavonol intake was associated",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        533.8802000000001
-      ],
-      "fontHeight": 8.9663,
-      "width": 244.99697446000002,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 524.9139
-    },
-    {
-      "str": "only with lower cytokine and oxidative stress biomarker concentra-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        545.1625
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.00863065000001,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 536.1962
-    },
-    {
-      "str": "tions. In food-based analyses, higher intakes of apples and pears,",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        556.4448
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.05077226,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 547.4784999999999
-    },
-    {
-      "str": "red wine, and strawberries were associated with a lower IS with",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        567.7271
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.04987563000003,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 558.7607999999999
-    },
-    {
-      "str": "differences between quintiles 5 and 1 of",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.9676,
-        579.0094
-      ],
-      "fontHeight": 8.9663,
-      "width": 145.00210696999997,
-      "height": 8.9663,
-      "left": 39.9676,
-      "top": 570.0431
-    },
-    {
-      "str": "2",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        187.4265,
-        579.0094
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 187.4265,
-      "top": 570.0431
-    },
-    {
-      "str": "1.02",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        194.9098,
-        579.0094
-      ],
-      "fontHeight": 8.9663,
-      "width": 15.691025,
-      "height": 8.9663,
-      "left": 194.9098,
-      "top": 570.0431
-    },
-    {
-      "str": "6",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        213.0513,
-        579.0094
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 213.0513,
-      "top": 570.0431
-    },
-    {
-      "str": "0.43 (",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        222.9725,
-        579.0094
-      ],
-      "fontHeight": 8.9663,
-      "width": 21.18378038,
-      "height": 8.9663,
-      "left": 222.9725,
-      "top": 570.0431
-    },
-    {
-      "str": "P",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        244.1186,
-        579.0094
-      ],
-      "fontHeight": 8.9663,
-      "width": 5.5053082,
-      "height": 8.9663,
-      "left": 244.1186,
-      "top": 570.0431
-    },
-    {
-      "str": "= 0.006),",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        252.1121,
-        579.0094
-      ],
-      "fontHeight": 8.9663,
-      "width": 32.94128957,
-      "height": 8.9663,
-      "left": 252.1121,
-      "top": 570.0431
-    },
-    {
-      "str": "2",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96671,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 39.96671,
-      "top": 581.3254
-    },
-    {
-      "str": "1.73",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        47.39349,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 15.691025,
-      "height": 8.9663,
-      "left": 47.39349,
-      "top": 581.3254
-    },
-    {
-      "str": "6",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        65.9887,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 65.9887,
-      "top": 581.3254
-    },
-    {
-      "str": "0.39 (",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        76.36361,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 21.580987470000004,
-      "height": 8.9663,
-      "left": 76.36361,
-      "top": 581.3254
-    },
-    {
-      "str": "P",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        97.96343,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 5.5053082,
-      "height": 8.9663,
-      "left": 97.96343,
-      "top": 581.3254
-    },
-    {
-      "str": ",",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        106.3541,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 106.3541,
-      "top": 581.3254
-    },
-    {
-      "str": "0.001), and",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        116.729,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 41.26291260000001,
-      "height": 8.9663,
-      "left": 116.729,
-      "top": 581.3254
-    },
-    {
-      "str": "2",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        160.8925,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 160.8925,
-      "top": 581.3254
-    },
-    {
-      "str": "0.44",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        168.3758,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 15.691025,
-      "height": 8.9663,
-      "left": 168.3758,
-      "top": 581.3254
-    },
-    {
-      "str": "6",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        186.971,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 7.4689279,
-      "height": 8.9663,
-      "left": 186.971,
-      "top": 581.3254
-    },
-    {
-      "str": "0.88 (",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        197.3459,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 21.580987470000004,
-      "height": 8.9663,
-      "left": 197.3459,
-      "top": 581.3254
-    },
-    {
-      "str": "P",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        218.8892,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 5.5053082,
-      "height": 8.9663,
-      "left": 218.8892,
-      "top": 581.3254
-    },
-    {
-      "str": "= 0.02), respec-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        227.3364,
-        590.2917
-      ],
-      "fontHeight": 8.9663,
-      "width": 57.67751801000001,
-      "height": 8.9663,
-      "left": 227.3364,
-      "top": 581.3254
-    },
-    {
-      "str": "tively. Although intakes of other classes were not associated with",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        601.574
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.04987563000006,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 592.6076999999999
-    },
-    {
-      "str": "a reduction in overall IS, higher intakes of flavan-3-ols and their",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        612.8562999999999
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.03821943999992,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 603.8899999999999
-    },
-    {
-      "str": "polymers were associated with a significant reduction in oxidative",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        624.1386
-      ],
-      "fontHeight": 8.9663,
-      "width": 245.11981276999998,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 615.1723
-    },
-    {
-      "str": "stress biomarkers.",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        635.4209
-      ],
-      "fontHeight": 8.9663,
-      "width": 65.4988215,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 626.4545999999999
-    },
-    {
-      "str": "Conclusion:",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        646.3625
-      ],
-      "fontHeight": 8.9663,
-      "width": 45.73709630000001,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 637.3961999999999
-    },
-    {
-      "str": "These findings provide evidence to suggest that an anti-",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        88.77835,
-        646.3625
-      ],
-      "fontHeight": 8.9663,
-      "width": 195.98448877,
-      "height": 8.9663,
-      "left": 88.77835,
-      "top": 637.3961999999999
-    },
-    {
-      "str": "inflammatory effect may be a key component underlying the reduction",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        657.304
-      ],
-      "fontHeight": 8.9663,
-      "width": 244.85261703,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 648.3376999999999
-    },
-    {
-      "str": "in risk of certain chronic disease",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        668.5862999999999
-      ],
-      "fontHeight": 8.9663,
-      "width": 118.97921448,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 659.6199999999999
-    },
-    {
-      "str": "sassociatedwithhigherintakesof",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        159.0212,
-        668.5862999999999
-      ],
-      "fontHeight": 8.9663,
-      "width": 129.74236100000005,
-      "height": 8.9663,
-      "left": 159.0212,
-      "top": 659.6199999999999
-    },
-    {
-      "str": "anthocyanins and flavonols. The Framingham Offspring Study was",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        679.8686
-      ],
-      "fontHeight": 8.9663,
-      "width": 244.82123497999999,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 670.9023
-    },
-    {
-      "str": "registered at clinic",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        691.15092
-      ],
-      "fontHeight": 8.9663,
-      "width": 66.61243596,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 682.18462
-    },
-    {
-      "str": "altrials.gov as NCT00005121 (Framingham Heart",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        106.5809,
-        691.15092
-      ],
-      "fontHeight": 8.9663,
-      "width": 178.23480129000004,
-      "height": 8.9663,
-      "left": 106.5809,
-      "top": 682.18462
-    },
-    {
-      "str": "Study).",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        39.96581,
-        702.43322
-      ],
-      "fontHeight": 8.9663,
-      "width": 24.582904710000005,
-      "height": 8.9663,
-      "left": 39.96581,
-      "top": 693.46692
-    },
-    {
-      "str": "Am J Clin Nutr",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        82.4858,
-        702.43322
-      ],
-      "fontHeight": 8.9663,
-      "width": 54.35371060000001,
-      "height": 8.9663,
-      "left": 82.4858,
-      "top": 693.46692
-    },
-    {
-      "str": "2015;102:172–81.",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        139.8594,
-        702.43322
-      ],
-      "fontHeight": 8.9663,
-      "width": 61.93202736000002,
-      "height": 8.9663,
-      "left": 139.8594,
-      "top": 693.46692
-    },
-    {
-      "str": "Keywords:",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        299.9607,
-        254.50109999999995
-      ],
-      "fontHeight": 8.9663,
-      "width": 41.60990841000001,
-      "height": 8.9663,
-      "left": 299.9607,
-      "top": 245.53479999999996
-    },
-    {
-      "str": "anthocyanins, dietary intake, flavonoids, flavonols,",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        350.588,
-        254.50109999999995
-      ],
-      "fontHeight": 8.9663,
-      "width": 194.68347864000003,
-      "height": 8.9663,
-      "left": 350.588,
-      "top": 245.53479999999996
-    },
-    {
-      "str": "inflammation",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        299.9607,
-        265.4991
-      ],
-      "fontHeight": 8.9663,
-      "width": 50.79050298,
-      "height": 8.9663,
-      "left": 299.9607,
-      "top": 256.5328
-    },
-    {
-      "str": "INTRODUCTION",
-      "tx": [
-        8.9663,
-        0,
-        0,
-        -8.9663,
-        299.9607,
-        300.8757
-      ],
-      "fontHeight": 8.9663,
-      "width": 71.34664236,
-      "height": 8.9663,
-      "left": 299.9607,
-      "top": 291.9094
-    },
-    {
-      "str": "Evidence from population-based studies and randomized",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        309.9401,
-        314.8727
-      ],
-      "fontHeight": 9.4646,
-      "width": 235.08362771999998,
-      "height": 9.4646,
-      "left": 309.9401,
-      "top": 305.4081
-    },
-    {
-      "str": "controlled trials has supported a protective role for several dietary",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        326.0977
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.05742320000002,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 316.63309999999996
-    },
-    {
-      "str": "flavonoids in relation to a number of age-related chronic con-",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        337.2659
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.09054930000008,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 327.80129999999997
-    },
-    {
-      "str": "ditions including cardiovascular disease, diabetes, some cancers,",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        348.491
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.05647674000002,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 339.02639999999997
-    },
-    {
-      "str": "Parkinson disease, and cognitive decline (1–8). One shared",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        359.716
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.08487054000003,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 350.2514
-    },
-    {
-      "str": "mechanism for these conditions is low-grade systemic chronic",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        370.88419999999996
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.09054930000005,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 361.41959999999995
-    },
-    {
-      "str": "inflammation or metaflammation. A wealth of data from exper-",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        382.1092
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.11705018,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 372.64459999999997
-    },
-    {
-      "str": "imental, clinical, and epidemiologic research links inflammation",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        393.3342
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.10853204000003,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 383.8696
-    },
-    {
-      "str": "and the biological networks integral to the inflammatory re-",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        404.5592
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.18519529999998,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 395.09459999999996
-    },
-    {
-      "str": "sponse to their pathophysiology (9–11). Many dietary factors",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        415.72749999999996
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.1321935400001,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 406.26289999999995
-    },
-    {
-      "str": "influence various aspects of inflammation (11), and emerging",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        426.9525
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.13503291999996,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 417.48789999999997
-    },
-    {
-      "str": "data support the potential for several flavonoids to reduce a pre-",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        438.1775
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.21264264000007,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 428.7129
-    },
-    {
-      "str": "disposition to chronic inflammation with particular interest in the",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        449.34569999999997
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.05836965999998,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 439.88109999999995
-    },
-    {
-      "str": "anthocyanin, flavonol, and flavan-3-ol subclasses. Specifically,",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        460.57079999999996
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.06783426000007,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 451.10619999999994
-    },
-    {
-      "str": "these bioactive compounds and their metabolites decrease in-",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        471.7958
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.19560636000006,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 462.33119999999997
-    },
-    {
-      "str": "flammatory mediator production through effects on endogenous",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        482.964
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.09812098000003,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 473.4994
-    },
-    {
-      "str": "cell signaling pathways, gene expression, and gut microbiota and",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        494.18899999999996
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.16815902,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 484.72439999999995
-    },
-    {
-      "str": "by exerting anti-inflammatory and neuroprotective effects (12–",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        505.414
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.13503292000004,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 495.94939999999997
-    },
-    {
-      "str": "15). Inflammation plays a key role in a range of different diseases",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        516.5823
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.13408646000005,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 507.1177
-    },
-    {
-      "str": "and conditions, and although resulting clinical signs and symp-",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        527.8072999999999
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.14071168000007,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 518.3426999999999
-    },
-    {
-      "str": "toms are different, many of the processes, cells, and molecules",
-      "tx": [
-        9.4646,
-        0,
-        0,
-        -9.4646,
-        299.9625,
-        539.0323
-      ],
-      "fontHeight": 9.4646,
-      "width": 245.09717452,
-      "height": 9.4646,
-      "left": 299.9625,
-      "top": 529.5677
-    },
-    {
-      "str": "1",
-      "tx": [
-        5.9774,
-        0,
-        0,
-        -5.3127,
-        307.9558,
-        559.3892
-      ],
-      "fontHeight": 5.3127,
-      "width": 2.9887,
-      "height": 5.9774,
-      "left": 307.9558,
-      "top": 554.0765
-    },
-    {
-      "str": "Supported by grants from the International Life Sciences Institute North",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        312.2645,
-        562.9609
-      ],
-      "fontHeight": 7.9702,
-      "width": 232.82309134000002,
-      "height": 7.9702,
-      "left": 312.2645,
-      "top": 554.9907000000001
-    },
-    {
-      "str": "America; the National Heart, Lung, and Blood Institute (contracts N01-HC-",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        572.9388
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.06531854000002,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 564.9686
-    },
-    {
-      "str": "25195, R01 HL064753, R01 HL076784, and R21 HL87217); the National",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        582.8601
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.11712484000006,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 574.8899
-    },
-    {
-      "str": "Institute for Aging (R01 AG028321); the Biotechnology and Biological",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        592.838
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.14581756,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 584.8678
-    },
-    {
-      "str": "Sciences Research Council, United Kingdom (reference BB/J004545/1);",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        602.8159
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.17690134,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 594.8457000000001
-    },
-    {
-      "str": "and the USDA Agricultural Research Service (agreement 58-1950-0-014).",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        612.7372
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.09002615999998,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 604.767
-    },
-    {
-      "str": "AC is a Royal Society Wolfson Research Merit Award Holder. This is a free",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        622.7151
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.17849538000007,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 614.7449
-    },
-    {
-      "str": "access article, distributed under terms (http://www.nutrition.org/publications/",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        632.693
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.11234272000002,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 624.7228
-    },
-    {
-      "str": "guidelines-and-policies/license/) that permit unrestricted non-commercial use,",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        642.6709
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.19443578000008,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 634.7007
-    },
-    {
-      "str": "distribution, and reproduction in any medium, provided the original work is",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        652.5922
-      ],
-      "fontHeight": 7.9702,
-      "width": 245.17769835999994,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 644.6220000000001
-    },
-    {
-      "str": "properly cited.",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        662.5701
-      ],
-      "fontHeight": 7.9702,
-      "width": 46.22955106,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 654.5999
-    },
-    {
-      "str": "*Towhom correspondence should be addressed. E-mail: paul.jacques@",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        307.9566,
-        672.548
-      ],
-      "fontHeight": 7.9702,
-      "width": 237.07678708000003,
-      "height": 7.9702,
-      "left": 307.9566,
-      "top": 664.5778
-    },
-    {
-      "str": "tufts.edu.",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9625,
-        682.5259
-      ],
-      "fontHeight": 7.9702,
-      "width": 29.704935400000004,
-      "height": 7.9702,
-      "left": 299.9625,
-      "top": 674.5557
-    },
-    {
-      "str": "Received February 3, 2015. Accepte",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        307.9566,
-        692.39057
-      ],
-      "fontHeight": 7.9702,
-      "width": 112.92976380000002,
-      "height": 7.9702,
-      "left": 307.9566,
-      "top": 684.42037
-    },
-    {
-      "str": "d for publication April 28, 2015.",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        420.8896,
-        692.39057
-      ],
-      "fontHeight": 7.9702,
-      "width": 102.84825782000004,
-      "height": 7.9702,
-      "left": 420.8896,
-      "top": 684.42037
-    },
-    {
-      "str": "First published online May 27, 2015; doi: 10.3945/ajcn.115.108555.",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        307.9566,
-        702.36847
-      ],
-      "fontHeight": 7.9702,
-      "width": 220.73867410000003,
-      "height": 7.9702,
-      "left": 307.9566,
-      "top": 694.39827
-    },
-    {
-      "str": "172",
-      "tx": [
-        9.9626,
-        0,
-        0,
-        -9.9626,
-        39.9685,
-        723.345
-      ],
-      "fontHeight": 9.9626,
-      "width": 14.9439,
-      "height": 9.9626,
-      "left": 39.9685,
-      "top": 713.3824000000001
-    },
-    {
-      "str": "Am J Clin Nutr",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        246.8409,
-        723.345
-      ],
-      "fontHeight": 7.9702,
-      "width": 50.48643488,
-      "height": 7.9702,
-      "left": 246.8409,
-      "top": 715.3748
-    },
-    {
-      "str": "2015;102:172–81. Printed in USA.",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        299.9623,
-        723.345
-      ],
-      "fontHeight": 7.9702,
-      "width": 113.13459793999999,
-      "height": 7.9702,
-      "left": 299.9623,
-      "top": 715.3748
-    },
-    {
-      "str": "Ó",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        415.7294,
-        723.345
-      ],
-      "fontHeight": 7.9702,
-      "width": 6.3044282,
-      "height": 7.9702,
-      "left": 415.7294,
-      "top": 715.3748
-    },
-    {
-      "str": "2015 American Society for Nutrition",
-      "tx": [
-        7.9702,
-        0,
-        0,
-        -7.9702,
-        424.6871,
-        723.345
-      ],
-      "fontHeight": 7.9702,
-      "width": 120.44885048,
-      "height": 7.9702,
-      "left": 424.6871,
-      "top": 715.3748
-    },
-    {
-      "str": " by guest on November 11, 2017",
-      "tx": [
-        0,
-        8,
-        8,
-        0,
-        561,
-        393.9779
-      ],
-      "fontHeight": 8,
-      "width": 116.06400000000008,
-      "height": 8,
-      "left": 561,
-      "top": 385.9779
-    },
-    {
-      "str": "ajcn.nutrition.org",
-      "tx": [
-        0,
-        8,
-        8,
-        0,
-        561,
-        334.8421
-      ],
-      "fontHeight": 8,
-      "width": 59.13600000000001,
-      "height": 8,
-      "left": 561,
-      "top": 326.8421
-    },
-    {
-      "str": "Downloaded from ",
-      "tx": [
-        0,
-        8,
-        8,
-        0,
-        561,
-        269.9302
-      ],
-      "fontHeight": 8,
-      "width": 64.912,
-      "height": 8,
-      "left": 561,
-      "top": 261.9302
-    }
-  ]
+    "viewport": {
+      "viewBox": [
+        0,
+        0,
+        595,
+        842
+      ],
+      "scale": 1,
+      "rotation": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "transform": [
+        1,
+        0,
+        0,
+        -1,
+        0,
+        842
+      ],
+      "width": 595,
+      "height": 842
+    },
+    "textContent": [
+      {
+        "str": "Dietary Sugar and Body Weight:",
+        "tx": [
+          21.9178,
+          0,
+          0,
+          -21.9178,
+          47.8488,
+          195.02059999999994
+        ],
+        "fontHeight": 21.9178,
+        "width": 289.61304208,
+        "height": 21.9178,
+        "left": 47.8488,
+        "top": 173.10279999999995
+      },
+      {
+        "str": "Have We Reached a Crisis in the",
+        "tx": [
+          21.9178,
+          0,
+          0,
+          -21.9178,
+          47.8488,
+          218.9461
+        ],
+        "fontHeight": 21.9178,
+        "width": 296.3505738,
+        "height": 21.9178,
+        "left": 47.8488,
+        "top": 197.0283
+      },
+      {
+        "str": "Epidemic of Obesity and Diabetes?",
+        "tx": [
+          21.9178,
+          0,
+          0,
+          -21.9178,
+          47.8488,
+          242.81460000000004
+        ],
+        "fontHeight": 21.9178,
+        "width": 312.62892386,
+        "height": 21.9178,
+        "left": 47.8488,
+        "top": 220.89680000000004
+      },
+      {
+        "str": "We Have, but the Pox on Sugar Is",
+        "tx": [
+          17.9328,
+          0,
+          0,
+          -17.9328,
+          47.8488,
+          266.2269
+        ],
+        "fontHeight": 17.9328,
+        "width": 263.1494937599999,
+        "height": 17.9328,
+        "left": 47.8488,
+        "top": 248.29410000000001
+      },
+      {
+        "str": "Overwrought and Over worked",
+        "tx": [
+          17.9328,
+          0,
+          0,
+          -17.9328,
+          47.8488,
+          286.1825
+        ],
+        "fontHeight": 17.9328,
+        "width": 232.5346176,
+        "height": 17.9328,
+        "left": 47.8488,
+        "top": 268.2497
+      },
+      {
+        "str": "Diabetes Care 2014;37:957",
+        "tx": [
+          8.9663,
+          0,
+          0,
+          -8.9663,
+          47.8488,
+          304.0978
+        ],
+        "fontHeight": 8.9663,
+        "width": 98.81848893000002,
+        "height": 8.9663,
+        "left": 47.8488,
+        "top": 295.1315
+      },
+      {
+        "str": "–",
+        "tx": [
+          8.9663,
+          0,
+          0,
+          -8.9663,
+          146.722,
+          304.0978
+        ],
+        "fontHeight": 8.9663,
+        "width": 4.3845207,
+        "height": 8.9663,
+        "left": 146.722,
+        "top": 295.1315
+      },
+      {
+        "str": "962",
+        "tx": [
+          8.9663,
+          0,
+          0,
+          -8.9663,
+          151.1442,
+          304.0978
+        ],
+        "fontHeight": 8.9663,
+        "width": 13.553459080000001,
+        "height": 8.9663,
+        "left": 151.1442,
+        "top": 295.1315
+      },
+      {
+        "str": "|",
+        "tx": [
+          8.9663,
+          0,
+          0,
+          -8.9663,
+          167.132,
+          304.0978
+        ],
+        "fontHeight": 8.9663,
+        "width": 4.1065654,
+        "height": 8.9663,
+        "left": 167.132,
+        "top": 295.1315
+      },
+      {
+        "str": "DOI: 10.2337/dc13-2506",
+        "tx": [
+          8.9663,
+          0,
+          0,
+          -8.9663,
+          173.5949,
+          304.0978
+        ],
+        "fontHeight": 8.9663,
+        "width": 89.64058425000002,
+        "height": 8.9663,
+        "left": 173.5949,
+        "top": 295.1315
+      },
+      {
+        "str": "In the preceding point narrative, Drs. Bray and Popkin provide their opinion and",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          414.7056
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.74501295999994,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 405.241
+      },
+      {
+        "str": "review data that suggest to them that we need to reconsider the consumption of",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          426.6679
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.78665719999987,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 417.20329999999996
+      },
+      {
+        "str": "dietary sugar based on the growing concern of obesity and type 2 diabetes. In the",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          438.6302
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.73649482,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 429.1656
+      },
+      {
+        "str": "counterpoint narrative below, we argue that there is no clear or convincing",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          450.5357
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.79328242,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 441.0711
+      },
+      {
+        "str": "evidence that any dietary or added sugar has a unique or detrimental impact",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          462.498
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.71283332,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 453.0334
+      },
+      {
+        "str": "relative to any other source of calories on the development of obesity or diabetes.",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          474.4604
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.6939041199999,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 464.9958
+      },
+      {
+        "str": "Sugar is purely a highly palatable source of energy; because it has no other",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          486.4227
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.7913895000001,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 476.9581
+      },
+      {
+        "str": "property that appears to contribute to our nutritional well-being, it is not an",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          498.385
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.7667815399999,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 488.9204
+      },
+      {
+        "str": "essential food for most of us. For those who wish to reduce energy consumption,",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          510.3473
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.74690587999993,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 500.8827
+      },
+      {
+        "str": "ingestingless sugarisa goodplace to start.However, doing so doesnot automatically",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          522.3096
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.84155188000005,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 512.845
+      },
+      {
+        "str": "portend any clinical bene",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          534.2719
+        ],
+        "fontHeight": 9.4646,
+        "width": 97.11909998000002,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 524.8072999999999
+      },
+      {
+        "str": "fi",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          144.737,
+          534.2719
+        ],
+        "fontHeight": 9.4646,
+        "width": 5.224459200000001,
+        "height": 9.4646,
+        "left": 144.737,
+        "top": 524.8072999999999
+      },
+      {
+        "str": "t.",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          149.8961,
+          534.2719
+        ],
+        "fontHeight": 9.4646,
+        "width": 5.7071538,
+        "height": 9.4646,
+        "left": 149.8961,
+        "top": 524.8072999999999
+      },
+      {
+        "str": "In this counterpoint discussion, we use the phrase",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          561.6549
+        ],
+        "fontHeight": 9.4646,
+        "width": 191.39219474000006,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 552.1903
+      },
+      {
+        "str": "“",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          241.2853,
+          561.6549
+        ],
+        "fontHeight": 9.4646,
+        "width": 3.9372736000000006,
+        "height": 9.4646,
+        "left": 241.2853,
+        "top": 552.1903
+      },
+      {
+        "str": "dietary sugar",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          245.2539,
+          561.6549
+        ],
+        "fontHeight": 9.4646,
+        "width": 50.07530567999999,
+        "height": 9.4646,
+        "left": 245.2539,
+        "top": 552.1903
+      },
+      {
+        "str": "”",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          295.4257,
+          561.6549
+        ],
+        "fontHeight": 9.4646,
+        "width": 3.9372736000000006,
+        "height": 9.4646,
+        "left": 295.4257,
+        "top": 552.1903
+      },
+      {
+        "str": "or",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          301.3799,
+          561.6549
+        ],
+        "fontHeight": 9.4646,
+        "width": 8.30234712,
+        "height": 9.4646,
+        "left": 301.3799,
+        "top": 552.1903
+      },
+      {
+        "str": "“",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          311.6414,
+          561.6549
+        ],
+        "fontHeight": 9.4646,
+        "width": 3.9372736000000006,
+        "height": 9.4646,
+        "left": 311.6414,
+        "top": 552.1903
+      },
+      {
+        "str": "added sugar",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          315.6099,
+          561.6549
+        ],
+        "fontHeight": 9.4646,
+        "width": 47.020132800000006,
+        "height": 9.4646,
+        "left": 315.6099,
+        "top": 552.1903
+      },
+      {
+        "str": "”",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          362.6651,
+          561.6549
+        ],
+        "fontHeight": 9.4646,
+        "width": 3.9372736000000006,
+        "height": 9.4646,
+        "left": 362.6651,
+        "top": 552.1903
+      },
+      {
+        "str": "to mean sucrose or high-fructose corn syrup (HFCS). Almost all dietary or added",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          573.107
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.77435322,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 563.6424
+      },
+      {
+        "str": "sugar used as an ingredient in either solid (e.g., desserts, snacks) or liquid (e.g.,",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          584.5591999999999
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.77624614,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 575.0945999999999
+      },
+      {
+        "str": "sugar-sweetened beverages [SSB]) foods is in the form of these two disaccharides.",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          596.0114
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.77813905999994,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 586.5468
+      },
+      {
+        "str": "Although we will discuss evidence from feeding studies in which fructose itself was",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          607.4635000000001
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.8065328599999,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 597.9989
+      },
+      {
+        "str": "used as the sole added sweetener, it should be noted that fructose rarely occurs",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          618.9157
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.7980147200001,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 609.4511
+      },
+      {
+        "str": "alone in foods commonly consumed by humans. Also of importance is the fact that",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          630.3679
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.7081010200001,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 620.9033
+      },
+      {
+        "str": "sucrose and HFCS are both composed of glucose and fructose. Whereas the ratio of",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          641.8199999999999
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.80463994,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 632.3553999999999
+      },
+      {
+        "str": "glucose to fructose is equal in sucrose, in HFCS the ratio is usually 55% fructose, 42%",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          653.2722
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.78949658000005,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 643.8076
+      },
+      {
+        "str": "glucose, and 3% glucose polymers; other forms of HFCS have a lower proportion of",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          664.7812
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.79044304000024,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 655.3166
+      },
+      {
+        "str": "fructose. In addition, the glucose and fructose in HFCS are free in solution; in sucrose",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          676.2333
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.71661916000005,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 666.7687
+      },
+      {
+        "str": "they are initially bound together. But when sucrose is used in processed or prepared",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          687.6855
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.78192490000015,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 678.2209
+      },
+      {
+        "str": "foods/beverages an appreciable amount is broken down to free fructose and glu-",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          699.1377
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.7346019000001,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 689.6731
+      },
+      {
+        "str": "cose prior to consumption. Finally, whereas glucose and fructose are metabolized",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          710.5898
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.76962092,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 701.1252
+      },
+      {
+        "str": "differently, the belief that sucrose is metabolized differently than HFCS is a myth. No",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          722.042
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.71377978,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 712.5774
+      },
+      {
+        "str": "study has shown any difference between the two when each is given isocalorically,",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          733.4942
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.77435322000014,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 724.0296
+      },
+      {
+        "str": "nor is there any difference in sweetness or caloric value (1",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          744.94632
+        ],
+        "fontHeight": 9.4646,
+        "width": 227.02452082000005,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 735.48172
+      },
+      {
+        "str": "–",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          274.9036,
+          744.94632
+        ],
+        "fontHeight": 9.4646,
+        "width": 4.6281894,
+        "height": 9.4646,
+        "left": 274.9036,
+        "top": 735.48172
+      },
+      {
+        "str": "3).",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          279.6094,
+          744.94632
+        ],
+        "fontHeight": 9.4646,
+        "width": 10.019225560000002,
+        "height": 9.4646,
+        "left": 279.6094,
+        "top": 735.48172
+      },
+      {
+        "str": "Much of the condemnation of sugar in the last few years owes its origin to an",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          57.25945,
+          756.3984800000001
+        ],
+        "fontHeight": 9.4646,
+        "width": 309.31164614000005,
+        "height": 9.4646,
+        "left": 57.25945,
+        "top": 746.93388
+      },
+      {
+        "str": "article by Bray et al. (4) showing an ecological relationship between sugar availability",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          767.85065
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.73554835999994,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 758.38605
+      },
+      {
+        "str": "(a crude measure of intake) and obesity, which has now been expanded to explain a",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          779.30281
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.79990763999996,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 769.83821
+      },
+      {
+        "str": "myriad of metabolic abnormalities (5",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          790.81177
+        ],
+        "fontHeight": 9.4646,
+        "width": 143.82122222,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 781.34717
+      },
+      {
+        "str": "–",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          191.7921,
+          790.81177
+        ],
+        "fontHeight": 9.4646,
+        "width": 4.6281894,
+        "height": 9.4646,
+        "left": 191.7921,
+        "top": 781.34717
+      },
+      {
+        "str": "7). Table 1 shows that the rise in the preva-",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          196.4411,
+          790.81177
+        ],
+        "fontHeight": 9.4646,
+        "width": 170.10820226000007,
+        "height": 9.4646,
+        "left": 196.4411,
+        "top": 781.34717
+      },
+      {
+        "str": "lence of overweight/obesity in the early 1980s does indeed appear to be related to",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          802.26393
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.7734067600002,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 792.7993299999999
+      },
+      {
+        "str": "an increase in the availability of added sugars. However, starting around 2000, sugar",
+        "tx": [
+          9.4646,
+          0,
+          0,
+          -9.4646,
+          47.8488,
+          813.7161
+        ],
+        "fontHeight": 9.4646,
+        "width": 318.79990764,
+        "height": 9.4646,
+        "left": 47.8488,
+        "top": 804.2515
+      },
+      {
+        "str": "1",
+        "tx": [
+          5.9774,
+          0,
+          0,
+          -5.3127,
+          378.5952,
+          656.2174
+        ],
+        "fontHeight": 5.3127,
+        "width": 2.9887,
+        "height": 5.9774,
+        "left": 378.5952,
+        "top": 650.9047
+      },
+      {
+        "str": "Department of Medicine, University of North",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          381.6566,
+          659.789
+        ],
+        "fontHeight": 7.9702,
+        "width": 150.34507068000005,
+        "height": 7.9702,
+        "left": 381.6566,
+        "top": 651.8188
+      },
+      {
+        "str": "Carolina School of Medicine, Chapel Hill, NC",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.5952,
+          669.2568
+        ],
+        "fontHeight": 7.9702,
+        "width": 140.72743034000004,
+        "height": 7.9702,
+        "left": 378.5952,
+        "top": 661.2866
+      },
+      {
+        "str": "2",
+        "tx": [
+          5.9774,
+          0,
+          0,
+          -5.3127,
+          378.5952,
+          675.1528000000001
+        ],
+        "fontHeight": 5.3127,
+        "width": 2.9887,
+        "height": 5.9774,
+        "left": 378.5952,
+        "top": 669.8401000000001
+      },
+      {
+        "str": "Toronto 3D Knowledge Synthesis and Clinical",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          381.5999,
+          678.7245
+        ],
+        "fontHeight": 7.9702,
+        "width": 150.41441142,
+        "height": 7.9702,
+        "left": 381.5999,
+        "top": 670.7543000000001
+      },
+      {
+        "str": "Trials Unit, Clinical Nutrition and Risk Factor",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.5951,
+          688.1922999999999
+        ],
+        "fontHeight": 7.9702,
+        "width": 153.47178014000005,
+        "height": 7.9702,
+        "left": 378.5951,
+        "top": 680.2221
+      },
+      {
+        "str": "Modi",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.5951,
+          697.6034999999999
+        ],
+        "fontHeight": 7.9702,
+        "width": 17.759199640000002,
+        "height": 7.9702,
+        "left": 378.5951,
+        "top": 689.6333
+      },
+      {
+        "str": "fi",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          396.3966,
+          697.6034999999999
+        ],
+        "fontHeight": 7.9702,
+        "width": 4.144504,
+        "height": 7.9702,
+        "left": 396.3966,
+        "top": 689.6333
+      },
+      {
+        "str": "cation Centre, St. Michael",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          400.8184,
+          697.6034999999999
+        ],
+        "fontHeight": 7.9702,
+        "width": 91.98328118,
+        "height": 7.9702,
+        "left": 400.8184,
+        "top": 689.6333
+      },
+      {
+        "str": "’",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          492.8878,
+          697.6034999999999
+        ],
+        "fontHeight": 7.9702,
+        "width": 1.9048778000000002,
+        "height": 7.9702,
+        "left": 492.8878,
+        "top": 689.6333
+      },
+      {
+        "str": "sHospital,",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          495.0421,
+          697.6034999999999
+        ],
+        "fontHeight": 7.9702,
+        "width": 40.3371822,
+        "height": 7.9702,
+        "left": 495.0421,
+        "top": 689.6333
+      },
+      {
+        "str": "Toronto, Canada",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.5943,
+          707.0713000000001
+        ],
+        "fontHeight": 7.9702,
+        "width": 53.777330459999995,
+        "height": 7.9702,
+        "left": 378.5943,
+        "top": 699.1011000000001
+      },
+      {
+        "str": "3",
+        "tx": [
+          5.9774,
+          0,
+          0,
+          -5.3127,
+          378.5952,
+          713.0237
+        ],
+        "fontHeight": 5.3127,
+        "width": 2.9887,
+        "height": 5.9774,
+        "left": 378.5952,
+        "top": 707.711
+      },
+      {
+        "str": "Department of Pathology and Molecular Medi-",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          381.5432,
+          716.5386
+        ],
+        "fontHeight": 7.9702,
+        "width": 150.52519720000004,
+        "height": 7.9702,
+        "left": 381.5432,
+        "top": 708.5684
+      },
+      {
+        "str": "cine, Faculty of Health Sciences, McMaster Uni-",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.595,
+          726.0064
+        ],
+        "fontHeight": 7.9702,
+        "width": 153.44069636000003,
+        "height": 7.9702,
+        "left": 378.595,
+        "top": 718.0362
+      },
+      {
+        "str": "versity, Hamilton, Canada",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.595,
+          735.4742
+        ],
+        "fontHeight": 7.9702,
+        "width": 82.80320481999999,
+        "height": 7.9702,
+        "left": 378.595,
+        "top": 727.504
+      },
+      {
+        "str": "Corresponding author: Richard Kahn, rak6200@",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.595,
+          747.94677
+        ],
+        "fontHeight": 7.9702,
+        "width": 153.45902782000002,
+        "height": 7.9702,
+        "left": 378.595,
+        "top": 739.97657
+      },
+      {
+        "str": "gmail.com.",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.595,
+          757.41457
+        ],
+        "fontHeight": 7.9702,
+        "width": 35.515211199999996,
+        "height": 7.9702,
+        "left": 378.595,
+        "top": 749.44437
+      },
+      {
+        "str": "© 2014 by the American Diabetes Association.",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.595,
+          769.88713
+        ],
+        "fontHeight": 7.9702,
+        "width": 153.40164238000006,
+        "height": 7.9702,
+        "left": 378.595,
+        "top": 761.91693
+      },
+      {
+        "str": "See http://creativecommons.org/licenses/by-",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.595,
+          779.29835
+        ],
+        "fontHeight": 7.9702,
+        "width": 153.52199240000004,
+        "height": 7.9702,
+        "left": 378.595,
+        "top": 771.32815
+      },
+      {
+        "str": "nc-nd/3.0/ for details.",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          378.595,
+          788.76615
+        ],
+        "fontHeight": 7.9702,
+        "width": 71.21373700000001,
+        "height": 7.9702,
+        "left": 378.595,
+        "top": 780.7959500000001
+      },
+      {
+        "str": "See accompanying articles, pp. 906,",
+        "tx": [
+          9.9626,
+          0,
+          0,
+          -9.9626,
+          378.5952,
+          802.7118
+        ],
+        "fontHeight": 9.9626,
+        "width": 147.03303210000004,
+        "height": 9.9626,
+        "left": 378.5952,
+        "top": 792.7492000000001
+      },
+      {
+        "str": "909, 912, 922, 934, 943, and 950.",
+        "tx": [
+          9.9626,
+          0,
+          0,
+          -9.9626,
+          387.5526,
+          813.71051
+        ],
+        "fontHeight": 9.9626,
+        "width": 135.90580416,
+        "height": 9.9626,
+        "left": 387.5526,
+        "top": 803.74791
+      },
+      {
+        "str": "Richard Kahn",
+        "tx": [
+          8.9663,
+          0,
+          0,
+          -8.9663,
+          378.5952,
+          181.69780000000003
+        ],
+        "fontHeight": 8.9663,
+        "width": 48.37767165,
+        "height": 8.9663,
+        "left": 378.5952,
+        "top": 172.73150000000004
+      },
+      {
+        "str": "1",
+        "tx": [
+          6.7246,
+          0,
+          0,
+          -5.9768,
+          427.0676,
+          177.6726
+        ],
+        "fontHeight": 5.9768,
+        "width": 3.3623,
+        "height": 6.7246,
+        "left": 427.0676,
+        "top": 171.6958
+      },
+      {
+        "str": "and John L. Sievenpiper",
+        "tx": [
+          8.9663,
+          0,
+          0,
+          -8.9663,
+          432.8503,
+          181.69780000000003
+        ],
+        "fontHeight": 8.9663,
+        "width": 85.53132896000002,
+        "height": 8.9663,
+        "left": 432.8503,
+        "top": 172.73150000000004
+      },
+      {
+        "str": "2,3",
+        "tx": [
+          6.7246,
+          0,
+          0,
+          -5.9768,
+          519.4771,
+          177.6726
+        ],
+        "fontHeight": 5.9768,
+        "width": 8.42794118,
+        "height": 6.7246,
+        "left": 519.4771,
+        "top": 171.6958
+      },
+      {
+        "str": "Diabetes Care",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          47.8488,
+          95.63789999999995
+        ],
+        "fontHeight": 7.9702,
+        "width": 46.22078384,
+        "height": 7.9702,
+        "left": 47.8488,
+        "top": 87.66769999999994
+      },
+      {
+        "str": "Volume 37, April 2014",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          98.07859,
+          95.63789999999995
+        ],
+        "fontHeight": 7.9702,
+        "width": 72.54157232,
+        "height": 7.9702,
+        "left": 98.07859,
+        "top": 87.66769999999994
+      },
+      {
+        "str": "957",
+        "tx": [
+          7.9702,
+          0,
+          0,
+          -7.9702,
+          543.9133,
+          95.63789999999995
+        ],
+        "fontHeight": 7.9702,
+        "width": 12.035002,
+        "height": 7.9702,
+        "left": 543.9133,
+        "top": 87.66769999999994
+      },
+      {
+        "str": "TYPE 2 DIABETES PREVENTION",
+        "tx": [
+          0,
+          7.9702,
+          7.9702,
+          0,
+          576.8502,
+          101.47739999999999
+        ],
+        "fontHeight": 7.9702,
+        "width": 102.96541976,
+        "height": 7.9702,
+        "left": 576.8502,
+        "top": 93.50719999999998
+      }
+    ]
+  }
 }
