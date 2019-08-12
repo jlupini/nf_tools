@@ -89,7 +89,7 @@ NFPDFManager = {
    */
   getAnnotationDataForPageComp: function(targetComp) {
     var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, convertCartesian, convertColorJSON, dataFile, exportData, getRectFromTextItem, i, importedData, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, o, overlapExists, parsedData, pdfDataKey, pdfLayer, recognizedAnnotationTypes, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
-    recognizedAnnotationTypes = [NFPDFManager.AnnotationType.STRIKEOUT, NFPDFManager.AnnotationType.HIGHLIGHT, NFPDFManager.AnnotationType.UNDERLINE, NFPDFManager.AnnotationType.CIRCLE, NFPDFManager.AnnotationType.POLYGON];
+    recognizedAnnotationTypes = [NFPDFManager.AnnotationType.STRIKEOUT, NFPDFManager.AnnotationType.HIGHLIGHT, NFPDFManager.AnnotationType.UNDERLINE, NFPDFManager.AnnotationType.CIRCLE, NFPDFManager.AnnotationType.SQUARE, NFPDFManager.AnnotationType.POLYGON];
     convertColorJSON = function(arr) {
       return [arr[0] / 256, arr[1] / 256, arr[2] / 256];
     };
@@ -154,28 +154,29 @@ NFPDFManager = {
     for (i = m = 0, len2 = trimmedAnnotationData.length; m < len2; i = ++m) {
       testAnnotation = trimmedAnnotationData[i];
       annotationRect = convertCartesian(testAnnotation.rect, viewport);
-      matchingLines = [];
-      for (n = 0, len3 = textContent.length; n < len3; n++) {
-        textItem = textContent[n];
-        textRect = new Rect(textItem);
-        if (annotationRect.contains(textRect)) {
-          overlapExists = false;
-          if (matchingLines.length !== 0) {
-            for (o = 0, len4 = matchingLines.length; o < len4; o++) {
-              matchedLine = matchingLines[o];
-              if (matchedLine.yOverlapWith(textRect) !== 0) {
-                overlapExists = true;
+      if (textContent.length === 0 || testAnnotation.annotationType === NFPDFManager.AnnotationType.SQUARE) {
+        lineCount = 0;
+      } else {
+        matchingLines = [];
+        for (n = 0, len3 = textContent.length; n < len3; n++) {
+          textItem = textContent[n];
+          textRect = new Rect(textItem);
+          if (annotationRect.contains(textRect) || textRect.contains(annotationRect)) {
+            overlapExists = false;
+            if (matchingLines.length !== 0) {
+              for (o = 0, len4 = matchingLines.length; o < len4; o++) {
+                matchedLine = matchingLines[o];
+                if (matchedLine.yOverlapWith(textRect) !== 0) {
+                  overlapExists = true;
+                }
               }
             }
-          }
-          if (!overlapExists) {
-            matchingLines.push(textRect);
+            if (!overlapExists) {
+              matchingLines.push(textRect);
+            }
           }
         }
-      }
-      lineCount = matchingLines.length;
-      if (lineCount === 0) {
-        lineCount = 1;
+        lineCount = matchingLines.length;
       }
       typeList = testAnnotation.types.join(" ");
       if (typeList.indexOf("Highlight ") > -1) {

@@ -24,8 +24,9 @@ loadAutoHighlightDataIntoView = (treeView) ->
   return alert "No PDF Annotation Data Found\nTry the Import button below first" unless annotationData?
   for annotation in annotationData
 
-    thisPDFNode = treeView.add 'item', annotation.cleanName
-    thisPDFNode.data = annotation
+    thisNode = treeView.add 'item', annotation.cleanName
+    thisNode.data = annotation
+    thisNode.image = if annotation.cleanName.indexOf("Highlight") > -1 then NFIcon.tree.highlight else NFIcon.tree.star
 
 
 loadContentIntoView = (treeView) ->
@@ -136,26 +137,45 @@ getPanelUI = ->
 
     # Actually add the shapes and stuff
     annotationLayer = targetComp.addShapeLayer()
-    annotationLayer.setName "Imported Shape"
     annotationLayer.addRectangle
       fillColor: choice.color
       rect: choice.rect
 
     annotationLayer.transform().scale.setValue targetComp?.getPDFLayer().transform().scale.value
 
-    # Create the highlight effect
-    targetComp.createHighlight
-      shapeLayer: annotationLayer
-      lines: choice.lineCount
-      name: choice.cleanName
+    if choice.lineCount is 0
+      annotationLayer.transform("Opacity").setValue 20
+      annotationLayer.setName "Imported PDF Shape: #{choice.cleanName}"
+    else
 
-    annotationLayer.remove()
+      # Create the highlight effect
+      targetComp.createHighlight
+        shapeLayer: annotationLayer
+        lines: choice.lineCount
+        name: choice.cleanName
+
+      annotationLayer.remove()
 
     app.endUndoGroup()
+
+  customPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.path)
+  customPrepButton.onClick = (w) ->
+    selectedLayer = NFProject.selectedLayers()?.get(0)
+    return alert "No Valid Shape Layer Selected" unless selectedLayer? and selectedLayer instanceof NFShapeLayer
+    lineCount = parseInt prompt('How many initial highlight lines would you like to create?')
+    # Create the highlight effect
+    selectedLayer.containingComp().createHighlight
+      shapeLayer: selectedLayer
+      lines: lineCount
+      name: selectedLayer.getName().replace("Imported PDF Shape: ", "")
+
+    selectedLayer.remove()
 
   refreshPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.refresh)
   refreshPrepButton.onClick = (w) ->
     loadAutoHighlightDataIntoView treePrepView
+    panel.layout.resize()
+
     @active = false
 
   importPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.import)
@@ -395,6 +415,7 @@ getPanelUI = ->
   refreshButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.refresh)
   refreshButton.onClick = (w) ->
     loadContentIntoView treeView
+    treeView.notify()
     @active = false
 
   # Layout + Resize handling

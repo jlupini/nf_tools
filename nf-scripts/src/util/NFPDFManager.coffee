@@ -87,6 +87,7 @@ NFPDFManager =
       NFPDFManager.AnnotationType.HIGHLIGHT
       NFPDFManager.AnnotationType.UNDERLINE
       NFPDFManager.AnnotationType.CIRCLE
+      NFPDFManager.AnnotationType.SQUARE
       NFPDFManager.AnnotationType.POLYGON
     ]
 
@@ -115,9 +116,7 @@ NFPDFManager =
     pdfLayer = targetComp?.getPDFLayer()
     dataFile = pdfLayer.$.source?.file
     pdfDataKey = dataFile.name
-    # pdfData = NFTools.readFile dataFile.path + "/annotationData.json", true, false
-    # parsedData = JSON.parse(pdfData)
-    # parsedData = parsedData[pdfDataKey]
+
     importedData = NFPDFManagerImportedData[app.project.file.name]
     return null unless importedData?
 
@@ -152,18 +151,20 @@ NFPDFManager =
 
       annotationRect = convertCartesian(testAnnotation.rect, viewport)
 
-      matchingLines = []
-      for textItem in textContent
-        textRect = new Rect textItem
-        if annotationRect.contains textRect
-          overlapExists = no
-          if matchingLines.length isnt 0
-            for matchedLine in matchingLines
-              overlapExists = yes if matchedLine.yOverlapWith(textRect) isnt 0
-          matchingLines.push textRect unless overlapExists
+      if textContent.length is 0 or testAnnotation.annotationType is NFPDFManager.AnnotationType.SQUARE
+        lineCount = 0
+      else
+        matchingLines = []
+        for textItem in textContent
+          textRect = new Rect textItem
+          if annotationRect.contains(textRect) or textRect.contains(annotationRect)
+            overlapExists = no
+            if matchingLines.length isnt 0
+              for matchedLine in matchingLines
+                overlapExists = yes if matchedLine.yOverlapWith(textRect) isnt 0
+            matchingLines.push textRect unless overlapExists
 
-      lineCount = matchingLines.length
-      lineCount = 1 if lineCount is 0
+        lineCount = matchingLines.length
 
       typeList = testAnnotation.types.join(" ")
       if typeList.indexOf("Highlight ") > -1

@@ -183,7 +183,7 @@ processFiles = function(files, idx) {
     };
     addToFinalData(files[idx], dataObject);
     if (idx + 1 === files.length) {
-      fs.writeFile(testFolder + "/annotationData.json", JSON.stringify(finalDataObject), function(err) {
+      fs.writeFile(testFolder + "/annotationData.json", JSON.stringify(finalDataObject, null, " "), function(err) {
         if (err) {
           return console.log(err);
         }
@@ -195,7 +195,7 @@ processFiles = function(files, idx) {
   }), function(err) {
     console.error('Error: ' + err);
     if (idx + 1 === files.length) {
-      fs.writeFile(testFolder + "/annotationData.json", JSON.stringify(finalDataObject), function(err) {
+      fs.writeFile(testFolder + "/annotationData.json", JSON.stringify(finalDataObject, null, " "), function(err) {
         if (err) {
           return console.log(err);
         }

@@ -299,9 +299,6 @@ class NFComp extends NFObject
       lineStrokeProp.property('Stroke Width').expression = 'effect("AV Highlighter")("Thickness")'
 
 
-    # FIXME: Add in the meat of the expression logic here
-
-
     return null
 
   ###*

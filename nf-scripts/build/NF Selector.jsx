@@ -22,7 +22,7 @@ importPDFAnnotationData = function() {
 };
 
 loadAutoHighlightDataIntoView = function(treeView) {
-  var activeComp, annotation, annotationData, contentTree, i, len, results, thisPDFNode;
+  var activeComp, annotation, annotationData, contentTree, i, len, results, thisNode;
   treeView.removeAll();
   contentTree = {};
   activeComp = NFProject.activeComp();
@@ -33,8 +33,9 @@ loadAutoHighlightDataIntoView = function(treeView) {
   results = [];
   for (i = 0, len = annotationData.length; i < len; i++) {
     annotation = annotationData[i];
-    thisPDFNode = treeView.add('item', annotation.cleanName);
-    results.push(thisPDFNode.data = annotation);
+    thisNode = treeView.add('item', annotation.cleanName);
+    thisNode.data = annotation;
+    results.push(thisNode.image = annotation.cleanName.indexOf("Highlight") > -1 ? NFIcon.tree.highlight : NFIcon.tree.star);
   }
   return results;
 };
@@ -105,7 +106,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, goButton, importPrepButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
+  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, customPrepButton, goButton, importPrepButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -146,23 +147,43 @@ getPanelUI = function() {
     app.beginUndoGroup("NF Selector");
     targetComp = NFProject.activeComp();
     annotationLayer = targetComp.addShapeLayer();
-    annotationLayer.setName("Imported Shape");
     annotationLayer.addRectangle({
       fillColor: choice.color,
       rect: choice.rect
     });
     annotationLayer.transform().scale.setValue(targetComp != null ? targetComp.getPDFLayer().transform().scale.value : void 0);
-    targetComp.createHighlight({
-      shapeLayer: annotationLayer,
-      lines: choice.lineCount,
-      name: choice.cleanName
-    });
-    annotationLayer.remove();
+    if (choice.lineCount === 0) {
+      annotationLayer.transform("Opacity").setValue(20);
+      annotationLayer.setName("Imported PDF Shape: " + choice.cleanName);
+    } else {
+      targetComp.createHighlight({
+        shapeLayer: annotationLayer,
+        lines: choice.lineCount,
+        name: choice.cleanName
+      });
+      annotationLayer.remove();
+    }
     return app.endUndoGroup();
+  };
+  customPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.path);
+  customPrepButton.onClick = function(w) {
+    var lineCount, ref, selectedLayer;
+    selectedLayer = (ref = NFProject.selectedLayers()) != null ? ref.get(0) : void 0;
+    if (!((selectedLayer != null) && selectedLayer instanceof NFShapeLayer)) {
+      return alert("No Valid Shape Layer Selected");
+    }
+    lineCount = parseInt(prompt('How many initial highlight lines would you like to create?'));
+    selectedLayer.containingComp().createHighlight({
+      shapeLayer: selectedLayer,
+      lines: lineCount,
+      name: selectedLayer.getName().replace("Imported PDF Shape: ", "")
+    });
+    return selectedLayer.remove();
   };
   refreshPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.refresh);
   refreshPrepButton.onClick = function(w) {
     loadAutoHighlightDataIntoView(treePrepView);
+    panel.layout.resize();
     return this.active = false;
   };
   importPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button["import"]);
@@ -395,6 +416,7 @@ getPanelUI = function() {
   refreshButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.refresh);
   refreshButton.onClick = function(w) {
     loadContentIntoView(treeView);
+    treeView.notify();
     return this.active = false;
   };
   panel.layout.layout(true);

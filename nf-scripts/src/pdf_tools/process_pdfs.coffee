@@ -153,7 +153,7 @@ processFiles = (files, idx) ->
     addToFinalData files[idx], dataObject
     if idx + 1 is files.length
       # Write to a file
-      fs.writeFile "#{testFolder}/annotationData.json", JSON.stringify(finalDataObject), (err) ->
+      fs.writeFile "#{testFolder}/annotationData.json", JSON.stringify(finalDataObject, null, " "), (err) ->
         if err
           return console.log(err)
         console.log 'The file was saved!'
@@ -166,7 +166,7 @@ processFiles = (files, idx) ->
     console.error 'Error: ' + err
     if idx + 1 is files.length
       # Write to a file
-      fs.writeFile "#{testFolder}/annotationData.json", JSON.stringify(finalDataObject), (err) ->
+      fs.writeFile "#{testFolder}/annotationData.json", JSON.stringify(finalDataObject, null, " "), (err) ->
         if err
           return console.log(err)
         console.log 'The file was saved!'
