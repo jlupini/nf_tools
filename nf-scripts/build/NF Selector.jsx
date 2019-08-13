@@ -232,7 +232,6 @@ getPanelUI = function() {
   treeView = buttonPanel.add('treeview', void 0);
   treeView.preferredSize = [220, 250];
   treeView.alignment = ['fill', 'fill'];
-  loadContentIntoView(treeView);
   buttonGroup = buttonPanel.add('group', void 0);
   buttonGroup.maximumSize = [200, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);

@@ -216,7 +216,7 @@ getPanelUI = ->
   treeView.preferredSize = [220, 250]
   treeView.alignment = ['fill','fill']
 
-  loadContentIntoView treeView
+  # loadContentIntoView treeView
 
   buttonGroup = buttonPanel.add 'group', undefined
   buttonGroup.maximumSize = [200,50]
