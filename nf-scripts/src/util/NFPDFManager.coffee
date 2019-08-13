@@ -150,11 +150,14 @@ NFPDFManager =
     for testAnnotation, i in trimmedAnnotationData
 
       annotationRect = convertCartesian(testAnnotation.rect, viewport)
+      expandColor = null
 
+      # Count lines
       if textContent.length is 0 or testAnnotation.annotationType is NFPDFManager.AnnotationType.SQUARE
         lineCount = 0
       else
         matchingLines = []
+        lineHeightSum = 0
         for textItem in textContent
           textRect = new Rect textItem
           if annotationRect.contains(textRect) or textRect.contains(annotationRect)
@@ -162,14 +165,38 @@ NFPDFManager =
             if matchingLines.length isnt 0
               for matchedLine in matchingLines
                 overlapExists = yes if matchedLine.yOverlapWith(textRect) isnt 0
-            matchingLines.push textRect unless overlapExists
+            unless overlapExists
+              matchingLines.push textRect
+              lineHeightSum += textRect.height
 
         lineCount = matchingLines.length
 
+        # Look for Expands
+        # $.writeln "Testannotation.colorname = #{testAnnotation.colorName}"
+        if testAnnotation.colorName.indexOf("Highlight Pink") >= 0
+          unless lineCount is 0
+            averageLineHeight = lineHeightSum / lineCount
+            closestDistance = 99999
+            for distanceCheckAnnotation, j in trimmedAnnotationData
+              if i isnt j
+                distanceCheckAnnotationRect = convertCartesian(distanceCheckAnnotation.rect, viewport)
+                distance = annotationRect.distanceTo(distanceCheckAnnotationRect)
+                if distance <= averageLineHeight
+                  if distance < closestDistance
+                    expandColor = distanceCheckAnnotation.colorName.replace("Highlight ", "")
+                    closestDistance = distance
+
+      # Create a cleaner type list with the word 'Highlight' at the end
       typeList = testAnnotation.types.join(" ")
       if typeList.indexOf("Highlight ") > -1
         typeList = typeList.replace("Highlight ", "")
         typeList = typeList + " Highlight"
+
+      if expandColor?
+        expString = "#{expandColor} Expand"
+        cleanName = "#{testAnnotation.colorName.replace("Highlight Pink", expString)} #{typeList}"
+      else
+        cleanName = "#{testAnnotation.colorName.replace("Highlight ", "")} #{typeList}"
 
       exportData.push
         rect: annotationRect
@@ -177,7 +204,8 @@ NFPDFManager =
         color: convertColorJSON(testAnnotation.color)
         colorName: testAnnotation.colorName
         type: typeList
-        cleanName: "#{testAnnotation.colorName.replace("Highlight ", "")} #{typeList}"
+        cleanName: cleanName
+        expand: expandColor
 
     return exportData
 

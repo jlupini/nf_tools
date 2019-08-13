@@ -88,7 +88,7 @@ NFPDFManager = {
   @returns {Object} the annotation data
    */
   getAnnotationDataForPageComp: function(targetComp) {
-    var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, convertCartesian, convertColorJSON, dataFile, exportData, getRectFromTextItem, i, importedData, j, k, l, len, len1, len2, len3, len4, lineCount, m, matchedLine, matchingLines, n, o, overlapExists, parsedData, pdfDataKey, pdfLayer, recognizedAnnotationTypes, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
+    var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, averageLineHeight, cleanName, closestDistance, convertCartesian, convertColorJSON, dataFile, distance, distanceCheckAnnotation, distanceCheckAnnotationRect, expString, expandColor, exportData, getRectFromTextItem, i, importedData, j, k, l, len, len1, len2, len3, len4, len5, lineCount, lineHeightSum, m, matchedLine, matchingLines, n, o, overlapExists, p, parsedData, pdfDataKey, pdfLayer, recognizedAnnotationTypes, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
     recognizedAnnotationTypes = [NFPDFManager.AnnotationType.STRIKEOUT, NFPDFManager.AnnotationType.HIGHLIGHT, NFPDFManager.AnnotationType.UNDERLINE, NFPDFManager.AnnotationType.CIRCLE, NFPDFManager.AnnotationType.SQUARE, NFPDFManager.AnnotationType.POLYGON];
     convertColorJSON = function(arr) {
       return [arr[0] / 256, arr[1] / 256, arr[2] / 256];
@@ -154,10 +154,12 @@ NFPDFManager = {
     for (i = m = 0, len2 = trimmedAnnotationData.length; m < len2; i = ++m) {
       testAnnotation = trimmedAnnotationData[i];
       annotationRect = convertCartesian(testAnnotation.rect, viewport);
+      expandColor = null;
       if (textContent.length === 0 || testAnnotation.annotationType === NFPDFManager.AnnotationType.SQUARE) {
         lineCount = 0;
       } else {
         matchingLines = [];
+        lineHeightSum = 0;
         for (n = 0, len3 = textContent.length; n < len3; n++) {
           textItem = textContent[n];
           textRect = new Rect(textItem);
@@ -173,15 +175,41 @@ NFPDFManager = {
             }
             if (!overlapExists) {
               matchingLines.push(textRect);
+              lineHeightSum += textRect.height;
             }
           }
         }
         lineCount = matchingLines.length;
+        if (testAnnotation.colorName.indexOf("Highlight Pink") >= 0) {
+          if (lineCount !== 0) {
+            averageLineHeight = lineHeightSum / lineCount;
+            closestDistance = 99999;
+            for (j = p = 0, len5 = trimmedAnnotationData.length; p < len5; j = ++p) {
+              distanceCheckAnnotation = trimmedAnnotationData[j];
+              if (i !== j) {
+                distanceCheckAnnotationRect = convertCartesian(distanceCheckAnnotation.rect, viewport);
+                distance = annotationRect.distanceTo(distanceCheckAnnotationRect);
+                if (distance <= averageLineHeight) {
+                  if (distance < closestDistance) {
+                    expandColor = distanceCheckAnnotation.colorName.replace("Highlight ", "");
+                    closestDistance = distance;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
       typeList = testAnnotation.types.join(" ");
       if (typeList.indexOf("Highlight ") > -1) {
         typeList = typeList.replace("Highlight ", "");
         typeList = typeList + " Highlight";
+      }
+      if (expandColor != null) {
+        expString = expandColor + " Expand";
+        cleanName = (testAnnotation.colorName.replace("Highlight Pink", expString)) + " " + typeList;
+      } else {
+        cleanName = (testAnnotation.colorName.replace("Highlight ", "")) + " " + typeList;
       }
       exportData.push({
         rect: annotationRect,
@@ -189,7 +217,8 @@ NFPDFManager = {
         color: convertColorJSON(testAnnotation.color),
         colorName: testAnnotation.colorName,
         type: typeList,
-        cleanName: (testAnnotation.colorName.replace("Highlight ", "")) + " " + typeList
+        cleanName: cleanName,
+        expand: expandColor
       });
     }
     return exportData;

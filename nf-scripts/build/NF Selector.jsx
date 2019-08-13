@@ -35,7 +35,13 @@ loadAutoHighlightDataIntoView = function(treeView) {
     annotation = annotationData[i];
     thisNode = treeView.add('item', annotation.cleanName);
     thisNode.data = annotation;
-    results.push(thisNode.image = annotation.cleanName.indexOf("Highlight") > -1 ? NFIcon.tree.highlight : NFIcon.tree.star);
+    if (annotation.expand != null) {
+      results.push(thisNode.image = NFIcon.tree.expand);
+    } else if (annotation.cleanName.indexOf("Highlight") > -1) {
+      results.push(thisNode.image = NFIcon.tree.highlight);
+    } else {
+      results.push(thisNode.image = NFIcon.tree.star);
+    }
   }
   return results;
 };
@@ -139,7 +145,7 @@ getPanelUI = function() {
   buttonPrepGroup.maximumSize = [200, 50];
   addPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.add);
   addPrepButton.onClick = function(w) {
-    var annotationLayer, choice, ref, targetComp;
+    var annotationLayer, choice, key, newColor, ref, ref1, targetComp, testColor;
     choice = (ref = treePrepView.selection) != null ? ref.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -156,10 +162,18 @@ getPanelUI = function() {
       annotationLayer.transform("Opacity").setValue(20);
       annotationLayer.setName("Imported PDF Shape: " + choice.cleanName);
     } else {
+      ref1 = NFHighlightLayer.COLOR;
+      for (key in ref1) {
+        testColor = ref1[key];
+        if (choice.colorName.indexOf(testColor.str) >= 0) {
+          newColor = testColor;
+        }
+      }
       targetComp.createHighlight({
         shapeLayer: annotationLayer,
         lines: choice.lineCount,
-        name: choice.cleanName
+        name: choice.cleanName,
+        color: newColor
       });
       annotationLayer.remove();
     }
@@ -167,23 +181,31 @@ getPanelUI = function() {
   };
   customPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.path);
   customPrepButton.onClick = function(w) {
-    var lineCount, ref, selectedLayer;
+    var key, lineCount, newColor, newName, ref, ref1, selectedLayer, testColor;
     selectedLayer = (ref = NFProject.selectedLayers()) != null ? ref.get(0) : void 0;
     if (!((selectedLayer != null) && selectedLayer instanceof NFShapeLayer)) {
       return alert("No Valid Shape Layer Selected");
     }
     lineCount = parseInt(prompt('How many initial highlight lines would you like to create?'));
+    newName = selectedLayer.getName().replace("Imported PDF Shape: ", "");
+    ref1 = NFHighlightLayer.COLOR;
+    for (key in ref1) {
+      testColor = ref1[key];
+      if (newName.indexOf(testColor.str) >= 0) {
+        newColor = testColor;
+      }
+    }
     selectedLayer.containingComp().createHighlight({
       shapeLayer: selectedLayer,
       lines: lineCount,
-      name: selectedLayer.getName().replace("Imported PDF Shape: ", "")
+      name: newName,
+      color: newColor
     });
     return selectedLayer.remove();
   };
   refreshPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.refresh);
   refreshPrepButton.onClick = function(w) {
     loadAutoHighlightDataIntoView(treePrepView);
-    panel.layout.resize();
     return this.active = false;
   };
   importPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button["import"]);

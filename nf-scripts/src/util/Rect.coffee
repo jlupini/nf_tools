@@ -49,14 +49,76 @@ class Rect
     return @top + @height
 
   ###*
+  Returns the Top Left Point
+  @memberof Rect
+  @returns {float[]} the point
+  ###
+  topLeft: ->
+    return [@left, @top]
+
+  ###*
+  Returns the Top Right Point
+  @memberof Rect
+  @returns {float[]} the point
+  ###
+  topRight: ->
+    return [@maxX(), @top]
+
+  ###*
+  Returns the Bottom Left Point
+  @memberof Rect
+  @returns {float[]} the point
+  ###
+  bottomLeft: ->
+    return [@left, @maxY()]
+
+  ###*
+  Returns the Bottom Right Point
+  @memberof Rect
+  @returns {float[]} the point
+  ###
+  bottomRight: ->
+    return [@maxX(), @maxY()]
+
+  ###*
+  Returns if this rect is left of a given rect
+  @memberof Rect
+  @returns {boolean} the restule
+  ###
+  leftOf: (testRect) ->
+    return @maxX() < testRect.left
+
+  ###*
+  Returns if this rect is right of a given rect
+  @memberof Rect
+  @returns {boolean} the restule
+  ###
+  rightOf: (testRect) ->
+    return @left > testRect.maxX()
+
+  ###*
+  Returns if this rect is above a given rect
+  @memberof Rect
+  @returns {boolean} the restule
+  ###
+  above: (testRect) ->
+    return @maxY() < testRect.top
+
+  ###*
+  Returns if this rect is below a given rect
+  @memberof Rect
+  @returns {boolean} the restule
+  ###
+  below: (testRect) ->
+    return @top > testRect.maxY()
+
+  ###*
   Returns the y overlap with another rect
   @memberof Rect
   @returns {float} the overlap
   ###
   yOverlapWith: (testRect) ->
-    aAboveB = @top > testRect.maxY()
-    aBelowB = @maxY() < testRect.top
-    if !(aAboveB or aBelowB)
+    if !(@above(testRect) or @below(testRect))
       return Math.min(@maxY(), testRect.maxY()) - Math.max(@top, testRect.top)
     else
       return 0
@@ -67,9 +129,7 @@ class Rect
   @returns {float} the overlap
   ###
   xOverlapWith: (testRect) ->
-    aLeftOfB = @maxX() < testRect.left
-    aRightOfB = @left > testRect.maxX()
-    if !(aLeftOfB or aRightOfB)
+    if !(@leftOf(testRect) or @rightOf(testRect))
       return Math.min(@maxX(), testRect.maxX()) - Math.max(@left, testRect.left)
     else
       return 0
@@ -92,6 +152,65 @@ class Rect
     else
       return false
 
+  ###*
+  Returns the distance from any edge of this rect to the nearest edge of a given
+  rect, or 0 if they intersect.
+  @memberof Rect
+  @param {Rect} [testRect] - the Rect to test
+  @returns {boolean} the result
+  ###
+  distanceTo: (testRect) ->
+    throw new Error "Invalid rect object" unless testRect instanceof Rect
+
+    distanceBetweenPoints = (p1, p2) ->
+      x1 = p1[0]
+      x2 = p2[0]
+      y1 = p1[1]
+      y2 = p2[1]
+
+      a = x1 - x2
+      b = y1 - y2
+      c = Math.sqrt(a * a + b * b)
+      return c
+
+    # $.level = 2
+    # debugger
+
+    aLeftOfB = @leftOf testRect
+    aRightOfB = @rightOf testRect
+    aBelowB = @below testRect
+    aAboveB = @above testRect
+
+    # Rects intersect
+    return 0 if !( aLeftOfB or aRightOfB or aAboveB or aBelowB )
+
+    # TestRect has neither x nor y overlap
+    if aAboveB
+      if aLeftOfB
+        #bottom right of A to top left of B
+        return distanceBetweenPoints @bottomRight(), testRect.topLeft()
+      else if aRightOfB
+        #bottom left of a to top right of B
+        return distanceBetweenPoints @bottomLeft(), testRect.topRight()
+      else
+        #bottom of A to top of B
+        return testRect.top - @maxY()
+    else if aBelowB
+      if aLeftOfB
+        #top right of A to bottom left of B
+        return distanceBetweenPoints @topRight(), testRect.bottomLeft()
+      else if aBelowB and aRightOfB
+        #top left of A to bottom right of B
+        return distanceBetweenPoints @topLeft(), testRect.bottomRight()
+      else
+        #bottom of B to top of A
+        return @top - testRect.maxY()
+    else if aRightOfB
+      #left of A minus right of B
+      return @left - testRect.maxX()
+    else if aLeftOfB
+      #left of B minus right of A
+      return testRect.left - @maxX()
 
 
 
@@ -106,7 +225,7 @@ class Rect
 
     aLeftOfB = @maxX() < testRect.left
     aRightOfB = @left > testRect.maxX()
-    aAboveB = @top > testRect.maxY()
-    aBelowB = @maxY() < testRect.top
+    aBelowB = @top > testRect.maxY()
+    aAboveB = @maxY() < testRect.top
 
     return !( aLeftOfB or aRightOfB or aAboveB or aBelowB )

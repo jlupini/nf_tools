@@ -190,7 +190,37 @@ NFHighlightLayer = Object.assign NFHighlightLayer,
   isHighlightLayer: (theLayer) ->
     return theLayer instanceof ShapeLayer and theLayer.Effects.numProperties > 0 and theLayer.Effects.property(1)?.matchName is "AV_Highlighter"
 
+  ###*
+  Colors in the AV Highlighter Dropdown
+  @memberof NFHighlightLayer
+  ###
+  COLOR:
+    YELLOW:
+      str: "Yellow"
+      idx: 1
+    BLUE:
+      str: "Blue"
+      idx: 2
+    PURPLE:
+      str: "Purple"
+      idx: 3
+    GREEN:
+      str: "Green"
+      idx: 4
+    PINK:
+      str: "Pink"
+      idx: 5
+    ORANGE:
+      str: "Orange"
+      idx: 6
+    RED:
+      str: "Red"
+      idx: 7
 
+  ###*
+  Properties in the AV Highlighter effect
+  @memberof NFHighlightLayer
+  ###
   highlighterProperties: [
     'Spacing'
     'Thickness'

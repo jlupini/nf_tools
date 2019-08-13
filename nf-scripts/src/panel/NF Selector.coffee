@@ -26,7 +26,12 @@ loadAutoHighlightDataIntoView = (treeView) ->
 
     thisNode = treeView.add 'item', annotation.cleanName
     thisNode.data = annotation
-    thisNode.image = if annotation.cleanName.indexOf("Highlight") > -1 then NFIcon.tree.highlight else NFIcon.tree.star
+    if annotation.expand?
+      thisNode.image = NFIcon.tree.expand
+    else if annotation.cleanName.indexOf("Highlight") > -1
+      thisNode.image = NFIcon.tree.highlight
+    else
+      thisNode.image = NFIcon.tree.star
 
 
 loadContentIntoView = (treeView) ->
@@ -147,12 +152,15 @@ getPanelUI = ->
       annotationLayer.transform("Opacity").setValue 20
       annotationLayer.setName "Imported PDF Shape: #{choice.cleanName}"
     else
+      for key, testColor of NFHighlightLayer.COLOR
+        newColor = testColor if choice.colorName.indexOf(testColor.str) >= 0
 
       # Create the highlight effect
       targetComp.createHighlight
         shapeLayer: annotationLayer
         lines: choice.lineCount
         name: choice.cleanName
+        color: newColor
 
       annotationLayer.remove()
 
@@ -164,17 +172,21 @@ getPanelUI = ->
     return alert "No Valid Shape Layer Selected" unless selectedLayer? and selectedLayer instanceof NFShapeLayer
     lineCount = parseInt prompt('How many initial highlight lines would you like to create?')
     # Create the highlight effect
+    newName = selectedLayer.getName().replace("Imported PDF Shape: ", "")
+    for key, testColor of NFHighlightLayer.COLOR
+      newColor = testColor if newName.indexOf(testColor.str) >= 0
     selectedLayer.containingComp().createHighlight
       shapeLayer: selectedLayer
       lines: lineCount
-      name: selectedLayer.getName().replace("Imported PDF Shape: ", "")
+      name: newName
+      color: newColor
+
 
     selectedLayer.remove()
 
   refreshPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.refresh)
   refreshPrepButton.onClick = (w) ->
     loadAutoHighlightDataIntoView treePrepView
-    panel.layout.resize()
 
     @active = false
 

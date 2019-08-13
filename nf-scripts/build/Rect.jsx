@@ -69,16 +69,101 @@ Rect = (function() {
 
 
   /**
+  Returns the Top Left Point
+  @memberof Rect
+  @returns {float[]} the point
+   */
+
+  Rect.prototype.topLeft = function() {
+    return [this.left, this.top];
+  };
+
+
+  /**
+  Returns the Top Right Point
+  @memberof Rect
+  @returns {float[]} the point
+   */
+
+  Rect.prototype.topRight = function() {
+    return [this.maxX(), this.top];
+  };
+
+
+  /**
+  Returns the Bottom Left Point
+  @memberof Rect
+  @returns {float[]} the point
+   */
+
+  Rect.prototype.bottomLeft = function() {
+    return [this.left, this.maxY()];
+  };
+
+
+  /**
+  Returns the Bottom Right Point
+  @memberof Rect
+  @returns {float[]} the point
+   */
+
+  Rect.prototype.bottomRight = function() {
+    return [this.maxX(), this.maxY()];
+  };
+
+
+  /**
+  Returns if this rect is left of a given rect
+  @memberof Rect
+  @returns {boolean} the restule
+   */
+
+  Rect.prototype.leftOf = function(testRect) {
+    return this.maxX() < testRect.left;
+  };
+
+
+  /**
+  Returns if this rect is right of a given rect
+  @memberof Rect
+  @returns {boolean} the restule
+   */
+
+  Rect.prototype.rightOf = function(testRect) {
+    return this.left > testRect.maxX();
+  };
+
+
+  /**
+  Returns if this rect is above a given rect
+  @memberof Rect
+  @returns {boolean} the restule
+   */
+
+  Rect.prototype.above = function(testRect) {
+    return this.maxY() < testRect.top;
+  };
+
+
+  /**
+  Returns if this rect is below a given rect
+  @memberof Rect
+  @returns {boolean} the restule
+   */
+
+  Rect.prototype.below = function(testRect) {
+    return this.top > testRect.maxY();
+  };
+
+
+  /**
   Returns the y overlap with another rect
   @memberof Rect
   @returns {float} the overlap
    */
 
   Rect.prototype.yOverlapWith = function(testRect) {
-    var aAboveB, aBelowB;
-    aAboveB = this.top > testRect.maxY();
-    aBelowB = this.maxY() < testRect.top;
-    if (!(aAboveB || aBelowB)) {
+    if (!(this.above(testRect) || this.below(testRect))) {
       return Math.min(this.maxY(), testRect.maxY()) - Math.max(this.top, testRect.top);
     } else {
       return 0;
@@ -93,10 +178,7 @@ Rect = (function() {
    */
 
   Rect.prototype.xOverlapWith = function(testRect) {
-    var aLeftOfB, aRightOfB;
-    aLeftOfB = this.maxX() < testRect.left;
-    aRightOfB = this.left > testRect.maxX();
-    if (!(aLeftOfB || aRightOfB)) {
+    if (!(this.leftOf(testRect) || this.rightOf(testRect))) {
       return Math.min(this.maxX(), testRect.maxX()) - Math.max(this.left, testRect.left);
     } else {
       return 0;
@@ -128,6 +210,61 @@ Rect = (function() {
 
 
   /**
+  Returns the distance from any edge of this rect to the nearest edge of a given
+  rect, or 0 if they intersect.
+  @memberof Rect
+  @param {Rect} [testRect] - the Rect to test
+  @returns {boolean} the result
+   */
+
+  Rect.prototype.distanceTo = function(testRect) {
+    var aAboveB, aBelowB, aLeftOfB, aRightOfB, distanceBetweenPoints;
+    if (!(testRect instanceof Rect)) {
+      throw new Error("Invalid rect object");
+    }
+    distanceBetweenPoints = function(p1, p2) {
+      var a, b, c, x1, x2, y1, y2;
+      x1 = p1[0];
+      x2 = p2[0];
+      y1 = p1[1];
+      y2 = p2[1];
+      a = x1 - x2;
+      b = y1 - y2;
+      c = Math.sqrt(a * a + b * b);
+      return c;
+    };
+    aLeftOfB = this.leftOf(testRect);
+    aRightOfB = this.rightOf(testRect);
+    aBelowB = this.below(testRect);
+    aAboveB = this.above(testRect);
+    if (!(aLeftOfB || aRightOfB || aAboveB || aBelowB)) {
+      return 0;
+    }
+    if (aAboveB) {
+      if (aLeftOfB) {
+        return distanceBetweenPoints(this.bottomRight(), testRect.topLeft());
+      } else if (aRightOfB) {
+        return distanceBetweenPoints(this.bottomLeft(), testRect.topRight());
+      } else {
+        return testRect.top - this.maxY();
+      }
+    } else if (aBelowB) {
+      if (aLeftOfB) {
+        return distanceBetweenPoints(this.topRight(), testRect.bottomLeft());
+      } else if (aBelowB && aRightOfB) {
+        return distanceBetweenPoints(this.topLeft(), testRect.bottomRight());
+      } else {
+        return this.top - testRect.maxY();
+      }
+    } else if (aRightOfB) {
+      return this.left - testRect.maxX();
+    } else if (aLeftOfB) {
+      return testRect.left - this.maxX();
+    }
+  };
+
+
+  /**
   Returns whether or not the given rect intersects with this one
   @memberof Rect
   @param {Rect} [testRect] - the Rect to test
@@ -141,8 +278,8 @@ Rect = (function() {
     }
     aLeftOfB = this.maxX() < testRect.left;
     aRightOfB = this.left > testRect.maxX();
-    aAboveB = this.top > testRect.maxY();
-    aBelowB = this.maxY() < testRect.top;
+    aBelowB = this.top > testRect.maxY();
+    aAboveB = this.maxY() < testRect.top;
     return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
   };
 

@@ -395,11 +395,12 @@ NFComp = (function(superClass) {
   @param {NFLayer} model.shapeLayer the shape layer with target shape
   @param {String} [model.name="OLD_NAME Highlight"] the new name
   @param {int} model.lines the number of lines
+  @param {Object} [model.color=NFHighlightLayer.COLOR.YELLOW] the color from the available dropdown colors
   @returns {NFHighlightLayer} the new highlight
    */
 
   NFComp.prototype.createHighlight = function(model) {
-    var currTime, group, highlightLayer, highlightProperty, i, j, lineGroup, lineHeight, linePathProp, lineShape, lineStrokeProp, lineTrimProp, mainContents, paddedLineHeight, rect, ref, ref1, ref2, ref3, xPadding, yOffset, yPadding;
+    var currTime, group, highlightLayer, highlightProperty, i, j, lineGroup, lineHeight, linePathProp, lineShape, lineStrokeProp, lineTrimProp, mainContents, paddedLineHeight, rect, ref, ref1, ref2, ref3, ref4, xPadding, yOffset, yPadding;
     model = {
       shapeLayer: (function() {
         if ((ref = model.shapeLayer) != null) {
@@ -415,7 +416,8 @@ NFComp = (function(superClass) {
           throw new Error("Must include number of lines");
         }
       })(),
-      name: (ref2 = model.name) != null ? ref2 : (model.shapeLayer.getName()) + " Highlight"
+      name: (ref2 = model.name) != null ? ref2 : (model.shapeLayer.getName()) + " Highlight",
+      color: (ref3 = model.color) != null ? ref3 : "Yellow"
     };
     if (!model.shapeLayer.isShapeLayer()) {
       throw new Error("model.shapeLayer must be a valid shape layer");
@@ -437,6 +439,7 @@ NFComp = (function(superClass) {
     highlightProperty.property("Thickness").setValue(paddedLineHeight + 4);
     yOffset = model.lines === 1 ? paddedLineHeight / 2 - yPadding : paddedLineHeight / 2 - yPadding * 2;
     highlightProperty.property("Offset").setValue([0, yOffset]);
+    highlightProperty.property("Highlight Colour").setValue(model.color.idx);
     highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")';
     mainContents = highlightLayer.property("ADBE Root Vectors Group");
     lineShape = new Shape();
@@ -446,7 +449,7 @@ NFComp = (function(superClass) {
     lineShape.closed = false;
     group = mainContents.addProperty("ADBE Vector Group");
     group.name = "Highlight Lines";
-    for (i = j = 1, ref3 = model.lines; 1 <= ref3 ? j <= ref3 : j >= ref3; i = 1 <= ref3 ? ++j : --j) {
+    for (i = j = 1, ref4 = model.lines; 1 <= ref4 ? j <= ref4 : j >= ref4; i = 1 <= ref4 ? ++j : --j) {
       lineGroup = group.property("Contents").addProperty("ADBE Vector Group");
       lineGroup.name = "Line " + i;
       lineGroup.property('Transform').property('Position').expression = '[0, effect("AV Highlighter")("Spacing")*' + (i - 1) + ']';
@@ -4071,6 +4074,46 @@ NFHighlightLayer = Object.assign(NFHighlightLayer, {
     var ref;
     return theLayer instanceof ShapeLayer && theLayer.Effects.numProperties > 0 && ((ref = theLayer.Effects.property(1)) != null ? ref.matchName : void 0) === "AV_Highlighter";
   },
+
+  /**
+  Colors in the AV Highlighter Dropdown
+  @memberof NFHighlightLayer
+   */
+  COLOR: {
+    YELLOW: {
+      str: "Yellow",
+      idx: 1
+    },
+    BLUE: {
+      str: "Blue",
+      idx: 2
+    },
+    PURPLE: {
+      str: "Purple",
+      idx: 3
+    },
+    GREEN: {
+      str: "Green",
+      idx: 4
+    },
+    PINK: {
+      str: "Pink",
+      idx: 5
+    },
+    ORANGE: {
+      str: "Orange",
+      idx: 6
+    },
+    RED: {
+      str: "Red",
+      idx: 7
+    }
+  },
+
+  /**
+  Properties in the AV Highlighter effect
+  @memberof NFHighlightLayer
+   */
   highlighterProperties: ['Spacing', 'Thickness', 'Start Offset', 'Completion', 'Offset', 'Opacity', 'Highlight Colour', 'End Offset']
 });
 

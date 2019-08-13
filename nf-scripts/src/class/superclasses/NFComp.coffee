@@ -230,6 +230,7 @@ class NFComp extends NFObject
   @param {NFLayer} model.shapeLayer the shape layer with target shape
   @param {String} [model.name="OLD_NAME Highlight"] the new name
   @param {int} model.lines the number of lines
+  @param {Object} [model.color=NFHighlightLayer.COLOR.YELLOW] the color from the available dropdown colors
   @returns {NFHighlightLayer} the new highlight
   ###
   createHighlight: (model) ->
@@ -237,6 +238,7 @@ class NFComp extends NFObject
       shapeLayer: model.shapeLayer ? throw new Error "Must specify a shape layer"
       lines: model.lines ? throw new Error "Must include number of lines"
       name: model.name ? "#{model.shapeLayer.getName()} Highlight"
+      color: model.color ? "Yellow"
     throw new Error "model.shapeLayer must be a valid shape layer" unless model.shapeLayer.isShapeLayer()
 
     # First, let's get the source rect
@@ -263,6 +265,7 @@ class NFComp extends NFObject
     highlightProperty.property("Thickness").setValue paddedLineHeight + 4
     yOffset = if model.lines is 1 then paddedLineHeight / 2 - yPadding else paddedLineHeight / 2 - yPadding * 2
     highlightProperty.property("Offset").setValue [0, yOffset]
+    highlightProperty.property("Highlight Colour").setValue model.color.idx
 
     highlightLayer.transform().property('Opacity').expression = 'effect("AV Highlighter")("Opacity")'
 
