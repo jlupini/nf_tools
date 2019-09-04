@@ -179,7 +179,7 @@ getPanelUI = ->
       shapeLayer: selectedLayer
       lines: lineCount
       name: newName
-      color: newColor
+      color: newColor ? NFHighlightLayer.COLOR.YELLOW
 
 
     selectedLayer.remove()

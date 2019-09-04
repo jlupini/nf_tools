@@ -199,7 +199,7 @@ getPanelUI = function() {
       shapeLayer: selectedLayer,
       lines: lineCount,
       name: newName,
-      color: newColor
+      color: newColor != null ? newColor : NFHighlightLayer.COLOR.YELLOW
     });
     return selectedLayer.remove();
   };
