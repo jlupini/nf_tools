@@ -1,5 +1,6 @@
-#include "runtimeLibraries.jsx";
 var NF, _, createHighlighter, createShapeLayer, createSplitterEffect, fixExpressionProblems, getChoice, getColorExpression, getLineArray, indexOfClosestLineToPoint, initColorPresets, main, percentThroughLineAtPoint, splitHighlightAtPoint, splitHighlightLayer;
+
+$.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
 NF = app.NF;
 

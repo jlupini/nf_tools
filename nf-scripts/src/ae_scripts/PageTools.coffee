@@ -1,4 +1,4 @@
-try `#include "runtimeLibraries.jsx"`
+$.evalFile File($.fileName).path + "/runtimeLibraries.jsx"
 
 NF = app.NF
 _ =
