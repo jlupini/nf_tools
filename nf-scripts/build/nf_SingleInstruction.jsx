@@ -1,8 +1,6 @@
 var NF, main;
 
-try {
-  #include "runtimeLibraries.jsx";
-} catch (undefined) {}
+$.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
 NF = app.NF;
 

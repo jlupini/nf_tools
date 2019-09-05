@@ -1,8 +1,6 @@
 var NF, _, error, error1, getCancelFunction, presentUI;
 
-try {
-  #include "runtimeLibraries.jsx";
-} catch (undefined) {}
+$.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
 NF = app.NF;
 

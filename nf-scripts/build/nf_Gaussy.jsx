@@ -1,6 +1,4 @@
-try {
-  #include "runtimeLibraries.jsx";
-} catch (undefined) {}
+$.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
 app.beginUndoGroup('Create Gaussy Layer');
 

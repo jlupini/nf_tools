@@ -1,4 +1,4 @@
-﻿`#include "runtimeLibraries.jsx"`
+$.evalFile File($.fileName).path + "/runtimeLibraries.jsx"
 
 NF = app.NF
 _ =
@@ -34,7 +34,7 @@ main = ->
 getChoice = ->
 	w = new Window('dialog')
 	w.alignChildren = 'left'
-	
+
 	w.add 'statictext', [0,0,300,50], 'This highlight is connected to a parent composition.\rCreating a split will disconnect the highlight,\rso you will have to bubble it up again after.', {multiline: true}
 
 	splitButton = w.add 'button', undefined, 'Split and Disconnect', name: 'split'
@@ -202,7 +202,7 @@ splitHighlightAtPoint = (splitterPoint) ->
 	highlighterThickness = highlighterEffect.property("Thickness")
 	highlighterSpacing = highlighterEffect.property("Spacing")
 	highlighterThickness.setValue highlighterSpacing.value + 1 if highlighterThickness.value > highlighterSpacing.value + 1
-	
+
 
 	originalHighlightLayer = _.selectedLayer
 	newHighlightLayer = originalHighlightLayer.duplicate()
