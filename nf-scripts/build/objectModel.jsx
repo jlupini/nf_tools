@@ -86,7 +86,7 @@ NFComp = (function(superClass) {
   }
 
   NFComp.prototype.toString = function() {
-    return "NFComp: '" + this.name + "'";
+    return "NFComp: '" + (this.getName()) + "'";
   };
 
 
@@ -3864,7 +3864,7 @@ NFHighlightLayer = (function(superClass) {
       expression = this.highlighterEffect().property("Spacing").expression;
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression);
-      comp = new NFComp(NF.Util.findItem(compName));
+      comp = new NFComp(NFProject.findItem(compName));
       if (comp != null) {
         possibleLayers = comp.layersWithName(layerName);
         if (possibleLayers.isEmpty()) {

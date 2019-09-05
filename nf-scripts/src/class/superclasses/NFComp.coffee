@@ -20,7 +20,7 @@ class NFComp extends NFObject
     @comp = item
     @
   toString: ->
-    return "NFComp: '#{@name}'"
+    return "NFComp: '#{@getName()}'"
 
   ###*
   Gets the comp's name

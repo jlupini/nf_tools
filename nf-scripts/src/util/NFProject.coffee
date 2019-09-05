@@ -24,19 +24,27 @@ NFProject =
     return allItems
 
   ###*
-  Looks for an item globally in the project. Returns first item found. Exact name
+  Looks for an item globally in the project. Returns the item, or throws
+  an error if multiple items are found. Exact name required.
   @memberof NFProject
   @param {string} itemName - the string to search for
+  @throw Throws error if multiple matching items are found
   @returns {Item | null} the found item or null
   ###
   findItem: (itemName) ->
+    items = []
     i = 1
     while i <= app.project.items.length
       thisItem = app.project.items[i]
       if thisItem.name == itemName
-        return thisItem
+        items.push thisItem
       i++
-    null
+    if items.length is 0
+      return null
+    else if items.length is 1
+      return items[0]
+    else throw new Error "findItem() found multiple items with the same exact name while looking for '#{itemName}'.\nCheck your project to make sure something isn't amiss..."
+
 
   ###*
   Returns the root FolderItem

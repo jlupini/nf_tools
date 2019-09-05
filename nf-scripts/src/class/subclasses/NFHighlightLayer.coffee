@@ -42,7 +42,7 @@ class NFHighlightLayer extends NFLayer
       expression = @highlighterEffect().property("Spacing").expression
       compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
       layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression)
-      comp = new NFComp NF.Util.findItem(compName)
+      comp = new NFComp NFProject.findItem(compName)
 
       # This is to deal with the possibility that there are two layers with the
       # same name in the comp...
