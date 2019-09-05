@@ -1,114 +1,93 @@
-﻿// FIXME: Add a second or two of time before a marker in part comps
+var backdropFile, backdropFileName, backdropLayer, bgLayer, currentMarker, currentTime, dotOverlayFile, dotOverlayFileName, dotOverlayLayer, duplicatedFootageLayer, fadeLayer, fadeOpacity, fileName, footageFile, footageLayer, i, j, mainComp, mainCompName, markerCount, markerStream, newComp, newCompLayer, newCompName, newComps, partsFolder, precomposedFootageLayer, prevTime, ref, rootFolder;
 
-var audio = app.project.selection[0];
-var newName = audio.name.substr(0, audio.name.indexOf('.')) + " - MainComp";
-var compLength = audio.duration+3.5;
-var newComp = app.project.items.addComp(newName, 1920, 1080, 1.0, compLength, 29.9700012207031);
-newComp.layers.add(audio);
+$.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
-var mainComp = newComp;
-var audioLayer = mainComp.layers[1];
+app.beginUndoGroup('Setup Main Comp');
 
-// Get number of markers on layer
+fileName = decodeURIComponent(app.project.file.name);
 
-var markerStream = audioLayer.property("Marker");
-var markerCount = markerStream.numKeys;
+mainCompName = fileName.substr(0, fileName.indexOf('.')) + ' - MainComp';
 
-// If we're dealing with a comp instead of audio file...
-if (markerCount == 0 && audio instanceof CompItem) {
-  compMarkerStream = audio.markerProperty;
-  markerCount = compMarkerStream.numKeys;
-  for (var i = 1; i <= markerCount; i++)
-  {
-    thisMarkerTime = compMarkerStream.keyTime(i);
-    markerStream.setValueAtTime(thisMarkerTime, new MarkerValue("Marker " + i));
+footageFile = app.project.selection[0];
+
+if (footageFile == null) {
+  throw new Error("No footage file selected!");
+}
+
+backdropFileName = "nf-bg-v01.ai";
+
+dotOverlayFileName = "particular-bg-overlay-v01.mov";
+
+backdropFile = NFProject.findItem(backdropFileName);
+
+dotOverlayFile = NFProject.findItem(dotOverlayFileName);
+
+if (!((backdropFile != null) && (dotOverlayFile != null))) {
+  throw new Error("Can't find dependent files in the project");
+}
+
+mainComp = app.project.items.addComp(mainCompName, 1920, 1080, 1.0, footageFile.duration, 29.9700012207031);
+
+footageLayer = mainComp.layers.add(footageFile);
+
+footageLayer.property('Transform').property("Scale").setValue([50, 50]);
+
+markerStream = footageLayer.property('Marker');
+
+markerCount = markerStream.numKeys;
+
+bgLayer = mainComp.layers.addSolid([1, 1, 1], 'Background', 1920, 1080, 1);
+
+bgLayer.moveBefore(footageLayer);
+
+newComps = [];
+
+prevTime = 0;
+
+rootFolder = app.project.rootFolder;
+
+partsFolder = app.project.items.addFolder('Parts');
+
+for (i = j = 1, ref = markerCount + 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+  duplicatedFootageLayer = footageLayer.duplicate();
+  duplicatedFootageLayer.inPoint = prevTime;
+  if (i === markerCount + 1) {
+    currentTime = duplicatedFootageLayer.outPoint = mainComp.duration;
+  } else {
+    currentMarker = markerStream.keyValue(i);
+    currentTime = duplicatedFootageLayer.outPoint = markerStream.keyTime(i);
   }
+  newCompName = "Part " + i;
+  newComp = mainComp.layers.precompose([duplicatedFootageLayer.index], newCompName, true);
+  precomposedFootageLayer = newComp.layers[1];
+  backdropLayer = newComp.layers.add(backdropFile);
+  dotOverlayLayer = newComp.layers.add(dotOverlayFile);
+  backdropLayer.name = "NF Backdrop";
+  dotOverlayLayer.name = "Dot Overlay";
+  dotOverlayLayer.blendingMode = BlendingMode.SCREEN;
+  dotOverlayLayer.moveAfter(precomposedFootageLayer);
+  backdropLayer.moveAfter(dotOverlayLayer);
+  newComps.push(newComp);
+  newComp.parentFolder = partsFolder;
+  newCompLayer = mainComp.layers.byName(newCompName);
+  if (markerCount !== 0) {
+    newCompLayer.inPoint = prevTime - 3;
+    newCompLayer.outPoint = currentTime + 10;
+  }
+  newCompLayer.audioEnabled = false;
+  newComp.bgColor = [1, 1, 1];
+  newCompLayer.moveToBeginning();
+  prevTime = currentTime;
 }
 
-var endTime = mainComp.duration;
+fadeLayer = mainComp.layers.addSolid([1, 1, 1], 'Fade In/Out', 1920, 1080, 1);
 
-// create new background layer
-var bgLayer = mainComp.layers.addSolid([1, 1, 1], "Background", 1920, 1080, 1);
-bgLayer.moveBefore(audioLayer);
+fadeOpacity = fadeLayer.property('Transform').property('Opacity');
 
+fadeOpacity.setValuesAtTimes([0, 1, mainComp.duration - 2.5, mainComp.duration], [100, 0, 0, 100]);
 
-if (markerCount == 0)
-{
-    alert("No Markers on selected Layer");
-} else {
+fadeLayer.moveToBeginning();
 
-    var newComps = [];
-    var prevTime = 0;
+footageLayer.remove();
 
-    // Make a folder for the new Precomps
-    var rootFolder = app.project.rootFolder
-    var newFolder = app.project.items.addFolder("Parts");
-
-    // Add a temporary Zoomer
-    var zoomer = mainComp.layers.addNull();
-    var zoomerScale = zoomer.property("Transform").property("Scale");
-    zoomerScale.setValueAtTime(0, [100,100]);
-    zoomerScale.setValueAtTime(mainComp.duration, [mainComp.duration, mainComp.duration]);
-
-    // For each marker, duplicate the audio layer, set in and out points, then precompose
-    for (var i = 1; i <= markerCount+1; i++)
-    {
-            var duplicatedAudioLayer = audioLayer.duplicate();
-            var duplicatedZoomerLayer = zoomer.duplicate();
-            duplicatedZoomerLayer.name = "Zoomer";
-
-            // Set audio in and out points
-            duplicatedAudioLayer.inPoint = prevTime;
-
-            if (i==markerCount+1) {
-                    duplicatedAudioLayer.outPoint = endTime;
-                    currentTime=endTime;
-                } else {
-                    var currentMarker = markerStream.keyValue(i);
-                    var currentTime = markerStream.keyTime(i);
-                    duplicatedAudioLayer.outPoint = currentTime;
-                }
-
-            var compName = "Part" + i;
-
-            // Precompose and add to the folder
-            newComp = mainComp.layers.precompose([duplicatedAudioLayer.index, duplicatedZoomerLayer.index], compName, true);
-            newComps.push(newComp);
-            newComp.parentFolder = newFolder;
-
-            // Set part comp in and out points, with a 10-second handle at the end
-            var newCompLayer = mainComp.layers.byName(compName);
-            newCompLayer.inPoint = prevTime - 3;
-            newCompLayer.outPoint = currentTime + 10;
-
-            // Disable audio
-            newCompLayer.audioEnabled = false;
-
-            // Change comp bg
-            newComp.bgColor = [1.0,1.0,1.0];
-
-            // Move to top
-            newCompLayer.moveToBeginning();
-
-            prevTime = currentTime;
-    }
-
-    zoomer.remove();
-}
-
-// create vignette layer
-var vigLayer = mainComp.layers.addSolid([1, 1, 1], "Vignette", 1920, 1080, 1);
-vigLayer.property("Effects").addProperty("CC Vignette");
-vigLayer.blendingMode = BlendingMode.MULTIPLY;
-vigLayer.property("Effects").property("CC Vignette").property("Amount").setValueAtTime(0, 50);
-vigLayer.property("Transform").property("Opacity").setValueAtTime(0, 0);
-vigLayer.property("Transform").property("Opacity").setValueAtTime(0, 0);
-vigLayer.property("Transform").property("Opacity").setValueAtTime(0.5, 0);
-vigLayer.property("Transform").property("Opacity").setValueAtTime(1.5, 100);
-vigLayer.moveToBeginning;
-
-// create fade out layer
-var fadeLayer = mainComp.layers.addSolid([1, 1, 1], "Fade Out", 1920, 1080, 1);
-fadeLayer.property("Transform").property("Opacity").setValueAtTime(endTime-2.5, 0);
-fadeLayer.property("Transform").property("Opacity").setValueAtTime(endTime-0.5, 100);
-fadeLayer.moveToBeginning;
+app.endUndoGroup();
