@@ -238,7 +238,7 @@ class NFComp extends NFObject
       shapeLayer: model.shapeLayer ? throw new Error "Must specify a shape layer"
       lines: model.lines ? throw new Error "Must include number of lines"
       name: model.name ? "#{model.shapeLayer.getName()} Highlight"
-      color: model.color ? "Yellow"
+      color: model.color ? NFHighlightLayer.COLOR.YELLOW
     throw new Error "model.shapeLayer must be a valid shape layer" unless model.shapeLayer.isShapeLayer()
 
     # First, let's get the source rect

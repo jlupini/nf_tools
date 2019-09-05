@@ -417,7 +417,7 @@ NFComp = (function(superClass) {
         }
       })(),
       name: (ref2 = model.name) != null ? ref2 : (model.shapeLayer.getName()) + " Highlight",
-      color: (ref3 = model.color) != null ? ref3 : "Yellow"
+      color: (ref3 = model.color) != null ? ref3 : NFHighlightLayer.COLOR.YELLOW
     };
     if (!model.shapeLayer.isShapeLayer()) {
       throw new Error("model.shapeLayer must be a valid shape layer");
