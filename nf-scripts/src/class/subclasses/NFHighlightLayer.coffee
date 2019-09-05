@@ -38,10 +38,22 @@ class NFHighlightLayer extends NFLayer
   @returns {NFHighlightControlLayer | null} the control layer or null
   ###
   getControlLayer: ->
+
+    argumentOfPropertyFromExpression = (property, expression) ->
+      propertyIndex = expression.indexOf(property + "(")
+      if propertyIndex > 0
+      	# The +1 is to account for the Open bracket
+        startIdx = propertyIndex + property.length + 1
+        result = expression.slice(startIdx)
+        endIdx = result.indexOf(")")
+        result = result.substr(0, endIdx)
+        return result.stripQuotes()
+      return null
+
     if @isBubbled()
       expression = @highlighterEffect().property("Spacing").expression
-      compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression)
-      layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression)
+      compName = argumentOfPropertyFromExpression("comp", expression)
+      layerName = argumentOfPropertyFromExpression("layer", expression)
       comp = new NFComp NFProject.findItem(compName)
 
       # This is to deal with the possibility that there are two layers with the

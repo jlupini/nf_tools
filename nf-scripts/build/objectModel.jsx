@@ -3859,11 +3859,23 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.getControlLayer = function() {
-    var comp, compName, expression, layerName, possibleLayers;
+    var argumentOfPropertyFromExpression, comp, compName, expression, layerName, possibleLayers;
+    argumentOfPropertyFromExpression = function(property, expression) {
+      var endIdx, propertyIndex, result, startIdx;
+      propertyIndex = expression.indexOf(property + "(");
+      if (propertyIndex > 0) {
+        startIdx = propertyIndex + property.length + 1;
+        result = expression.slice(startIdx);
+        endIdx = result.indexOf(")");
+        result = result.substr(0, endIdx);
+        return result.stripQuotes();
+      }
+      return null;
+    };
     if (this.isBubbled()) {
       expression = this.highlighterEffect().property("Spacing").expression;
-      compName = NF.Util.getCleanedArgumentOfPropertyFromExpression("comp", expression);
-      layerName = NF.Util.getCleanedArgumentOfPropertyFromExpression("layer", expression);
+      compName = argumentOfPropertyFromExpression("comp", expression);
+      layerName = argumentOfPropertyFromExpression("layer", expression);
       comp = new NFComp(NFProject.findItem(compName));
       if (comp != null) {
         possibleLayers = comp.layersWithName(layerName);

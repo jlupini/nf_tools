@@ -67,6 +67,24 @@ The Javascript String class
 
 
 /**
+Strips opening and closing quotes off a string
+@function stripQuotes
+@memberof String
+@returns {String} the new string
+ */
+
+String.prototype.stripQuotes = function() {
+  var first, last;
+  first = this.charAt(0);
+  last = this.charAt(this.length - 1);
+  if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+    return this.substr(1, this.length - 2);
+  }
+  return this;
+};
+
+
+/**
 Converts a string in csv format to an array
 @function splitCSV
 @memberof String
@@ -148,7 +166,7 @@ The After Effects Layer Class
 
 
 /**
-Returns the index of the marker with the given comment
+Returns the expression string that will give the value of this property
 @memberof Property
 @function expressionStringForValue
 @returns {string} the expression string for the value of this property
