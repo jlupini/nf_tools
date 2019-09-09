@@ -273,9 +273,6 @@ getPanelUI = function() {
         continuous: true
       });
       group = newPageLayer.getPaperLayerGroup();
-      group.setConnectionToZoomer({
-        connected: false
-      });
       newPageLayer.transform('Scale').setValue([23, 23, 23]);
       newPageLayer.transform('Position').setValue([1560, -150]);
       if (newPageLayer.effect('Drop Shadow') != null) {

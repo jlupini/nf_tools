@@ -148,15 +148,6 @@ class NFComp extends NFObject
     return foundLayers
 
   ###*
-  Gets the Zoomer layer
-  @memberof NFComp
-  @returns {NFLayer | null} The zoomer NFLayer or null if it doesn't exist
-  ###
-  getZoomer: ->
-    zoomer = @layerWithName 'Zoomer'
-    return zoomer
-
-  ###*
   Sets the comp time
   @memberof NFComp
   @param {float} newTime - the new time

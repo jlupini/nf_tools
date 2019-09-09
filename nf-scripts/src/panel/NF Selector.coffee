@@ -261,8 +261,6 @@ getPanelUI = ->
         page: choicePage
         continuous: yes
       group = newPageLayer.getPaperLayerGroup()
-      group.setConnectionToZoomer
-        connected: no
       newPageLayer.transform('Scale').setValue [23,23,23]
       newPageLayer.transform('Position').setValue [1560, -150]
       newPageLayer.effect('Drop Shadow').enabled = no if newPageLayer.effect('Drop Shadow')?

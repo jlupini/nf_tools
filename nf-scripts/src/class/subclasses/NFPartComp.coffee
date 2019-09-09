@@ -561,18 +561,6 @@ class NFPartComp extends NFComp
     return foundPlaceholder
 
   ###*
-  Gets the zoomer layer
-  @memberof NFPartComp
-  @override
-  @throws Will throw an error if the zoomer comp cannot be found
-  @returns {NFLayer} The zoomer NFLayer
-  ###
-  getZoomer: ->
-    zoomer = @layerWithName 'Zoomer'
-    throw new Error "This NFPartComp has no zoomer!" unless zoomer?
-    return zoomer
-
-  ###*
   Gets the active PDF at an optional time
   @memberof NFPartComp
   @param {float} [time] - the time to check at, or the current time by default

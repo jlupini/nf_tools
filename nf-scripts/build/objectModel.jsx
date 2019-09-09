@@ -283,19 +283,6 @@ NFComp = (function(superClass) {
 
 
   /**
-  Gets the Zoomer layer
-  @memberof NFComp
-  @returns {NFLayer | null} The zoomer NFLayer or null if it doesn't exist
-   */
-
-  NFComp.prototype.getZoomer = function() {
-    var zoomer;
-    zoomer = this.layerWithName('Zoomer');
-    return zoomer;
-  };
-
-
-  /**
   Sets the comp time
   @memberof NFComp
   @param {float} newTime - the new time
@@ -1057,23 +1044,6 @@ NFLayer = (function(superClass) {
       this.layer.parent = newParent != null ? newParent.layer : void 0;
     } else {
       throw new Error("Can only set an NFLayer's parent to another NFLayer or AVLayer");
-    }
-    return this;
-  };
-
-
-  /**
-  Sets the layer's parent to the zoomer if this layer is in an NFPartComp
-  @memberof NFLayer
-  @returns {NFLayer} self
-  @throws Will throw an error if not given an NFLayer or null
-   */
-
-  NFLayer.prototype.setZoomer = function() {
-    var zoomer;
-    zoomer = this.containingComp().getZoomer();
-    if (zoomer != null) {
-      this.setParent(zoomer);
     }
     return this;
   };
@@ -2546,31 +2516,6 @@ NFPaperLayerGroup = (function(superClass) {
       };
     })(this));
     return pageChildren;
-  };
-
-
-  /**
-  Connects or disconnects the group to the zoomer, at the specified time
-  @memberof NFPaperLayerGroup
-  @param {Object} model - the model
-  @param {boolean} model.connected=no  - whether or not to connect to zoomer
-  @param {float} model.time=currTime - the time in this comp to set or sever the connection at
-  @returns {NFPaperLayerGroup} self
-   */
-
-  NFPaperLayerGroup.prototype.setConnectionToZoomer = function() {
-    var container, model, newTime, oldTime, ref;
-    model = model != null ? model : {};
-    container = this.containingComp();
-    oldTime = container.getTime();
-    newTime = (ref = model.time) != null ? ref : oldTime;
-    container.setTime(newTime);
-    if (model.connected) {
-      this.paperParent.setParent(container.getZoomer());
-    } else {
-      this.paperParent.setParent();
-    }
-    return container.setTime(oldTime);
   };
 
 
@@ -4987,8 +4932,7 @@ NFPageLayer = (function(superClass) {
 
   /**
   Checks for an existing valid paper parent layer for this page. Sets it as
-  the parent if it exists, otherwise creates a new one and parents it to
-  the zoomer.
+  the parent if it exists, otherwise creates a new one.
   @memberof NFPageLayer
   @returns {NFPaperParentLayer} the paper parent layer
   @param {boolean} [shouldMove=false] - whether or not the layer should move below its parent
@@ -5009,7 +4953,6 @@ NFPageLayer = (function(superClass) {
     } else {
       nullLayer = this.nullify([1, 0, 0.7]);
       paperParentLayer = new NFPaperParentLayer(nullLayer).setName();
-      paperParentLayer.setZoomer();
     }
     return paperParentLayer;
   };
@@ -6498,24 +6441,6 @@ NFPartComp = (function(superClass) {
       };
     })(this));
     return foundPlaceholder;
-  };
-
-
-  /**
-  Gets the zoomer layer
-  @memberof NFPartComp
-  @override
-  @throws Will throw an error if the zoomer comp cannot be found
-  @returns {NFLayer} The zoomer NFLayer
-   */
-
-  NFPartComp.prototype.getZoomer = function() {
-    var zoomer;
-    zoomer = this.layerWithName('Zoomer');
-    if (zoomer == null) {
-      throw new Error("This NFPartComp has no zoomer!");
-    }
-    return zoomer;
   };
 
 

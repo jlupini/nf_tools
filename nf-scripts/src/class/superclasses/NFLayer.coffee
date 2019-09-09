@@ -286,17 +286,7 @@ class NFLayer extends NFObject
     else
       throw new Error "Can only set an NFLayer's parent to another NFLayer or AVLayer"
     return @
-
-  ###*
-  Sets the layer's parent to the zoomer if this layer is in an NFPartComp
-  @memberof NFLayer
-  @returns {NFLayer} self
-  @throws Will throw an error if not given an NFLayer or null
-  ###
-  setZoomer: ->
-    zoomer = @containingComp().getZoomer()
-    @setParent zoomer if zoomer?
-    return @
+    
 
   ###*
   Moves this layer's index to immediately before the provided target layer

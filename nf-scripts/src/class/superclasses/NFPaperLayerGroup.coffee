@@ -47,28 +47,6 @@ class NFPaperLayerGroup extends NFObject
       pageChildren.add layer if layer instanceof NFPageLayer
     return pageChildren
 
-  ###*
-  Connects or disconnects the group to the zoomer, at the specified time
-  @memberof NFPaperLayerGroup
-  @param {Object} model - the model
-  @param {boolean} model.connected=no  - whether or not to connect to zoomer
-  @param {float} model.time=currTime - the time in this comp to set or sever the connection at
-  @returns {NFPaperLayerGroup} self
-  ###
-  setConnectionToZoomer: ->
-    model = model ? {}
-    container = @containingComp()
-    oldTime = container.getTime()
-    newTime = model.time ? oldTime
-    container.setTime newTime
-
-    if model.connected
-      @paperParent.setParent container.getZoomer()
-    else
-      @paperParent.setParent()
-
-    container.setTime oldTime
-
 
   ###*
   Gets all the NFHighlightControlLayer in the group

@@ -341,8 +341,7 @@ class NFPageLayer extends NFLayer
 
   ###*
   Checks for an existing valid paper parent layer for this page. Sets it as
-  the parent if it exists, otherwise creates a new one and parents it to
-  the zoomer.
+  the parent if it exists, otherwise creates a new one.
   @memberof NFPageLayer
   @returns {NFPaperParentLayer} the paper parent layer
   @param {boolean} [shouldMove=false] - whether or not the layer should move below its parent
@@ -357,7 +356,6 @@ class NFPageLayer extends NFLayer
     else
       nullLayer = @nullify [1, 0, 0.7]
       paperParentLayer = new NFPaperParentLayer(nullLayer).setName()
-      paperParentLayer.setZoomer()
 
     return paperParentLayer
 
