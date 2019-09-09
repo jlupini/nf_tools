@@ -247,8 +247,10 @@ getPanelUI = function() {
     pickedPage = choice instanceof NFPageComp;
     if (pickedPage) {
       choicePage = choice;
-    } else {
+    } else if (pickedShape || pickedHighlight) {
       choicePage = choice.containingComp();
+    } else {
+      throw new Error("Looks like you picked a choice, but we can't figure out what it is. Hit the refresh button and try again");
     }
     thisPart = NFProject.activeComp();
     if (!(thisPart instanceof NFPartComp)) {

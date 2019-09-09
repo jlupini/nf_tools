@@ -234,8 +234,9 @@ getPanelUI = ->
 
     if pickedPage
       choicePage = choice
-    else
+    else if pickedShape or pickedHighlight
       choicePage = choice.containingComp()
+    else throw new Error "Looks like you picked a choice, but we can't figure out what it is. Hit the refresh button and try again"
 
     # First, bring in a continuous version of the page.
     thisPart = NFProject.activeComp()
