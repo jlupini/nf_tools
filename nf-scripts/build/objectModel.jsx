@@ -3263,10 +3263,14 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
         }
         return citeObj[pdfKey];
       } else {
-        return "NO CITATION FOUND!";
+        return (thePDF.getName()) + " - NO CITATION FOUND IN FILE! FIX ME LATER.";
       }
     }
-    throw new Error("No citation file found!");
+    if (app.citationWarning !== app.project.file.name) {
+      alert("Warning!\nNo citation file found in the project directory. If your project directory does not contain a file called 'citations.csv', then citations will not be automatically imported and you'll have to fix them all after you're done animating. You'll only receive this warning once for this project, during this AE session.");
+      app.citationWarning = app.project.file.name;
+    }
+    return (thePDF.getName()) + " - NO CITATION FILE FOUND. FIX ME LATER.";
   },
 
   /**
