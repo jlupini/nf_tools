@@ -2789,12 +2789,16 @@ NFPaperLayerGroup = (function(superClass) {
   @returns {NFPaperLayerGroup} self
   @param {NFHighlightLayer | NFHighlightLayerCollection} highlightsToControl - the highlights to control
   @param {float} [time] - the time to create the control layer at
+  @param {boolean} [trackSpotlights=yes] - whether or not spotlights should be tracked for these highlights
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
    */
 
-  NFPaperLayerGroup.prototype.addControlLayer = function(highlightsToControl, time) {
+  NFPaperLayerGroup.prototype.addControlLayer = function(highlightsToControl, time, trackSpotlights) {
     this.log("Adding control layer for highlights: " + (highlightsToControl.toString()));
+    if (trackSpotlights == null) {
+      trackSpotlights = true;
+    }
     if (highlightsToControl instanceof NFHighlightLayer) {
       highlightsToControl = new NFHighlightLayerCollection([highlightsToControl]);
     }
@@ -2842,8 +2846,10 @@ NFPaperLayerGroup = (function(superClass) {
               sourceEffect.property(highlighterProperty).expression = sourceExpression;
             }
           }
-          spotlightLayer = (ref1 = _this.getSpotlight()) != null ? ref1 : _this.addSpotlight(highlight);
-          return spotlightLayer.trackHighlight(highlight);
+          if (trackSpotlights) {
+            spotlightLayer = (ref1 = _this.getSpotlight()) != null ? ref1 : _this.addSpotlight(highlight);
+            return spotlightLayer.trackHighlight(highlight);
+          }
         };
       })(this));
     }
@@ -2860,14 +2866,18 @@ NFPaperLayerGroup = (function(superClass) {
   @param {NFHighlightLayer | NFHighlightLayerCollection} highlights - the highlights to control
   @param {float} [time=currTime] - the time to create the control layer(s) at, if new
   layers are to be created
+  @param {boolean} [trackSpotlights=yes] - whether or not spotlights should be tracked for these highlights
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
    */
 
-  NFPaperLayerGroup.prototype.assignControlLayer = function(highlights, time) {
+  NFPaperLayerGroup.prototype.assignControlLayer = function(highlights, time, trackSpotlights) {
     var existingControlLayers;
     if (highlights == null) {
       throw new Error("Empty highlight parameter");
+    }
+    if (trackSpotlights == null) {
+      trackSpotlights = true;
     }
     if (highlights instanceof NFHighlightLayer) {
       highlights = new NFHighlightLayerCollection([highlights]);
@@ -2880,7 +2890,7 @@ NFPaperLayerGroup = (function(superClass) {
           controlName = NFHighlightControlLayer.nameForPDFNumberAndHighlight(_this.getPDFNumber(), highlight);
           matchedLayer = _this.containingComp().layerWithName(controlName);
           if (matchedLayer == null) {
-            return _this.addControlLayer(highlight, time);
+            return _this.addControlLayer(highlight, time, trackSpotlights);
           } else {
             return matchedLayer.addSpotlightMarker({
               time: time

@@ -231,11 +231,14 @@ class NFPaperLayerGroup extends NFObject
   @returns {NFPaperLayerGroup} self
   @param {NFHighlightLayer | NFHighlightLayerCollection} highlightsToControl - the highlights to control
   @param {float} [time] - the time to create the control layer at
+  @param {boolean} [trackSpotlights=yes] - whether or not spotlights should be tracked for these highlights
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
   ###
-  addControlLayer: (highlightsToControl, time) ->
+  addControlLayer: (highlightsToControl, time, trackSpotlights) ->
     @log "Adding control layer for highlights: #{highlightsToControl.toString()}"
+    trackSpotlights ?= yes
+
     # If given a single highlight, wrap it.
     if highlightsToControl instanceof NFHighlightLayer
       highlightsToControl = new NFHighlightLayerCollection([highlightsToControl])
@@ -290,9 +293,10 @@ class NFPaperLayerGroup extends NFObject
 
             sourceEffect.property(highlighterProperty).expression = sourceExpression
 
-        # Add a spotlight layer if one doesn't exist, and track the new highlight
-        spotlightLayer = @getSpotlight() ? @addSpotlight(highlight)
-        spotlightLayer.trackHighlight highlight
+        if trackSpotlights
+          # Add a spotlight layer if one doesn't exist, and track the new highlight
+          spotlightLayer = @getSpotlight() ? @addSpotlight(highlight)
+          spotlightLayer.trackHighlight highlight
     @
 
   ###*
@@ -304,11 +308,13 @@ class NFPaperLayerGroup extends NFObject
   @param {NFHighlightLayer | NFHighlightLayerCollection} highlights - the highlights to control
   @param {float} [time=currTime] - the time to create the control layer(s) at, if new
   layers are to be created
+  @param {boolean} [trackSpotlights=yes] - whether or not spotlights should be tracked for these highlights
   @throws Throw error if the given highlight is not in this page
   @throws Throw error if not given an NFHighlightLayer or NFHighlightLayerCollection
   ###
-  assignControlLayer: (highlights, time) ->
+  assignControlLayer: (highlights, time, trackSpotlights) ->
     throw new Error "Empty highlight parameter" unless highlights?
+    trackSpotlights ?= yes
 
     # If given a single highlight, wrap it.
     if highlights instanceof NFHighlightLayer
@@ -323,7 +329,7 @@ class NFPaperLayerGroup extends NFObject
         controlName = NFHighlightControlLayer.nameForPDFNumberAndHighlight @getPDFNumber(), highlight
         matchedLayer = @containingComp().layerWithName controlName
         if not matchedLayer?
-          @addControlLayer highlight, time
+          @addControlLayer highlight, time, trackSpotlights
         else
           # Already connected, so let's just add a spotlight marker to it
           matchedLayer.addSpotlightMarker
