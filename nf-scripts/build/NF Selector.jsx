@@ -442,6 +442,7 @@ getPanelUI = function() {
   };
   panel.layout.layout(true);
   panel.layout.resize();
+  tPanel.selection = animateTab;
   panel.onResizing = panel.onResize = function() {
     this.layout.resize();
   };

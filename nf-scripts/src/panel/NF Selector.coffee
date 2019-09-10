@@ -434,6 +434,7 @@ getPanelUI = ->
   # Layout + Resize handling
   panel.layout.layout(true)
   panel.layout.resize()
+  tPanel.selection = animateTab
 
   panel.onResizing = panel.onResize = ->
     @layout.resize()
