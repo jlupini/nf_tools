@@ -19,6 +19,7 @@ toolRegistry =
 
       setupMainComp:
         name: "Setup Main Comp"
+        automaticUndo: no
         callback: ->
           openScript "nf_SetupMainComp.jsx"
 
@@ -261,21 +262,16 @@ toolRegistry =
 
       nullify:
         name: "Nullify"
-        automaticUndo: no
-        callback: ->
-          openScript "nf_Nullify.jsx"
+        callbackScript: "nf_Nullify.jsx"
+
 
       singleInstruction:
         name: "Follow Single Instruction"
-        automaticUndo: no
-        callback: ->
-          openScript "nf_SingleInstruction.jsx"
+        callbackScript: "nf_SingleInstruction.jsx"
 
       pageTools:
         name: "Page Tools"
-        automaticUndo: no
-        callback: ->
-          openScript "nf_PageTools.jsx"
+        callbackScript: "nf_PageTools.jsx"
 
       toggleSpotlights:
         name: "Toggle Spotlight Layers"
@@ -302,14 +298,12 @@ toolRegistry =
       addGaussyLayer:
         name: "Add Gaussy"
         automaticUndo: no
-        callback: ->
-          openScript "nf_Gaussy.jsx"
+        callbackScript: "nf_Gaussy.jsx"
 
       addEmphasis:
         name: "Emphasizer"
         automaticUndo: no
-        callback: ->
-          openScript "nf_Emphasizer.jsx"
+        callbackScript: "nf_Emphasizer.jsx"
 
       addSpotlightMarker:
         name: "Add Spotlight Marker"
@@ -483,27 +477,19 @@ toolRegistry =
 
       scratch:
         name: "Scratch Script"
-        automaticUndo: no
-        callback: ->
-          openScript "nf_Scratch.jsx"
+        callbackScript: "nf_Scratch.jsx"
 
       createAnnotations:
         name: "Create Annotations"
-        automaticUndo: yes
-        callback: ->
-          openScript "nf_CreateAnnotations.jsx"
+        callbackScript: "nf_CreateAnnotations.jsx"
 
       debug:
         name: "Debug"
-        automaticUndo: no
-        callback: ->
-          openScript "nf_debug.jsx"
+        callbackScript: "nf_debug.jsx"
 
       pdfConnect:
         name: "PDF Connect"
-        automaticUndo: yes
-        callback: ->
-          openScript "nf_pdfConnect.jsx"
+        callbackScript: "nf_pdfConnect.jsx"
 
       iconFromFile:
         name: "Create Icon Data"
@@ -562,10 +548,14 @@ getPanelUI = ->
   goButton.onClick = (w) ->
     choice = treeView.selection.data if treeView.selection?.data && treeView.selection?.type is 'item'
     return alert "No Tool Selected!" unless choice?
-    app.beginUndoGroup "NF Tool: #{choice.name}" unless choice.automaticUndo is no
-    choice.callback()
-    @active = false
-    app.endUndoGroup() unless choice.automaticUndo is no
+    if choice.callback?
+      app.beginUndoGroup "NF Tool: #{choice.name}"
+      choice.callback()
+      @active = false
+      app.endUndoGroup()
+    else
+      openScript choice.callbackScript
+      @active = false
 
   # Layout + Resize handling
   panel.layout.layout(true)
