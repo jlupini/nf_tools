@@ -1,16 +1,11 @@
-var lines, shapeLayer;
+var testLayer;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
 app.beginUndoGroup('Run Scratch Script');
 
-shapeLayer = NFProject.activeComp().selectedLayers().get(0);
+testLayer = NFProject.activeComp().selectedLayers().get(0);
 
-lines = 15;
-
-NFProject.activeComp().createHighlight({
-  shapeLayer: shapeLayer,
-  lines: lines
-});
+testLayer.centerAnchorPoint();
 
 app.endUndoGroup();

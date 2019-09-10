@@ -329,6 +329,33 @@ NFTools = {
   },
 
   /**
+  Returns a rect from a 4-corner Shape object
+  @memberof NFTools
+  @param {Shape} shape - a Shape object
+  @returns {Rect} the Rect object
+   */
+  rectFromShape: function(shape) {
+    var maxX, maxY, minX, minY, v0, v1, v2, v3;
+    if (!(shape instanceof Shape)) {
+      throw new Error("Invalid rect object");
+    }
+    v0 = shape.vertices[0];
+    v1 = shape.vertices[1];
+    v2 = shape.vertices[2];
+    v3 = shape.vertices[3];
+    minX = Math.min(v0[0], v1[0], v2[0], v3[0]);
+    maxX = Math.max(v0[0], v1[0], v2[0], v3[0]);
+    minY = Math.min(v0[1], v1[1], v2[1], v3[1]);
+    maxY = Math.max(v0[1], v1[1], v2[1], v3[1]);
+    return new Rect({
+      left: minX,
+      top: minY,
+      width: maxX - minX,
+      height: maxY - minY
+    });
+  },
+
+  /**
   Returns whether or not two rect objects intersect
   @memberof NFTools
   @param {Object} [rectA] - a rect object with .top, .left, .width, and .height properties

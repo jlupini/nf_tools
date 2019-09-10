@@ -47,6 +47,23 @@ Rect = (function() {
 
 
   /**
+  Returns a new rect that's a combination of this rect and the added one
+  @memberof Rect
+  @param {Rect} rectToAdd - the rect to add
+  @returns {Rect} the new rect
+   */
+
+  Rect.prototype.combineWith = function(rectToAdd) {
+    return new Rect({
+      left: Math.min(this.left, rectToAdd.left),
+      top: Math.min(this.top, rectToAdd.top),
+      width: Math.max(this.maxX(), rectToAdd.maxX()) - Math.min(this.left, rectToAdd.left),
+      height: Math.max(this.maxY(), rectToAdd.maxY()) - Math.min(this.top, rectToAdd.top)
+    });
+  };
+
+
+  /**
   Returns the maximum x value of the rect
   @memberof Rect
   @returns {boolean} the result
@@ -54,6 +71,17 @@ Rect = (function() {
 
   Rect.prototype.maxX = function() {
     return this.left + this.width;
+  };
+
+
+  /**
+  Returns the center point of the rect
+  @memberof Rect
+  @returns {float[]} the center point
+   */
+
+  Rect.prototype.centerPoint = function() {
+    return [this.left + this.width / 2, this.top + this.height / 2];
   };
 
 
@@ -276,11 +304,37 @@ Rect = (function() {
     if (!(testRect instanceof Rect)) {
       throw new Error("Invalid rect object");
     }
-    aLeftOfB = this.maxX() < testRect.left;
-    aRightOfB = this.left > testRect.maxX();
-    aBelowB = this.top > testRect.maxY();
-    aAboveB = this.maxY() < testRect.top;
+    aLeftOfB = this.leftOf(testRect);
+    aRightOfB = this.rightOf(testRect);
+    aBelowB = this.below(testRect);
+    aAboveB = this.above(testRect);
     return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
+  };
+
+
+  /**
+  Returns a new rect from the intersect between the two rects. Throws an error if there's no intersect
+  @memberof Rect
+  @param {Rect} [otherRect] - the rect to form the intersect with
+  @returns {Rect} the resulting new rect
+   */
+
+  Rect.prototype.rectFromIntersect = function(otherRect) {
+    var newLeft, newTop;
+    if (!(otherRect instanceof Rect)) {
+      throw new Error("Invalid rect object");
+    }
+    if (!this.intersectsWith(otherRect)) {
+      throw new Error("No intersection between rects");
+    }
+    newLeft = Math.max(this.left, otherRect.left);
+    newTop = Math.max(this.top, otherRect.top);
+    return new Rect({
+      left: newLeft,
+      top: newTop,
+      width: Math.min(this.maxX(), otherRect.maxX()) - newLeft,
+      height: Math.min(this.maxY(), otherRect.maxY()) - newTop
+    });
   };
 
   return Rect;

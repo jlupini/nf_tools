@@ -346,7 +346,7 @@ getPanelUI = function() {
       refLayer.transform("Position").setValue([refPosition[0], refPosition[1] + delta - PADDING]);
       group = targetPageLayer.getPaperLayerGroup();
       if (pickedHighlight) {
-        group.assignControlLayer(choice);
+        group.assignControlLayer(choice, null, false);
       }
       if (newPageLayer == null) {
         layerAbove = (ref1 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref1 : targetPageLayer.getPaperLayerGroup().paperParent;
@@ -356,6 +356,7 @@ getPanelUI = function() {
         refLayer.removeNFMarkers();
       }
       bgSolid.moveAfter(refLayer);
+      refLayer.centerAnchorPoint();
       group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false);
       if (pickedHighlight) {
         controlLayer = choice.getControlLayer();
@@ -389,7 +390,7 @@ getPanelUI = function() {
     if (group == null) {
       return alert("Can't find this PDF's group (#" + (choice.getPDFNumber()) + ") in this part");
     }
-    return group.assignControlLayer(choice);
+    return group.assignControlLayer(choice, null, false);
   };
   goButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.play);
   goButton.onClick = function(w) {

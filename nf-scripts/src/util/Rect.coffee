@@ -33,12 +33,33 @@ class Rect
     return @width * @height
 
   ###*
+  Returns a new rect that's a combination of this rect and the added one
+  @memberof Rect
+  @param {Rect} rectToAdd - the rect to add
+  @returns {Rect} the new rect
+  ###
+  combineWith: (rectToAdd) ->
+    return new Rect
+      left: Math.min(@left, rectToAdd.left)
+      top: Math.min(@top, rectToAdd.top)
+      width: Math.max(@maxX(), rectToAdd.maxX()) - Math.min(@left, rectToAdd.left)
+      height: Math.max(@maxY(), rectToAdd.maxY()) - Math.min(@top, rectToAdd.top)
+
+  ###*
   Returns the maximum x value of the rect
   @memberof Rect
   @returns {boolean} the result
   ###
   maxX: ->
     return @left + @width
+
+  ###*
+  Returns the center point of the rect
+  @memberof Rect
+  @returns {float[]} the center point
+  ###
+  centerPoint: ->
+    return [@left + @width / 2, @top + @height / 2]
 
   ###*
   Returns the maximum y value of the rect
@@ -223,9 +244,28 @@ class Rect
   intersectsWith: (testRect) ->
     throw new Error "Invalid rect object" unless testRect instanceof Rect
 
-    aLeftOfB = @maxX() < testRect.left
-    aRightOfB = @left > testRect.maxX()
-    aBelowB = @top > testRect.maxY()
-    aAboveB = @maxY() < testRect.top
+    aLeftOfB = @leftOf testRect
+    aRightOfB = @rightOf testRect
+    aBelowB = @below testRect
+    aAboveB = @above testRect
 
     return !( aLeftOfB or aRightOfB or aAboveB or aBelowB )
+
+  ###*
+  Returns a new rect from the intersect between the two rects. Throws an error if there's no intersect
+  @memberof Rect
+  @param {Rect} [otherRect] - the rect to form the intersect with
+  @returns {Rect} the resulting new rect
+  ###
+  rectFromIntersect: (otherRect) ->
+    throw new Error "Invalid rect object" unless otherRect instanceof Rect
+    throw new Error "No intersection between rects" unless @intersectsWith otherRect
+
+    newLeft = Math.max(@left, otherRect.left)
+    newTop = Math.max(@top, otherRect.top)
+
+    return new Rect
+      left: newLeft
+      top: newTop
+      width: Math.min(@maxX(), otherRect.maxX()) - newLeft
+      height: Math.min(@maxY(), otherRect.maxY()) - newTop

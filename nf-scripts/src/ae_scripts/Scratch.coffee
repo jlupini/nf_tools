@@ -2,34 +2,26 @@ $.evalFile File($.fileName).path + "/runtimeLibraries.jsx"
 
 app.beginUndoGroup 'Run Scratch Script'
 
-shapeLayer = NFProject.activeComp().selectedLayers().get(0)
-lines = 15
-NFProject.activeComp().createHighlight
-    shapeLayer: shapeLayer
-    lines: lines
+testLayer = NFProject.activeComp().selectedLayers().get(0)
+testLayer.centerAnchorPoint()
+#
+# parentLayer = testLayer.getParent()
+# testLayer.setParent null
+#
+# centerPoint = testLayer.relativeCenterPoint()
+#
+# anchorPointProp = testLayer.transform("Anchor Point")
+# anchorPoint = anchorPointProp.value
+#
+# positionProp = testLayer.transform("Position")
+# oldPosition = positionProp.value
+# positionProp.setValue centerPoint
+# positionDelta = [centerPoint[0] - oldPosition[0], centerPoint[1] - oldPosition[1]]
+#
+# newAnchorPointValue = [positionDelta[0] + anchorPoint[0], positionDelta[1] + anchorPoint[1]]
+# anchorPointProp.setValue newAnchorPointValue
+#
+# testLayer.setParent parentLayer
 
-# pageComps = NFProject.allPageComps()
-# for pageComp in pageComps
-#   highlights = pageComp.highlights()
-#   highlights.forEach (highlightLayer) =>
-#     if highlightLayer.isBubbled()
-#       for property in NFHighlightLayer.highlighterProperties
-#         expression = highlightLayer.highlighterEffect().property(property).expression
-#         highlightLayer.highlighterEffect().property(property).expression = ""
-#         highlightLayer.highlighterEffect().property(property).expression = expression
-
-
-# pageComps = NFProject.allPageComps()
-# for pageComp in pageComps
-#   for i in [1..4]
-#     dataLayer = pageComp.addTextLayer
-#       at: pageComp.allLayers().count()-1
-#       time: 0
-#     expression = NFTools.readExpression "highlight-data-expression",
-#       TARGET_COMP_NAME: "Part#{i}"
-#       PAGE_BASE_NAME: pageComp.getPageBaseName()
-#     dataLayer.property("Text").property("Source Text").expression = expression
-#     dataLayer.layer.enabled = no
-#     dataLayer.layer.name = "HighData-Part#{i}"
 
 app.endUndoGroup()

@@ -341,7 +341,7 @@ getPanelUI = ->
 
       # Add the HCL
       group = targetPageLayer.getPaperLayerGroup()
-      group.assignControlLayer choice if pickedHighlight
+      group.assignControlLayer(choice, null, no) if pickedHighlight
       unless newPageLayer?
         layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
         refLayer.moveAfter layerAbove
@@ -349,6 +349,8 @@ getPanelUI = ->
         refLayer.transform("Position").expression = ""
         refLayer.removeNFMarkers()
       bgSolid.moveAfter refLayer
+
+      refLayer.centerAnchorPoint()
 
       group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false)
       if pickedHighlight
@@ -383,7 +385,7 @@ getPanelUI = ->
     group = thisPart.groupFromPDF(choice.getPDF())
     return alert "Can't find this PDF's group (##{choice.getPDFNumber()}) in this part"  unless group?
 
-    group.assignControlLayer(choice)
+    group.assignControlLayer(choice, null, no)
 
 
   goButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.play)

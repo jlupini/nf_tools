@@ -286,7 +286,7 @@ class NFLayer extends NFObject
     else
       throw new Error "Can only set an NFLayer's parent to another NFLayer or AVLayer"
     return @
-    
+
 
   ###*
   Moves this layer's index to immediately before the provided target layer
@@ -584,6 +584,7 @@ class NFLayer extends NFObject
   internalStartTime: ->
     @layer.inPoint - @layer.startTime
 
+
   ###*
   Uses a null hack to get the source Rect of the layer in it's containing comp.
   Optional time parameter. WARNING: This method is very likely to cause the time
@@ -595,7 +596,7 @@ class NFLayer extends NFObject
   @memberof NFLayer
   @param {float} [time=Current time] - the optional time of the containing comp to
   check at. Default is the current time of the containingComp.
-  @returns {Object} the rect object with .left, .width, .hight, .top
+  @returns {Rect} the rect object
   ###
   sourceRect: (time) ->
     compTime = @containingComp().getTime()
@@ -608,7 +609,7 @@ class NFLayer extends NFObject
     tempNull.transform().position.expression = expressionBase + "thisComp.layer(#{@index()}).toComp([rect.left + rect.width, rect.top + rect.height])"
     bottomRightPoint = tempNull.transform().position.valueAtTime time, false
     tempNull.remove()
-    rect =
+    rect = new Rect
       left: topLeftPoint[0]
       top: topLeftPoint[1]
       width: bottomRightPoint[0] - topLeftPoint[0]
@@ -627,7 +628,7 @@ class NFLayer extends NFObject
     throw new Error "Missing values on the rect" unless rect.left? and rect.top? and rect.width? and rect.height?
     topLeftPoint = @relativePoint [rect.left, rect.top], targetTime
     bottomRightPoint = @relativePoint [rect.left + rect.width, rect.top + rect.height], targetTime
-    newRect =
+    newRect = new Rect
       left: topLeftPoint[0]
       top: topLeftPoint[1]
       width: bottomRightPoint[0] - topLeftPoint[0]
@@ -662,7 +663,56 @@ class NFLayer extends NFObject
   ###
   relativeCenterPoint: (targetTime = null) ->
     sourceRect = @sourceRect(targetTime)
-    return [sourceRect.left + sourceRect.width / 2, sourceRect.top + sourceRect.height / 2]
+    return sourceRect.centerPoint()
+
+  ###*
+  Moves the anchor point of a layer to it's sourceRect's center without changing
+  the layer's position in the comp. Optionally, can use masks to make anchor point
+  more accurate
+  @memberof NFLayer
+  @param {boolean} [useMasks=yes] whether to look at masks to narrow the size and shape of layer.
+  @returns {NFLayer} self
+  ###
+  centerAnchorPoint: (useMasks = yes) ->
+    parent = @getParent()
+    @setParent null
+
+    if useMasks and @mask().numProperties > 0
+      combinedRect = null
+      for i in [1..@mask().numProperties]
+        mask = @mask().property(i)
+        maskRect = NFTools.rectFromShape(mask.property(1).value)
+        if combinedRect?
+          combinedRect = combinedRect.combineWith maskRect
+        else
+          combinedRect = maskRect
+
+      combinedRelativeRect = @relativeRect combinedRect
+      sourceRect = @sourceRect()
+
+      finalRect = sourceRect.rectFromIntersect(combinedRelativeRect)
+      centerPoint = finalRect.centerPoint()
+
+    else
+      centerPoint = @relativeCenterPoint()
+
+    anchorProp = @transform "Anchor Point"
+    positionProp = @transform "Position"
+    scaleProp = @transform "Scale"
+
+    oldAnchor = anchorProp.value
+    oldPosition = positionProp.value
+
+    positionProp.setValue centerPoint
+
+    pDeltaX = (centerPoint[0] - oldPosition[0]) / (scaleProp.value[0]/100)
+    pDeltaY = (centerPoint[1] - oldPosition[1]) / (scaleProp.value[1]/100)
+    newAnchor = [oldAnchor[0] + pDeltaX, oldAnchor[1] + pDeltaY]
+
+    anchorProp.setValue newAnchor
+
+    @setParent parent
+    @
 
 # Class Methods
 NFLayer = Object.assign NFLayer,

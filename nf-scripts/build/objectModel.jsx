@@ -988,14 +988,14 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.getChildren = function(recursive) {
-    var allLayers, childLayers, i, len, testLayer, theLayer;
+    var allLayers, childLayers, j, len, testLayer, theLayer;
     if (recursive == null) {
       recursive = false;
     }
     allLayers = this.containingComp().comp.layers.toArr();
     childLayers = [];
-    for (i = 0, len = allLayers.length; i < len; i++) {
-      theLayer = allLayers[i];
+    for (j = 0, len = allLayers.length; j < len; j++) {
+      theLayer = allLayers[j];
       testLayer = new NFLayer(theLayer);
       if (testLayer.layer.parent === this.layer) {
         testLayer = testLayer.getSpecializedLayer();
@@ -1171,7 +1171,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.addInOutMarkersForProperty = function(options) {
-    var alreadyContainsInValue, alreadyContainsOutValue, e, element, error, error1, expression, i, idx, inComm, inMarker, inValueString, j, markers, outComm, outMarker, outValueString, prevExpression, ref, ref1, shouldFail, shouldPreserveInValue, shouldPreserveOutValue;
+    var alreadyContainsInValue, alreadyContainsOutValue, e, element, error, error1, expression, idx, inComm, inMarker, inValueString, j, k, markers, outComm, outMarker, outValueString, prevExpression, ref, ref1, shouldFail, shouldPreserveInValue, shouldPreserveOutValue;
     if (!((options.property != null) && options.property instanceof Property)) {
       throw new Error("Invalid property");
     }
@@ -1253,7 +1253,7 @@ NFLayer = (function(superClass) {
       expression = ("var startEquationFunc = " + options.startEquation + "\n") + expression;
       if (options.startValue instanceof Array) {
         inValueString = "[";
-        for (idx = i = 0, ref = options.startValue.length - 1; 0 <= ref ? i <= ref : i >= ref; idx = 0 <= ref ? ++i : --i) {
+        for (idx = j = 0, ref = options.startValue.length - 1; 0 <= ref ? j <= ref : j >= ref; idx = 0 <= ref ? ++j : --j) {
           element = options.startValue[idx];
           if (element instanceof Property) {
             inValueString += options.startValue[idx].expressionStringForValue();
@@ -1276,7 +1276,7 @@ NFLayer = (function(superClass) {
       expression = ("var endEquationFunc = " + options.endEquation + "\n") + expression;
       if (options.endValue instanceof Array) {
         outValueString = "[";
-        for (idx = j = 0, ref1 = options.endValue.length - 1; 0 <= ref1 ? j <= ref1 : j >= ref1; idx = 0 <= ref1 ? ++j : --j) {
+        for (idx = k = 0, ref1 = options.endValue.length - 1; 0 <= ref1 ? k <= ref1 : k >= ref1; idx = 0 <= ref1 ? ++k : --k) {
           element = options.endValue[idx];
           if (element instanceof Property) {
             outValueString += options.endValue[idx].expressionStringForValue();
@@ -1439,7 +1439,7 @@ NFLayer = (function(superClass) {
   @memberof NFLayer
   @param {float} [time=Current time] - the optional time of the containing comp to
   check at. Default is the current time of the containingComp.
-  @returns {Object} the rect object with .left, .width, .hight, .top
+  @returns {Rect} the rect object
    */
 
   NFLayer.prototype.sourceRect = function(time) {
@@ -1453,12 +1453,12 @@ NFLayer = (function(superClass) {
     tempNull.transform().position.expression = expressionBase + ("thisComp.layer(" + (this.index()) + ").toComp([rect.left + rect.width, rect.top + rect.height])");
     bottomRightPoint = tempNull.transform().position.valueAtTime(time, false);
     tempNull.remove();
-    return rect = {
+    return rect = new Rect({
       left: topLeftPoint[0],
       top: topLeftPoint[1],
       width: bottomRightPoint[0] - topLeftPoint[0],
       height: bottomRightPoint[1] - topLeftPoint[1]
-    };
+    });
   };
 
 
@@ -1482,12 +1482,12 @@ NFLayer = (function(superClass) {
     }
     topLeftPoint = this.relativePoint([rect.left, rect.top], targetTime);
     bottomRightPoint = this.relativePoint([rect.left + rect.width, rect.top + rect.height], targetTime);
-    return newRect = {
+    return newRect = new Rect({
       left: topLeftPoint[0],
       top: topLeftPoint[1],
       width: bottomRightPoint[0] - topLeftPoint[0],
       height: bottomRightPoint[1] - topLeftPoint[1]
-    };
+    });
   };
 
 
@@ -1529,7 +1529,56 @@ NFLayer = (function(superClass) {
       targetTime = null;
     }
     sourceRect = this.sourceRect(targetTime);
-    return [sourceRect.left + sourceRect.width / 2, sourceRect.top + sourceRect.height / 2];
+    return sourceRect.centerPoint();
+  };
+
+
+  /**
+  Moves the anchor point of a layer to it's sourceRect's center without changing
+  the layer's position in the comp. Optionally, can use masks to make anchor point
+  more accurate
+  @memberof NFLayer
+  @param {boolean} [useMasks=yes] whether to look at masks to narrow the size and shape of layer.
+  @returns {NFLayer} self
+   */
+
+  NFLayer.prototype.centerAnchorPoint = function(useMasks) {
+    var anchorProp, centerPoint, combinedRect, combinedRelativeRect, finalRect, i, j, mask, maskRect, newAnchor, oldAnchor, oldPosition, pDeltaX, pDeltaY, parent, positionProp, ref, scaleProp, sourceRect;
+    if (useMasks == null) {
+      useMasks = true;
+    }
+    parent = this.getParent();
+    this.setParent(null);
+    if (useMasks && this.mask().numProperties > 0) {
+      combinedRect = null;
+      for (i = j = 1, ref = this.mask().numProperties; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+        mask = this.mask().property(i);
+        maskRect = NFTools.rectFromShape(mask.property(1).value);
+        if (combinedRect != null) {
+          combinedRect = combinedRect.combineWith(maskRect);
+        } else {
+          combinedRect = maskRect;
+        }
+      }
+      combinedRelativeRect = this.relativeRect(combinedRect);
+      sourceRect = this.sourceRect();
+      finalRect = sourceRect.rectFromIntersect(combinedRelativeRect);
+      centerPoint = finalRect.centerPoint();
+    } else {
+      centerPoint = this.relativeCenterPoint();
+    }
+    anchorProp = this.transform("Anchor Point");
+    positionProp = this.transform("Position");
+    scaleProp = this.transform("Scale");
+    oldAnchor = anchorProp.value;
+    oldPosition = positionProp.value;
+    positionProp.setValue(centerPoint);
+    pDeltaX = (centerPoint[0] - oldPosition[0]) / (scaleProp.value[0] / 100);
+    pDeltaY = (centerPoint[1] - oldPosition[1]) / (scaleProp.value[1] / 100);
+    newAnchor = [oldAnchor[0] + pDeltaX, oldAnchor[1] + pDeltaY];
+    anchorProp.setValue(newAnchor);
+    this.setParent(parent);
+    return this;
   };
 
   return NFLayer;

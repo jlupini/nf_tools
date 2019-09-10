@@ -21,6 +21,7 @@ toolRegistry = {
     tools: {
       setupMainComp: {
         name: "Setup Main Comp",
+        automaticUndo: false,
         callback: function() {
           return openScript("nf_SetupMainComp.jsx");
         }
@@ -263,24 +264,15 @@ toolRegistry = {
     tools: {
       nullify: {
         name: "Nullify",
-        automaticUndo: false,
-        callback: function() {
-          return openScript("nf_Nullify.jsx");
-        }
+        callbackScript: "nf_Nullify.jsx"
       },
       singleInstruction: {
         name: "Follow Single Instruction",
-        automaticUndo: false,
-        callback: function() {
-          return openScript("nf_SingleInstruction.jsx");
-        }
+        callbackScript: "nf_SingleInstruction.jsx"
       },
       pageTools: {
         name: "Page Tools",
-        automaticUndo: false,
-        callback: function() {
-          return openScript("nf_PageTools.jsx");
-        }
+        callbackScript: "nf_PageTools.jsx"
       },
       toggleSpotlights: {
         name: "Toggle Spotlight Layers",
@@ -322,16 +314,12 @@ toolRegistry = {
       addGaussyLayer: {
         name: "Add Gaussy",
         automaticUndo: false,
-        callback: function() {
-          return openScript("nf_Gaussy.jsx");
-        }
+        callbackScript: "nf_Gaussy.jsx"
       },
       addEmphasis: {
         name: "Emphasizer",
         automaticUndo: false,
-        callback: function() {
-          return openScript("nf_Emphasizer.jsx");
-        }
+        callbackScript: "nf_Emphasizer.jsx"
       },
       addSpotlightMarker: {
         name: "Add Spotlight Marker",
@@ -544,31 +532,19 @@ toolRegistry = {
       },
       scratch: {
         name: "Scratch Script",
-        automaticUndo: false,
-        callback: function() {
-          return openScript("nf_Scratch.jsx");
-        }
+        callbackScript: "nf_Scratch.jsx"
       },
       createAnnotations: {
         name: "Create Annotations",
-        automaticUndo: true,
-        callback: function() {
-          return openScript("nf_CreateAnnotations.jsx");
-        }
+        callbackScript: "nf_CreateAnnotations.jsx"
       },
       debug: {
         name: "Debug",
-        automaticUndo: false,
-        callback: function() {
-          return openScript("nf_debug.jsx");
-        }
+        callbackScript: "nf_debug.jsx"
       },
       pdfConnect: {
         name: "PDF Connect",
-        automaticUndo: true,
-        callback: function() {
-          return openScript("nf_pdfConnect.jsx");
-        }
+        callbackScript: "nf_pdfConnect.jsx"
       },
       iconFromFile: {
         name: "Create Icon Data",
@@ -631,13 +607,14 @@ getPanelUI = function() {
     if (choice == null) {
       return alert("No Tool Selected!");
     }
-    if (choice.automaticUndo !== false) {
+    if (choice.callback != null) {
       app.beginUndoGroup("NF Tool: " + choice.name);
-    }
-    choice.callback();
-    this.active = false;
-    if (choice.automaticUndo !== false) {
+      choice.callback();
+      this.active = false;
       return app.endUndoGroup();
+    } else {
+      openScript(choice.callbackScript);
+      return this.active = false;
     }
   };
   panel.layout.layout(true);
