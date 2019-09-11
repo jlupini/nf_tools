@@ -3362,7 +3362,9 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     thePDF = NFPDF.fromGroup(group);
     compName = NFCitationLayer.nameFor(thePDF);
     citationComp = NFProject.findItem(compName);
-    if (citationComp == null) {
+    if (citationComp != null) {
+      citationComp = new NFComp(citationComp);
+    } else {
       citationComp = NFCitationLayer.newCitationComp(compName, NFCitationLayer.fetchCitation(thePDF));
     }
     NFTools.log("Creating new citation layer for Group: " + (group.toString()), "static NFCitationLayer");

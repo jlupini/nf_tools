@@ -235,7 +235,10 @@ NFCitationLayer = Object.assign NFCitationLayer,
     citationComp = NFProject.findItem compName
 
     # Make a new comp if one doesn't exist for this PDF
-    citationComp = NFCitationLayer.newCitationComp compName, NFCitationLayer.fetchCitation(thePDF) unless citationComp?
+    if citationComp?
+      citationComp = new NFComp citationComp
+    else
+      citationComp = NFCitationLayer.newCitationComp compName, NFCitationLayer.fetchCitation(thePDF)
 
     NFTools.log "Creating new citation layer for Group: #{group.toString()}", "static NFCitationLayer"
     # Add the Layer
