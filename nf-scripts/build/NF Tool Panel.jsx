@@ -311,6 +311,18 @@ toolRegistry = {
           }
         }
       },
+      looseCitation: {
+        name: "Add Loose Citation",
+        callback: function() {
+          var citationLayer, citationText, comp, ref;
+          citationText = prompt("Please enter citation text:");
+          if (citationText != null) {
+            comp = NFProject.activeComp();
+            citationLayer = (ref = comp.layerWithName(NFCitationLayer.nameForLoose(citationText))) != null ? ref : NFCitationLayer.newLooseCitationLayer(citationText, comp);
+            return citationLayer.show();
+          }
+        }
+      },
       addGaussyLayer: {
         name: "Add Gaussy",
         automaticUndo: false,

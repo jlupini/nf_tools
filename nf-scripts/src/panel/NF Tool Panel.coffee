@@ -295,6 +295,16 @@ toolRegistry =
           else
             alert "Error\nPlease select a single Citation Layer and try again"
 
+      looseCitation:
+        name: "Add Loose Citation"
+        callback: ->
+          citationText = prompt "Please enter citation text:"
+
+          if citationText?
+            comp = NFProject.activeComp()
+            citationLayer = comp.layerWithName(NFCitationLayer.nameForLoose(citationText)) ? NFCitationLayer.newLooseCitationLayer(citationText, comp)
+            citationLayer.show()
+
       addGaussyLayer:
         name: "Add Gaussy"
         automaticUndo: no

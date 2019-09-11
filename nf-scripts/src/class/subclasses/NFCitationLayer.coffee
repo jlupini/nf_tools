@@ -140,20 +140,28 @@ NFCitationLayer = Object.assign NFCitationLayer,
     return "#{thePDF.getPDFNumber()} - Citation"
 
   ###*
+  Returns the citation layer/comp name for a given PDF
+  @memberof NFCitationLayer
+  @param {String} text - the text of the citation
+  @returns {String} the citation layer/comp name
+  ###
+  nameForLoose: (text) ->
+    return "#{text} - Citation"
+
+
+
+  ###*
   Creates a new citation composition. Note that citation comps, while NFComps,
   do not have their own unique wrapper class.
   @memberof NFCitationLayer
   @param {NFPDF} thePDF - the PDF to make the comp for
   @returns {NFComp} the new comp
   ###
-  newCitationComp: (thePDF) ->
-    throw new Error "Missing parameters" unless thePDF instanceof NFPDF
-    NFTools.log "Creating new citation comp for PDF: #{thePDF.toString()}", "NFCitationLayer"
-
-    citationString = NFCitationLayer.fetchCitation thePDF
+  newCitationComp: (name, citationString) ->
+    NFTools.log "Creating new citation comp for PDF: #{name}", "NFCitationLayer"
 
     citeFolder = NFCitationLayer.folder()
-    citeComp = citeFolder.items.addComp(NFCitationLayer.nameFor(thePDF), 1920, 1080, 1, 600, 30)
+    citeComp = citeFolder.items.addComp(name, 1920, 1080, 1, 600, 30)
 
     # Note: we're working with raw layers and comps and stuff here
 
@@ -211,7 +219,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
     # Order Layers Correctly
     textLayer.moveBefore bgSolid
 
-    return citeComp
+    return new NFComp citeComp
 
   ###*
   Creates a new NFCitationLayer for the given group
@@ -227,12 +235,12 @@ NFCitationLayer = Object.assign NFCitationLayer,
     citationComp = NFProject.findItem compName
 
     # Make a new comp if one doesn't exist for this PDF
-    citationComp = NFCitationLayer.newCitationComp thePDF unless citationComp?
+    citationComp = NFCitationLayer.newCitationComp compName, NFCitationLayer.fetchCitation(thePDF) unless citationComp?
 
     NFTools.log "Creating new citation layer for Group: #{group.toString()}", "static NFCitationLayer"
     # Add the Layer
     citeLayer = group.containingComp().insertComp
-      comp: new NFComp citationComp
+      comp: citationComp
       below: group.paperParent
       time: group.paperParent.layer.inPoint
     citeLayer.layer.collapseTransformation = yes
@@ -240,6 +248,33 @@ NFCitationLayer = Object.assign NFCitationLayer,
       citeLayer.layer.startTime = group.containingComp().getTime()
     else
       citeLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint
+
+    sourceExpression = NFTools.readExpression "citation-opacity-expression"
+    citeLayer.transform().property("Opacity").expression = sourceExpression
+
+    return citeLayer
+
+  ###*
+  Creates a new  looseNFCitationLayer for the given string
+  @memberof NFCitationLayer
+  @param {String} name - the string to make the citation layer for
+  @param {NFComp} containingComp - the comp to put it in
+  @param {float} [time=currentTime] - the time to start it at
+  @returns {NFCitationLayer} the new citation layer
+  ###
+  newLooseCitationLayer: (name, containingComp, time) ->
+    compName = NFCitationLayer.nameForLoose name
+    citationComp = NFProject.findItem compName
+
+    # Make a new comp if one doesn't exist for this PDF
+    citationComp = NFCitationLayer.newCitationComp compName, name unless citationComp?
+
+    NFTools.log "Creating new loose citation layer for String: #{name}", "static NFCitationLayer"
+    # Add the Layer
+    citeLayer = containingComp.insertComp
+      comp: citationComp
+      time: time ? containingComp.getTime()
+    citeLayer.layer.collapseTransformation = yes
 
     sourceExpression = NFTools.readExpression "citation-opacity-expression"
     citeLayer.transform().property("Opacity").expression = sourceExpression

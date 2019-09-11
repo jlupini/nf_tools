@@ -3275,21 +3275,27 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
   },
 
   /**
+  Returns the citation layer/comp name for a given PDF
+  @memberof NFCitationLayer
+  @param {String} text - the text of the citation
+  @returns {String} the citation layer/comp name
+   */
+  nameForLoose: function(text) {
+    return text + " - Citation";
+  },
+
+  /**
   Creates a new citation composition. Note that citation comps, while NFComps,
   do not have their own unique wrapper class.
   @memberof NFCitationLayer
   @param {NFPDF} thePDF - the PDF to make the comp for
   @returns {NFComp} the new comp
    */
-  newCitationComp: function(thePDF) {
-    var bgBlur, bgBrightness, bgMask, bgSolid, citationString, citeComp, citeFolder, fontSize, maskPath, maskShape, sourceRectBgMask, sourceRectText, textBoxSizeX, textBoxSizeY, textLayer, textLayer_TextDocument, textLayer_TextProp;
-    if (!(thePDF instanceof NFPDF)) {
-      throw new Error("Missing parameters");
-    }
-    NFTools.log("Creating new citation comp for PDF: " + (thePDF.toString()), "NFCitationLayer");
-    citationString = NFCitationLayer.fetchCitation(thePDF);
+  newCitationComp: function(name, citationString) {
+    var bgBlur, bgBrightness, bgMask, bgSolid, citeComp, citeFolder, fontSize, maskPath, maskShape, sourceRectBgMask, sourceRectText, textBoxSizeX, textBoxSizeY, textLayer, textLayer_TextDocument, textLayer_TextProp;
+    NFTools.log("Creating new citation comp for PDF: " + name, "NFCitationLayer");
     citeFolder = NFCitationLayer.folder();
-    citeComp = citeFolder.items.addComp(NFCitationLayer.nameFor(thePDF), 1920, 1080, 1, 600, 30);
+    citeComp = citeFolder.items.addComp(name, 1920, 1080, 1, 600, 30);
     bgSolid = citeComp.layers.addSolid([0, 0, 0], 'colorCorrect', citeComp.width, citeComp.height, 1);
     bgSolid.adjustmentLayer = true;
     bgSolid.name = 'Background Blur';
@@ -3327,7 +3333,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     bgSolid.position.setValue([citeComp.width, 20, 0]);
     textLayer.position.setValue([citeComp.width - 10, 30, 0]);
     textLayer.moveBefore(bgSolid);
-    return citeComp;
+    return new NFComp(citeComp);
   },
 
   /**
@@ -3345,11 +3351,11 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     compName = NFCitationLayer.nameFor(thePDF);
     citationComp = NFProject.findItem(compName);
     if (citationComp == null) {
-      citationComp = NFCitationLayer.newCitationComp(thePDF);
+      citationComp = NFCitationLayer.newCitationComp(compName, NFCitationLayer.fetchCitation(thePDF));
     }
     NFTools.log("Creating new citation layer for Group: " + (group.toString()), "static NFCitationLayer");
     citeLayer = group.containingComp().insertComp({
-      comp: new NFComp(citationComp),
+      comp: citationComp,
       below: group.paperParent,
       time: group.paperParent.layer.inPoint
     });
@@ -3359,6 +3365,32 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     } else {
       citeLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint;
     }
+    sourceExpression = NFTools.readExpression("citation-opacity-expression");
+    citeLayer.transform().property("Opacity").expression = sourceExpression;
+    return citeLayer;
+  },
+
+  /**
+  Creates a new  looseNFCitationLayer for the given string
+  @memberof NFCitationLayer
+  @param {String} name - the string to make the citation layer for
+  @param {NFComp} containingComp - the comp to put it in
+  @param {float} [time=currentTime] - the time to start it at
+  @returns {NFCitationLayer} the new citation layer
+   */
+  newLooseCitationLayer: function(name, containingComp, time) {
+    var citationComp, citeLayer, compName, sourceExpression;
+    compName = NFCitationLayer.nameForLoose(name);
+    citationComp = NFProject.findItem(compName);
+    if (citationComp == null) {
+      citationComp = NFCitationLayer.newCitationComp(compName, name);
+    }
+    NFTools.log("Creating new loose citation layer for String: " + name, "static NFCitationLayer");
+    citeLayer = containingComp.insertComp({
+      comp: citationComp,
+      time: time != null ? time : containingComp.getTime()
+    });
+    citeLayer.layer.collapseTransformation = true;
     sourceExpression = NFTools.readExpression("citation-opacity-expression");
     citeLayer.transform().property("Opacity").expression = sourceExpression;
     return citeLayer;
