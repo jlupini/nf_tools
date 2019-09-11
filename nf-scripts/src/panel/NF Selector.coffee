@@ -1,7 +1,8 @@
 $.evalFile File($.fileName).path + "/runtimeLibraries.jsx"
 $.evalFile File($.fileName).path + "/NFIcon.jsx"
 _ = {}
-PADDING = 80
+EDGE_PADDING = 80
+BOTTOM_PADDING = 150
 
 panelTest = this
 
@@ -282,6 +283,8 @@ getPanelUI = ->
       # FIXME: Allow multiple selections so you can show expands too and frame they up together with a 'combineRects' function
       scaleFactor = refLayer.getScaleFactorToFrameUp
         rect: refLayer.relativeRect choiceRect
+        fillPercentage: 75
+        maxScale: 100
       scaleProp = refLayer.transform "Scale"
       oldScale = scaleProp.value
       newScale = oldScale[0] * scaleFactor
@@ -318,10 +321,10 @@ getPanelUI = ->
       bgSolid.layer.motionBlur = true
       relRect = refLayer.relativeRect paddedChoiceRect
       paddedRelRect =
-        left: relRect.left - (PADDING / 2)
-        top: relRect.top - (PADDING / 4)
-        width: relRect.width + PADDING
-        height: relRect.height + (PADDING / 2)
+        left: relRect.left - (EDGE_PADDING / 2)
+        top: relRect.top - (EDGE_PADDING / 4)
+        width: relRect.width + EDGE_PADDING
+        height: relRect.height + (EDGE_PADDING / 2)
       newMask = bgSolid.mask().addProperty "Mask"
       newMask.maskShape.setValue NFTools.shapeFromRect(paddedRelRect)
       bgSolid.setParent refLayer
@@ -337,7 +340,7 @@ getPanelUI = ->
       compBottom = thisPart.comp.height
       delta = compBottom - boxBottom
       refPosition = refLayer.transform("Position").value
-      refLayer.transform("Position").setValue [refPosition[0], refPosition[1] + delta - PADDING]
+      refLayer.transform("Position").setValue [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]
 
       # Add the HCL
       group = targetPageLayer.getPaperLayerGroup()

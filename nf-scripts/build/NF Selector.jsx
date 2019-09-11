@@ -1,4 +1,4 @@
-var PADDING, _, getPanelUI, importPDFAnnotationData, loadAutoHighlightDataIntoView, loadContentIntoView, main, openScript, panelTest;
+var BOTTOM_PADDING, EDGE_PADDING, _, getPanelUI, importPDFAnnotationData, loadAutoHighlightDataIntoView, loadContentIntoView, main, openScript, panelTest;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
@@ -6,7 +6,9 @@ $.evalFile(File($.fileName).path + "/NFIcon.jsx");
 
 _ = {};
 
-PADDING = 80;
+EDGE_PADDING = 80;
+
+BOTTOM_PADDING = 150;
 
 panelTest = this;
 
@@ -290,7 +292,9 @@ getPanelUI = function() {
         thisPart.setTime(currTime);
       }
       scaleFactor = refLayer.getScaleFactorToFrameUp({
-        rect: refLayer.relativeRect(choiceRect)
+        rect: refLayer.relativeRect(choiceRect),
+        fillPercentage: 75,
+        maxScale: 100
       });
       scaleProp = refLayer.transform("Scale");
       oldScale = scaleProp.value;
@@ -326,10 +330,10 @@ getPanelUI = function() {
       bgSolid.layer.motionBlur = true;
       relRect = refLayer.relativeRect(paddedChoiceRect);
       paddedRelRect = {
-        left: relRect.left - (PADDING / 2),
-        top: relRect.top - (PADDING / 4),
-        width: relRect.width + PADDING,
-        height: relRect.height + (PADDING / 2)
+        left: relRect.left - (EDGE_PADDING / 2),
+        top: relRect.top - (EDGE_PADDING / 4),
+        width: relRect.width + EDGE_PADDING,
+        height: relRect.height + (EDGE_PADDING / 2)
       };
       newMask = bgSolid.mask().addProperty("Mask");
       newMask.maskShape.setValue(NFTools.shapeFromRect(paddedRelRect));
@@ -344,7 +348,7 @@ getPanelUI = function() {
       compBottom = thisPart.comp.height;
       delta = compBottom - boxBottom;
       refPosition = refLayer.transform("Position").value;
-      refLayer.transform("Position").setValue([refPosition[0], refPosition[1] + delta - PADDING]);
+      refLayer.transform("Position").setValue([refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]);
       group = targetPageLayer.getPaperLayerGroup();
       if (pickedHighlight) {
         group.assignControlLayer(choice, null, false);
