@@ -1,4 +1,4 @@
-var backdropFile, backdropFileName, backdropLayer, bgLayer, currentMarker, currentTime, dotOverlayFile, dotOverlayFileName, dotOverlayLayer, duplicatedFootageLayer, fadeLayer, fadeOpacity, fileName, footageFile, footageLayer, footageLayerName, i, j, mainComp, mainCompName, markerCount, markerStream, newComp, newCompLayer, newCompName, newComps, partsFolder, precomposedFootageLayer, prevTime, ref, rootFolder;
+var backdropFile, backdropFileName, backdropLayer, bgLayer, currentMarker, currentTime, dotOverlayFile, dotOverlayFileName, dotOverlayLayer, duplicatedFootageLayer, fadeLayer, fadeOpacity, fileName, footageFile, footageLayer, footageLayerName, gsPreset, i, j, mainComp, mainCompName, markerCount, markerStream, newComp, newCompLayer, newCompName, newComps, partsFolder, path, precomposedFootageLayer, prevTime, ref, rootFolder;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
@@ -65,6 +65,11 @@ for (i = j = 1, ref = markerCount + 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= 
   newCompName = "Part " + i;
   newComp = mainComp.layers.precompose([duplicatedFootageLayer.index], newCompName, true);
   precomposedFootageLayer = newComp.layers[1];
+  path = Folder(File($.fileName).parent.parent.fsName).fsName + '/lib/NF Greenscreen Preset.ffx';
+  gsPreset = File(path);
+  precomposedFootageLayer.selected = true;
+  precomposedFootageLayer.applyPreset(gsPreset);
+  precomposedFootageLayer.selected = false;
   backdropLayer = newComp.layers.add(backdropFile);
   dotOverlayLayer = newComp.layers.add(dotOverlayFile);
   backdropLayer.name = "NF Backdrop";

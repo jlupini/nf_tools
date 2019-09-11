@@ -41,6 +41,7 @@ for i in [1..markerCount+1]
   duplicatedFootageLayer = footageLayer.duplicate()
   duplicatedFootageLayer.name = footageLayerName
   duplicatedFootageLayer.inPoint = prevTime
+
   if i is markerCount + 1
     currentTime = duplicatedFootageLayer.outPoint = mainComp.duration
   else
@@ -50,6 +51,13 @@ for i in [1..markerCount+1]
   newCompName = "Part #{i}"
   newComp = mainComp.layers.precompose [duplicatedFootageLayer.index], newCompName, true
   precomposedFootageLayer = newComp.layers[1]
+
+  # Apply the Animation Preset. NOTE: because of an AE bug, a layer has to be selected to apply a preset. Hence the hack
+  path = Folder(File($.fileName).parent.parent.fsName).fsName + '/lib/NF Greenscreen Preset.ffx'
+  gsPreset = File path
+  precomposedFootageLayer.selected = yes
+  precomposedFootageLayer.applyPreset gsPreset
+  precomposedFootageLayer.selected = no
 
   backdropLayer = newComp.layers.add backdropFile
   dotOverlayLayer = newComp.layers.add dotOverlayFile
