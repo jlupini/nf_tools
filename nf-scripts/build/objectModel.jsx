@@ -2534,16 +2534,7 @@ NFPaperLayerGroup = (function(superClass) {
    */
 
   NFPaperLayerGroup.prototype.getPDFNumber = function() {
-    var children, i, layer, len, ref;
-    children = this.getChildren();
-    ref = children.layers;
-    for (i = 0, len = ref.length; i < len; i++) {
-      layer = ref[i];
-      if (layer instanceof NFPageLayer) {
-        return layer.getPDFNumber();
-      }
-    }
-    return null;
+    return this.paperParent.getName().replace("PDF ", "");
   };
 
 
@@ -2665,7 +2656,7 @@ NFPaperLayerGroup = (function(superClass) {
 
   NFPaperLayerGroup.prototype.assignCitationLayer = function() {
     var citeLayer;
-    citeLayer = (this.getCitationLayer() != null) || NFCitationLayer.newCitationLayer(this);
+    citeLayer = this.getCitationLayer() || NFCitationLayer.newCitationLayer(this);
     return citeLayer;
   };
 
@@ -3363,7 +3354,11 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
       time: group.paperParent.layer.inPoint
     });
     citeLayer.layer.collapseTransformation = true;
-    citeLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint;
+    if (group.getPages().isEmpty()) {
+      citeLayer.layer.startTime = group.containingComp().getTime();
+    } else {
+      citeLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint;
+    }
     sourceExpression = NFTools.readExpression("citation-opacity-expression");
     citeLayer.transform().property("Opacity").expression = sourceExpression;
     return citeLayer;
@@ -4591,7 +4586,7 @@ NFPageLayer = (function(superClass) {
     var paperParent;
     paperParent = this.getPaperParentLayer();
     if (paperParent == null) {
-      paperParent = this.containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForPageLayer(this));
+      paperParent = this.containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForObject(this));
     }
     return paperParent;
   };
@@ -5015,7 +5010,7 @@ NFPageLayer = (function(superClass) {
       }
     } else {
       nullLayer = this.nullify([1, 0, 0.7]);
-      paperParentLayer = new NFPaperParentLayer(nullLayer).setName();
+      paperParentLayer = new NFPaperParentLayer(nullLayer).setName(NFPaperParentLayer.getPaperParentNameForObject(this));
     }
     return paperParentLayer;
   };
@@ -5848,21 +5843,13 @@ NFPaperParentLayer = (function(superClass) {
 
 
   /**
-  Sets the name of this paper parent layer to the correct name.
+  Returns the NFPaperLayerGroup for this parent layer
   @memberof NFPaperParentLayer
-  @returns {NFPaperParentLayer} self
-  @throws Throws error if there are no child layers
+  @returns {NFPaperLayerGroup} the group
    */
 
-  NFPaperParentLayer.prototype.setName = function() {
-    var children, newName;
-    children = this.getChildren();
-    if (children.isEmpty()) {
-      throw new Error("Cannot set paper parent layer name because it has no child layers");
-    }
-    newName = 'PDF ' + children.layers[0].getPDFNumber();
-    this.layer.name = newName;
-    return this;
+  NFPaperParentLayer.prototype.getGroup = function() {
+    return new NFPaperLayerGroup(this);
   };
 
   return NFPaperParentLayer;
@@ -5882,13 +5869,13 @@ NFPaperParentLayer = Object.assign(NFPaperParentLayer, {
   },
 
   /**
-  Class Method. Returns the name string for the paper parent for a given layer
+  Class Method. Returns the name string for the paper parent for a given layer or NFPDF
   @memberof NFPaperParentLayer
-  @param {NFPageLayer} pageLayer - the page layer to use to determine the name
-  @returns {string} The name of the paperParentLayer for the given layer
+  @param {NFPageLayer | NFPDF} object - the page layer or pdf to use to determine the name
+  @returns {string} The name of the paperParentLayer for the given layer or pdf
    */
-  getPaperParentNameForPageLayer: function(pageLayer) {
-    return 'PDF ' + pageLayer.getPDFNumber();
+  getPaperParentNameForObject: function(object) {
+    return 'PDF ' + object.getPDFNumber();
   }
 });
 

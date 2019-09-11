@@ -53,7 +53,7 @@ class NFPageLayer extends NFLayer
   findPaperParentLayer: ->
     paperParent = @getPaperParentLayer()
     unless paperParent?
-      paperParent = @containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForPageLayer(@))
+      paperParent = @containingComp().layerWithName(NFPaperParentLayer.getPaperParentNameForObject(@))
     return paperParent
 
   ###*
@@ -355,7 +355,7 @@ class NFPageLayer extends NFLayer
         paperLayerGroup.gatherLayers @
     else
       nullLayer = @nullify [1, 0, 0.7]
-      paperParentLayer = new NFPaperParentLayer(nullLayer).setName()
+      paperParentLayer = new NFPaperParentLayer(nullLayer).setName(NFPaperParentLayer.getPaperParentNameForObject(@))
 
     return paperParentLayer
 

@@ -17,17 +17,12 @@ class NFPaperParentLayer extends NFLayer
     return "NFPaperParentLayer: '#{@layer.name}'"
 
   ###*
-  Sets the name of this paper parent layer to the correct name.
+  Returns the NFPaperLayerGroup for this parent layer
   @memberof NFPaperParentLayer
-  @returns {NFPaperParentLayer} self
-  @throws Throws error if there are no child layers
+  @returns {NFPaperLayerGroup} the group
   ###
-  setName: ->
-    children = @getChildren()
-    throw new Error "Cannot set paper parent layer name because it has no child layers" if children.isEmpty()
-    newName = 'PDF ' + children.layers[0].getPDFNumber()
-    @layer.name = newName
-    return @
+  getGroup: ->
+    return new NFPaperLayerGroup @
 
 # Class Methods
 NFPaperParentLayer = Object.assign NFPaperParentLayer,
@@ -41,10 +36,10 @@ NFPaperParentLayer = Object.assign NFPaperParentLayer,
     return layer.isSolid() and layer.name.indexOf('PDF') >= 0
 
   ###*
-  Class Method. Returns the name string for the paper parent for a given layer
+  Class Method. Returns the name string for the paper parent for a given layer or NFPDF
   @memberof NFPaperParentLayer
-  @param {NFPageLayer} pageLayer - the page layer to use to determine the name
-  @returns {string} The name of the paperParentLayer for the given layer
+  @param {NFPageLayer | NFPDF} object - the page layer or pdf to use to determine the name
+  @returns {string} The name of the paperParentLayer for the given layer or pdf
   ###
-  getPaperParentNameForPageLayer: (pageLayer) ->
-    return 'PDF ' + pageLayer.getPDFNumber()
+  getPaperParentNameForObject: (object) ->
+    return 'PDF ' + object.getPDFNumber()

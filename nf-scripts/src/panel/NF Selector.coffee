@@ -49,6 +49,7 @@ loadContentIntoView = (treeView) ->
   for key of contentTree
     thisPDFNode = treeView.add 'node', "PDF #{key}"
     thisPDFNode.image = NFIcon.tree.pdf
+    thisPDFNode.data = NFPDF.fromPDFNumber key
 
     pageCompArr = contentTree[key]
     # pdfTree = contentTree[key]
@@ -219,7 +220,7 @@ getPanelUI = ->
   # loadContentIntoView treeView
 
   buttonGroup = buttonPanel.add 'group', undefined
-  buttonGroup.maximumSize = [200,50]
+  buttonGroup.maximumSize = [300,50]
 
   addButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.add)
   addButton.onClick = (w) ->
@@ -370,7 +371,7 @@ getPanelUI = ->
     app.endUndoGroup()
 
   linkButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.link)
-  linkButton.onClick = (w)  ->
+  linkButton.onClick = (w) ->
     choice = treeView.selection?.data
 
     return alert "Invalid Selection!" unless choice?
@@ -389,7 +390,7 @@ getPanelUI = ->
 
 
   goButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.play)
-  goButton.onClick = (w)  ->
+  goButton.onClick = (w) ->
     choice = treeView.selection?.data
 
     return alert "Invalid Selection!" unless choice?
@@ -424,6 +425,40 @@ getPanelUI = ->
       instruction: dictObject
       expandLookString: expandLookString ? null
     result = NFProject.layoutSingleInstruction instruction
+
+  citeButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.book)
+  citeButton.onClick = (w) ->
+    choice = treeView.selection?.data
+    return alert "Invalid Selection!" unless choice?
+    app.beginUndoGroup "Add Citation (via NF Selector)"
+
+    if choice instanceof NFPDF
+      thisPart = NFProject.activeComp()
+
+      # If the PDF already has a paperParentLayer in this comp
+      parentLayer = thisPart.layerWithName(choice.getName())
+      if parentLayer?
+        group = parentLayer.getGroup()
+      else
+        nullLayer = thisPart.addSolid
+          color: [1,0,0.7]
+          width: 10
+          height: 10
+        nullLayer.layer.enabled = no
+
+        nullLayer.setName NFPaperParentLayer.getPaperParentNameForObject(choice)
+        paperParentLayer = new NFPaperParentLayer(nullLayer)
+        group = new NFPaperLayerGroup paperParentLayer
+
+      citationLayer = group.assignCitationLayer()
+      citationLayer.show()
+
+
+    else alert "Error\nMake sure you've selected a PDF to cite, or try
+                refreshing the Selector Panel"
+
+    app.endUndoGroup()
+
 
   refreshButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.refresh)
   refreshButton.onClick = (w) ->

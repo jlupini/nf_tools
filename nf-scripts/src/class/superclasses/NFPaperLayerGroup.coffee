@@ -29,10 +29,7 @@ class NFPaperLayerGroup extends NFObject
   @returns {String} the pdf number
   ###
   getPDFNumber: ->
-    children = @getChildren()
-    for layer in children.layers
-      return layer.getPDFNumber() if layer instanceof NFPageLayer
-    return null
+    return @paperParent.getName().replace("PDF ", "")
 
 
   ###*
@@ -112,7 +109,7 @@ class NFPaperLayerGroup extends NFObject
   @returns {NFCitationLayer} the citation layer
   ###
   assignCitationLayer: ->
-    citeLayer = @getCitationLayer()? || NFCitationLayer.newCitationLayer(@)
+    citeLayer = @getCitationLayer() or NFCitationLayer.newCitationLayer(@)
     return citeLayer
 
   ###*

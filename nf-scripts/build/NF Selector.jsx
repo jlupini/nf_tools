@@ -63,6 +63,7 @@ loadContentIntoView = function(treeView) {
   for (key in contentTree) {
     thisPDFNode = treeView.add('node', "PDF " + key);
     thisPDFNode.image = NFIcon.tree.pdf;
+    thisPDFNode.data = NFPDF.fromPDFNumber(key);
     pageCompArr = contentTree[key];
     for (j = 0, len1 = pageCompArr.length; j < len1; j++) {
       pageComp = pageCompArr[j];
@@ -112,7 +113,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, customPrepButton, goButton, importPrepButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
+  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, citeButton, customPrepButton, goButton, importPrepButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -233,7 +234,7 @@ getPanelUI = function() {
   treeView.preferredSize = [220, 250];
   treeView.alignment = ['fill', 'fill'];
   buttonGroup = buttonPanel.add('group', void 0);
-  buttonGroup.maximumSize = [200, 50];
+  buttonGroup.maximumSize = [300, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
   addButton.onClick = function(w) {
     var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, paddedRelRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, targetPageLayer, thisPart;
@@ -433,6 +434,37 @@ getPanelUI = function() {
       expandLookString: expandLookString != null ? expandLookString : null
     });
     return result = NFProject.layoutSingleInstruction(instruction);
+  };
+  citeButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.book);
+  citeButton.onClick = function(w) {
+    var choice, citationLayer, group, nullLayer, paperParentLayer, parentLayer, ref, thisPart;
+    choice = (ref = treeView.selection) != null ? ref.data : void 0;
+    if (choice == null) {
+      return alert("Invalid Selection!");
+    }
+    app.beginUndoGroup("Add Citation (via NF Selector)");
+    if (choice instanceof NFPDF) {
+      thisPart = NFProject.activeComp();
+      parentLayer = thisPart.layerWithName(choice.getName());
+      if (parentLayer != null) {
+        group = parentLayer.getGroup();
+      } else {
+        nullLayer = thisPart.addSolid({
+          color: [1, 0, 0.7],
+          width: 10,
+          height: 10
+        });
+        nullLayer.layer.enabled = false;
+        nullLayer.setName(NFPaperParentLayer.getPaperParentNameForObject(choice));
+        paperParentLayer = new NFPaperParentLayer(nullLayer);
+        group = new NFPaperLayerGroup(paperParentLayer);
+      }
+      citationLayer = group.assignCitationLayer();
+      citationLayer.show();
+    } else {
+      alert("Error\nMake sure you've selected a PDF to cite, or try refreshing the Selector Panel");
+    }
+    return app.endUndoGroup();
   };
   refreshButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.refresh);
   refreshButton.onClick = function(w) {
