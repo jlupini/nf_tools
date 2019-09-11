@@ -149,6 +149,14 @@ class NFHighlightControlLayer extends NFLayer
     return @layer.Effects.property("AV_Highlighter")
 
   ###*
+  Returns the highlight name
+  @memberof NFHighlightControlLayer
+  @returns {String} the name of the highlight
+  ###
+  highlightName: ->
+    return @highlighterEffect().name
+
+  ###*
   Returns the AV Highlight Control effect
   @memberof NFHighlightControlLayer
   @returns {Property} the AV Highlighter Control property on the control layer
@@ -179,11 +187,12 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
   Returns the name for a control layer for a given PDF Number and highlight
   @memberof NFHighlightControlLayer
   @param {String} num - the PDF Number
-  @param {NFHighlightLayer} highlight - the highlight
+  @param {NFHighlightLayer | String} highlight - the highlight or highlight layer name
   @returns {String} the appropriate name
   ###
   nameForPDFNumberAndHighlight: (num, highlight) ->
-    return "#{num} - #{highlight.layer.name} Highlight Control"
+    highlightName = highlight.layer?.name or highlight
+    return "#{num} - #{highlightName} Highlight Control"
 
   ###*
   Returns whether or not the given AVLayer is a valid Highlight Control Layer

@@ -102,6 +102,22 @@ NFComp = (function(superClass) {
 
 
   /**
+  Gets the comp's rect
+  @memberof NFComp
+  @returns {Rect} The comp's rect
+   */
+
+  NFComp.prototype.getRect = function() {
+    return new Rect({
+      left: 0,
+      top: 0,
+      width: this.comp.width,
+      height: this.comp.height
+    });
+  };
+
+
+  /**
   Gets the comp's unique ID
   @memberof NFComp
   @returns {String} The comp's ID
@@ -1033,7 +1049,7 @@ NFLayer = (function(superClass) {
 
   NFLayer.prototype.getParent = function() {
     if (this.layer.parent != null) {
-      return new NFLayer(this.layer.parent);
+      return new NFLayer(this.layer.parent).getSpecializedLayer();
     }
     return null;
   };
@@ -1551,13 +1567,21 @@ NFLayer = (function(superClass) {
   more accurate
   @memberof NFLayer
   @param {boolean} [useMasks=yes] whether to look at masks to narrow the size and shape of layer.
+  @param {float} [atTime = currentTime] the time to center the anchor point at (in case scale changes)
+  @param {boolean} [preExpression = no] whether to look at the value and ignore the calculated expression value
   @returns {NFLayer} self
    */
 
-  NFLayer.prototype.centerAnchorPoint = function(useMasks) {
+  NFLayer.prototype.centerAnchorPoint = function(useMasks, atTime, preExpression) {
     var anchorProp, centerPoint, combinedRect, combinedRelativeRect, finalRect, i, j, mask, maskRect, newAnchor, oldAnchor, oldPosition, pDeltaX, pDeltaY, parent, positionProp, ref, scaleProp, sourceRect;
     if (useMasks == null) {
       useMasks = true;
+    }
+    if (preExpression == null) {
+      preExpression = false;
+    }
+    if (atTime == null) {
+      atTime = this.containingComp().getTime();
     }
     parent = this.getParent();
     this.setParent(null);
@@ -1565,15 +1589,15 @@ NFLayer = (function(superClass) {
       combinedRect = null;
       for (i = j = 1, ref = this.mask().numProperties; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
         mask = this.mask().property(i);
-        maskRect = NFTools.rectFromShape(mask.property(1).value);
+        maskRect = NFTools.rectFromShape(mask.property(1).valueAtTime(atTime, preExpression));
         if (combinedRect != null) {
           combinedRect = combinedRect.combineWith(maskRect);
         } else {
           combinedRect = maskRect;
         }
       }
-      combinedRelativeRect = this.relativeRect(combinedRect);
-      sourceRect = this.sourceRect();
+      combinedRelativeRect = this.relativeRect(combinedRect, atTime);
+      sourceRect = this.sourceRect(atTime);
       finalRect = sourceRect.rectFromIntersect(combinedRelativeRect);
       centerPoint = finalRect.centerPoint();
     } else {
@@ -1582,9 +1606,15 @@ NFLayer = (function(superClass) {
     anchorProp = this.transform("Anchor Point");
     positionProp = this.transform("Position");
     scaleProp = this.transform("Scale");
-    oldAnchor = anchorProp.value;
-    oldPosition = positionProp.value;
+    if (anchorProp.numKeys + positionProp.numKeys > 0) {
+      throw new Error("Can't center anchor point when anchor or position are keyframed");
+    }
+    oldAnchor = anchorProp.valueAtTime(atTime, preExpression);
+    oldPosition = positionProp.valueAtTime(atTime, preExpression);
     positionProp.setValue(centerPoint);
+    if (scaleProp.value[0] === 0 || scaleProp.value[1] === 0) {
+      throw new Error("Can't center anchor point when scale is 0");
+    }
     pDeltaX = (centerPoint[0] - oldPosition[0]) / (scaleProp.value[0] / 100);
     pDeltaY = (centerPoint[1] - oldPosition[1]) / (scaleProp.value[1] / 100);
     newAnchor = [oldAnchor[0] + pDeltaX, oldAnchor[1] + pDeltaY];
@@ -3737,6 +3767,17 @@ NFHighlightControlLayer = (function(superClass) {
 
 
   /**
+  Returns the highlight name
+  @memberof NFHighlightControlLayer
+  @returns {String} the name of the highlight
+   */
+
+  NFHighlightControlLayer.prototype.highlightName = function() {
+    return this.highlighterEffect().name;
+  };
+
+
+  /**
   Returns the AV Highlight Control effect
   @memberof NFHighlightControlLayer
   @returns {Property} the AV Highlighter Control property on the control layer
@@ -3779,11 +3820,13 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
   Returns the name for a control layer for a given PDF Number and highlight
   @memberof NFHighlightControlLayer
   @param {String} num - the PDF Number
-  @param {NFHighlightLayer} highlight - the highlight
+  @param {NFHighlightLayer | String} highlight - the highlight or highlight layer name
   @returns {String} the appropriate name
    */
   nameForPDFNumberAndHighlight: function(num, highlight) {
-    return num + " - " + highlight.layer.name + " Highlight Control";
+    var highlightName, ref;
+    highlightName = ((ref = highlight.layer) != null ? ref.name : void 0) || highlight;
+    return num + " - " + highlightName + " Highlight Control";
   },
 
   /**

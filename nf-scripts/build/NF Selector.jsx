@@ -113,7 +113,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, citeButton, customPrepButton, goButton, importPrepButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
+  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, citeButton, customPrepButton, goButton, hideButton, importPrepButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -354,10 +354,22 @@ getPanelUI = function() {
         refLayer.moveAfter(layerAbove);
         refLayer.layer.inPoint = thisPart.getTime();
         refLayer.transform("Position").expression = "";
-        refLayer.removeNFMarkers();
       }
-      bgSolid.moveAfter(refLayer);
       refLayer.centerAnchorPoint();
+      refLayer.removeNFMarkers();
+      refLayer.addInOutMarkersForProperty({
+        property: refLayer.transform("Scale"),
+        startEquation: EasingEquation.quart.out,
+        startValue: [0, 0, 0],
+        length: 1
+      });
+      refLayer.addInOutMarkersForProperty({
+        property: refLayer.transform("Opacity"),
+        startEquation: EasingEquation.quart.out,
+        startValue: 0,
+        length: 1
+      });
+      bgSolid.moveAfter(refLayer);
       group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false);
       if (pickedHighlight) {
         controlLayer = choice.getControlLayer();
@@ -435,6 +447,80 @@ getPanelUI = function() {
       expandLookString: expandLookString != null ? expandLookString : null
     });
     return result = NFProject.layoutSingleInstruction(instruction);
+  };
+  hideButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.hide);
+  hideButton.onClick = function(w) {
+    var controlLayers, group, highlightName, layersToTrim, matchingPageLayers, partComp, pdfNumber, refLayers, selectedLayer, selectedLayers, time;
+    app.beginUndoGroup("Hide Element (via NF Selector)");
+    partComp = NFProject.activeComp();
+    if (!(partComp instanceof NFPartComp)) {
+      return alert("Can only do this in a part comp");
+    }
+    time = partComp.getTime();
+    selectedLayers = NFProject.selectedLayers();
+    if (selectedLayers.count() !== 1) {
+      return alert("Wrong number of selected layers. Please select a single layer and run again");
+    } else {
+      selectedLayer = selectedLayers.get(0);
+      if (selectedLayer.getName().indexOf("^ Backing") >= 0) {
+        selectedLayer = selectedLayer.getParent();
+      } else if (selectedLayer instanceof NFHighlightControlLayer) {
+        group = new NFPaperLayerGroup(selectedLayer.getParent());
+        refLayers = group.getChildren().searchLayers("[ref]").searchLayers(selectedLayer.highlightName());
+        if (refLayers.count() !== 1) {
+          return alert("I couldn't find the layers to trim. Try selecting only the ref layer and trying again");
+        }
+        selectedLayer = refLayers.get(0);
+      }
+      if (selectedLayer instanceof NFPageLayer) {
+        if (selectedLayer.getName().indexOf("[+]") >= 0 && partComp.getRect().intersectsWith(selectedLayer.sourceRect(time))) {
+          selectedLayer.layer.outPoint = time;
+          selectedLayer.slideOut();
+        } else if (selectedLayer.getName().indexOf("[ref]") >= 0) {
+          layersToTrim = selectedLayer.getChildren().add(selectedLayer);
+          highlightName = selectedLayer.getName().match(/\(([^)]+)\)/)[1];
+          pdfNumber = selectedLayer.getPDFNumber();
+          controlLayers = partComp.searchLayers(NFHighlightControlLayer.nameForPDFNumberAndHighlight(pdfNumber, highlightName));
+          if (controlLayers.count() !== 0) {
+            controlLayers.forEach((function(_this) {
+              return function(cLayer) {
+                return layersToTrim.add(cLayer);
+              };
+            })(this));
+          }
+          matchingPageLayers = partComp.layersForPage(selectedLayer.getPageComp());
+          if (matchingPageLayers.count() !== 0) {
+            matchingPageLayers.forEach((function(_this) {
+              return function(pLayer) {
+                if (!partComp.getRect().intersectsWith(pLayer.sourceRect(time))) {
+                  return layersToTrim.add(pLayer);
+                }
+              };
+            })(this));
+          }
+          layersToTrim.forEach((function(_this) {
+            return function(layer) {
+              return layer.layer.outPoint = time;
+            };
+          })(this));
+          selectedLayer.addInOutMarkersForProperty({
+            property: selectedLayer.transform("Scale"),
+            endEquation: EasingEquation.quart["in"],
+            endValue: [0, 0, 0],
+            length: 1
+          });
+          selectedLayer.addInOutMarkersForProperty({
+            property: selectedLayer.transform("Opacity"),
+            endEquation: EasingEquation.quart["in"],
+            endValue: 0,
+            length: 1
+          });
+        } else {
+          throw new Error("Something's wrong with this layer's name...");
+        }
+      }
+    }
+    return app.endUndoGroup();
   };
   citeButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.book);
   citeButton.onClick = function(w) {

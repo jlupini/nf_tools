@@ -266,7 +266,7 @@ class NFLayer extends NFObject
   @returns {NFLayer | null} the parent layer, or null if no parent
   ###
   getParent: ->
-    return new NFLayer(@layer.parent) if @layer.parent?
+    return new NFLayer(@layer.parent).getSpecializedLayer() if @layer.parent?
     return null
 
   ###*
@@ -671,9 +671,12 @@ class NFLayer extends NFObject
   more accurate
   @memberof NFLayer
   @param {boolean} [useMasks=yes] whether to look at masks to narrow the size and shape of layer.
+  @param {float} [atTime = currentTime] the time to center the anchor point at (in case scale changes)
+  @param {boolean} [preExpression = no] whether to look at the value and ignore the calculated expression value
   @returns {NFLayer} self
   ###
-  centerAnchorPoint: (useMasks = yes) ->
+  centerAnchorPoint: (useMasks = yes, atTime, preExpression = no) ->
+    atTime ?= @containingComp().getTime()
     parent = @getParent()
     @setParent null
 
@@ -681,14 +684,14 @@ class NFLayer extends NFObject
       combinedRect = null
       for i in [1..@mask().numProperties]
         mask = @mask().property(i)
-        maskRect = NFTools.rectFromShape(mask.property(1).value)
+        maskRect = NFTools.rectFromShape(mask.property(1).valueAtTime(atTime, preExpression))
         if combinedRect?
           combinedRect = combinedRect.combineWith maskRect
         else
           combinedRect = maskRect
 
-      combinedRelativeRect = @relativeRect combinedRect
-      sourceRect = @sourceRect()
+      combinedRelativeRect = @relativeRect combinedRect, atTime
+      sourceRect = @sourceRect atTime
 
       finalRect = sourceRect.rectFromIntersect(combinedRelativeRect)
       centerPoint = finalRect.centerPoint()
@@ -700,10 +703,16 @@ class NFLayer extends NFObject
     positionProp = @transform "Position"
     scaleProp = @transform "Scale"
 
-    oldAnchor = anchorProp.value
-    oldPosition = positionProp.value
+    if anchorProp.numKeys + positionProp.numKeys > 0
+      throw new Error "Can't center anchor point when anchor or position are keyframed"
+
+    oldAnchor = anchorProp.valueAtTime atTime, preExpression
+    oldPosition = positionProp.valueAtTime atTime, preExpression
 
     positionProp.setValue centerPoint
+
+    if scaleProp.value[0] is 0 or scaleProp.value[1] is 0
+      throw new Error "Can't center anchor point when scale is 0"
 
     pDeltaX = (centerPoint[0] - oldPosition[0]) / (scaleProp.value[0]/100)
     pDeltaY = (centerPoint[1] - oldPosition[1]) / (scaleProp.value[1]/100)

@@ -31,6 +31,18 @@ class NFComp extends NFObject
     return @comp.name
 
   ###*
+  Gets the comp's rect
+  @memberof NFComp
+  @returns {Rect} The comp's rect
+  ###
+  getRect: ->
+    return new Rect
+      left: 0
+      top: 0
+      width: @comp.width
+      height: @comp.height
+
+  ###*
   Gets the comp's unique ID
   @memberof NFComp
   @returns {String} The comp's ID

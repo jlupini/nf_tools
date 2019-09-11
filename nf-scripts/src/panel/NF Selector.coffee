@@ -281,7 +281,6 @@ getPanelUI = ->
 
       # FIXME: Allow multiple selections so you can show expands too and frame they up together with a 'combineRects' function
       scaleFactor = refLayer.getScaleFactorToFrameUp
-        # highlight: if pickedHighlight then choice else null
         rect: refLayer.relativeRect choiceRect
       scaleProp = refLayer.transform "Scale"
       oldScale = scaleProp.value
@@ -289,7 +288,6 @@ getPanelUI = ->
       scaleProp.setValue [newScale, newScale]
 
       positionDelta = refLayer.getPositionDeltaToFrameUp
-        # highlight: if pickedHighlight then choice else null
         rect: refLayer.relativeRect choiceRect
       positionProp = refLayer.transform "Position"
       oldPosition = positionProp.value
@@ -349,10 +347,22 @@ getPanelUI = ->
         refLayer.moveAfter layerAbove
         refLayer.layer.inPoint = thisPart.getTime()
         refLayer.transform("Position").expression = ""
-        refLayer.removeNFMarkers()
-      bgSolid.moveAfter refLayer
 
+      # Animate In
       refLayer.centerAnchorPoint()
+      refLayer.removeNFMarkers()
+      refLayer.addInOutMarkersForProperty
+        property: refLayer.transform "Scale"
+        startEquation: EasingEquation.quart.out
+        startValue: [0, 0, 0]
+        length: 1
+      refLayer.addInOutMarkersForProperty
+        property: refLayer.transform "Opacity"
+        startEquation: EasingEquation.quart.out
+        startValue: 0
+        length: 1
+
+      bgSolid.moveAfter refLayer
 
       group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false)
       if pickedHighlight
@@ -429,6 +439,74 @@ getPanelUI = ->
       instruction: dictObject
       expandLookString: expandLookString ? null
     result = NFProject.layoutSingleInstruction instruction
+
+  hideButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.hide)
+  hideButton.onClick = (w) ->
+    app.beginUndoGroup "Hide Element (via NF Selector)"
+
+    partComp = NFProject.activeComp()
+    return alert "Can only do this in a part comp" unless partComp instanceof NFPartComp
+    time = partComp.getTime()
+
+    # Get selected layer
+    selectedLayers = NFProject.selectedLayers()
+    if selectedLayers.count() isnt 1
+      return alert "Wrong number of selected layers. Please select a single layer and run again"
+    else
+      selectedLayer = selectedLayers.get(0)
+
+      # Switch the selected layer to the relevant parent if we've clicked the backing or control layer
+      if selectedLayer.getName().indexOf("^ Backing") >= 0
+        selectedLayer = selectedLayer.getParent()
+      else if selectedLayer instanceof NFHighlightControlLayer
+        group = new NFPaperLayerGroup selectedLayer.getParent()
+        refLayers = group.getChildren().searchLayers("[ref]").searchLayers(selectedLayer.highlightName())
+        if refLayers.count() isnt 1
+          return alert "I couldn't find the layers to trim. Try selecting only the ref layer and trying again"
+        selectedLayer = refLayers.get(0)
+
+      if selectedLayer instanceof NFPageLayer
+        # If the layer is a visible, initted page layer
+        if selectedLayer.getName().indexOf("[+]") >= 0 and partComp.getRect().intersectsWith(selectedLayer.sourceRect(time))
+          selectedLayer.layer.outPoint = time
+          selectedLayer.slideOut()
+        else if selectedLayer.getName().indexOf("[ref]") >= 0
+          # Let's get all the layers that are children of this layer and end them here too
+          layersToTrim = selectedLayer.getChildren().add selectedLayer
+
+          # Find and add the control layer
+          highlightName = selectedLayer.getName().match(/\(([^)]+)\)/)[1]
+          pdfNumber = selectedLayer.getPDFNumber()
+          controlLayers = partComp.searchLayers NFHighlightControlLayer.nameForPDFNumberAndHighlight pdfNumber, highlightName
+          unless controlLayers.count() is 0
+            controlLayers.forEach (cLayer) =>
+              layersToTrim.add cLayer
+
+          # Find and add any offscreen page layers
+          matchingPageLayers = partComp.layersForPage(selectedLayer.getPageComp())
+          unless matchingPageLayers.count() is 0
+            matchingPageLayers.forEach (pLayer) =>
+              # Add these layers if they aren't inside the visible area
+              layersToTrim.add pLayer unless partComp.getRect().intersectsWith(pLayer.sourceRect(time))
+
+          layersToTrim.forEach (layer) =>
+            layer.layer.outPoint = time
+
+          selectedLayer.addInOutMarkersForProperty
+            property: selectedLayer.transform "Scale"
+            endEquation: EasingEquation.quart.in
+            endValue: [0, 0, 0]
+            length: 1
+          selectedLayer.addInOutMarkersForProperty
+            property: selectedLayer.transform "Opacity"
+            endEquation: EasingEquation.quart.in
+            endValue: 0
+            length: 1
+
+        else throw new Error "Something's wrong with this layer's name..."
+
+
+    app.endUndoGroup()
 
   citeButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.book)
   citeButton.onClick = (w) ->
