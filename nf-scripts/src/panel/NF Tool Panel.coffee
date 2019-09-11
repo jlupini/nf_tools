@@ -1,4 +1,4 @@
-$.evalFile "runtimeLibraries.jsx"
+$.evalFile File($.fileName).path + "/runtimeLibraries.jsx"
 
 _ = {}
 cacheFileName = "combinedTranscript.json"
@@ -19,21 +19,15 @@ toolRegistry =
 
       setupMainComp:
         name: "Setup Main Comp"
-        automaticUndo: no
-        callback: ->
-          openScript "nf_SetupMainComp.jsx"
+        callbackScript: "nf_SetupMainComp.jsx"
 
       setupHighlightLayer:
         name: "Setup Highlight Layer"
-        automaticUndo: no
-        callback: ->
-          openScript "nf_SetupHighlightLayer.jsx"
+        callbackScript: "nf_SetupHighlightLayer.jsx"
 
       precomposePDFs:
         name: "Precompose PDFs"
-        automaticUndo: no
-        callback: ->
-          openScript "nf_Precompose PDF Pages.jsx"
+        callbackScript: "nf_Precompose PDF Pages.jsx"
 
   layout:
 
@@ -307,12 +301,10 @@ toolRegistry =
 
       addGaussyLayer:
         name: "Add Gaussy"
-        automaticUndo: no
         callbackScript: "nf_Gaussy.jsx"
 
       addEmphasis:
         name: "Emphasizer"
-        automaticUndo: no
         callbackScript: "nf_Emphasizer.jsx"
 
       addSpotlightMarker:
@@ -561,11 +553,10 @@ getPanelUI = ->
     if choice.callback?
       app.beginUndoGroup "NF Tool: #{choice.name}"
       choice.callback()
-      @active = false
       app.endUndoGroup()
     else
       openScript choice.callbackScript
-      @active = false
+    @active = false
 
   # Layout + Resize handling
   panel.layout.layout(true)

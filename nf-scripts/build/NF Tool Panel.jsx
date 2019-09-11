@@ -1,6 +1,6 @@
 var _, cacheFileName, getPanelUI, main, openScript, panelTest, toolRegistry;
 
-$.evalFile("runtimeLibraries.jsx");
+$.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
 _ = {};
 
@@ -21,24 +21,15 @@ toolRegistry = {
     tools: {
       setupMainComp: {
         name: "Setup Main Comp",
-        automaticUndo: false,
-        callback: function() {
-          return openScript("nf_SetupMainComp.jsx");
-        }
+        callbackScript: "nf_SetupMainComp.jsx"
       },
       setupHighlightLayer: {
         name: "Setup Highlight Layer",
-        automaticUndo: false,
-        callback: function() {
-          return openScript("nf_SetupHighlightLayer.jsx");
-        }
+        callbackScript: "nf_SetupHighlightLayer.jsx"
       },
       precomposePDFs: {
         name: "Precompose PDFs",
-        automaticUndo: false,
-        callback: function() {
-          return openScript("nf_Precompose PDF Pages.jsx");
-        }
+        callbackScript: "nf_Precompose PDF Pages.jsx"
       }
     }
   },
@@ -325,12 +316,10 @@ toolRegistry = {
       },
       addGaussyLayer: {
         name: "Add Gaussy",
-        automaticUndo: false,
         callbackScript: "nf_Gaussy.jsx"
       },
       addEmphasis: {
         name: "Emphasizer",
-        automaticUndo: false,
         callbackScript: "nf_Emphasizer.jsx"
       },
       addSpotlightMarker: {
@@ -622,12 +611,11 @@ getPanelUI = function() {
     if (choice.callback != null) {
       app.beginUndoGroup("NF Tool: " + choice.name);
       choice.callback();
-      this.active = false;
-      return app.endUndoGroup();
+      app.endUndoGroup();
     } else {
       openScript(choice.callbackScript);
-      return this.active = false;
     }
+    return this.active = false;
   };
   panel.layout.layout(true);
   panel.layout.resize();
