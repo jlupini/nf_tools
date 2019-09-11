@@ -367,6 +367,7 @@ getPanelUI = function() {
       targetPageLayer.transform('Position').setValue([439, 202]);
       targetPageLayer.slideIn();
       targetPageLayer.getPaperLayerGroup().getCitationLayer().show();
+      targetPageLayer.moveAfter(thisPart.greenscreenLayer());
     }
     this.active = false;
     return app.endUndoGroup();

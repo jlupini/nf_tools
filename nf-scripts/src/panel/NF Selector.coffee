@@ -244,6 +244,7 @@ getPanelUI = ->
     throw new Error "This operation can only be performed in a part comp." unless thisPart instanceof NFPartComp
 
     # FIXME: Don't insert a new page if there's already a perfectly good one there ya dummy
+
     # Check if this page already exists or not.
     layersForPage = thisPart.layersForPage choicePage
 
@@ -366,6 +367,9 @@ getPanelUI = ->
 
       # Show the citation
       targetPageLayer.getPaperLayerGroup().getCitationLayer().show()
+
+      # Move the target layer below the greenscreen
+      targetPageLayer.moveAfter thisPart.greenscreenLayer()
 
     @active = false
     app.endUndoGroup()

@@ -1,4 +1,4 @@
-var backdropFile, backdropFileName, backdropLayer, bgLayer, currentMarker, currentTime, dotOverlayFile, dotOverlayFileName, dotOverlayLayer, duplicatedFootageLayer, fadeLayer, fadeOpacity, fileName, footageFile, footageLayer, i, j, mainComp, mainCompName, markerCount, markerStream, newComp, newCompLayer, newCompName, newComps, partsFolder, precomposedFootageLayer, prevTime, ref, rootFolder;
+var backdropFile, backdropFileName, backdropLayer, bgLayer, currentMarker, currentTime, dotOverlayFile, dotOverlayFileName, dotOverlayLayer, duplicatedFootageLayer, fadeLayer, fadeOpacity, fileName, footageFile, footageLayer, footageLayerName, i, j, mainComp, mainCompName, markerCount, markerStream, newComp, newCompLayer, newCompName, newComps, partsFolder, precomposedFootageLayer, prevTime, ref, rootFolder;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
@@ -18,6 +18,8 @@ backdropFileName = "nf-bg-v01.ai";
 
 dotOverlayFileName = "particular-bg-overlay-v01.mov";
 
+footageLayerName = "GREENSCREEN";
+
 backdropFile = NFProject.findItem(backdropFileName);
 
 dotOverlayFile = NFProject.findItem(dotOverlayFileName);
@@ -29,6 +31,8 @@ if (!((backdropFile != null) && (dotOverlayFile != null))) {
 mainComp = app.project.items.addComp(mainCompName, 1920, 1080, 1.0, footageFile.duration, 29.9700012207031);
 
 footageLayer = mainComp.layers.add(footageFile);
+
+footageLayer.name = footageLayerName;
 
 footageLayer.property('Transform').property("Scale").setValue([50, 50]);
 
@@ -50,6 +54,7 @@ partsFolder = app.project.items.addFolder('Parts');
 
 for (i = j = 1, ref = markerCount + 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
   duplicatedFootageLayer = footageLayer.duplicate();
+  duplicatedFootageLayer.name = footageLayerName;
   duplicatedFootageLayer.inPoint = prevTime;
   if (i === markerCount + 1) {
     currentTime = duplicatedFootageLayer.outPoint = mainComp.duration;

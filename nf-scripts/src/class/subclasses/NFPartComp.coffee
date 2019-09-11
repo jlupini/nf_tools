@@ -325,7 +325,7 @@ class NFPartComp extends NFComp
   only one of .above, .below or .at
   @param {NFLayer} [model.below] - the layer to insert the page below. Can use
   only one of .above, .below or .at
-  @param {int} [model.at=1] - the index to insert the page at. Can use only
+  @param {int} [model.at=0] - the index to insert the page at. Can use only
   one of .above, .below or .at
   @param {boolean} [model.animate=no] whether to animate the page in
   @param {float} [model.time=Current Time] The time to insert at
@@ -339,7 +339,7 @@ class NFPartComp extends NFComp
     @log "Inserting page: #{model.page.comp.name}"
     throw new Error "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
 
-    model.at = 1 unless model.above? or model.below? or model.at?
+    model.at = 0 unless model.above? or model.below? or model.at?
     model.time = model.time ? @getTime()
     model.pageTurn = model.pageTurn ? NFPageLayer.PAGETURN_NONE
     model.continuous = model.continuous ? no
@@ -614,6 +614,20 @@ class NFPartComp extends NFComp
       return new NFPaperLayerGroup parentLayer
     else
       return null
+
+  ###*
+  Returns the greenscreen footage layer, or null if not found
+  @memberof NFPartComp
+  @returns {NFLayer | null} The greenscreen layer or null
+  ###
+  greenscreenLayer: ->
+    matchedLayers = @searchLayers "greenscreen", no
+
+    if matchedLayers.count() is 1
+      return matchedLayers.get 0
+    else
+      return null
+
 
 
   ###*

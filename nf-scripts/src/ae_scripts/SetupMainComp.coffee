@@ -10,6 +10,7 @@ throw new Error "No footage file selected!" unless footageFile?
 # Check that all the other assets we need exist
 backdropFileName = "nf-bg-v01.ai"
 dotOverlayFileName = "particular-bg-overlay-v01.mov"
+footageLayerName = "GREENSCREEN"
 backdropFile = NFProject.findItem backdropFileName
 dotOverlayFile = NFProject.findItem dotOverlayFileName
 throw new Error "Can't find dependent files in the project" unless backdropFile? and dotOverlayFile?
@@ -17,6 +18,7 @@ throw new Error "Can't find dependent files in the project" unless backdropFile?
 # Make the main comp and add footage
 mainComp = app.project.items.addComp(mainCompName, 1920, 1080, 1.0, footageFile.duration, 29.9700012207031)
 footageLayer = mainComp.layers.add footageFile
+footageLayer.name = footageLayerName
 footageLayer.property('Transform').property("Scale").setValue [50, 50]
 
 # Get number of markers on layer
@@ -34,9 +36,10 @@ prevTime = 0
 rootFolder = app.project.rootFolder
 partsFolder = app.project.items.addFolder('Parts')
 
-# For each marker, duplicate the audio layer, set in and out points, then precompose
+# For each marker, duplicate the audio/video layer, set in and out points, then precompose
 for i in [1..markerCount+1]
   duplicatedFootageLayer = footageLayer.duplicate()
+  duplicatedFootageLayer.name = footageLayerName
   duplicatedFootageLayer.inPoint = prevTime
   if i is markerCount + 1
     currentTime = duplicatedFootageLayer.outPoint = mainComp.duration

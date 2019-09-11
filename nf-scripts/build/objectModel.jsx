@@ -265,15 +265,27 @@ NFComp = (function(superClass) {
    * the searchString in their name
    * @memberof NFComp
    * @param {string} searchString - The search string
+   * @param {boolean} [caseSensitive=yes] - whether to match case
    * @returns {NFLayerCollection} The found layers
    */
 
-  NFComp.prototype.searchLayers = function(searchString) {
+  NFComp.prototype.searchLayers = function(searchString, caseSensitive) {
     var foundLayers;
+    if (caseSensitive == null) {
+      caseSensitive = true;
+    }
     foundLayers = new NFLayerCollection;
+    if (!caseSensitive) {
+      searchString = searchString.toLowerCase();
+    }
     this.allLayers().forEach((function(_this) {
       return function(layer) {
-        if (layer.getName().indexOf(searchString) >= 0) {
+        var matchName;
+        matchName = layer.getName();
+        if (!caseSensitive) {
+          matchName = matchName.toLowerCase();
+        }
+        if (matchName.indexOf(searchString) >= 0) {
           return foundLayers.add(layer);
         }
       };
@@ -6238,7 +6250,7 @@ NFPartComp = (function(superClass) {
   only one of .above, .below or .at
   @param {NFLayer} [model.below] - the layer to insert the page below. Can use
   only one of .above, .below or .at
-  @param {int} [model.at=1] - the index to insert the page at. Can use only
+  @param {int} [model.at=0] - the index to insert the page at. Can use only
   one of .above, .below or .at
   @param {boolean} [model.animate=no] whether to animate the page in
   @param {float} [model.time=Current Time] The time to insert at
@@ -6256,7 +6268,7 @@ NFPartComp = (function(superClass) {
       throw new Error("No page given to insert...");
     }
     if (!((model.above != null) || (model.below != null) || (model.at != null))) {
-      model.at = 1;
+      model.at = 0;
     }
     model.time = (ref = model.time) != null ? ref : this.getTime();
     model.pageTurn = (ref1 = model.pageTurn) != null ? ref1 : NFPageLayer.PAGETURN_NONE;
@@ -6590,6 +6602,23 @@ NFPartComp = (function(superClass) {
     parentLayer = this.layerWithName(pdf.getName());
     if (parentLayer != null) {
       return new NFPaperLayerGroup(parentLayer);
+    } else {
+      return null;
+    }
+  };
+
+
+  /**
+  Returns the greenscreen footage layer, or null if not found
+  @memberof NFPartComp
+  @returns {NFLayer | null} The greenscreen layer or null
+   */
+
+  NFPartComp.prototype.greenscreenLayer = function() {
+    var matchedLayers;
+    matchedLayers = this.searchLayers("greenscreen", false);
+    if (matchedLayers.count() === 1) {
+      return matchedLayers.get(0);
     } else {
       return null;
     }
