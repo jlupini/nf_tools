@@ -393,7 +393,7 @@ getPanelUI = function() {
   };
   linkButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.link);
   linkButton.onClick = function(w) {
-    var choice, group, pickedHighlight, ref, thisPart;
+    var choice, controlLayer, group, pickedHighlight, ref, thisPart;
     choice = (ref = treeView.selection) != null ? ref.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -411,7 +411,9 @@ getPanelUI = function() {
     if (group == null) {
       return alert("Can't find this PDF's group (#" + (choice.getPDFNumber()) + ") in this part");
     }
-    return group.assignControlLayer(choice, null, false);
+    group.assignControlLayer(choice, null, false);
+    controlLayer = choice.getControlLayer();
+    return controlLayer.removeSpotlights();
   };
   goButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.play);
   goButton.onClick = function(w) {

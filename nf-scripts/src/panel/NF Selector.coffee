@@ -406,6 +406,9 @@ getPanelUI = ->
 
     group.assignControlLayer(choice, null, no)
 
+    controlLayer = choice.getControlLayer()
+    controlLayer.removeSpotlights()
+
 
   goButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.play)
   goButton.onClick = (w) ->
