@@ -278,8 +278,10 @@ getPanelUI = function() {
         page: choicePage,
         continuous: true
       });
-      newPageLayer.layer.startTime = startTime;
-      newPageLayer.layer.inPoint = currTime;
+      if (startTime != null) {
+        newPageLayer.layer.startTime = startTime;
+        newPageLayer.layer.inPoint = currTime;
+      }
       group = newPageLayer.getPaperLayerGroup();
       newPageLayer.transform('Scale').setValue([23, 23, 23]);
       newPageLayer.transform('Position').setValue([1560, -150]);
@@ -290,7 +292,10 @@ getPanelUI = function() {
     }
     if (pickedHighlight || pickedShape) {
       refLayer = targetPageLayer.duplicateAsReferenceLayer();
-      refLayer.layer.name = (refLayer.getName()) + " (" + (choice.getName()) + ")";
+      refLayer.layer.name = (refLayer.getName()) + " <" + (choice.getName()) + ">";
+      if (newPageLayer == null) {
+        refLayer.transform("Position").expression = "";
+      }
       choiceRect = choice.sourceRect();
       if (thisPart.getTime() !== currTime) {
         thisPart.setTime(currTime);
@@ -361,7 +366,6 @@ getPanelUI = function() {
         layerAbove = (ref1 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref1 : targetPageLayer.getPaperLayerGroup().paperParent;
         refLayer.moveAfter(layerAbove);
         refLayer.layer.inPoint = thisPart.getTime();
-        refLayer.transform("Position").expression = "";
       }
       refLayer.centerAnchorPoint();
       refLayer.removeNFMarkers();
@@ -491,7 +495,7 @@ getPanelUI = function() {
           selectedLayer.slideOut();
         } else if (selectedLayer.getName().indexOf("[ref]") >= 0) {
           layersToTrim = selectedLayer.getChildren().add(selectedLayer);
-          highlightName = selectedLayer.getName().match(/\(([^)]+)\)/)[1];
+          highlightName = selectedLayer.getName().match(/\<(.*?)\>/)[1];
           pdfNumber = selectedLayer.getPDFNumber();
           controlLayers = partComp.searchLayers(NFHighlightControlLayer.nameForPDFNumberAndHighlight(pdfNumber, highlightName));
           if (controlLayers.count() !== 0) {

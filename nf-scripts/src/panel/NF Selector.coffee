@@ -267,8 +267,9 @@ getPanelUI = ->
       newPageLayer = thisPart.insertPage
         page: choicePage
         continuous: yes
-      newPageLayer.layer.startTime = startTime
-      newPageLayer.layer.inPoint = currTime
+      if startTime?
+        newPageLayer.layer.startTime = startTime
+        newPageLayer.layer.inPoint = currTime
       group = newPageLayer.getPaperLayerGroup()
       newPageLayer.transform('Scale').setValue [23,23,23]
       newPageLayer.transform('Position').setValue [1560, -150]
@@ -279,7 +280,8 @@ getPanelUI = ->
     if pickedHighlight or pickedShape
       # Duplicate and convert to reference layer
       refLayer = targetPageLayer.duplicateAsReferenceLayer()
-      refLayer.layer.name = "#{refLayer.getName()} (#{choice.getName()})"
+      refLayer.layer.name = "#{refLayer.getName()} <#{choice.getName()}>"
+      refLayer.transform("Position").expression = "" unless newPageLayer?
 
       # Frame up that baby
       choiceRect = choice.sourceRect()
@@ -354,7 +356,6 @@ getPanelUI = ->
         layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
         refLayer.moveAfter layerAbove
         refLayer.layer.inPoint = thisPart.getTime()
-        refLayer.transform("Position").expression = ""
 
       # Animate In
       refLayer.centerAnchorPoint()
@@ -487,7 +488,7 @@ getPanelUI = ->
           layersToTrim = selectedLayer.getChildren().add selectedLayer
 
           # Find and add the control layer
-          highlightName = selectedLayer.getName().match(/\(([^)]+)\)/)[1]
+          highlightName = selectedLayer.getName().match(/\<(.*?)\>/)[1]
           pdfNumber = selectedLayer.getPDFNumber()
           controlLayers = partComp.searchLayers NFHighlightControlLayer.nameForPDFNumberAndHighlight pdfNumber, highlightName
           unless controlLayers.count() is 0
