@@ -90,9 +90,11 @@ class NFPageComp extends NFComp
   addHighlightDataLayerFor: (targetComp) ->
     targetCompName = targetComp.comp.name
     unless @layerWithName(targetCompName)?
+      currTime = targetComp.getTime()
       dataLayer = @addTextLayer
         at: @allLayers().count()-1
         time: 0
+      targetComp.setTime(currTime) unless targetComp.getTime() is currTime
       expression = NFTools.readExpression "highlight-data-expression",
         TARGET_COMP_NAME: targetCompName
         PAGE_BASE_NAME: @getPageBaseName()

@@ -244,14 +244,18 @@ getPanelUI = ->
     thisPart = NFProject.activeComp()
     throw new Error "This operation can only be performed in a part comp." unless thisPart instanceof NFPartComp
 
+    currTime = thisPart.getTime()
+
     # FIXME: Don't insert a new page if there's already a perfectly good one there ya dummy
 
     # Check if this page already exists or not.
     layersForPage = thisPart.layersForPage choicePage
 
     targetPageLayer = null
+    startTime = null
     unless layersForPage.isEmpty()
       layersForPage.forEach (layer) =>
+        startTime = layer.layer.startTime
         targetPageLayer = layer if layer.isActive()
 
     # FIXME: All the positioning stuff fails if there's already a version of the
@@ -263,6 +267,8 @@ getPanelUI = ->
       newPageLayer = thisPart.insertPage
         page: choicePage
         continuous: yes
+      newPageLayer.layer.startTime = startTime
+      newPageLayer.layer.inPoint = currTime
       group = newPageLayer.getPaperLayerGroup()
       newPageLayer.transform('Scale').setValue [23,23,23]
       newPageLayer.transform('Position').setValue [1560, -150]
@@ -276,7 +282,6 @@ getPanelUI = ->
       refLayer.layer.name = "#{refLayer.getName()} (#{choice.getName()})"
 
       # Frame up that baby
-      currTime = thisPart.getTime()
       choiceRect = choice.sourceRect()
       thisPart.setTime(currTime) unless thisPart.getTime() is currTime
 

@@ -4563,13 +4563,17 @@ NFPageComp = (function(superClass) {
    */
 
   NFPageComp.prototype.addHighlightDataLayerFor = function(targetComp) {
-    var dataLayer, expression, targetCompName;
+    var currTime, dataLayer, expression, targetCompName;
     targetCompName = targetComp.comp.name;
     if (this.layerWithName(targetCompName) == null) {
+      currTime = targetComp.getTime();
       dataLayer = this.addTextLayer({
         at: this.allLayers().count() - 1,
         time: 0
       });
+      if (targetComp.getTime() !== currTime) {
+        targetComp.setTime(currTime);
+      }
       expression = NFTools.readExpression("highlight-data-expression", {
         TARGET_COMP_NAME: targetCompName,
         PAGE_BASE_NAME: this.getPageBaseName()

@@ -239,7 +239,7 @@ getPanelUI = function() {
   buttonGroup.maximumSize = [300, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
   addButton.onClick = function(w) {
-    var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, paddedRelRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, targetPageLayer, thisPart;
+    var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, paddedRelRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, startTime, targetPageLayer, thisPart;
     choice = (ref = treeView.selection) != null ? ref.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -259,11 +259,14 @@ getPanelUI = function() {
     if (!(thisPart instanceof NFPartComp)) {
       throw new Error("This operation can only be performed in a part comp.");
     }
+    currTime = thisPart.getTime();
     layersForPage = thisPart.layersForPage(choicePage);
     targetPageLayer = null;
+    startTime = null;
     if (!layersForPage.isEmpty()) {
       layersForPage.forEach((function(_this) {
         return function(layer) {
+          startTime = layer.layer.startTime;
           if (layer.isActive()) {
             return targetPageLayer = layer;
           }
@@ -275,6 +278,8 @@ getPanelUI = function() {
         page: choicePage,
         continuous: true
       });
+      newPageLayer.layer.startTime = startTime;
+      newPageLayer.layer.inPoint = currTime;
       group = newPageLayer.getPaperLayerGroup();
       newPageLayer.transform('Scale').setValue([23, 23, 23]);
       newPageLayer.transform('Position').setValue([1560, -150]);
@@ -286,7 +291,6 @@ getPanelUI = function() {
     if (pickedHighlight || pickedShape) {
       refLayer = targetPageLayer.duplicateAsReferenceLayer();
       refLayer.layer.name = (refLayer.getName()) + " (" + (choice.getName()) + ")";
-      currTime = thisPart.getTime();
       choiceRect = choice.sourceRect();
       if (thisPart.getTime() !== currTime) {
         thisPart.setTime(currTime);
