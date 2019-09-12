@@ -239,7 +239,7 @@ getPanelUI = function() {
   buttonGroup.maximumSize = [300, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
   addButton.onClick = function(w) {
-    var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, paddedRelRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, targetPageLayer, thisPart;
+    var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, paddedRelRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, targetPageLayer, thisPart;
     choice = (ref = treeView.selection) != null ? ref.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -383,7 +383,10 @@ getPanelUI = function() {
       targetPageLayer.transform('Position').setValue([439, 202]);
       targetPageLayer.slideIn();
       targetPageLayer.getPaperLayerGroup().getCitationLayer().show();
-      targetPageLayer.moveAfter(thisPart.greenscreenLayer());
+      gsLayer = thisPart.greenscreenLayer();
+      if (gsLayer != null) {
+        targetPageLayer.moveAfter(gsLayer);
+      }
     }
     this.active = false;
     return app.endUndoGroup();

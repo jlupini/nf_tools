@@ -382,7 +382,8 @@ getPanelUI = ->
       targetPageLayer.getPaperLayerGroup().getCitationLayer().show()
 
       # Move the target layer below the greenscreen
-      targetPageLayer.moveAfter thisPart.greenscreenLayer()
+      gsLayer = thisPart.greenscreenLayer()
+      targetPageLayer.moveAfter gsLayer if gsLayer?
 
     @active = false
     app.endUndoGroup()
