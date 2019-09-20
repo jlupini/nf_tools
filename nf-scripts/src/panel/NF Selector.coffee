@@ -479,10 +479,11 @@ getPanelUI = ->
         selectedLayer = refLayers.get(0)
 
       if selectedLayer instanceof NFPageLayer
-        # If the layer is a visible, initted page layer
+        # If the layer is a visible, initted page layer, and is active at the moment
         if selectedLayer.getName().indexOf("[+]") >= 0 and partComp.getRect().intersectsWith(selectedLayer.sourceRect(time))
-          selectedLayer.layer.outPoint = time
-          selectedLayer.slideOut()
+          if selectedLayer.outPoint >= time
+            selectedLayer.layer.outPoint = time
+            selectedLayer.slideOut()
         else if selectedLayer.getName().indexOf("[ref]") >= 0
           # Let's get all the layers that are children of this layer and end them here too
           layersToTrim = selectedLayer.getChildren().add selectedLayer

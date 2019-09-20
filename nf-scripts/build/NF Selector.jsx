@@ -491,8 +491,10 @@ getPanelUI = function() {
       }
       if (selectedLayer instanceof NFPageLayer) {
         if (selectedLayer.getName().indexOf("[+]") >= 0 && partComp.getRect().intersectsWith(selectedLayer.sourceRect(time))) {
-          selectedLayer.layer.outPoint = time;
-          selectedLayer.slideOut();
+          if (selectedLayer.outPoint >= time) {
+            selectedLayer.layer.outPoint = time;
+            selectedLayer.slideOut();
+          }
         } else if (selectedLayer.getName().indexOf("[ref]") >= 0) {
           layersToTrim = selectedLayer.getChildren().add(selectedLayer);
           highlightName = selectedLayer.getName().match(/\<(.*?)\>/)[1];
