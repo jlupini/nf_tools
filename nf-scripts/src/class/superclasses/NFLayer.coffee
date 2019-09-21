@@ -676,16 +676,14 @@ class NFLayer extends NFObject
     return sourceRect.centerPoint()
 
   ###*
-  Moves the anchor point of a layer to it's sourceRect's center without changing
-  the layer's position in the comp. Optionally, can use masks to make anchor point
-  more accurate
+  Returns the value to achieve centerAnchorPoint
   @memberof NFLayer
   @param {boolean} [useMasks=yes] whether to look at masks to narrow the size and shape of layer.
   @param {float} [atTime = currentTime] the time to center the anchor point at (in case scale changes)
   @param {boolean} [preExpression = no] whether to look at the value and ignore the calculated expression value
-  @returns {NFLayer} self
+  @returns {Array} the new position and anchor point values
   ###
-  centerAnchorPoint: (useMasks = yes, atTime, preExpression = no) ->
+  getCenterAnchorPointValue: (useMasks = yes, atTime, preExpression = no) ->
     atTime ?= @containingComp().getTime()
     parent = @getParent()
     @setParent null
@@ -713,13 +711,8 @@ class NFLayer extends NFObject
     positionProp = @transform "Position"
     scaleProp = @transform "Scale"
 
-    if anchorProp.numKeys + positionProp.numKeys > 0
-      throw new Error "Can't center anchor point when anchor or position are keyframed"
-
     oldAnchor = anchorProp.valueAtTime atTime, preExpression
     oldPosition = positionProp.valueAtTime atTime, preExpression
-
-    positionProp.setValue centerPoint
 
     if scaleProp.value[0] is 0 or scaleProp.value[1] is 0
       throw new Error "Can't center anchor point when scale is 0"
@@ -728,7 +721,31 @@ class NFLayer extends NFObject
     pDeltaY = (centerPoint[1] - oldPosition[1]) / (scaleProp.value[1]/100)
     newAnchor = [oldAnchor[0] + pDeltaX, oldAnchor[1] + pDeltaY]
 
-    anchorProp.setValue newAnchor
+    @setParent parent
+
+    return [centerPoint, newAnchor]
+
+  ###*
+  Moves the anchor point of a layer to it's sourceRect's center without changing
+  the layer's position in the comp. Optionally, can use masks to make anchor point
+  more accurate
+  @memberof NFLayer
+  @param {boolean} [useMasks=yes] whether to look at masks to narrow the size and shape of layer.
+  @param {float} [atTime = currentTime] the time to center the anchor point at (in case scale changes)
+  @param {boolean} [preExpression = no] whether to look at the value and ignore the calculated expression value
+  @returns {NFLayer} self
+  ###
+  centerAnchorPoint: (useMasks = yes, atTime, preExpression = no) ->
+    targetValues = @getCenterAnchorPointValue useMasks, atTime, preExpression
+
+    parent = @getParent()
+    @setParent null
+
+    anchorProp = @transform "Anchor Point"
+    positionProp = @transform "Position"
+
+    positionProp.setValue targetValues[0]
+    anchorProp.setValue targetValues[1]
 
     @setParent parent
     @

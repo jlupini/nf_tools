@@ -236,7 +236,7 @@ getPanelUI = ->
       choicePage = choice
     else if pickedShape or pickedHighlight
       choicePage = choice.containingComp()
-    else throw new Error "Looks like you picked a choice, but we can't figure out what it is. Hit the refresh button and try again"
+    else throw new Error "Looks like you picked something, but we can't figure out what it is. Hit the refresh button and try again"
 
     # First, bring in a continuous version of the page.
     thisPart = NFProject.activeComp()
@@ -259,6 +259,30 @@ getPanelUI = ->
     # FIXME: All the positioning stuff fails if there's already a version of the
     # group that's been used for old-style page tracking
 
+    # Check for expand animation
+    shouldExpand = no
+    bgSolid = null
+    if targetPageLayer? and pickedHighlight and choice.getName().indexOf("Expand") >= 0
+      # First, make sure we actually wanna do this. Is there an active ref that this expands the highlight of?
+      refLayers = thisPart.searchLayers("[ref]")
+      unless refLayers.isEmpty()
+        activeRefs = new NFLayerCollection()
+        refLayers.forEach (ref) =>
+          if ref.isActive()
+            if ref.getName().indexOf("Backing") < 0
+              activeRefs.add ref
+            else
+              bgSolid = ref
+        if activeRefs.count() > 1
+          return alert "Error\nCan't animate an expand if multiple matching refs are active"
+        else if activeRefs.count() is 1
+          refLayer = activeRefs.get(0)
+          refTargetName = refLayer.getName().match(/\<(.*?)\>/)[1]
+          if choice.getName().indexOf(refTargetName) >= 0
+            shouldExpand = yes
+            keyIn = currTime - 0.5
+            keyOut = currTime + 0.5
+
 
     if not targetPageLayer?
       # Insert the page
@@ -276,13 +300,20 @@ getPanelUI = ->
 
 
     if pickedHighlight or pickedShape
-      # Duplicate and convert to reference layer
-      refLayer = targetPageLayer.duplicateAsReferenceLayer()
-      refLayer.layer.name = "#{refLayer.getName()} <#{choice.getName()}>"
-      refLayer.transform("Position").expression = "" unless newPageLayer?
+
+      unless shouldExpand
+        # Duplicate and convert to reference layer
+        refLayer = targetPageLayer.duplicateAsReferenceLayer()
+        refLayer.layer.name = "#{refLayer.getName()} <#{choice.getName()}>"
+        refLayer.transform("Position").expression = "" unless newPageLayer?
 
       # Frame up that baby
       choiceRect = choice.sourceRect()
+      if shouldExpand
+        activeRefComp = new NFPageComp refLayer.layer.source
+        activeHighlight = activeRefComp.layerWithName refTargetName
+        activeHighlightRect = activeHighlight.sourceRect()
+        choiceRect = choiceRect.combineWith activeHighlightRect
       thisPart.setTime(currTime) unless thisPart.getTime() is currTime
 
       # FIXME: Allow multiple selections so you can show expands too and frame they up together with a 'combineRects' function
@@ -293,14 +324,27 @@ getPanelUI = ->
       scaleProp = refLayer.transform "Scale"
       oldScale = scaleProp.value
       newScale = oldScale[0] * scaleFactor
-      scaleProp.setValue [newScale, newScale]
+
+      if shouldExpand
+        scaleProp.setValuesAtTimes [keyIn, keyOut], [scaleProp.valueAtTime(currTime, yes), [newScale, newScale]]
+        scaleProp.easyEaseKeyTimes
+          keyTimes: [keyIn, keyOut]
+      else
+        scaleProp.setValue [newScale, newScale]
 
       positionDelta = refLayer.getPositionDeltaToFrameUp
         rect: refLayer.relativeRect choiceRect
       positionProp = refLayer.transform "Position"
       oldPosition = positionProp.value
       newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]]
-      positionProp.setValue newPosition
+
+      if shouldExpand
+        positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(currTime, yes), newPosition]
+        positionProp.easyEaseKeyTimes
+          keyTimes: [keyIn, keyOut]
+      else
+        positionProp.setValue newPosition
+
 
       # Make a mask over the text
       highlightThickness = if pickedHighlight then choice.highlighterEffect().property("Thickness").value else 0
@@ -309,43 +353,65 @@ getPanelUI = ->
         top: choiceRect.top - (highlightThickness/2)
         width: choiceRect.width
         height: choiceRect.height + highlightThickness
-      newMask = refLayer.mask().addProperty "Mask"
-      newMask.maskShape.setValue NFTools.shapeFromRect(paddedChoiceRect)
-      newMask.maskFeather.setValue [20,20]
-      newMask.maskExpansion.setValue 3
-      refLayer.effect("Drop Shadow").remove()
-      refLayer.effects().addProperty("ADBE Brightness & Contrast 2").property("Contrast").setValue(99)
-      refLayer.layer.blendingMode = BlendingMode.DARKEN
+      if shouldExpand
+        mask = refLayer.mask().property(1)
+        mask.maskShape.setValuesAtTimes [keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, yes), NFTools.shapeFromRect(paddedChoiceRect)]
+        mask.maskShape.easyEaseKeyTimes
+          keyTimes: [keyIn, keyOut]
+      else
+        newMask = refLayer.mask().addProperty "Mask"
+        newMask.maskShape.setValue NFTools.shapeFromRect(paddedChoiceRect)
+        newMask.maskFeather.setValue [20,20]
+        newMask.maskExpansion.setValue 3
+        refLayer.effect("Drop Shadow").remove()
+        refLayer.effects().addProperty("ADBE Brightness & Contrast 2").property("Contrast").setValue(99)
+        refLayer.layer.blendingMode = BlendingMode.DARKEN
 
       # Create a white BG box and attach it to the ref layer
-      bgSolid = thisPart.addSolid
-        color: [1,1,1]
-        name: "Backing for '#{refLayer.layer.name}'"
-      bgSolid.transform("Opacity").setValue 90
-      bgSolid.layer.motionBlur = true
-      bgSolid.setShy yes
+      unless shouldExpand
+        bgSolid = thisPart.addSolid
+          color: [1,1,1]
+          name: "Backing for '#{refLayer.layer.name}'"
+        bgSolid.transform("Opacity").setValue 90
+        bgSolid.layer.motionBlur = true
+        bgSolid.setShy yes
 
-      relRect = refLayer.relativeRect paddedChoiceRect
-
-      newMask = bgSolid.mask().addProperty "Mask"
-      newMask.maskShape.expression = NFTools.readExpression "backing-mask-expression",
-        TARGET_LAYER_NAME: refLayer.getName()
-        EDGE_PADDING: EDGE_PADDING
-      newMask.maskExpansion.setValue 24
-      bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
-        TARGET_LAYER_NAME: refLayer.getName()
-      shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow')
-      shadowProp.property('Opacity').setValue(76.5)
-      shadowProp.property('Direction').setValue(152)
-      shadowProp.property('Distance').setValue(20)
-      shadowProp.property('Softness').setValue(100)
+        newMask = bgSolid.mask().addProperty "Mask"
+        newMask.maskShape.expression = NFTools.readExpression "backing-mask-expression",
+          TARGET_LAYER_NAME: refLayer.getName()
+          EDGE_PADDING: EDGE_PADDING
+        newMask.maskExpansion.setValue 24
+        bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
+          TARGET_LAYER_NAME: refLayer.getName()
+        shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow')
+        shadowProp.property('Opacity').setValue(76.5)
+        shadowProp.property('Direction').setValue(152)
+        shadowProp.property('Distance').setValue(20)
+        shadowProp.property('Softness').setValue(100)
 
       # Move the whole thing to the bottom of the screen
+      if shouldExpand
+        anchorValues = refLayer.getCenterAnchorPointValue(yes, keyOut)
+
+        anchorProp = refLayer.transform "Anchor Point"
+        anchorProp.setValuesAtTimes [keyIn, keyOut], [anchorProp.valueAtTime(keyIn, yes), anchorValues[1]]
+        anchorProp.easyEaseKeyTimes
+          keyTimes: [keyIn, keyOut]
+        relRect = refLayer.relativeRect paddedChoiceRect, keyOut
+      else
+        relRect = refLayer.relativeRect paddedChoiceRect
       boxBottom = relRect.top + relRect.height + (EDGE_PADDING / 4)
       compBottom = thisPart.comp.height
       delta = compBottom - boxBottom
-      refPosition = refLayer.transform("Position").value
-      refLayer.transform("Position").setValue [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]
+
+      if shouldExpand
+        refPosition = positionProp.valueAtTime keyOut, yes
+        positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(keyIn, yes), [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]]
+        positionProp.easyEaseKeyTimes
+          keyTimes: [keyIn, keyOut]
+      else
+        refPosition = positionProp.value
+        positionProp.setValue [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]
 
       # Add the HCL
       group = targetPageLayer.getPaperLayerGroup()
@@ -353,23 +419,25 @@ getPanelUI = ->
       unless newPageLayer?
         layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
         refLayer.moveAfter layerAbove
-        refLayer.layer.inPoint = thisPart.getTime()
+        unless shouldExpand
+          refLayer.layer.inPoint = thisPart.getTime()
 
       # Animate In
-      refLayer.centerAnchorPoint()
-      refLayer.removeNFMarkers()
-      refLayer.addInOutMarkersForProperty
-        property: refLayer.transform "Scale"
-        startEquation: EasingEquation.quart.out
-        startValue: [0, 0, 0]
-        length: 1
-      refLayer.addInOutMarkersForProperty
-        property: refLayer.transform "Opacity"
-        startEquation: EasingEquation.quart.out
-        startValue: 0
-        length: 1
+      unless shouldExpand
+        refLayer.centerAnchorPoint()
+        refLayer.removeNFMarkers()
+        refLayer.addInOutMarkersForProperty
+          property: refLayer.transform "Scale"
+          startEquation: EasingEquation.quart.out
+          startValue: [0, 0, 0]
+          length: 1
+        refLayer.addInOutMarkersForProperty
+          property: refLayer.transform "Opacity"
+          startEquation: EasingEquation.quart.out
+          startValue: 0
+          length: 1
 
-      bgSolid.moveAfter refLayer
+        bgSolid.moveAfter refLayer
 
       group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false)
       if pickedHighlight

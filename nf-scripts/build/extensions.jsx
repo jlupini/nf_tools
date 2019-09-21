@@ -189,12 +189,12 @@ Eases an array of key times.
 @memberof Property
 @function easyEaseKeyTimes
 @param {Object} model - The options
-@param {float[]} keyTimes - the key times
+@param {float[]} model.keyTimes - the key times
 @param {KeyframeInterpolationType | KeyframeInterpolationType[]}
-[easeType=KeyframeInterpolationType.BEZIER] - the Keyframe Interpolation
+[model.easeType=KeyframeInterpolationType.BEZIER] - the Keyframe Interpolation
 Type to use, or an array of types the same length as the number of dimensions
 of the property
-@param {float | float[]} [easeWeight=33] - the weight of the ease, or an array
+@param {float | float[]} [model.easeWeight=33] - the weight of the ease, or an array
 of weights the same length as the number of dimensions of the property.
 @returns {Property} self
  */
@@ -217,11 +217,11 @@ Easy Eases an array of key indicies.
 @memberof Property
 @function easyEaseKeys
 @param {Object} model - The options
-@param {int[]} keys - the key indices
+@param {int[]} model.keys - the key indices
 @param {KeyframeInterpolationType | KeyframeInterpolationType[]}
-[easeType=KeyframeInterpolationType.BEZIER] - the Keyframe Interpolation
+[model.easeType=KeyframeInterpolationType.BEZIER] - the Keyframe Interpolation
 Type to use, or an array with two objects: the in type and out type.
-@param {float | float[]} [easeWeight=33] - the weight of the ease, or an array
+@param {float | float[]} [model.easeWeight=33] - the weight of the ease, or an array
 of weights with two objects: the in weight and out weight.
 @returns {Property} self
  */

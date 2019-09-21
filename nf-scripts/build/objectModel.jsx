@@ -1575,17 +1575,15 @@ NFLayer = (function(superClass) {
 
 
   /**
-  Moves the anchor point of a layer to it's sourceRect's center without changing
-  the layer's position in the comp. Optionally, can use masks to make anchor point
-  more accurate
+  Returns the value to achieve centerAnchorPoint
   @memberof NFLayer
   @param {boolean} [useMasks=yes] whether to look at masks to narrow the size and shape of layer.
   @param {float} [atTime = currentTime] the time to center the anchor point at (in case scale changes)
   @param {boolean} [preExpression = no] whether to look at the value and ignore the calculated expression value
-  @returns {NFLayer} self
+  @returns {Array} the new position and anchor point values
    */
 
-  NFLayer.prototype.centerAnchorPoint = function(useMasks, atTime, preExpression) {
+  NFLayer.prototype.getCenterAnchorPointValue = function(useMasks, atTime, preExpression) {
     var anchorProp, centerPoint, combinedRect, combinedRelativeRect, finalRect, i, j, mask, maskRect, newAnchor, oldAnchor, oldPosition, pDeltaX, pDeltaY, parent, positionProp, ref, scaleProp, sourceRect;
     if (useMasks == null) {
       useMasks = true;
@@ -1619,19 +1617,45 @@ NFLayer = (function(superClass) {
     anchorProp = this.transform("Anchor Point");
     positionProp = this.transform("Position");
     scaleProp = this.transform("Scale");
-    if (anchorProp.numKeys + positionProp.numKeys > 0) {
-      throw new Error("Can't center anchor point when anchor or position are keyframed");
-    }
     oldAnchor = anchorProp.valueAtTime(atTime, preExpression);
     oldPosition = positionProp.valueAtTime(atTime, preExpression);
-    positionProp.setValue(centerPoint);
     if (scaleProp.value[0] === 0 || scaleProp.value[1] === 0) {
       throw new Error("Can't center anchor point when scale is 0");
     }
     pDeltaX = (centerPoint[0] - oldPosition[0]) / (scaleProp.value[0] / 100);
     pDeltaY = (centerPoint[1] - oldPosition[1]) / (scaleProp.value[1] / 100);
     newAnchor = [oldAnchor[0] + pDeltaX, oldAnchor[1] + pDeltaY];
-    anchorProp.setValue(newAnchor);
+    this.setParent(parent);
+    return [centerPoint, newAnchor];
+  };
+
+
+  /**
+  Moves the anchor point of a layer to it's sourceRect's center without changing
+  the layer's position in the comp. Optionally, can use masks to make anchor point
+  more accurate
+  @memberof NFLayer
+  @param {boolean} [useMasks=yes] whether to look at masks to narrow the size and shape of layer.
+  @param {float} [atTime = currentTime] the time to center the anchor point at (in case scale changes)
+  @param {boolean} [preExpression = no] whether to look at the value and ignore the calculated expression value
+  @returns {NFLayer} self
+   */
+
+  NFLayer.prototype.centerAnchorPoint = function(useMasks, atTime, preExpression) {
+    var anchorProp, parent, positionProp, targetValues;
+    if (useMasks == null) {
+      useMasks = true;
+    }
+    if (preExpression == null) {
+      preExpression = false;
+    }
+    targetValues = this.getCenterAnchorPointValue(useMasks, atTime, preExpression);
+    parent = this.getParent();
+    this.setParent(null);
+    anchorProp = this.transform("Anchor Point");
+    positionProp = this.transform("Position");
+    positionProp.setValue(targetValues[0]);
+    anchorProp.setValue(targetValues[1]);
     this.setParent(parent);
     return this;
   };

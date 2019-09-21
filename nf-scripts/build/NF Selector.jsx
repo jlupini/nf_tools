@@ -148,8 +148,8 @@ getPanelUI = function() {
   buttonPrepGroup.maximumSize = [200, 50];
   addPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.add);
   addPrepButton.onClick = function(w) {
-    var annotationLayer, choice, key, newColor, ref, ref1, targetComp, testColor;
-    choice = (ref = treePrepView.selection) != null ? ref.data : void 0;
+    var annotationLayer, choice, key, newColor, ref1, ref2, targetComp, testColor;
+    choice = (ref1 = treePrepView.selection) != null ? ref1.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
     }
@@ -165,9 +165,9 @@ getPanelUI = function() {
       annotationLayer.transform("Opacity").setValue(20);
       annotationLayer.setName("Imported PDF Shape: " + choice.cleanName);
     } else {
-      ref1 = NFHighlightLayer.COLOR;
-      for (key in ref1) {
-        testColor = ref1[key];
+      ref2 = NFHighlightLayer.COLOR;
+      for (key in ref2) {
+        testColor = ref2[key];
         if (choice.colorName.indexOf(testColor.str) >= 0) {
           newColor = testColor;
         }
@@ -184,16 +184,16 @@ getPanelUI = function() {
   };
   customPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.path);
   customPrepButton.onClick = function(w) {
-    var key, lineCount, newColor, newName, ref, ref1, selectedLayer, testColor;
-    selectedLayer = (ref = NFProject.selectedLayers()) != null ? ref.get(0) : void 0;
+    var key, lineCount, newColor, newName, ref1, ref2, selectedLayer, testColor;
+    selectedLayer = (ref1 = NFProject.selectedLayers()) != null ? ref1.get(0) : void 0;
     if (!((selectedLayer != null) && selectedLayer instanceof NFShapeLayer)) {
       return alert("No Valid Shape Layer Selected");
     }
     lineCount = parseInt(prompt('How many initial highlight lines would you like to create?'));
     newName = selectedLayer.getName().replace("Imported PDF Shape: ", "");
-    ref1 = NFHighlightLayer.COLOR;
-    for (key in ref1) {
-      testColor = ref1[key];
+    ref2 = NFHighlightLayer.COLOR;
+    for (key in ref2) {
+      testColor = ref2[key];
       if (newName.indexOf(testColor.str) >= 0) {
         newColor = testColor;
       }
@@ -239,8 +239,8 @@ getPanelUI = function() {
   buttonGroup.maximumSize = [300, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
   addButton.onClick = function(w) {
-    var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, startTime, targetPageLayer, thisPart;
-    choice = (ref = treeView.selection) != null ? ref.data : void 0;
+    var activeHighlight, activeHighlightRect, activeRefComp, activeRefs, anchorProp, anchorValues, bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, keyIn, keyOut, layerAbove, layersForPage, mask, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref1, ref2, refLayer, refLayers, refPosition, refTargetName, relRect, scaleFactor, scaleProp, shadowProp, shouldExpand, startTime, targetPageLayer, thisPart;
+    choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
     }
@@ -253,7 +253,7 @@ getPanelUI = function() {
     } else if (pickedShape || pickedHighlight) {
       choicePage = choice.containingComp();
     } else {
-      throw new Error("Looks like you picked a choice, but we can't figure out what it is. Hit the refresh button and try again");
+      throw new Error("Looks like you picked something, but we can't figure out what it is. Hit the refresh button and try again");
     }
     thisPart = NFProject.activeComp();
     if (!(thisPart instanceof NFPartComp)) {
@@ -273,6 +273,36 @@ getPanelUI = function() {
         };
       })(this));
     }
+    shouldExpand = false;
+    bgSolid = null;
+    if ((targetPageLayer != null) && pickedHighlight && choice.getName().indexOf("Expand") >= 0) {
+      refLayers = thisPart.searchLayers("[ref]");
+      if (!refLayers.isEmpty()) {
+        activeRefs = new NFLayerCollection();
+        refLayers.forEach((function(_this) {
+          return function(ref) {
+            if (ref.isActive()) {
+              if (ref.getName().indexOf("Backing") < 0) {
+                return activeRefs.add(ref);
+              } else {
+                return bgSolid = ref;
+              }
+            }
+          };
+        })(this));
+        if (activeRefs.count() > 1) {
+          return alert("Error\nCan't animate an expand if multiple matching refs are active");
+        } else if (activeRefs.count() === 1) {
+          refLayer = activeRefs.get(0);
+          refTargetName = refLayer.getName().match(/\<(.*?)\>/)[1];
+          if (choice.getName().indexOf(refTargetName) >= 0) {
+            shouldExpand = true;
+            keyIn = currTime - 0.5;
+            keyOut = currTime + 0.5;
+          }
+        }
+      }
+    }
     if (targetPageLayer == null) {
       newPageLayer = thisPart.insertPage({
         page: choicePage,
@@ -291,12 +321,20 @@ getPanelUI = function() {
       targetPageLayer = newPageLayer;
     }
     if (pickedHighlight || pickedShape) {
-      refLayer = targetPageLayer.duplicateAsReferenceLayer();
-      refLayer.layer.name = (refLayer.getName()) + " <" + (choice.getName()) + ">";
-      if (newPageLayer == null) {
-        refLayer.transform("Position").expression = "";
+      if (!shouldExpand) {
+        refLayer = targetPageLayer.duplicateAsReferenceLayer();
+        refLayer.layer.name = (refLayer.getName()) + " <" + (choice.getName()) + ">";
+        if (newPageLayer == null) {
+          refLayer.transform("Position").expression = "";
+        }
       }
       choiceRect = choice.sourceRect();
+      if (shouldExpand) {
+        activeRefComp = new NFPageComp(refLayer.layer.source);
+        activeHighlight = activeRefComp.layerWithName(refTargetName);
+        activeHighlightRect = activeHighlight.sourceRect();
+        choiceRect = choiceRect.combineWith(activeHighlightRect);
+      }
       if (thisPart.getTime() !== currTime) {
         thisPart.setTime(currTime);
       }
@@ -308,14 +346,28 @@ getPanelUI = function() {
       scaleProp = refLayer.transform("Scale");
       oldScale = scaleProp.value;
       newScale = oldScale[0] * scaleFactor;
-      scaleProp.setValue([newScale, newScale]);
+      if (shouldExpand) {
+        scaleProp.setValuesAtTimes([keyIn, keyOut], [scaleProp.valueAtTime(currTime, true), [newScale, newScale]]);
+        scaleProp.easyEaseKeyTimes({
+          keyTimes: [keyIn, keyOut]
+        });
+      } else {
+        scaleProp.setValue([newScale, newScale]);
+      }
       positionDelta = refLayer.getPositionDeltaToFrameUp({
         rect: refLayer.relativeRect(choiceRect)
       });
       positionProp = refLayer.transform("Position");
       oldPosition = positionProp.value;
       newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]];
-      positionProp.setValue(newPosition);
+      if (shouldExpand) {
+        positionProp.setValuesAtTimes([keyIn, keyOut], [positionProp.valueAtTime(currTime, true), newPosition]);
+        positionProp.easyEaseKeyTimes({
+          keyTimes: [keyIn, keyOut]
+        });
+      } else {
+        positionProp.setValue(newPosition);
+      }
       highlightThickness = pickedHighlight ? choice.highlighterEffect().property("Thickness").value : 0;
       paddedChoiceRect = {
         left: choiceRect.left,
@@ -323,64 +375,96 @@ getPanelUI = function() {
         width: choiceRect.width,
         height: choiceRect.height + highlightThickness
       };
-      newMask = refLayer.mask().addProperty("Mask");
-      newMask.maskShape.setValue(NFTools.shapeFromRect(paddedChoiceRect));
-      newMask.maskFeather.setValue([20, 20]);
-      newMask.maskExpansion.setValue(3);
-      refLayer.effect("Drop Shadow").remove();
-      refLayer.effects().addProperty("ADBE Brightness & Contrast 2").property("Contrast").setValue(99);
-      refLayer.layer.blendingMode = BlendingMode.DARKEN;
-      bgSolid = thisPart.addSolid({
-        color: [1, 1, 1],
-        name: "Backing for '" + refLayer.layer.name + "'"
-      });
-      bgSolid.transform("Opacity").setValue(90);
-      bgSolid.layer.motionBlur = true;
-      bgSolid.setShy(true);
-      relRect = refLayer.relativeRect(paddedChoiceRect);
-      newMask = bgSolid.mask().addProperty("Mask");
-      newMask.maskShape.expression = NFTools.readExpression("backing-mask-expression", {
-        TARGET_LAYER_NAME: refLayer.getName(),
-        EDGE_PADDING: EDGE_PADDING
-      });
-      newMask.maskExpansion.setValue(24);
-      bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression", {
-        TARGET_LAYER_NAME: refLayer.getName()
-      });
-      shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow');
-      shadowProp.property('Opacity').setValue(76.5);
-      shadowProp.property('Direction').setValue(152);
-      shadowProp.property('Distance').setValue(20);
-      shadowProp.property('Softness').setValue(100);
+      if (shouldExpand) {
+        mask = refLayer.mask().property(1);
+        mask.maskShape.setValuesAtTimes([keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, true), NFTools.shapeFromRect(paddedChoiceRect)]);
+        mask.maskShape.easyEaseKeyTimes({
+          keyTimes: [keyIn, keyOut]
+        });
+      } else {
+        newMask = refLayer.mask().addProperty("Mask");
+        newMask.maskShape.setValue(NFTools.shapeFromRect(paddedChoiceRect));
+        newMask.maskFeather.setValue([20, 20]);
+        newMask.maskExpansion.setValue(3);
+        refLayer.effect("Drop Shadow").remove();
+        refLayer.effects().addProperty("ADBE Brightness & Contrast 2").property("Contrast").setValue(99);
+        refLayer.layer.blendingMode = BlendingMode.DARKEN;
+      }
+      if (!shouldExpand) {
+        bgSolid = thisPart.addSolid({
+          color: [1, 1, 1],
+          name: "Backing for '" + refLayer.layer.name + "'"
+        });
+        bgSolid.transform("Opacity").setValue(90);
+        bgSolid.layer.motionBlur = true;
+        bgSolid.setShy(true);
+        newMask = bgSolid.mask().addProperty("Mask");
+        newMask.maskShape.expression = NFTools.readExpression("backing-mask-expression", {
+          TARGET_LAYER_NAME: refLayer.getName(),
+          EDGE_PADDING: EDGE_PADDING
+        });
+        newMask.maskExpansion.setValue(24);
+        bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression", {
+          TARGET_LAYER_NAME: refLayer.getName()
+        });
+        shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow');
+        shadowProp.property('Opacity').setValue(76.5);
+        shadowProp.property('Direction').setValue(152);
+        shadowProp.property('Distance').setValue(20);
+        shadowProp.property('Softness').setValue(100);
+      }
+      if (shouldExpand) {
+        anchorValues = refLayer.getCenterAnchorPointValue(true, keyOut);
+        anchorProp = refLayer.transform("Anchor Point");
+        anchorProp.setValuesAtTimes([keyIn, keyOut], [anchorProp.valueAtTime(keyIn, true), anchorValues[1]]);
+        anchorProp.easyEaseKeyTimes({
+          keyTimes: [keyIn, keyOut]
+        });
+        relRect = refLayer.relativeRect(paddedChoiceRect, keyOut);
+      } else {
+        relRect = refLayer.relativeRect(paddedChoiceRect);
+      }
       boxBottom = relRect.top + relRect.height + (EDGE_PADDING / 4);
       compBottom = thisPart.comp.height;
       delta = compBottom - boxBottom;
-      refPosition = refLayer.transform("Position").value;
-      refLayer.transform("Position").setValue([refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]);
+      if (shouldExpand) {
+        refPosition = positionProp.valueAtTime(keyOut, true);
+        positionProp.setValuesAtTimes([keyIn, keyOut], [positionProp.valueAtTime(keyIn, true), [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]]);
+        positionProp.easyEaseKeyTimes({
+          keyTimes: [keyIn, keyOut]
+        });
+      } else {
+        refPosition = positionProp.value;
+        positionProp.setValue([refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]);
+      }
       group = targetPageLayer.getPaperLayerGroup();
       if (pickedHighlight) {
         group.assignControlLayer(choice, null, false);
       }
       if (newPageLayer == null) {
-        layerAbove = (ref1 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref1 : targetPageLayer.getPaperLayerGroup().paperParent;
+        layerAbove = (ref2 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref2 : targetPageLayer.getPaperLayerGroup().paperParent;
         refLayer.moveAfter(layerAbove);
-        refLayer.layer.inPoint = thisPart.getTime();
+        if (!shouldExpand) {
+          refLayer.layer.inPoint = thisPart.getTime();
+        }
       }
-      refLayer.centerAnchorPoint();
-      refLayer.removeNFMarkers();
-      refLayer.addInOutMarkersForProperty({
-        property: refLayer.transform("Scale"),
-        startEquation: EasingEquation.quart.out,
-        startValue: [0, 0, 0],
-        length: 1
-      });
-      refLayer.addInOutMarkersForProperty({
-        property: refLayer.transform("Opacity"),
-        startEquation: EasingEquation.quart.out,
-        startValue: 0,
-        length: 1
-      });
-      bgSolid.moveAfter(refLayer);
+      if (!shouldExpand) {
+        refLayer.centerAnchorPoint();
+        refLayer.removeNFMarkers();
+        refLayer.addInOutMarkersForProperty({
+          property: refLayer.transform("Scale"),
+          startEquation: EasingEquation.quart.out,
+          startValue: [0, 0, 0],
+          length: 1
+        });
+        refLayer.addInOutMarkersForProperty({
+          property: refLayer.transform("Opacity"),
+          startEquation: EasingEquation.quart.out,
+          startValue: 0,
+          length: 1
+        });
+        bgSolid.moveAfter(refLayer);
+      }
       group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false);
       if (pickedHighlight) {
         controlLayer = choice.getControlLayer();
@@ -400,8 +484,8 @@ getPanelUI = function() {
   };
   linkButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.link);
   linkButton.onClick = function(w) {
-    var choice, controlLayer, group, pickedHighlight, ref, thisPart;
-    choice = (ref = treeView.selection) != null ? ref.data : void 0;
+    var choice, controlLayer, group, pickedHighlight, ref1, thisPart;
+    choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
     }
@@ -424,8 +508,8 @@ getPanelUI = function() {
   };
   goButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.play);
   goButton.onClick = function(w) {
-    var choice, choicePage, dictObject, expandLookString, instruction, key, option, pickedHighlight, pickedPage, pickedShape, ref, result;
-    choice = (ref = treeView.selection) != null ? ref.data : void 0;
+    var choice, choicePage, dictObject, expandLookString, instruction, key, option, pickedHighlight, pickedPage, pickedShape, ref1, result;
+    choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
     }
@@ -540,8 +624,8 @@ getPanelUI = function() {
   };
   citeButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.book);
   citeButton.onClick = function(w) {
-    var choice, citationLayer, group, nullLayer, paperParentLayer, parentLayer, ref, thisPart;
-    choice = (ref = treeView.selection) != null ? ref.data : void 0;
+    var choice, citationLayer, group, nullLayer, paperParentLayer, parentLayer, ref1, thisPart;
+    choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
     }
