@@ -239,7 +239,7 @@ getPanelUI = function() {
   buttonGroup.maximumSize = [300, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
   addButton.onClick = function(w) {
-    var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, paddedRelRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, startTime, targetPageLayer, thisPart;
+    var bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, layerAbove, layersForPage, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref, ref1, refLayer, refPosition, relRect, scaleFactor, scaleProp, shadowProp, startTime, targetPageLayer, thisPart;
     choice = (ref = treeView.selection) != null ? ref.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -332,28 +332,27 @@ getPanelUI = function() {
       refLayer.layer.blendingMode = BlendingMode.DARKEN;
       bgSolid = thisPart.addSolid({
         color: [1, 1, 1],
-        name: "^ Backing"
+        name: "Backing for '" + refLayer.layer.name + "'"
       });
-      bgSolid.layer.inPoint = currTime;
       bgSolid.transform("Opacity").setValue(90);
       bgSolid.layer.motionBlur = true;
+      bgSolid.setShy(true);
       relRect = refLayer.relativeRect(paddedChoiceRect);
-      paddedRelRect = {
-        left: relRect.left - (EDGE_PADDING / 2),
-        top: relRect.top - (EDGE_PADDING / 4),
-        width: relRect.width + EDGE_PADDING,
-        height: relRect.height + (EDGE_PADDING / 2)
-      };
       newMask = bgSolid.mask().addProperty("Mask");
-      newMask.maskShape.setValue(NFTools.shapeFromRect(paddedRelRect));
-      bgSolid.setParent(refLayer);
-      bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression");
+      newMask.maskShape.expression = NFTools.readExpression("backing-mask-expression", {
+        TARGET_LAYER_NAME: refLayer.getName(),
+        EDGE_PADDING: EDGE_PADDING
+      });
+      newMask.maskExpansion.setValue(24);
+      bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression", {
+        TARGET_LAYER_NAME: refLayer.getName()
+      });
       shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow');
       shadowProp.property('Opacity').setValue(76.5);
       shadowProp.property('Direction').setValue(152);
       shadowProp.property('Distance').setValue(20);
       shadowProp.property('Softness').setValue(100);
-      boxBottom = paddedRelRect.top + paddedRelRect.height;
+      boxBottom = relRect.top + relRect.height + (EDGE_PADDING / 4);
       compBottom = thisPart.comp.height;
       delta = compBottom - boxBottom;
       refPosition = refLayer.transform("Position").value;
@@ -479,9 +478,7 @@ getPanelUI = function() {
       return alert("Wrong number of selected layers. Please select a single layer and run again");
     } else {
       selectedLayer = selectedLayers.get(0);
-      if (selectedLayer.getName().indexOf("^ Backing") >= 0) {
-        selectedLayer = selectedLayer.getParent();
-      } else if (selectedLayer instanceof NFHighlightControlLayer) {
+      if (selectedLayer instanceof NFHighlightControlLayer) {
         group = new NFPaperLayerGroup(selectedLayer.getParent());
         refLayers = group.getChildren().searchLayers("[ref]").searchLayers(selectedLayer.highlightName());
         if (refLayers.count() !== 1) {
@@ -585,10 +582,12 @@ getPanelUI = function() {
     app.beginUndoGroup("Unshy all (NF Selector)");
     NFProject.activeComp().allLayers().forEach((function(_this) {
       return function(layer) {
-        return layer.setShy(false);
+        if (!(layer.getName().indexOf("Backing for") >= 0)) {
+          return layer.setShy(false);
+        }
       };
     })(this));
-    NFProject.activeComp().comp.hideShyLayers = false;
+    NFProject.activeComp().comp.hideShyLayers = true;
     return app.endUndoGroup();
   };
   looseFocus = visGroup.add('iconbutton', void 0, NFIcon.button.looseFocus);
@@ -604,7 +603,7 @@ getPanelUI = function() {
     activeLayers.forEach((function(_this) {
       return function(layer) {
         var group;
-        if (!(layer instanceof NFCitationLayer)) {
+        if (!(layer instanceof NFCitationLayer || layer.getName().indexOf("Backing for") >= 0)) {
           looseLayers.add(layer);
         }
         looseLayers.add(layer.getChildren(true));
@@ -636,7 +635,7 @@ getPanelUI = function() {
     activeLayers.forEach((function(_this) {
       return function(layer) {
         var group, time;
-        if (!(layer instanceof NFCitationLayer)) {
+        if (!(layer instanceof NFCitationLayer || layer.getName().indexOf("Backing for") >= 0)) {
           tightLayers.add(layer);
         }
         if (layer instanceof NFPageLayer) {

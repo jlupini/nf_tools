@@ -19,6 +19,7 @@ setupMainComp = function() {
     return alert("Error\nCan't find dependent files (backdrop and dot overlay) in the project.");
   }
   mainComp = app.project.items.addComp(mainCompName, 1920, 1080, 1.0, footageFile.duration, 29.9700012207031);
+  mainComp.hideShyLayers = true;
   footageLayer = mainComp.layers.add(footageFile);
   footageLayer.name = footageLayerName;
   footageLayer.property('Transform').property("Scale").setValue([50, 50]);

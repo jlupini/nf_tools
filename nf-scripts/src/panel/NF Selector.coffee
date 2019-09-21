@@ -202,7 +202,6 @@ getPanelUI = ->
       alert "Failed\nLook for annotationData.json file in the PDF Pages directory"
     @active = false
 
-  # loadAutoHighlightDataIntoView treePrepView
 
   # Animate Tab
   animateTab = tPanel.add("tab", undefined, "Animator")
@@ -218,7 +217,6 @@ getPanelUI = ->
   treeView.preferredSize = [220, 250]
   treeView.alignment = ['fill','fill']
 
-  # loadContentIntoView treeView
 
   buttonGroup = buttonPanel.add 'group', undefined
   buttonGroup.maximumSize = [300,50]
@@ -259,7 +257,7 @@ getPanelUI = ->
         targetPageLayer = layer if layer.isActive()
 
     # FIXME: All the positioning stuff fails if there's already a version of the
-    # group that's been used for normal page tracking
+    # group that's been used for old-style page tracking
 
 
     if not targetPageLayer?
@@ -322,20 +320,20 @@ getPanelUI = ->
       # Create a white BG box and attach it to the ref layer
       bgSolid = thisPart.addSolid
         color: [1,1,1]
-        name: "^ Backing"
-      bgSolid.layer.inPoint = currTime
+        name: "Backing for '#{refLayer.layer.name}'"
       bgSolid.transform("Opacity").setValue 90
       bgSolid.layer.motionBlur = true
+      bgSolid.setShy yes
+
       relRect = refLayer.relativeRect paddedChoiceRect
-      paddedRelRect =
-        left: relRect.left - (EDGE_PADDING / 2)
-        top: relRect.top - (EDGE_PADDING / 4)
-        width: relRect.width + EDGE_PADDING
-        height: relRect.height + (EDGE_PADDING / 2)
+
       newMask = bgSolid.mask().addProperty "Mask"
-      newMask.maskShape.setValue NFTools.shapeFromRect(paddedRelRect)
-      bgSolid.setParent refLayer
-      bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression"
+      newMask.maskShape.expression = NFTools.readExpression "backing-mask-expression",
+        TARGET_LAYER_NAME: refLayer.getName()
+        EDGE_PADDING: EDGE_PADDING
+      newMask.maskExpansion.setValue 24
+      bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
+        TARGET_LAYER_NAME: refLayer.getName()
       shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow')
       shadowProp.property('Opacity').setValue(76.5)
       shadowProp.property('Direction').setValue(152)
@@ -343,7 +341,7 @@ getPanelUI = ->
       shadowProp.property('Softness').setValue(100)
 
       # Move the whole thing to the bottom of the screen
-      boxBottom = paddedRelRect.top + paddedRelRect.height
+      boxBottom = relRect.top + relRect.height + (EDGE_PADDING / 4)
       compBottom = thisPart.comp.height
       delta = compBottom - boxBottom
       refPosition = refLayer.transform("Position").value
@@ -468,10 +466,8 @@ getPanelUI = ->
     else
       selectedLayer = selectedLayers.get(0)
 
-      # Switch the selected layer to the relevant parent if we've clicked the backing or control layer
-      if selectedLayer.getName().indexOf("^ Backing") >= 0
-        selectedLayer = selectedLayer.getParent()
-      else if selectedLayer instanceof NFHighlightControlLayer
+      # Switch the selected layer to the relevant parent if we've clicked the control layer
+      if selectedLayer instanceof NFHighlightControlLayer
         group = new NFPaperLayerGroup selectedLayer.getParent()
         refLayers = group.getChildren().searchLayers("[ref]").searchLayers(selectedLayer.highlightName())
         if refLayers.count() isnt 1
@@ -570,9 +566,9 @@ getPanelUI = ->
     app.beginUndoGroup "Unshy all (NF Selector)"
 
     NFProject.activeComp().allLayers().forEach (layer) =>
-      layer.setShy no
+      layer.setShy no unless layer.getName().indexOf("Backing for") >= 0
 
-    NFProject.activeComp().comp.hideShyLayers = no
+    NFProject.activeComp().comp.hideShyLayers = yes
 
     app.endUndoGroup()
 
@@ -586,7 +582,7 @@ getPanelUI = ->
 
     looseLayers = new NFLayerCollection
     activeLayers.forEach (layer) =>
-      looseLayers.add layer unless layer instanceof NFCitationLayer
+      looseLayers.add layer unless layer instanceof NFCitationLayer or layer.getName().indexOf("Backing for") >= 0
       looseLayers.add layer.getChildren(yes)
 
       # Add members in PDF group if we can find one
@@ -594,8 +590,6 @@ getPanelUI = ->
         group = layer.getPaperLayerGroup()
         looseLayers.add group.getMembers()
         looseLayers.add group.paperParent
-      # else if layer instanceof NFPaperParentLayer
-      #   looseLayers.add layer.getGroup().getMembers()
 
     activeComp.allLayers().forEach (layer) =>
       layer.setShy not looseLayers.containsLayer(layer)
@@ -614,7 +608,7 @@ getPanelUI = ->
 
     tightLayers = new NFLayerCollection
     activeLayers.forEach (layer) =>
-      tightLayers.add layer unless layer instanceof NFCitationLayer
+      tightLayers.add layer unless layer instanceof NFCitationLayer or layer.getName().indexOf("Backing for") >= 0
       if layer instanceof NFPageLayer
         group = layer.getPaperLayerGroup()
         tightLayers.add group.paperParent
