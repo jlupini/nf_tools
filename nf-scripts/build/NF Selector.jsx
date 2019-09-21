@@ -115,7 +115,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, citeButton, customPrepButton, goButton, hideButton, importPrepButton, linkButton, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, treePrepView, treeView;
+  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, circle, citeButton, customPrepButton, goButton, hideButton, importPrepButton, linkButton, looseFocus, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, tightFocus, treePrepView, treeView, visGroup;
   if (_.panel != null) {
     return _.panel;
   }
@@ -577,6 +577,88 @@ getPanelUI = function() {
     loadContentIntoView(treeView);
     treeView.notify();
     return this.active = false;
+  };
+  visGroup = buttonPanel.add('group', void 0);
+  visGroup.maximumSize = [300, 50];
+  circle = visGroup.add('iconbutton', void 0, NFIcon.button.circle);
+  circle.onClick = function(w) {
+    app.beginUndoGroup("Unshy all (NF Selector)");
+    NFProject.activeComp().allLayers().forEach((function(_this) {
+      return function(layer) {
+        return layer.setShy(false);
+      };
+    })(this));
+    NFProject.activeComp().comp.hideShyLayers = false;
+    return app.endUndoGroup();
+  };
+  looseFocus = visGroup.add('iconbutton', void 0, NFIcon.button.looseFocus);
+  looseFocus.onClick = function(w) {
+    var activeComp, activeLayers, looseLayers;
+    app.beginUndoGroup("Loose Focus (NF Selector)");
+    activeComp = NFProject.activeComp();
+    activeLayers = activeComp.activeLayers();
+    if (activeLayers.isEmpty()) {
+      return alert("No layers active!");
+    }
+    looseLayers = new NFLayerCollection;
+    activeLayers.forEach((function(_this) {
+      return function(layer) {
+        var group;
+        if (!(layer instanceof NFCitationLayer)) {
+          looseLayers.add(layer);
+        }
+        looseLayers.add(layer.getChildren(true));
+        if (layer instanceof NFPageLayer) {
+          group = layer.getPaperLayerGroup();
+          looseLayers.add(group.getMembers());
+          return looseLayers.add(group.paperParent);
+        }
+      };
+    })(this));
+    activeComp.allLayers().forEach((function(_this) {
+      return function(layer) {
+        return layer.setShy(!looseLayers.containsLayer(layer));
+      };
+    })(this));
+    activeComp.comp.hideShyLayers = true;
+    return app.endUndoGroup();
+  };
+  tightFocus = visGroup.add('iconbutton', void 0, NFIcon.button.tightFocus);
+  tightFocus.onClick = function(w) {
+    var activeComp, activeLayers, tightLayers;
+    app.beginUndoGroup("Tight Focus (NF Selector)");
+    activeComp = NFProject.activeComp();
+    activeLayers = activeComp.activeLayers();
+    if (activeLayers.isEmpty()) {
+      return alert("No layers active!");
+    }
+    tightLayers = new NFLayerCollection;
+    activeLayers.forEach((function(_this) {
+      return function(layer) {
+        var group, time;
+        if (!(layer instanceof NFCitationLayer)) {
+          tightLayers.add(layer);
+        }
+        if (layer instanceof NFPageLayer) {
+          group = layer.getPaperLayerGroup();
+          tightLayers.add(group.paperParent);
+          tightLayers.add(group.getCitationLayer());
+          time = activeComp.getTime();
+          return group.getControlLayers().forEach(function(control) {
+            if (control.layer.inPoint <= time && control.layer.outPoint >= time) {
+              return tightLayers.add(control);
+            }
+          });
+        }
+      };
+    })(this));
+    activeComp.allLayers().forEach((function(_this) {
+      return function(layer) {
+        return layer.setShy(!tightLayers.containsLayer(layer));
+      };
+    })(this));
+    activeComp.comp.hideShyLayers = true;
+    return app.endUndoGroup();
   };
   panel.layout.layout(true);
   panel.layout.resize();

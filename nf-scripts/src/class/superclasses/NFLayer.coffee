@@ -43,6 +43,16 @@ class NFLayer extends NFObject
     return @
 
   ###*
+  Sets the shy state of the layer
+  @memberof NFLayer
+  @param {boolean} state - the new layer shy state
+  @returns {NFLayer} self
+  ###
+  setShy: (state) ->
+    @layer.shy = state
+    return @
+
+  ###*
   Checks if this layer is an AVLayer and ALWAYS RETURNS FALSE
   @memberof NFLayer
   @returns {boolean} if this is a valid AVLayer... so no.

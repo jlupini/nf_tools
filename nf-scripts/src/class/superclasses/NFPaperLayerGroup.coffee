@@ -16,12 +16,24 @@ class NFPaperLayerGroup extends NFObject
     return "NFPaperLayerGroup: PDF #{@getPDFNumber()} in #{@containingComp().getName()}"
 
   ###*
-  Gets all the NFLayers in the group
+  Gets all the child NFLayers of the group's parent
   @memberof NFPaperLayerGroup
   @returns {NFLayerCollection} the layers
   ###
   getChildren: ->
     return @paperParent.getChildren()
+
+  ###*
+  Gets all the NFLayers in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the layers
+  ###
+  getMembers: ->
+    members = @paperParent.getChildren(yes)
+    members.add @getControlLayers()
+    members.add @getCitationLayer()
+
+    return members
 
   ###*
   Returns the PDF Number

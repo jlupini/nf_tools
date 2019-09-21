@@ -562,6 +562,76 @@ getPanelUI = ->
     treeView.notify()
     @active = false
 
+  visGroup = buttonPanel.add 'group', undefined
+  visGroup.maximumSize = [300,50]
+
+  circle = visGroup.add('iconbutton', undefined, NFIcon.button.circle)
+  circle.onClick = (w) ->
+    app.beginUndoGroup "Unshy all (NF Selector)"
+
+    NFProject.activeComp().allLayers().forEach (layer) =>
+      layer.setShy no
+
+    NFProject.activeComp().comp.hideShyLayers = no
+
+    app.endUndoGroup()
+
+  looseFocus = visGroup.add('iconbutton', undefined, NFIcon.button.looseFocus)
+  looseFocus.onClick = (w) ->
+    app.beginUndoGroup "Loose Focus (NF Selector)"
+
+    activeComp = NFProject.activeComp()
+    activeLayers = activeComp.activeLayers()
+    return alert "No layers active!" if activeLayers.isEmpty()
+
+    looseLayers = new NFLayerCollection
+    activeLayers.forEach (layer) =>
+      looseLayers.add layer unless layer instanceof NFCitationLayer
+      looseLayers.add layer.getChildren(yes)
+
+      # Add members in PDF group if we can find one
+      if layer instanceof NFPageLayer
+        group = layer.getPaperLayerGroup()
+        looseLayers.add group.getMembers()
+        looseLayers.add group.paperParent
+      # else if layer instanceof NFPaperParentLayer
+      #   looseLayers.add layer.getGroup().getMembers()
+
+    activeComp.allLayers().forEach (layer) =>
+      layer.setShy not looseLayers.containsLayer(layer)
+
+    activeComp.comp.hideShyLayers = yes
+
+    app.endUndoGroup()
+
+  tightFocus = visGroup.add('iconbutton', undefined, NFIcon.button.tightFocus)
+  tightFocus.onClick = (w) ->
+    app.beginUndoGroup "Tight Focus (NF Selector)"
+
+    activeComp = NFProject.activeComp()
+    activeLayers = activeComp.activeLayers()
+    return alert "No layers active!" if activeLayers.isEmpty()
+
+    tightLayers = new NFLayerCollection
+    activeLayers.forEach (layer) =>
+      tightLayers.add layer unless layer instanceof NFCitationLayer
+      if layer instanceof NFPageLayer
+        group = layer.getPaperLayerGroup()
+        tightLayers.add group.paperParent
+        tightLayers.add group.getCitationLayer()
+
+        time = activeComp.getTime()
+        group.getControlLayers().forEach (control) =>
+          tightLayers.add control if control.layer.inPoint <= time and control.layer.outPoint >= time
+
+    activeComp.allLayers().forEach (layer) =>
+      layer.setShy not tightLayers.containsLayer(layer)
+
+    activeComp.comp.hideShyLayers = yes
+
+    app.endUndoGroup()
+
+
   # Layout + Resize handling
   panel.layout.layout(true)
   panel.layout.resize()

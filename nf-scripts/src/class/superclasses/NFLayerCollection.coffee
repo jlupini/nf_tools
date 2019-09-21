@@ -45,16 +45,21 @@ class NFLayerCollection extends NFObject
     infoString += "]"
 
   ###*
-  Adds an NFLayer or AVLayer to this collection. AVLayers will be added as specialized layers
+  Adds an NFLayer or AVLayer or NFLayerCollection to this collection. AVLayers will be added as
+  specialized layers. Duplicates are ignored
   @memberof NFLayerCollection
-  @param {NFLayer | AVLayer} newLayer - the layer to add
+  @param {NFLayer | AVLayer | NFLayerCollection} newLayer - the layer to add (or layer collection)
   @returns {NFLayerCollection} self
   ###
   add: (newLayer) ->
     if newLayer instanceof NFLayer
-      @layers.push newLayer
-    else if newLayer.isAVLayer()
-      @layers.push NFLayer.getSpecializedLayerFromAVLayer(newLayer)
+      @layers.push newLayer unless @containsLayer layerToAdd
+    else if newLayer.isAVLayer?()
+      layerToAdd = NFLayer.getSpecializedLayerFromAVLayer(newLayer)
+      @layers.push layerToAdd unless @containsLayer layerToAdd
+    else if newLayer instanceof NFLayerCollection
+      newLayer.forEach (layer) =>
+        @add layer
     else
       throw new Error "You can only add NFLayers or AVLayers to an NFLayerCollection"
     @

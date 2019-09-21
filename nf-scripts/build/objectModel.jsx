@@ -744,6 +744,19 @@ NFLayer = (function(superClass) {
 
 
   /**
+  Sets the shy state of the layer
+  @memberof NFLayer
+  @param {boolean} state - the new layer shy state
+  @returns {NFLayer} self
+   */
+
+  NFLayer.prototype.setShy = function(state) {
+    this.layer.shy = state;
+    return this;
+  };
+
+
+  /**
   Checks if this layer is an AVLayer and ALWAYS RETURNS FALSE
   @memberof NFLayer
   @returns {boolean} if this is a valid AVLayer... so no.
@@ -1733,17 +1746,30 @@ NFLayerCollection = (function(superClass) {
 
 
   /**
-  Adds an NFLayer or AVLayer to this collection. AVLayers will be added as specialized layers
+  Adds an NFLayer or AVLayer or NFLayerCollection to this collection. AVLayers will be added as
+  specialized layers. Duplicates are ignored
   @memberof NFLayerCollection
-  @param {NFLayer | AVLayer} newLayer - the layer to add
+  @param {NFLayer | AVLayer | NFLayerCollection} newLayer - the layer to add (or layer collection)
   @returns {NFLayerCollection} self
    */
 
   NFLayerCollection.prototype.add = function(newLayer) {
+    var layerToAdd;
     if (newLayer instanceof NFLayer) {
-      this.layers.push(newLayer);
-    } else if (newLayer.isAVLayer()) {
-      this.layers.push(NFLayer.getSpecializedLayerFromAVLayer(newLayer));
+      if (!this.containsLayer(layerToAdd)) {
+        this.layers.push(newLayer);
+      }
+    } else if (typeof newLayer.isAVLayer === "function" ? newLayer.isAVLayer() : void 0) {
+      layerToAdd = NFLayer.getSpecializedLayerFromAVLayer(newLayer);
+      if (!this.containsLayer(layerToAdd)) {
+        this.layers.push(layerToAdd);
+      }
+    } else if (newLayer instanceof NFLayerCollection) {
+      newLayer.forEach((function(_this) {
+        return function(layer) {
+          return _this.add(layer);
+        };
+      })(this));
     } else {
       throw new Error("You can only add NFLayers or AVLayers to an NFLayerCollection");
     }
@@ -2559,13 +2585,28 @@ NFPaperLayerGroup = (function(superClass) {
 
 
   /**
-  Gets all the NFLayers in the group
+  Gets all the child NFLayers of the group's parent
   @memberof NFPaperLayerGroup
   @returns {NFLayerCollection} the layers
    */
 
   NFPaperLayerGroup.prototype.getChildren = function() {
     return this.paperParent.getChildren();
+  };
+
+
+  /**
+  Gets all the NFLayers in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the layers
+   */
+
+  NFPaperLayerGroup.prototype.getMembers = function() {
+    var members;
+    members = this.paperParent.getChildren(true);
+    members.add(this.getControlLayers());
+    members.add(this.getCitationLayer());
+    return members;
   };
 
 
