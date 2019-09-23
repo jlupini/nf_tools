@@ -641,7 +641,7 @@ getPanelUI = ->
     looseLayers = new NFLayerCollection
     activeLayers.forEach (layer) =>
       looseLayers.add layer unless layer instanceof NFCitationLayer or layer.getName().indexOf("Backing for") >= 0
-      looseLayers.add layer.getChildren(yes)
+      looseLayers.add layer.getChildren(yes) unless layer.is activeComp.greenscreenLayer()
 
       # Add members in PDF group if we can find one
       if layer instanceof NFPageLayer

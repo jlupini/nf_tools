@@ -682,7 +682,9 @@ getPanelUI = function() {
         if (!(layer instanceof NFCitationLayer || layer.getName().indexOf("Backing for") >= 0)) {
           looseLayers.add(layer);
         }
-        looseLayers.add(layer.getChildren(true));
+        if (!layer.is(activeComp.greenscreenLayer())) {
+          looseLayers.add(layer.getChildren(true));
+        }
         if (layer instanceof NFPageLayer) {
           group = layer.getPaperLayerGroup();
           looseLayers.add(group.getMembers());
