@@ -316,14 +316,11 @@ getPanelUI = ->
         choiceRect = choiceRect.combineWith activeHighlightRect
       thisPart.setTime(currTime) unless thisPart.getTime() is currTime
 
-      # FIXME: Allow multiple selections so you can show expands too and frame they up together with a 'combineRects' function
-      scaleFactor = refLayer.getScaleFactorToFrameUp
+      scaleProp = refLayer.transform("Scale")
+      newScale = refLayer.getAbsoluteScaleToFrameUp
         rect: refLayer.relativeRect choiceRect
         fillPercentage: 75
         maxScale: 100
-      scaleProp = refLayer.transform "Scale"
-      oldScale = scaleProp.value
-      newScale = oldScale[0] * scaleFactor
 
       if shouldExpand
         scaleProp.setValuesAtTimes [keyIn, keyOut], [scaleProp.valueAtTime(currTime, yes), [newScale, newScale]]
@@ -332,11 +329,9 @@ getPanelUI = ->
       else
         scaleProp.setValue [newScale, newScale]
 
-      positionDelta = refLayer.getPositionDeltaToFrameUp
+      positionProp = refLayer.transform("Position")
+      newPosition = refLayer.getAbsolutePositionToFrameUp
         rect: refLayer.relativeRect choiceRect
-      positionProp = refLayer.transform "Position"
-      oldPosition = positionProp.value
-      newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]]
 
       if shouldExpand
         positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(currTime, yes), newPosition]
@@ -383,16 +378,11 @@ getPanelUI = ->
         newMask.maskExpansion.setValue 24
         bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
           TARGET_LAYER_NAME: refLayer.getName()
-        shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow')
-        shadowProp.property('Opacity').setValue(76.5)
-        shadowProp.property('Direction').setValue(152)
-        shadowProp.property('Distance').setValue(20)
-        shadowProp.property('Softness').setValue(100)
+        shadowProp = bgSolid.addDropShadow()
 
       # Move the whole thing to the bottom of the screen
       if shouldExpand
         anchorValues = refLayer.getCenterAnchorPointValue(yes, keyOut)
-
         anchorProp = refLayer.transform "Anchor Point"
         anchorProp.setValuesAtTimes [keyIn, keyOut], [anchorProp.valueAtTime(keyIn, yes), anchorValues[1]]
         anchorProp.easyEaseKeyTimes

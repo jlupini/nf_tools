@@ -750,6 +750,24 @@ class NFLayer extends NFObject
     @setParent parent
     @
 
+  ###*
+  Adds a drop shadow to the layer with the given properties
+  @memberof NFLayer
+  @param {Object} [model=null] data model
+  @param {float} [model.opacity=76.5] opacity
+  @param {float} [model.direction=152] direction
+  @param {float} [model.distance=20] distance
+  @param {float} [model.softness=100] softness
+  @returns {Property} the drop shadow property
+  ###
+  addDropShadow: (model) ->
+    shadowProp = @effects().addProperty('ADBE Drop Shadow')
+    shadowProp.property('Opacity').setValue model?.opacity ? 76.5
+    shadowProp.property('Direction').setValue model?.direction ? 152
+    shadowProp.property('Distance').setValue model?.distance ? 20
+    shadowProp.property('Softness').setValue model?.softness ? 100
+    return shadowProp
+
 # Class Methods
 NFLayer = Object.assign NFLayer,
 

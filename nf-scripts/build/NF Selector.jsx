@@ -239,7 +239,7 @@ getPanelUI = function() {
   buttonGroup.maximumSize = [300, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
   addButton.onClick = function(w) {
-    var activeHighlight, activeHighlightRect, activeRefComp, activeRefs, anchorProp, anchorValues, bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, keyIn, keyOut, layerAbove, layersForPage, mask, newMask, newPageLayer, newPosition, newScale, oldPosition, oldScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionDelta, positionProp, ref1, ref2, refLayer, refLayers, refPosition, refTargetName, relRect, scaleFactor, scaleProp, shadowProp, shouldExpand, startTime, targetPageLayer, thisPart;
+    var activeHighlight, activeHighlightRect, activeRefComp, activeRefs, anchorProp, anchorValues, bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, keyIn, keyOut, layerAbove, layersForPage, mask, newMask, newPageLayer, newPosition, newScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionProp, ref1, ref2, refLayer, refLayers, refPosition, refTargetName, relRect, scaleProp, shadowProp, shouldExpand, startTime, targetPageLayer, thisPart;
     choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -338,14 +338,12 @@ getPanelUI = function() {
       if (thisPart.getTime() !== currTime) {
         thisPart.setTime(currTime);
       }
-      scaleFactor = refLayer.getScaleFactorToFrameUp({
+      scaleProp = refLayer.transform("Scale");
+      newScale = refLayer.getAbsoluteScaleToFrameUp({
         rect: refLayer.relativeRect(choiceRect),
         fillPercentage: 75,
         maxScale: 100
       });
-      scaleProp = refLayer.transform("Scale");
-      oldScale = scaleProp.value;
-      newScale = oldScale[0] * scaleFactor;
       if (shouldExpand) {
         scaleProp.setValuesAtTimes([keyIn, keyOut], [scaleProp.valueAtTime(currTime, true), [newScale, newScale]]);
         scaleProp.easyEaseKeyTimes({
@@ -354,12 +352,10 @@ getPanelUI = function() {
       } else {
         scaleProp.setValue([newScale, newScale]);
       }
-      positionDelta = refLayer.getPositionDeltaToFrameUp({
+      positionProp = refLayer.transform("Position");
+      newPosition = refLayer.getAbsolutePositionToFrameUp({
         rect: refLayer.relativeRect(choiceRect)
       });
-      positionProp = refLayer.transform("Position");
-      oldPosition = positionProp.value;
-      newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]];
       if (shouldExpand) {
         positionProp.setValuesAtTimes([keyIn, keyOut], [positionProp.valueAtTime(currTime, true), newPosition]);
         positionProp.easyEaseKeyTimes({
@@ -407,11 +403,7 @@ getPanelUI = function() {
         bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression", {
           TARGET_LAYER_NAME: refLayer.getName()
         });
-        shadowProp = bgSolid.effects().addProperty('ADBE Drop Shadow');
-        shadowProp.property('Opacity').setValue(76.5);
-        shadowProp.property('Direction').setValue(152);
-        shadowProp.property('Distance').setValue(20);
-        shadowProp.property('Softness').setValue(100);
+        shadowProp = bgSolid.addDropShadow();
       }
       if (shouldExpand) {
         anchorValues = refLayer.getCenterAnchorPointValue(true, keyOut);

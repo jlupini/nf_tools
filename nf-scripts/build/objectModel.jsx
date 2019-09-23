@@ -1660,6 +1660,28 @@ NFLayer = (function(superClass) {
     return this;
   };
 
+
+  /**
+  Adds a drop shadow to the layer with the given properties
+  @memberof NFLayer
+  @param {Object} [model=null] data model
+  @param {float} [model.opacity=76.5] opacity
+  @param {float} [model.direction=152] direction
+  @param {float} [model.distance=20] distance
+  @param {float} [model.softness=100] softness
+  @returns {Property} the drop shadow property
+   */
+
+  NFLayer.prototype.addDropShadow = function(model) {
+    var ref, ref1, ref2, ref3, shadowProp;
+    shadowProp = this.effects().addProperty('ADBE Drop Shadow');
+    shadowProp.property('Opacity').setValue((ref = model != null ? model.opacity : void 0) != null ? ref : 76.5);
+    shadowProp.property('Direction').setValue((ref1 = model != null ? model.direction : void 0) != null ? ref1 : 152);
+    shadowProp.property('Distance').setValue((ref2 = model != null ? model.distance : void 0) != null ? ref2 : 20);
+    shadowProp.property('Softness').setValue((ref3 = model != null ? model.softness : void 0) != null ? ref3 : 100);
+    return shadowProp;
+  };
+
   return NFLayer;
 
 })(NFObject);
@@ -5519,6 +5541,32 @@ NFPageLayer = (function(superClass) {
 
 
   /**
+  Returns the absolute scale value for this layer to frame up a given
+  highlight or rect in this layer's Containing comp. Must provide either a highlight OR rect.
+  @memberof NFPageLayer
+  @returns {float} the scale factor
+  @param {Object} model - the options
+  @param {NFHighlightLayer} [model.highlight] - The highlight to get the scale
+  factor for.
+  @param {rect} [model.rect] - the rect to get the scale factor for
+  @param {float} [model.time=The current time] - The time to calculate at
+  @param {float} [model.fillPercentage=85] - Percentage of the comp width the
+  highlight should take up
+  @param {float} [model.maxScale=115] - The maximum that a page layer will scale
+  @throws Throws error if not given a NFHighlightLayer or rect, or the
+  given highlight is not on this page.
+   */
+
+  NFPageLayer.prototype.getAbsoluteScaleToFrameUp = function(model) {
+    var newScale, oldScale, scaleFactor, scaleProp;
+    scaleFactor = this.getScaleFactorToFrameUp(model);
+    scaleProp = this.transform("Scale");
+    oldScale = scaleProp.value;
+    return newScale = oldScale[0] * scaleFactor;
+  };
+
+
+  /**
   Returns the multiplier, or scale factor required to frame up the given
   highlight or rect in this layer's Containing comp. Basically, multiplying the scale
   of this layer by the result of this number will make the highlight or rect fit in
@@ -5567,6 +5615,30 @@ NFPageLayer = (function(superClass) {
       adjustedScaleFactor = scaleFactor;
     }
     return adjustedScaleFactor;
+  };
+
+
+  /**
+  Returns a length-2 array with absolute x and y values to make the given
+  highlight or rect be centered in frame *at the current scale of the layer*.
+  Must provide either a rect OR highlight.
+  @memberof NFPageLayer
+  @returns {float[]} the x and y nudge values
+  @param {Object} model - The options
+  @param {NFHighlightLayer} [model.highlight] - The highlight to get the scale
+  factor for.
+  @param {rect} [model.rect] - the rect to get the scale factor for
+  @param {float} [model.time=The current time] - The time to calculate at
+  @throws Throws error if not given a NFHighlightLayer or rect, or
+  given highlight is not on this page.
+   */
+
+  NFPageLayer.prototype.getAbsolutePositionToFrameUp = function(model) {
+    var newPosition, oldPosition, positionDelta, positionProp;
+    positionDelta = this.getPositionDeltaToFrameUp(model);
+    positionProp = this.transform("Position");
+    oldPosition = positionProp.value;
+    return newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]];
   };
 
 

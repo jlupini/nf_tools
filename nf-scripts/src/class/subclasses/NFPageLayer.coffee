@@ -642,6 +642,28 @@ class NFPageLayer extends NFLayer
     @
 
   ###*
+  Returns the absolute scale value for this layer to frame up a given
+  highlight or rect in this layer's Containing comp. Must provide either a highlight OR rect.
+  @memberof NFPageLayer
+  @returns {float} the scale factor
+  @param {Object} model - the options
+  @param {NFHighlightLayer} [model.highlight] - The highlight to get the scale
+  factor for.
+  @param {rect} [model.rect] - the rect to get the scale factor for
+  @param {float} [model.time=The current time] - The time to calculate at
+  @param {float} [model.fillPercentage=85] - Percentage of the comp width the
+  highlight should take up
+  @param {float} [model.maxScale=115] - The maximum that a page layer will scale
+  @throws Throws error if not given a NFHighlightLayer or rect, or the
+  given highlight is not on this page.
+  ###
+  getAbsoluteScaleToFrameUp: (model) ->
+    scaleFactor = @getScaleFactorToFrameUp model
+    scaleProp = @transform "Scale"
+    oldScale = scaleProp.value
+    return newScale = oldScale[0] * scaleFactor
+
+  ###*
   Returns the multiplier, or scale factor required to frame up the given
   highlight or rect in this layer's Containing comp. Basically, multiplying the scale
   of this layer by the result of this number will make the highlight or rect fit in
@@ -691,6 +713,26 @@ class NFPageLayer extends NFLayer
       adjustedScaleFactor = scaleFactor
 
     adjustedScaleFactor
+
+  ###*
+  Returns a length-2 array with absolute x and y values to make the given
+  highlight or rect be centered in frame *at the current scale of the layer*.
+  Must provide either a rect OR highlight.
+  @memberof NFPageLayer
+  @returns {float[]} the x and y nudge values
+  @param {Object} model - The options
+  @param {NFHighlightLayer} [model.highlight] - The highlight to get the scale
+  factor for.
+  @param {rect} [model.rect] - the rect to get the scale factor for
+  @param {float} [model.time=The current time] - The time to calculate at
+  @throws Throws error if not given a NFHighlightLayer or rect, or
+  given highlight is not on this page.
+  ###
+  getAbsolutePositionToFrameUp: (model) ->
+    positionDelta = @getPositionDeltaToFrameUp model
+    positionProp = @transform "Position"
+    oldPosition = positionProp.value
+    return newPosition = [oldPosition[0] + positionDelta[0], oldPosition[1] + positionDelta[1]]
 
   ###*
   Returns a length-2 array with x and y 'nudge' values to make the given
