@@ -545,7 +545,7 @@ getPanelUI = ->
       if selectedLayer instanceof NFPageLayer
         # If the layer is a visible, initted page layer, and is active at the moment
         if selectedLayer.getName().indexOf("[+]") >= 0 and partComp.getRect().intersectsWith(selectedLayer.sourceRect(time))
-          if selectedLayer.outPoint >= time
+          if selectedLayer.layer.outPoint >= time
             selectedLayer.layer.outPoint = time
             selectedLayer.slideOut()
         else if selectedLayer.getName().indexOf("[ref]") >= 0

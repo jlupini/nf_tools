@@ -572,7 +572,7 @@ getPanelUI = function() {
       }
       if (selectedLayer instanceof NFPageLayer) {
         if (selectedLayer.getName().indexOf("[+]") >= 0 && partComp.getRect().intersectsWith(selectedLayer.sourceRect(time))) {
-          if (selectedLayer.outPoint >= time) {
+          if (selectedLayer.layer.outPoint >= time) {
             selectedLayer.layer.outPoint = time;
             selectedLayer.slideOut();
           }
