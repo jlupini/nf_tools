@@ -239,7 +239,7 @@ getPanelUI = function() {
   buttonGroup.maximumSize = [300, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
   addButton.onClick = function(w) {
-    var activeHighlight, activeHighlightRect, activeRefComp, activeRefs, anchorProp, anchorValues, bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, keyIn, keyOut, layerAbove, layersForPage, mask, newMask, newPageLayer, newPosition, newScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionProp, ref1, ref2, refLayer, refLayers, refPosition, refTargetName, relRect, scaleProp, shadowProp, shouldExpand, startTime, targetPageLayer, thisPart;
+    var activeHighlight, activeHighlightRect, activeRefComp, activeRefs, alphabet, anchorProp, anchorValues, baseName, bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, i, idx, j, keyIn, keyOut, layerAbove, layersForPage, layersWithName, mask, newMask, newPageLayer, newPosition, newScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionProp, ref1, ref2, ref3, ref4, refLayer, refLayers, refPosition, refTargetName, relRect, scaleProp, shadowProp, shouldExpand, startTime, targetPageLayer, thisPart;
     choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -323,9 +323,24 @@ getPanelUI = function() {
     if (pickedHighlight || pickedShape) {
       if (!shouldExpand) {
         refLayer = targetPageLayer.duplicateAsReferenceLayer();
-        refLayer.layer.name = (refLayer.getName()) + " <" + (choice.getName()) + ">";
+        baseName = (refLayer.getName()) + " <" + (choice.getName()) + ">";
+        layersWithName = refLayer.containingComp().searchLayers(baseName, true, "Backing");
+        alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        refLayer.layer.name = baseName + " {" + alphabet[layersWithName.count()] + "}";
+        positionProp = refLayer.transform("Position");
+        scaleProp = refLayer.transform("Scale");
         if (newPageLayer == null) {
-          refLayer.transform("Position").expression = "";
+          positionProp.expression = "";
+        }
+        if (positionProp.numKeys > 0) {
+          for (idx = i = ref2 = positionProp.numKeys; ref2 <= 1 ? i <= 1 : i >= 1; idx = ref2 <= 1 ? ++i : --i) {
+            positionProp.removeKey(idx);
+          }
+        }
+        if (scaleProp.numKeys > 0) {
+          for (idx = j = ref3 = scaleProp.numKeys; ref3 <= 1 ? j <= 1 : j >= 1; idx = ref3 <= 1 ? ++j : --j) {
+            scaleProp.removeKey(idx);
+          }
         }
       }
       choiceRect = choice.sourceRect();
@@ -434,7 +449,7 @@ getPanelUI = function() {
         group.assignControlLayer(choice, null, false);
       }
       if (newPageLayer == null) {
-        layerAbove = (ref2 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref2 : targetPageLayer.getPaperLayerGroup().paperParent;
+        layerAbove = (ref4 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref4 : targetPageLayer.getPaperLayerGroup().paperParent;
         refLayer.moveAfter(layerAbove);
         if (!shouldExpand) {
           refLayer.layer.inPoint = thisPart.getTime();

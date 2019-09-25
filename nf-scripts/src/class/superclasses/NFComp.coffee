@@ -152,15 +152,18 @@ class NFComp extends NFObject
   # @memberof NFComp
   # @param {string} searchString - The search string
   # @param {boolean} [caseSensitive=yes] - whether to match case
+  # @param {String} [exclude=null] - if this text is found in the name, do not return the layer in the collection
   # @returns {NFLayerCollection} The found layers
   ###
-  searchLayers: (searchString, caseSensitive = yes) ->
+  searchLayers: (searchString, caseSensitive = yes, exclude = null) ->
     foundLayers = new NFLayerCollection
     searchString = searchString.toLowerCase() unless caseSensitive
     @allLayers().forEach (layer) =>
       matchName = layer.getName()
       matchName = matchName.toLowerCase() unless caseSensitive
-      foundLayers.add layer if matchName.indexOf(searchString) >= 0
+      if matchName.indexOf(searchString) >= 0
+        unless exclude? and matchName.indexOf(exclude) >= 0
+          foundLayers.add layer
     return foundLayers
 
   ###*

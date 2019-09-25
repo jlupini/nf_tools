@@ -282,13 +282,17 @@ NFComp = (function(superClass) {
    * @memberof NFComp
    * @param {string} searchString - The search string
    * @param {boolean} [caseSensitive=yes] - whether to match case
+   * @param {String} [exclude=null] - if this text is found in the name, do not return the layer in the collection
    * @returns {NFLayerCollection} The found layers
    */
 
-  NFComp.prototype.searchLayers = function(searchString, caseSensitive) {
+  NFComp.prototype.searchLayers = function(searchString, caseSensitive, exclude) {
     var foundLayers;
     if (caseSensitive == null) {
       caseSensitive = true;
+    }
+    if (exclude == null) {
+      exclude = null;
     }
     foundLayers = new NFLayerCollection;
     if (!caseSensitive) {
@@ -302,7 +306,9 @@ NFComp = (function(superClass) {
           matchName = matchName.toLowerCase();
         }
         if (matchName.indexOf(searchString) >= 0) {
-          return foundLayers.add(layer);
+          if (!((exclude != null) && matchName.indexOf(exclude) >= 0)) {
+            return foundLayers.add(layer);
+          }
         }
       };
     })(this));

@@ -304,8 +304,24 @@ getPanelUI = ->
       unless shouldExpand
         # Duplicate and convert to reference layer
         refLayer = targetPageLayer.duplicateAsReferenceLayer()
-        refLayer.layer.name = "#{refLayer.getName()} <#{choice.getName()}>"
-        refLayer.transform("Position").expression = "" unless newPageLayer?
+
+        baseName = "#{refLayer.getName()} <#{choice.getName()}>"
+
+        # Unique naming
+        layersWithName = refLayer.containingComp().searchLayers baseName, yes, "Backing"
+        alphabet = 'abcdefghijklmnopqrstuvwxyz'.split ''
+        refLayer.layer.name = "#{baseName} {#{alphabet[layersWithName.count()]}}"
+
+        positionProp = refLayer.transform("Position")
+        scaleProp = refLayer.transform("Scale")
+
+        positionProp.expression = "" unless newPageLayer?
+        if positionProp.numKeys > 0
+          for idx in [positionProp.numKeys..1]
+            positionProp.removeKey idx
+        if scaleProp.numKeys > 0
+          for idx in [scaleProp.numKeys..1]
+            scaleProp.removeKey idx
 
       # Frame up that baby
       choiceRect = choice.sourceRect()
