@@ -25,7 +25,7 @@ dataArr = dataString.split(",")
 
 for i in dataArr
   theLayer = targetComp.layer parseInt(i)
-  if theLayer.name.indexOf(targetPage) >= 0
+  if theLayer.name.indexOf(targetPage) is 0
     activeBabbies.push theLayer
     if theLayer.inPoint < controlIn < theLayer.outPoint
       activeAtControlIn = theLayer

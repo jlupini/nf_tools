@@ -19,7 +19,7 @@ if (thisProperty.name === "Completion") {
   for (j = 0, len = dataArr.length; j < len; j++) {
     i = dataArr[j];
     theLayer = targetComp.layer(parseInt(i));
-    if (theLayer.name.indexOf(targetPage) >= 0) {
+    if (theLayer.name.indexOf(targetPage) === 0) {
       rightNow = theLayer.startTime + time;
       if ((theLayer.inPoint <= rightNow && rightNow <= theLayer.outPoint)) {
         activeBabby = theLayer;

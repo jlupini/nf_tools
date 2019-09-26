@@ -37,7 +37,7 @@ dataArr = dataString.split(",");
 for (j = 0, len = dataArr.length; j < len; j++) {
   i = dataArr[j];
   theLayer = targetComp.layer(parseInt(i));
-  if (theLayer.name.indexOf(targetPage) >= 0) {
+  if (theLayer.name.indexOf(targetPage) === 0) {
     activeBabbies.push(theLayer);
     if ((theLayer.inPoint < controlIn && controlIn < theLayer.outPoint)) {
       activeAtControlIn = theLayer;

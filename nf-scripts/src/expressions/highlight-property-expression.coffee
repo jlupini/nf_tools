@@ -21,7 +21,7 @@ if thisProperty.name is "Completion"
 
   for i in dataArr
     theLayer = targetComp.layer parseInt(i)
-    if theLayer.name.indexOf(targetPage) >= 0
+    if theLayer.name.indexOf(targetPage) is 0
       rightNow = theLayer.startTime + time
       if theLayer.inPoint <= rightNow <= theLayer.outPoint
         activeBabby = theLayer
