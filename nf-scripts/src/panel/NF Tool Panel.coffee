@@ -477,6 +477,35 @@ toolRegistry =
                   strippedExp = currExp.substring(0, currExp.indexOf("inFunc = function(mark)"))
                   prop.expression = strippedExp + newMaskOpacityExpSegment
 
+      updateBackingExpressions:
+        name: "Update Backing Expressions"
+        description: "This script replaces all backing expressions with the
+                      latest versions from the expression files."
+        callback: ->
+
+          # FIXME: Have this update the data layers too
+
+          # Get our script segments
+          newExpSegment = NFTools.readExpression "backing-mask-expression"
+          newExpSegment = newExpSegment.substring(newExpSegment.indexOf("targetLayer = thisComp.layer(targetLayerName);"))
+
+          # Get all the backing layers...
+          parts = NFProject.allPartComps()
+          backingLayers = new NFLayerCollection()
+          for part in parts
+            part.searchLayers("Backing for").forEach (partBackingLayer) =>
+              backingMask = partBackingLayer.mask()
+              for i in [1..backingMask.numProperties]
+                mask = backingMask.property(i)
+
+                prop = mask.property("Mask Path")
+                currExp = prop.expression
+                strippedExp = currExp.substring(0, currExp.indexOf("targetLayer = thisComp.layer(targetLayerName);"))
+                prop.expression = strippedExp + newExpSegment.replace("targetLayer = thisComp.layer(targetLayerName);", "edgePadding = 80;targetLayer = thisComp.layer(targetLayerName);")
+
+                prop = mask.property("Mask Expansion")
+                prop.setValue 0
+
       scratch:
         name: "Scratch Script"
         callbackScript: "nf_Scratch.jsx"

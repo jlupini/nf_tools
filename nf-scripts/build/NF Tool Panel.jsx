@@ -531,6 +531,39 @@ toolRegistry = {
           return results;
         }
       },
+      updateBackingExpressions: {
+        name: "Update Backing Expressions",
+        description: "This script replaces all backing expressions with the latest versions from the expression files.",
+        callback: function() {
+          var backingLayers, j, len, newExpSegment, part, parts, results;
+          newExpSegment = NFTools.readExpression("backing-mask-expression");
+          newExpSegment = newExpSegment.substring(newExpSegment.indexOf("targetLayer = thisComp.layer(targetLayerName);"));
+          parts = NFProject.allPartComps();
+          backingLayers = new NFLayerCollection();
+          results = [];
+          for (j = 0, len = parts.length; j < len; j++) {
+            part = parts[j];
+            results.push(part.searchLayers("Backing for").forEach((function(_this) {
+              return function(partBackingLayer) {
+                var backingMask, currExp, i, k, mask, prop, ref, results1, strippedExp;
+                backingMask = partBackingLayer.mask();
+                results1 = [];
+                for (i = k = 1, ref = backingMask.numProperties; 1 <= ref ? k <= ref : k >= ref; i = 1 <= ref ? ++k : --k) {
+                  mask = backingMask.property(i);
+                  prop = mask.property("Mask Path");
+                  currExp = prop.expression;
+                  strippedExp = currExp.substring(0, currExp.indexOf("targetLayer = thisComp.layer(targetLayerName);"));
+                  prop.expression = strippedExp + newExpSegment.replace("targetLayer = thisComp.layer(targetLayerName);", "edgePadding = 80;targetLayer = thisComp.layer(targetLayerName);");
+                  prop = mask.property("Mask Expansion");
+                  results1.push(prop.setValue(0));
+                }
+                return results1;
+              };
+            })(this)));
+          }
+          return results;
+        }
+      },
       scratch: {
         name: "Scratch Script",
         callbackScript: "nf_Scratch.jsx"

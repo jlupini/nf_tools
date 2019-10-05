@@ -391,7 +391,7 @@ getPanelUI = ->
         newMask.maskShape.expression = NFTools.readExpression "backing-mask-expression",
           TARGET_LAYER_NAME: refLayer.getName()
           EDGE_PADDING: EDGE_PADDING
-        newMask.maskExpansion.setValue 24
+        #newMask.maskExpansion.setValue 24
         bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
           TARGET_LAYER_NAME: refLayer.getName()
         shadowProp = bgSolid.addDropShadow()
