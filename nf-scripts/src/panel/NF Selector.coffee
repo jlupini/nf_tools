@@ -348,6 +348,7 @@ getPanelUI = ->
       positionProp = refLayer.transform("Position")
       newPosition = refLayer.getAbsolutePositionToFrameUp
         rect: refLayer.relativeRect choiceRect
+        preventFalloff: no
 
       if shouldExpand
         positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(currTime, yes), newPosition]
@@ -421,6 +422,7 @@ getPanelUI = ->
 
       # Add the HCL
       group = targetPageLayer.getPaperLayerGroup()
+      return alert "No group and null found for the target page layer (#{targetPageLayer.getName()}). Try deleting it and adding again before running." unless group?
       group.assignControlLayer(choice, null, no) if pickedHighlight
       unless newPageLayer?
         layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent

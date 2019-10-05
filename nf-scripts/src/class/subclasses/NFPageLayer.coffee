@@ -725,6 +725,7 @@ class NFPageLayer extends NFLayer
   factor for.
   @param {rect} [model.rect] - the rect to get the scale factor for
   @param {float} [model.time=The current time] - The time to calculate at
+  @param {boolean} [model.preventFalloff=yes] - whether to derive position without letting the page fall out of the frame
   @throws Throws error if not given a NFHighlightLayer or rect, or
   given highlight is not on this page.
   ###
@@ -745,6 +746,7 @@ class NFPageLayer extends NFLayer
   factor for.
   @param {rect} [model.rect] - the rect to get the scale factor for
   @param {float} [model.time=The current time] - The time to calculate at
+  @param {boolean} [model.preventFalloff=yes] - whether to derive position without letting the page fall out of the frame
   @throws Throws error if not given a NFHighlightLayer or rect, or
   given highlight is not on this page.
   ###
@@ -756,6 +758,8 @@ class NFPageLayer extends NFLayer
     else if not model.rect?
       throw new Error "Must provide either a highlight OR rect"
 
+    model.preventFalloff = model.preventFalloff ? yes
+
     rect = model.rect ? @sourceRectForHighlight model.highlight, model.time
 
     rectCenterPoint = [rect.left + rect.width / 2, rect.top + rect.height / 2]
@@ -763,19 +767,20 @@ class NFPageLayer extends NFLayer
     delta = [compCenterPoint[0] - rectCenterPoint[0], compCenterPoint[1] - rectCenterPoint[1]]
 
     # Adjust to prevent falling off the page
-    rectAfterReposition = @sourceRect model.time
+    if model.preventFalloff
+      rectAfterReposition = @sourceRect model.time
 
-    rectAfterReposition.left += delta[0]
-    rectAfterReposition.top += delta[1]
+      rectAfterReposition.left += delta[0]
+      rectAfterReposition.top += delta[1]
 
-    if rectAfterReposition.left > 0
-      delta[0] -= rectAfterReposition.left
-    if rectAfterReposition.top > 0
-      delta[1] -= rectAfterReposition.top
-    if rectAfterReposition.left + rectAfterReposition.width < @containingComp().comp.width
-      delta[0] += @containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width)
-    if rectAfterReposition.top + rectAfterReposition.height < @containingComp().comp.height
-      delta[1] += @containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height)
+      if rectAfterReposition.left > 0
+        delta[0] -= rectAfterReposition.left
+      if rectAfterReposition.top > 0
+        delta[1] -= rectAfterReposition.top
+      if rectAfterReposition.left + rectAfterReposition.width < @containingComp().comp.width
+        delta[0] += @containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width)
+      if rectAfterReposition.top + rectAfterReposition.height < @containingComp().comp.height
+        delta[1] += @containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height)
 
     delta
 

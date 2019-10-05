@@ -369,7 +369,8 @@ getPanelUI = function() {
       }
       positionProp = refLayer.transform("Position");
       newPosition = refLayer.getAbsolutePositionToFrameUp({
-        rect: refLayer.relativeRect(choiceRect)
+        rect: refLayer.relativeRect(choiceRect),
+        preventFalloff: false
       });
       if (shouldExpand) {
         positionProp.setValuesAtTimes([keyIn, keyOut], [positionProp.valueAtTime(currTime, true), newPosition]);
@@ -444,6 +445,9 @@ getPanelUI = function() {
         positionProp.setValue([refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]);
       }
       group = targetPageLayer.getPaperLayerGroup();
+      if (group == null) {
+        return alert("No group and null found for the target page layer (" + (targetPageLayer.getName()) + "). Try deleting it and adding again before running.");
+      }
       if (pickedHighlight) {
         group.assignControlLayer(choice, null, false);
       }

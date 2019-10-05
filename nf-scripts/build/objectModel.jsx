@@ -354,11 +354,27 @@ NFComp = (function(superClass) {
   /**
    * Creates and returns a new null layer in this comp
    * @memberof NFComp
+   * @param {String} [name] - the name for the null
+   * @param {Point} [position] - the position of the null in the comp's coordinate system
    * @returns {NFLayer} The newly created null layer
    */
 
-  NFComp.prototype.addNull = function() {
-    return new NFLayer(this.comp.layers.addNull());
+  NFComp.prototype.addNull = function(name, position) {
+    var newNull;
+    if (name == null) {
+      name = null;
+    }
+    if (position == null) {
+      position = null;
+    }
+    newNull = new NFLayer(this.comp.layers.addNull());
+    if (position != null) {
+      newNull.transform("Position").setValue(position);
+    }
+    if (name != null) {
+      newNull.setName(name);
+    }
+    return newNull;
   };
 
 
@@ -5635,6 +5651,7 @@ NFPageLayer = (function(superClass) {
   factor for.
   @param {rect} [model.rect] - the rect to get the scale factor for
   @param {float} [model.time=The current time] - The time to calculate at
+  @param {boolean} [model.preventFalloff=yes] - whether to derive position without letting the page fall out of the frame
   @throws Throws error if not given a NFHighlightLayer or rect, or
   given highlight is not on this page.
    */
@@ -5659,12 +5676,13 @@ NFPageLayer = (function(superClass) {
   factor for.
   @param {rect} [model.rect] - the rect to get the scale factor for
   @param {float} [model.time=The current time] - The time to calculate at
+  @param {boolean} [model.preventFalloff=yes] - whether to derive position without letting the page fall out of the frame
   @throws Throws error if not given a NFHighlightLayer or rect, or
   given highlight is not on this page.
    */
 
   NFPageLayer.prototype.getPositionDeltaToFrameUp = function(model) {
-    var compCenterPoint, delta, rect, rectAfterReposition, rectCenterPoint, ref;
+    var compCenterPoint, delta, rect, rectAfterReposition, rectCenterPoint, ref, ref1;
     if (model.highlight != null) {
       if (!(model.highlight instanceof NFHighlightLayer && this.containsHighlight(model.highlight))) {
         throw new Error("Invalid highlight");
@@ -5672,24 +5690,27 @@ NFPageLayer = (function(superClass) {
     } else if (model.rect == null) {
       throw new Error("Must provide either a highlight OR rect");
     }
-    rect = (ref = model.rect) != null ? ref : this.sourceRectForHighlight(model.highlight, model.time);
+    model.preventFalloff = (ref = model.preventFalloff) != null ? ref : true;
+    rect = (ref1 = model.rect) != null ? ref1 : this.sourceRectForHighlight(model.highlight, model.time);
     rectCenterPoint = [rect.left + rect.width / 2, rect.top + rect.height / 2];
     compCenterPoint = [this.containingComp().comp.width / 2, this.containingComp().comp.height / 2];
     delta = [compCenterPoint[0] - rectCenterPoint[0], compCenterPoint[1] - rectCenterPoint[1]];
-    rectAfterReposition = this.sourceRect(model.time);
-    rectAfterReposition.left += delta[0];
-    rectAfterReposition.top += delta[1];
-    if (rectAfterReposition.left > 0) {
-      delta[0] -= rectAfterReposition.left;
-    }
-    if (rectAfterReposition.top > 0) {
-      delta[1] -= rectAfterReposition.top;
-    }
-    if (rectAfterReposition.left + rectAfterReposition.width < this.containingComp().comp.width) {
-      delta[0] += this.containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width);
-    }
-    if (rectAfterReposition.top + rectAfterReposition.height < this.containingComp().comp.height) {
-      delta[1] += this.containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height);
+    if (model.preventFalloff) {
+      rectAfterReposition = this.sourceRect(model.time);
+      rectAfterReposition.left += delta[0];
+      rectAfterReposition.top += delta[1];
+      if (rectAfterReposition.left > 0) {
+        delta[0] -= rectAfterReposition.left;
+      }
+      if (rectAfterReposition.top > 0) {
+        delta[1] -= rectAfterReposition.top;
+      }
+      if (rectAfterReposition.left + rectAfterReposition.width < this.containingComp().comp.width) {
+        delta[0] += this.containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width);
+      }
+      if (rectAfterReposition.top + rectAfterReposition.height < this.containingComp().comp.height) {
+        delta[1] += this.containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height);
+      }
     }
     return delta;
   };

@@ -195,10 +195,17 @@ class NFComp extends NFObject
   ###*
   # Creates and returns a new null layer in this comp
   # @memberof NFComp
+  # @param {String} [name] - the name for the null
+  # @param {Point} [position] - the position of the null in the comp's coordinate system
   # @returns {NFLayer} The newly created null layer
   ###
-  addNull: ->
-    return new NFLayer @comp.layers.addNull()
+  addNull: (name = null, position = null) ->
+    newNull = new NFLayer @comp.layers.addNull()
+
+    newNull.transform("Position").setValue position if position?
+    newNull.setName name if name?
+
+    return newNull
 
   ###*
   Creates and returns a new solid layer in this comp
