@@ -369,14 +369,24 @@ toolRegistry = {
       disconnectBrokenHighlights: {
         name: "Disconnect Broken Highlights",
         callback: function() {
-          var allHighlights;
+          var allBackings, allHighlights;
           allHighlights = NFProject.allHighlights();
-          return allHighlights.forEach((function(_this) {
+          allHighlights.forEach((function(_this) {
             return function(highlight) {
               highlight.resetExpressionErrors();
               if (highlight.isBroken()) {
                 highlight.disconnect();
                 return NFTools.log("Disconnected highlight: " + (highlight.getName()) + " in page: " + (highlight.getPageComp().comp.name) + "\n", "NFToolPanel#disconnectBrokenHighlights");
+              }
+            };
+          })(this));
+          allBackings = NFProject.allBackingLayers();
+          return allBackings.forEach((function(_this) {
+            return function(backing) {
+              var opacityProp;
+              opacityProp = backing.transform("Opacity");
+              if (opacityProp.expressionError !== "") {
+                return backing.remove();
               }
             };
           })(this));

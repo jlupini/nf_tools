@@ -140,6 +140,20 @@ NFProject =
     return allHighlights
 
   ###*
+  Returns all the backing layers in the project
+  @memberof NFProject
+  @returns {NFLayerCollection} the collection of backing layers
+  ###
+  allBackingLayers: ->
+    allBackings = new NFLayerCollection()
+    parts = NFProject.allPartComps()
+    parts.forEach (part) =>
+      backingLayers = part.searchLayers "Backing for"
+      allBackings.add backingLayers
+
+    return allBackings
+
+  ###*
   Returns whether there are broken highlights in the project
   @memberof NFProject
   @returns {boolean} If there are broken highlights

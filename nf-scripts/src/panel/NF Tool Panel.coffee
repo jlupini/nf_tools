@@ -350,6 +350,11 @@ toolRegistry =
               highlight.disconnect()
               NFTools.log "Disconnected highlight: #{highlight.getName()} in
                            page: #{highlight.getPageComp().comp.name}\n", "NFToolPanel#disconnectBrokenHighlights"
+          allBackings = NFProject.allBackingLayers()
+          allBackings.forEach (backing) =>
+            opacityProp = backing.transform("Opacity")
+            if opacityProp.expressionError isnt ""
+              backing.remove()
 
       toggleGuideLayers:
         name: "Toggle Guide Layers"

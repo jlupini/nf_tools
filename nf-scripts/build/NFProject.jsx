@@ -176,6 +176,25 @@ NFProject = {
   },
 
   /**
+  Returns all the backing layers in the project
+  @memberof NFProject
+  @returns {NFLayerCollection} the collection of backing layers
+   */
+  allBackingLayers: function() {
+    var allBackings, parts;
+    allBackings = new NFLayerCollection();
+    parts = NFProject.allPartComps();
+    parts.forEach((function(_this) {
+      return function(part) {
+        var backingLayers;
+        backingLayers = part.searchLayers("Backing for");
+        return allBackings.add(backingLayers);
+      };
+    })(this));
+    return allBackings;
+  },
+
+  /**
   Returns whether there are broken highlights in the project
   @memberof NFProject
   @returns {boolean} If there are broken highlights
