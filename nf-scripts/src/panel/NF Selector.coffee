@@ -573,7 +573,7 @@ getPanelUI = ->
           unless matchingPageLayers.count() is 0
             matchingPageLayers.forEach (pLayer) =>
               # Add these layers if they aren't inside the visible area
-              layersToTrim.add pLayer unless partComp.getRect().intersectsWith(pLayer.sourceRect(time))
+              layersToTrim.add pLayer unless partComp.getRect().intersectsWith(pLayer.sourceRect(time)) or pLayer.getOutMarkerTime()?
 
           layersToTrim.forEach (layer) =>
             layer.layer.outPoint = time

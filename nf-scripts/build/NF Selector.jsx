@@ -602,7 +602,7 @@ getPanelUI = function() {
           if (matchingPageLayers.count() !== 0) {
             matchingPageLayers.forEach((function(_this) {
               return function(pLayer) {
-                if (!partComp.getRect().intersectsWith(pLayer.sourceRect(time))) {
+                if (!(partComp.getRect().intersectsWith(pLayer.sourceRect(time)) || (pLayer.getOutMarkerTime() != null))) {
                   return layersToTrim.add(pLayer);
                 }
               };
