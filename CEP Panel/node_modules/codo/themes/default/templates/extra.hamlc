@@ -1,0 +1,18 @@
+!!!
+%html
+  != @render 'layout/header'
+  %body
+    != @render 'layout/intro', breadcrumbs: @breadcrumbs
+
+    #content
+      %nav.toc
+        %p.title
+          %a.hide_toc{href: '#'}
+            %strong Table of Contents
+          %small
+            != surround '(', ')', ->
+              %a.float_toc{href: '#'}> left
+      #filecontents
+        != @entity.parsed
+
+    != @render 'layout/footer'

@@ -1,0 +1,29 @@
+!!!
+%html
+  != @render 'layout/header'
+  %body.list
+    #content.tree.list
+      %h1.full_list_header File List
+
+      != @render 'partials/list_nav'
+
+      #search
+        Search:
+        %input{ type: 'text' }
+
+      - createLevel = (tree) =>
+        %ul
+          - for entry in tree
+            %li
+              - if entry.entity
+                %a{href: @pathFor('file', entry.entity, @path), target: 'main'}
+                  = entry.entity.basename
+                %small.namespace
+                  = entry.entity.dirname
+              - else
+                %span
+                  = entry.name
+
+            = createLevel(entry.children) if entry.children.length > 0
+
+      = createLevel @tree

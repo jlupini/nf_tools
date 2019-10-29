@@ -1,0 +1,33 @@
+!!!
+%html
+  != @render 'layout/header'
+  %body.list
+    #content.tree.list
+      %h1.full_list_header Class List
+
+      != @render 'partials/list_nav'
+
+      #search
+        Search:
+        %input{ type: 'text' }
+
+      - createLevel = (tree) =>
+        %ul
+          - for entry in tree
+            %li
+              - if entry.entity
+                %a{href: @pathFor('class', entry.entity, @path), target: 'main'}
+                  = entry.entity.basename
+                - if entry.entity.parent
+                  %small.parent
+                    <
+                    = entry.entity.parent.name || entry.entity.parent
+                %small.namespace
+                  = entry.entity.namespace
+              - else
+                %span
+                  = entry.name
+
+            = createLevel(entry.children) if entry.children.length > 0
+
+      = createLevel @tree

@@ -1,0 +1,29 @@
+%ul.summary
+  - for method in @methods
+    %li{deprecated: if method.documentation?.deprecated? then true else false}
+
+      %span.signature
+        %a{href: '#'+@anchorFor(method)}
+          != @render 'partials/method_signature', method: method.effectiveOverloads()[0]
+
+      - if method.name == 'constructor'
+        %span.constructor.note.title Constructor
+
+      - if method.bound
+        %span.bound.note.title Bound
+
+      - if method.documentation?.private?
+        %span.private.note.title Private
+
+      - if method.documentation?.abstract?
+        %span.abstract.note.title Abstract
+
+      - if method.documentation?.deprecated?
+        %span.deprecated.note.title Deprecated
+
+      %span.desc
+        - if method.documentation?.deprecated?
+          %strong Deprecated.
+          != @activate method.documentation?.deprecated, @path, true
+        - else if method.documentation?.summary
+          != @activate method.documentation?.summary, @path, true

@@ -1,0 +1,13 @@
+.methods
+  - for method in @methods
+    .method_details
+      %p.signature{id: "#{method.name}-#{method.kind}"}
+        - for overload in method.effectiveOverloads()
+          != @render 'partials/method_signature', method: overload
+          - if overload.bound
+            %span.bound.note Bound
+          - if overload.documentation?.private
+            %span.private.note Private
+          %br
+
+      != @render 'partials/documentation', documentation: method.documentation, kind: 'method', entity: method

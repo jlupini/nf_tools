@@ -1,0 +1,193 @@
+!!!
+%html
+  != @render 'layout/header'
+  %body
+    != @render 'layout/intro', breadcrumbs: @breadcrumbs
+
+    #content
+      %h1
+        Class:
+        = @entity.name
+
+        - if @entity.documentation?.abstract?
+          %span.note.title Abstract
+
+        - if @entity.documentation?.deprecated?
+          %span.deprecated.note.title Deprecated
+
+        - if @entity.documentation?.private?
+          %span.private.note.title Private
+
+      %table.box
+        %tr
+          %td Defined in:
+          %td= @entity.file.name
+
+        - if @entity.parent
+          %tr
+            %td Inherits:
+            %td
+              - if @entity.parent.visible?()
+                %a{href: @pathFor('class', @entity.parent, @path)}= @entity.parent.name
+              - else
+                = @entity.parent.name || @entity.parent
+
+        - if @entity.extends.length > 0
+          %tr
+            %td Extends:
+            %td
+              - for extension, i in @entity.extends
+                - if extension.visible?()
+                  %a{href: @pathFor('mixin', extension, @path)}= extension.name
+                - else
+                  = extension.name || extension
+
+        - if @entity.includes.length > 0
+          %tr
+            %td Includes:
+            %td
+              - for include, i in @entity.includes
+                - if include.visible?()
+                  %a{href: @pathFor('mixin', include, @path)}= include.name
+                - else
+                  = include.name || include
+
+        - if @entity.concerns.length > 0
+          %tr
+            %td Concerns:
+            %td
+              - for concern, i in @entity.concerns
+                - if concern.visible?()
+                  %a{href: @pathFor('mixin', concern, @path)}= concern.name
+                - else
+                  = concern.name || concern
+
+
+      - if @entity.documentation?
+        %h2 Overview
+        != @render 'partials/documentation', documentation: @entity.documentation, kind: 'class'
+
+
+      - if @entity.descendants.filter((x) -> x.visible()).length > 0
+        %h2 Direct Known Subclasses
+        %p.children
+          - for descendant in @entity.descendants.filter((x) -> x.visible())
+            %a{href: @pathFor('class', descendant, @path)}= descendant.name
+
+
+      - if @entity.properties.length > 0 || @entity.inheritedProperties().length > 0
+        %h2 Property Summary
+
+        - if @entity.properties.length > 0
+          %dl.properties
+            - for property in @entity.properties
+              %dt{id: @anchorFor(property)}
+                %span.signature
+                  - if property.documentation?.property
+                    = "(#{property.documentation.property})"
+                  - else
+                    (?)
+                  %b
+                    = property.name
+                - unless property.setter
+                  %span.readonly.note.title Readonly
+                - unless property.getter
+                  %span.writeonly.note.title Writeonly
+              %dd.desc
+                != @activate property.documentation.comment, @path, true
+
+        - if @entity.parent?.visible?() && @entity.inheritedProperties().length > 0
+          %h3.inherited
+            Properties inherited from
+            %a{href: @pathFor('class', @entity.parent, @path)}= @entity.parent.name
+          %p.inherited
+            - for property in @entity.inheritedProperties()
+              %a{href: @pathFor(property, undefined, @path)}= property.entity.name
+
+
+      - if @entity.variables.length > 0 || @entity.parent?.visible?() && @entity.inheritedVariables().length > 0
+        %h2 Variables Summary
+        != @render 'partials/variable_list', variables: @entity.variables
+
+        - if @entity.parent?.visible?() && @entity.inheritedVariables().length > 0
+          %h3.inherited
+            Variable inherited from
+            %a{href: @pathFor('class', @entity.parent, @path)}= @entity.parent.name
+          %p.inherited
+            - for variable in @entity.inheritedVariables()
+              %a{href: @pathFor(variable, undefined, @path)}= variable.entity.name
+
+
+      - staticMethods  = @entity.effectiveMethods().filter (m) -> m.kind == 'static' && m.visible
+      - dynamicMethods = @entity.effectiveMethods().filter (m) -> m.kind == 'dynamic' && m.name != 'constructor' && m.visible
+      - constructor    = @entity.effectiveMethods().filter (m) -> m.kind == 'dynamic' && m.name == 'constructor'
+
+      - if staticMethods.length > 0
+        %h2 Class Method Summary
+        != @render 'partials/method_summary', methods: staticMethods
+
+      - if dynamicMethods.length > 0
+        %h2 Instance Method Summary
+        != @render 'partials/method_summary', methods: dynamicMethods
+
+      - if @entity.parent?.visible?() && @entity.inheritedMethods().filter((x) -> x.entity.visible).length > 0
+        %h2
+          %small Inherited Method Summary
+
+          %h3.inherited
+            Methods inherited from
+            %a{href: @pathFor('class', @entity.parent, @path)}= @entity.parent.name
+          %p.inherited
+            - for method in @entity.inheritedMethods().filter((x) -> x.entity.visible)
+              %a{href: @pathFor(method, undefined, @path)}= method.entity.shortSignature()
+
+      - if @entity.extends.filter((x) -> x.visible?()).length > 0
+        %h2
+          %small Extended Method Summary
+
+        - for mixin in @entity.extends.filter((x) -> x.visible?())
+          %h3.inherited
+            Methods extended from
+            %a{href: @pathFor('mixin', mixin, @path)}= mixin.name
+          %p.inherited
+            - for method in mixin.effectiveExtensionMethods().filter((x) -> x.visible)
+              %a{href: "#{@pathFor 'mixin', mixin, @path}##{@anchorFor(method)}"}= method.shortSignature()
+
+      - if @entity.includes.filter((x) -> x.visible?()).length > 0
+        %h2
+          %small Included Method Summary
+
+        - for mixin in @entity.includes.filter((x) -> x.visible?())
+          %h3.inherited
+            Methods included from
+            %a{href: @pathFor('mixin', mixin, @path)}= mixin.name
+          %p.inherited
+            - for method in mixin.effectiveInclusionMethods().filter((x) -> x.visible)
+              %a{href: "#{@pathFor 'mixin', mixin, @path}##{@anchorFor(method)}"}= method.shortSignature()
+
+
+      - if @entity.concerns.filter((x) -> x.visible?()).length > 0
+        %h2
+          %small Concerned Method Summary
+
+        - for mixin in @entity.concerns.filter((x) -> x.visible?())
+          %h3.inherited
+            Methods concerned from
+            %a{href: @pathFor('mixin', mixin, @path)}= mixin.name
+          %p.inherited
+            - for method in mixin.effectiveConcernMethods().filter((x) -> x.visible)
+              %a{href: "#{@pathFor 'mixin', mixin, @path}##{@anchorFor(method)}"}= method.shortSignature()
+
+      - if staticMethods.length > 0
+        %h2 Class Method Details
+        != @render 'partials/method_list', methods: staticMethods
+
+      - if constructor.length == 1
+        %h2 Constructor Details
+        != @render 'partials/method_list', methods: constructor
+
+      - if dynamicMethods.length > 0
+        %h2 Instance Method Details
+        != @render 'partials/method_list', methods: dynamicMethods
+
+    != @render 'layout/footer'

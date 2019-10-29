@@ -1,0 +1,20 @@
+!!!
+%html
+  != @render 'layout/header'
+  %body.list
+    #content.list
+      %h1.full_list_header Method List
+
+      != @render 'partials/list_nav'
+
+      #search
+        Search:
+        %input{ type: 'text' }
+
+      %ul
+        - for method in @environment.visibleMethods()
+          %li{deprecated: if method.documentation?.deprecated then true else false}
+            %a{href: @pathFor(method), target: 'main', title: method.entity.name}
+              = method.entity.shortSignature()              
+            %small
+              = surround '(', ')', -> method.owner.name

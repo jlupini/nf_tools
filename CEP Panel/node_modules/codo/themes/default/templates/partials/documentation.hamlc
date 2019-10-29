@@ -1,0 +1,165 @@
+- if @documentation
+
+  - show_description = false
+  - show_description ||= @documentation[field] for field in ['deprecated', 'abstract', 'todos', 'notes', 'comment', 'examples']
+
+  - if show_description
+    .docstring
+
+      - if @documentation.deprecated?
+        .note.deprecated
+          %strong Deprecated.
+          != @activate @documentation.deprecated, @path, true
+
+      - if @documentation.abstract?
+        .note.abstract
+          %strong
+            This
+            = @kind
+            is abstract.
+          != @activate @documentation.abstract, @path, true
+
+      - if @documentation.todos
+        - for todo in @documentation.todos
+          .note.todo
+            %strong TODO:
+            != @activate todo, @path, true
+
+      - if @documentation.notes
+        - for note in @documentation.notes
+          .note
+            %strong Note:
+            != @activate note, @path, true
+
+      != @activate @documentation.comment, @path
+
+      - if @documentation.examples
+        .examples
+          %h3 Examples:
+
+          - for example in @documentation.examples
+            %h4
+              = example.title
+            %pre
+              %code.coffeescript= example.code
+
+  .tags
+    - if @documentation.params
+      %h3 Parameters:
+      %ul.param
+        - for param in @documentation.params
+          %li
+            - if param.optional
+              %span.name= '['+param.name+']'
+            - else
+              %span.name= param.name
+            %span.type
+              (
+                != @render('partials/type_link', type: param.type)
+              )
+            - if param.defaultState
+              %span.defaultState= ' = '+param.defaultState
+            - if param.description
+              &mdash;
+              %span.desc!= @activate param.description, @path, true
+
+    - if @documentation.options
+      - for hash, options of @documentation.options
+        %h3
+          Options Hash:
+          = surround '(', '):', -> hash
+        %ul.options
+          - for option in options
+            %li
+              %span.name= option.name
+              %span.type
+                (
+                  != @render('partials/type_link', type: option.type)
+                )
+              - if option.description
+                &mdash;
+                %span.desc!= @activate option.description, @path, true
+
+    - if @documentation.events
+      .events
+        %h3 Events:
+        - for event in @documentation.events
+          .event
+            %p.signature
+              = event.name
+            != @render('partials/documentation', documentation: event.documentation)
+
+    - if @documentation.throws
+      %h3 Throws:
+      %ul.throw
+        - for throws in @documentation.throws
+          %li
+            %span.type
+            - if throws.description
+              (
+                != @render('partials/type_link', type: throws.type)
+              )
+              &mdash;
+              %span.desc!= @activate throws.description, @path, true
+            - else
+              != @render('partials/type_link', type: throws.type)
+
+    - if @documentation.returns
+      %h3 Returns:
+      %ul.return
+        %li
+          %span.type
+          - if @documentation.returns.description
+            (
+              != @render('partials/type_link', type: @documentation.returns.type)
+            )
+            &mdash;
+            %span.desc!= @activate @documentation.returns.description, @path, true
+          - else
+            != @render('partials/type_link', type: @documentation.returns.type)
+
+    - if @documentation.authors
+      %h3 Author:
+      %ul.author
+        - for author in @documentation.authors
+          %li
+            != @activate author, @path, true
+
+    - if @documentation.copyright
+      %h3 Copyright:
+      %ul.copyright
+        %li
+          != @activate @documentation.copyright, @path, true
+
+    - if @documentation.since
+      %h3 Since:
+      %ul.since
+        %li
+          != @activate @documentation.since, @path, true
+
+    - if @documentation.version
+      %h3 Version:
+      %ul.version
+        %li
+          != @activate @documentation.version, @path, true
+
+    - if @documentation.see
+      %h3 See also:
+      %ul.see
+        - for see in @documentation.see
+          %li
+            - if see.reference && see.label
+              %a{href: @reference(see.reference, @path)}= see.label
+            - else if see.reference
+              %a{href: @reference(see.reference, @path)}= see.reference
+            - else
+              = see.label
+
+    - if @documentation.overloads && @entity?.effectiveOverloads?
+      .overloads
+        %h3 Overloads:
+        - for overload in @entity.effectiveOverloads()
+          .overload
+            %p.signature
+              != @render 'partials/method_signature', method: overload
+            != @render('partials/documentation', documentation: overload.documentation, type: 'overload')

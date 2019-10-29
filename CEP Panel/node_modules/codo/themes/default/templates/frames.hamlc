@@ -1,0 +1,6 @@
+!!!
+%html
+  != @render 'layout/header'
+  %frameset{ cols: '25%, *' }
+    %frame{ name: 'list', src: "#{@list}" }
+    %frame#content{ name: 'main', src: "#{@main}" }

@@ -3,7 +3,7 @@ function makeAlert(){
 }
 
 function openDocument(location){
-  alert("dicks");
+  alert("Testing server");
   var fileRef = new File(location);
   var docRef = app.open(fileRef);
 

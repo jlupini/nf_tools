@@ -1,0 +1,13 @@
+#base{data: {path: @path}}
+#header
+  #menu
+    - if @breadcrumbs?.length > 0
+      - current = @breadcrumbs.pop()
+      - for breadcrumb in @breadcrumbs
+        - if breadcrumb.href
+          %a{href: "#{@path}#{breadcrumb.href}", title: breadcrumb.title}
+            = breadcrumb.title
+        - else
+          %span.title= breadcrumb.title
+        &raquo;
+      %span.title= current.title

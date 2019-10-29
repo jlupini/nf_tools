@@ -1,33 +1,55 @@
-/* 1) Create an instance of CSInterface. */
-var csInterface = new CSInterface();
+$(document).ready(function() {
 
-csInterface.requestOpenExtension("com.my.localserver", "");
+	/* 1) Create an instance of CSInterface. */
+	var csInterface = new CSInterface();
 
-/* Make a reference to your HTML button and add a click handler. */
-var openButton = document.querySelector("#import-button");
-openButton.addEventListener("click", importDoc);
+	csInterface.requestOpenExtension("com.my.localserver", "");
 
-/* Get the path for your panel */
-var extensionDirectory = csInterface.getSystemPath("extension");
+	$('#reload-button').click(function() {
+	    window.location.reload(true);
+	});
 
-function importDoc() {
-	/* Make sure to include the full URL */
-	var url = "http://localhost:3200/import";
+	$('#import-button').click(function() {
+	    importDoc();
+	});
 
-	/* Use ajax to communicate with your server */
-	$.ajax({
-		type: "GET",
-		url: url,
-		headers: {
-			"directory": extensionDirectory
-		},
-		success: response => {
-			/* Use the ExtendScript function to display the downloaded file */
-			csInterface.evalScript(`openDocument("${response}")`);
-		},
-		error: (jqXHR, textStatus, errorThrown) => {
-			alert(errorThrown, jqXHR.responseJSON);
-		}
-	})
+	$('#alert-button').click(function() {
+	    makeAlert();
+	});
 
-}
+
+
+	/* Get the path for your panel */
+	var extensionDirectory = csInterface.getSystemPath("extension");
+
+	function makeAlert() {
+		csInterface.evalScript(`makeAlert()`);
+	}
+
+	function reloadPage() {
+		window.location.reload(true);
+	}
+
+	function importDoc() {
+		/* Make sure to include the full URL */
+		var url = "http://localhost:3200/import";
+
+		/* Use ajax to communicate with your server */
+		$.ajax({
+			type: "GET",
+			url: url,
+			headers: {
+				"directory": extensionDirectory
+			},
+			success: response => {
+				/* Use the ExtendScript function to display the downloaded file */
+				csInterface.evalScript(`openDocument("${response}")`);
+			},
+			error: (jqXHR, textStatus, errorThrown) => {
+				alert(errorThrown, jqXHR.responseJSON);
+			}
+		});
+
+	}
+
+});

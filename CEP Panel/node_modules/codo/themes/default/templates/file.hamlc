@@ -1,0 +1,44 @@
+!!!
+%html
+  != @render 'layout/header'
+  %body
+    != @render 'layout/intro', breadcrumbs: @breadcrumbs
+
+    #content
+      %h1
+        File:
+        = @entity.basename
+
+      %table.box
+        %tr
+          %td Defined in:
+          %td= @entity.dirname
+        - if @entity.classes.length > 0
+          %tr
+            %td
+              Classes:
+            %td
+              - for klass in @entity.classes
+                %a{href: @pathFor('class', klass, @path)}
+                  = klass.name
+        - if @entity.mixins.length > 0
+          %tr
+            %td
+              Mixins:
+            %td
+              - for mixin in @entity.mixins
+                %a{href: @pathFor('mixin', mixin, @path)}
+                  = mixin.name
+
+      - if @entity.variables.length > 0
+        %h2 Variables Summary
+        != @render 'partials/variable_list', variables: @entity.variables
+
+      - if @entity.effectiveMethods().length > 0
+        %h2 Method Summary
+        != @render 'partials/method_summary', methods: @entity.effectiveMethods()
+
+        %h2 Method Details
+        != @render 'partials/method_list', methods: @entity.effectiveMethods()
+
+    != @render 'layout/footer'
