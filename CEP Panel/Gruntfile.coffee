@@ -1,8 +1,10 @@
+sass = require('node-sass')
+
 module.exports = (grunt) ->
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
-    clean: ['client/*', 'host/*', 'server/*']
+    clean: ['client/*', 'host/*', 'server/*', 'CSXS/*']
     sass:
       options:
         implementation: sass
@@ -10,6 +12,22 @@ module.exports = (grunt) ->
       dist:
         files:
           'client/style.css': 'src/client/style.sass'
+    copy:
+      clientHTML:
+        expand: true
+        cwd: 'src/client'
+        src: ['*.html']
+        dest: 'client/'
+      clientJS:
+        expand: true
+        cwd: 'src/client'
+        src: ['*.js']
+        dest: 'client/'
+      manifest:
+        expand: true
+        cwd: 'src/CSXS'
+        src: ['*.xml']
+        dest: 'CSXS/'
     coffee:
       compileClient:
         options:
@@ -41,7 +59,7 @@ module.exports = (grunt) ->
     watch:
       scripts:
         files: 'src/**'
-        tasks: ['coffee', 'sass']
+        tasks: ['coffee', 'sass', 'copy']
 
 
   grunt.loadNpmTasks 'grunt-coffeelinter'
@@ -53,5 +71,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-sass'
 
   # Default task(s).
-  grunt.registerTask 'default', ['coffee']
+  grunt.registerTask 'default', ['coffee', 'sass', 'copy']
   return

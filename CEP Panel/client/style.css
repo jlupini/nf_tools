@@ -1,9 +1,8 @@
-body, html {
-  background-color: #272727;
-  /* background-color: yellow; */
-}
+body {
+  background-color: #272727; }
 
 h1 {
   color: white;
-  margin-left: 20px;
-}
+  margin-left: 20px; }
+
+/*# sourceMappingURL=style.css.map */

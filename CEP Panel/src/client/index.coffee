@@ -22,7 +22,6 @@ $(document).ready ->
 
   csInterface.requestOpenExtension 'com.my.localserver', ''
 
-
   $('#reload-button').click ->
     window.location.reload true
   $('#import-button').click ->
