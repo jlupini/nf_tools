@@ -2,8 +2,8 @@ $(document).ready ->
 
   csInterface = new CSInterface
 
-  makeAlert = ->
-    csInterface.makeAlert()
+  callMakeAlert = ->
+    csInterface.evalScript("makeAlert()")
 
   reloadPage = ->
     window.location.reload true
@@ -16,7 +16,7 @@ $(document).ready ->
       url: url
       headers: 'directory': extensionDirectory
       success: (response) ->
-        csInterface.openDocument("#{response}")
+        csInterface.evalScript("openDocument('#{response}')")
       error: (jqXHR, textStatus, errorThrown) ->
         alert errorThrown, jqXHR.responseJSON
 
@@ -27,7 +27,7 @@ $(document).ready ->
   $('#import-button').click ->
     importDoc()
   $('#alert-button').click ->
-    makeAlert()
+    callMakeAlert()
 
 
   extensionDirectory = csInterface.getSystemPath('extension')

@@ -1,8 +1,8 @@
 $(document).ready(function() {
-  var csInterface, extensionDirectory, importDoc, makeAlert, reloadPage;
+  var callMakeAlert, csInterface, extensionDirectory, importDoc, reloadPage;
   csInterface = new CSInterface;
-  makeAlert = function() {
-    return csInterface.makeAlert();
+  callMakeAlert = function() {
+    return csInterface.evalScript("makeAlert()");
   };
   reloadPage = function() {
     window.location.reload(true);
@@ -17,7 +17,7 @@ $(document).ready(function() {
         'directory': extensionDirectory
       },
       success: function(response) {
-        return csInterface.openDocument("" + response);
+        return csInterface.evalScript("openDocument('" + response + "')");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         return alert(errorThrown, jqXHR.responseJSON);
@@ -32,7 +32,7 @@ $(document).ready(function() {
     return importDoc();
   });
   $('#alert-button').click(function() {
-    return makeAlert();
+    return callMakeAlert();
   });
   return extensionDirectory = csInterface.getSystemPath('extension');
 });
