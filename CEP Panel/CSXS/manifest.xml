@@ -25,7 +25,7 @@
           <!-- 4) -->
           <MainPath>./client/index.html</MainPath>
           <!-- 5) -->
-          <ScriptPath>./host/index.jsx</ScriptPath>
+          <ScriptPath>./host/hooks.jsx</ScriptPath>
           <CEFCommandLine />
         </Resources>
         <Lifecycle>

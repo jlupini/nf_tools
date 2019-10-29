@@ -3,6 +3,13 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     clean: ['client/*', 'host/*', 'server/*']
+    sass:
+      options:
+        implementation: sass
+        sourceMap: true
+      dist:
+        files:
+          'client/style.css': 'src/client/style.sass'
     coffee:
       compileClient:
         options:
@@ -31,50 +38,11 @@ module.exports = (grunt) ->
         src: ['*.coffee']
         dest: 'server/'
         ext: '.js'
-        rename: (dest, src) ->
-          dest + "nf_" + src
-      compileUtilities:
-        expand: true
-        flatten: true
-        cwd: 'src/util'
-        src: ['*']
-        dest: 'build/'
-        ext: '.jsx'
-        options:
-          bare: yes
-      compilePDFTools:
-        expand: true
-        flatten: true
-        cwd: 'src/pdf_tools'
-        src: ['*']
-        dest: 'build/pdf_tools'
-        ext: '.js'
-        options:
-          bare: yes
-      compileObjectModel:
-        options:
-          bare: true
-        expand: true
-        flatten: false
-        cwd: 'src/class'
-        src: ['superestclasses/*', 'superclasses/*', 'subclasses/*']
-        dest: 'build/'
-        ext: '.jsx'
-        rename: (dest, src) ->
-          dest + "objectModel.jsx"
-    copy:
-      oldScripts:
-        expand: true
-        cwd: 'src/old_scripts'
-        src: ['**']
-        dest: 'build/'
     watch:
       scripts:
         files: 'src/**'
-        tasks: ['coffee', 'copy']
-      scriptsDocs:
-        files: 'src/**'
-        tasks: ['coffee', 'copy', 'jsdoc']
+        tasks: ['coffee', 'sass']
+
 
   grunt.loadNpmTasks 'grunt-coffeelinter'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -82,6 +50,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-jsdoc'
+  grunt.loadNpmTasks 'grunt-sass'
 
   # Default task(s).
   grunt.registerTask 'default', ['coffee']

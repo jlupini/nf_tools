@@ -41,11 +41,11 @@ $(document).ready(function() {
 			headers: {
 				"directory": extensionDirectory
 			},
-			success: response => {
+			success: function(response) {
 				/* Use the ExtendScript function to display the downloaded file */
 				csInterface.evalScript(`openDocument("${response}")`);
 			},
-			error: (jqXHR, textStatus, errorThrown) => {
+			error: function(jqXHR, textStatus, errorThrown) {
 				alert(errorThrown, jqXHR.responseJSON);
 			}
 		});
