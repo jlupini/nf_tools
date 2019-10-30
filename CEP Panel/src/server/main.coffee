@@ -16,8 +16,11 @@ namedColors = require 'color-name-list'
 fs = require('fs')
 httpServer = http.Server(app)
 
+# Import Local Classes and files
+jlpdf = require "./jlpdf.js"
 
 run = ->
+  console.log("Run Ran")
   port = 3200
   hostname = 'localhost'
   httpServer.listen port
@@ -27,6 +30,11 @@ run = ->
     limit: '50mb'
     extended: true)
   app.use express.static(path.join(__dirname, '../client'))
+
+  app.get '/restart', (req, res, next) ->
+    res.status(200).send()
+    httpServer.close()
+    run()
 
   app.get '/import', (req, res, next) ->
     path = req.headers['directory'] + '/placeholder.png'
@@ -205,8 +213,8 @@ run = ->
 
   app.get '/annotationData', (req, res, next) ->
     path = req.headers['filepath']
-    console.log "PATH OVERRIDE"
-    path = "/Users/jlupini/Avocado Video Dropbox/NF Active Prep/Fasting Webinar Aug-Sept 2019/20 Fasting-Mimicking Diet During Chemotherapy/Assets/PDF Pages/2007_pg01.pdf"
+    # console.log "PATH OVERRIDE"
+    # path = "/Users/jlupini/Avocado Video Dropbox/NF Active Prep/Fasting Webinar Aug-Sept 2019/20 Fasting-Mimicking Diet During Chemotherapy/Assets/PDF Pages/2007_pg01.pdf"
     colors =
       "Highlight Yellow": "#facd5a"
       "Highlight Green": "#7dc768"
@@ -345,16 +353,21 @@ run = ->
         finalDataObject = dataObject
 
         console.log 'The data was grabbed (block 1)!'
-        res.status(200).send finalDataObject
+        # finalDataObject['test'] = jlpdf.test()
+        res.status(200).send jlpdf.processRawAnnotationData finalDataObject
 
         return
       ), (err) ->
         console.error 'Error: ' + err
         # Write to a file
         console.log 'The data was grabbed with error (block 2)!'
-        res.status(200).send finalDataObject
+        # finalDataObject['test'] = jlpdf.test()
+        res.status(200).send jlpdf.processRawAnnotationData finalDataObject
 
     processFiles()
 
-module.exports = run
+module.exports =
+  run: run
+  close: ->
+    httpServer.close()
 console.log 'is this working'

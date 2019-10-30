@@ -1,4 +1,4 @@
-var getActivePage, getCompName, loadNFLibraries, makeAlert, openDocument;
+var getActivePage, getCompName, loadNFLibraries, makeAlert, openDocument, processRawAnnotationData;
 
 makeAlert = function() {
   alert('Oh dayummmmm');
@@ -23,5 +23,9 @@ getCompName = function() {
 };
 
 getActivePage = function() {
-  return NFProject.activeComp().getPDFLayer().layer.source.file.absoluteURI;
+  return NFProject.activeComp().getPDFLayer().layer.source.file.fsName;
+};
+
+processRawAnnotationData = function(rawData) {
+  return NFPDFManager.processRawAnnotationData(rawData);
 };

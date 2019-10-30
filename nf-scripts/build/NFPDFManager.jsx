@@ -82,13 +82,32 @@ NFPDFManager = {
   },
 
   /**
-  Returns the annotation Data for a given page comp. Does NOT import that data
+  Returns the raw annotation Data for a given page comp. Does NOT import that data
   @memberof NFPDFManager
-  @param {NFPageComp} the target comp
+  @param {NFPageComp} targetComp - the target comp
   @returns {Object} the annotation data
    */
   getAnnotationDataForPageComp: function(targetComp) {
-    var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, averageLineHeight, cleanName, closestDistance, convertCartesian, convertColorJSON, dataFile, distance, distanceCheckAnnotation, distanceCheckAnnotationRect, expString, expandColor, exportData, getRectFromTextItem, i, importedData, j, k, l, len, len1, len2, len3, len4, len5, lineCount, lineHeightSum, m, matchedLine, matchingLines, n, o, overlapExists, p, parsedData, pdfDataKey, pdfLayer, recognizedAnnotationTypes, ref, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
+    var dataFile, importedData, parsedData, pdfDataKey, pdfLayer, ref;
+    pdfLayer = targetComp != null ? targetComp.getPDFLayer() : void 0;
+    dataFile = (ref = pdfLayer.$.source) != null ? ref.file : void 0;
+    pdfDataKey = dataFile.name;
+    importedData = NFPDFManagerImportedData[app.project.file.name];
+    if (importedData == null) {
+      return null;
+    }
+    parsedData = importedData[pdfDataKey];
+    return parsedData;
+  },
+
+  /**
+  Processes the raw annotation Data into something usable by AE. Does NOT import that data
+  @memberof NFPDFManager
+  @param {Object} rawAnnotationData - the raw annotation data
+  @returns {Object} the processed annotation data
+   */
+  processRawAnnotationData: function(rawAnnotationData) {
+    var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, averageLineHeight, cleanName, closestDistance, convertCartesian, convertColorJSON, distance, distanceCheckAnnotation, distanceCheckAnnotationRect, expString, expandColor, exportData, getRectFromTextItem, i, j, k, l, len, len1, len2, len3, len4, len5, lineCount, lineHeightSum, m, matchedLine, matchingLines, n, o, overlapExists, p, recognizedAnnotationTypes, scaleFactor, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
     recognizedAnnotationTypes = [NFPDFManager.AnnotationType.STRIKEOUT, NFPDFManager.AnnotationType.HIGHLIGHT, NFPDFManager.AnnotationType.UNDERLINE, NFPDFManager.AnnotationType.CIRCLE, NFPDFManager.AnnotationType.SQUARE, NFPDFManager.AnnotationType.POLYGON];
     convertColorJSON = function(arr) {
       return [arr[0] / 256, arr[1] / 256, arr[2] / 256];
@@ -114,17 +133,9 @@ NFPDFManager = {
         top: viewport[3] - textItem.bottom
       };
     };
-    pdfLayer = targetComp != null ? targetComp.getPDFLayer() : void 0;
-    dataFile = (ref = pdfLayer.$.source) != null ? ref.file : void 0;
-    pdfDataKey = dataFile.name;
-    importedData = NFPDFManagerImportedData[app.project.file.name];
-    if (importedData == null) {
-      return null;
-    }
-    parsedData = importedData[pdfDataKey];
-    annotationData = parsedData["annotations"];
-    viewport = parsedData["viewport"];
-    textContent = parsedData["textContent"];
+    annotationData = rawAnnotationData["annotations"];
+    viewport = rawAnnotationData["viewport"];
+    textContent = rawAnnotationData["textContent"];
     scaleFactor = pdfLayer.transform().scale.value;
     trimmedAnnotationData = [];
     for (i = k = 0, len = annotationData.length; k < len; i = ++k) {

@@ -17,4 +17,7 @@ getCompName = ->
   return NFProject.activeComp().getName()
 
 getActivePage = ->
-  return NFProject.activeComp().getPDFLayer().layer.source.file.absoluteURI
+  return NFProject.activeComp().getPDFLayer().layer.source.file.fsName
+
+processRawAnnotationData = (rawData) ->
+  return NFPDFManager.processRawAnnotationData rawData

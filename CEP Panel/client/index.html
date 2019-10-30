@@ -10,13 +10,22 @@
 </head>
 <body>
 	<h1>PDF Connector</h1>
-	<button id="import-button">Test Server</button>
-	<button id="hook-button">Look NF Libraries</button>
-	<button id="reload-button">Reload Panel</button>
-	<button id="comp-button">Get Comp Name</button>
-	<button id="annotation-button">Get Annotations</button>
-	<button id="one-page-annotations">Get Annotations for THIS PAGE</button>
-	<p id="tempDisplayText"></p>
+
+	<div id="top-button-bar">
+		<!-- <button id="import-button">Test Server</button> -->
+		<button id="hook-button">Load NF Libraries</button>
+		<button id="reload-button">Reload Panel</button>
+		<button id="restart-server-button">Restart Server</button>
+		<!-- <button id="comp-button">Get Comp Name</button>
+		<button id="annotation-button">Get Annotations</button> -->
+		<button id="one-page-annotations">Get Page Annotations</button>
+		<p id="tempDisplayText"></p>
+	</div>
+
+	<div id="annotation-display">
+		<ul>
+		</ul>
+	</div>
 
 	<script type="text/javascript" src="index.js"></script>
 </body>

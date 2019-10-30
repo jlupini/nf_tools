@@ -2,14 +2,29 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<script>
-	    /* This script uses cep_node to start the Node.js server located at '/server/main.js' */
-      console.log('dinks');
-	    var localServer = cep_node.require(__dirname + '/server/main.js')();
-      console.log("Test");
-	</script>
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
 	<title>node.js server trigger html</title>
 </head>
 <body>
+	<h1>PDF Server</h1>
+	<p>Just leave me open somewhere so I can do my thing...</p>
+	<button id="reload-button">Restart Server</button>
+
+	<script>
+	    /* This script uses cep_node to start the Node.js server located at '/server/main.js' */
+      console.log('loading localserver');
+	    var localServer = cep_node.require(__dirname + '/server/main.js');
+			localServer.run()
+      console.log("localserver loaded!");
+
+
+			document.getElementById('reload-button').onclick = function(){
+				localServer.close()
+				window.location.reload(true);
+			}
+
+
+	</script>
 </body>
 </html>

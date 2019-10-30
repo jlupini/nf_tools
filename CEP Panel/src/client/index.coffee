@@ -13,34 +13,42 @@ $(document).ready ->
   #
   $('#reload-button').click ->
     window.location.reload true
-  $('#import-button').click ->
-    url = 'http://localhost:3200/import'
+  $('#restart-server-button').click ->
+    url = 'http://localhost:3200/restart'
     $.ajax
       type: 'GET'
       url: url
-      headers: 'directory': extensionDirectory
       success: (response) ->
-        hook "openDocument('#{response}')"
+        console.log "Restarted Server"
       error: (jqXHR, textStatus, errorThrown) ->
         alert errorThrown, jqXHR.responseJSON
+  # $('#import-button').click ->
+  #   url = 'http://localhost:3200/import'
+  #   $.ajax
+  #     type: 'GET'
+  #     url: url
+  #     headers: 'directory': extensionDirectory
+  #     success: (response) ->
+  #       hook "openDocument('#{response}')"
+  #     error: (jqXHR, textStatus, errorThrown) ->
+  #       alert errorThrown, jqXHR.responseJSON
   $('#hook-button').click ->
     hook "loadNFLibraries()"
-  $('#comp-button').click ->
-    hook "getCompName()", (result) ->
-      $("#tempDisplayText").text "Comp Name is... #{result}"
-  $('#annotation-button').click ->
-    url = 'http://localhost:3200/annotations'
-    $.ajax
-      type: 'GET'
-      url: url
-      # headers: 'directory': extensionDirectory
-      success: (response) ->
-        hook "makeAlert()"
-        console.log response
-      error: (jqXHR, textStatus, errorThrown) ->
-        alert errorThrown, jqXHR.responseJSON
-    # hook "getCompName()", (result) ->
-    #   $("#tempDisplayText").text "Comp Name is... #{result}"
+  # $('#comp-button').click ->
+  #   hook "getCompName()", (result) ->
+  #     $("#tempDisplayText").text "Comp Name is... #{result}"
+  # $('#annotation-button').click ->
+  #   url = 'http://localhost:3200/annotations'
+  #   $.ajax
+  #     type: 'GET'
+  #     url: url
+  #     # headers: 'directory': extensionDirectory
+  #     success: (response) ->
+  #       console.log response
+  #     error: (jqXHR, textStatus, errorThrown) ->
+  #       alert errorThrown, jqXHR.responseJSON
+  #   # hook "getCompName()", (result) ->
+  #   #   $("#tempDisplayText").text "Comp Name is... #{result}"
   $('#one-page-annotations').click ->
     hook "getActivePage()", (result) ->
       console.log "active page is '#{result}'"
@@ -50,8 +58,8 @@ $(document).ready ->
         url: url
         headers: 'filepath': result
         success: (response) ->
-          hook "alert('got the stuffffff')"
           console.log response
+          # hook "processRawAnnotationData()"
         error: (jqXHR, textStatus, errorThrown) ->
           alert errorThrown, jqXHR.responseJSON
 

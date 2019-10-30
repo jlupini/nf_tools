@@ -8,17 +8,14 @@ $(document).ready(function() {
   $('#reload-button').click(function() {
     return window.location.reload(true);
   });
-  $('#import-button').click(function() {
+  $('#restart-server-button').click(function() {
     var url;
-    url = 'http://localhost:3200/import';
+    url = 'http://localhost:3200/restart';
     return $.ajax({
       type: 'GET',
       url: url,
-      headers: {
-        'directory': extensionDirectory
-      },
       success: function(response) {
-        return hook("openDocument('" + response + "')");
+        return console.log("Restarted Server");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         return alert(errorThrown, jqXHR.responseJSON);
@@ -27,26 +24,6 @@ $(document).ready(function() {
   });
   $('#hook-button').click(function() {
     return hook("loadNFLibraries()");
-  });
-  $('#comp-button').click(function() {
-    return hook("getCompName()", function(result) {
-      return $("#tempDisplayText").text("Comp Name is... " + result);
-    });
-  });
-  $('#annotation-button').click(function() {
-    var url;
-    url = 'http://localhost:3200/annotations';
-    return $.ajax({
-      type: 'GET',
-      url: url,
-      success: function(response) {
-        hook("makeAlert()");
-        return console.log(response);
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        return alert(errorThrown, jqXHR.responseJSON);
-      }
-    });
   });
   $('#one-page-annotations').click(function() {
     return hook("getActivePage()", function(result) {
@@ -60,7 +37,6 @@ $(document).ready(function() {
           'filepath': result
         },
         success: function(response) {
-          hook("alert('got the stuffffff')");
           return console.log(response);
         },
         error: function(jqXHR, textStatus, errorThrown) {

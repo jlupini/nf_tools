@@ -76,12 +76,28 @@ NFPDFManager =
     5: "Underline"
 
   ###*
-  Returns the annotation Data for a given page comp. Does NOT import that data
+  Returns the raw annotation Data for a given page comp. Does NOT import that data
   @memberof NFPDFManager
-  @param {NFPageComp} the target comp
+  @param {NFPageComp} targetComp - the target comp
   @returns {Object} the annotation data
   ###
   getAnnotationDataForPageComp: (targetComp) ->
+    pdfLayer = targetComp?.getPDFLayer()
+    dataFile = pdfLayer.$.source?.file
+    pdfDataKey = dataFile.name
+
+    importedData = NFPDFManagerImportedData[app.project.file.name]
+    return null unless importedData?
+    parsedData = importedData[pdfDataKey]
+    return parsedData
+
+  ###*
+  Processes the raw annotation Data into something usable by AE. Does NOT import that data
+  @memberof NFPDFManager
+  @param {Object} rawAnnotationData - the raw annotation data
+  @returns {Object} the processed annotation data
+  ###
+  processRawAnnotationData: (rawAnnotationData) ->
     recognizedAnnotationTypes = [
       NFPDFManager.AnnotationType.STRIKEOUT
       NFPDFManager.AnnotationType.HIGHLIGHT
@@ -113,17 +129,9 @@ NFPDFManager =
         left: textItem.left
         top: viewport[3] - textItem.bottom
 
-    pdfLayer = targetComp?.getPDFLayer()
-    dataFile = pdfLayer.$.source?.file
-    pdfDataKey = dataFile.name
-
-    importedData = NFPDFManagerImportedData[app.project.file.name]
-    return null unless importedData?
-
-    parsedData = importedData[pdfDataKey]
-    annotationData = parsedData["annotations"]
-    viewport = parsedData["viewport"]
-    textContent = parsedData["textContent"]
+    annotationData = rawAnnotationData["annotations"]
+    viewport = rawAnnotationData["viewport"]
+    textContent = rawAnnotationData["textContent"]
 
     # Let's get the scale factor for the PDF Layer.
     scaleFactor = pdfLayer.transform().scale.value

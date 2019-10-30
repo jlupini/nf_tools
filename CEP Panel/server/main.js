@@ -1,6 +1,6 @@
 
 /* npm Modules */
-var app, bodyParser, express, fs, http, httpServer, namedColors, nearestColor, path, pdfjsLib, pdfjsWorker, request, run;
+var app, bodyParser, express, fs, http, httpServer, jlpdf, namedColors, nearestColor, path, pdfjsLib, pdfjsWorker, request, run;
 
 express = require('express');
 
@@ -28,8 +28,11 @@ fs = require('fs');
 
 httpServer = http.Server(app);
 
+jlpdf = require("./jlpdf.js");
+
 run = function() {
   var hostname, port;
+  console.log("Run Ran");
   port = 3200;
   hostname = 'localhost';
   httpServer.listen(port);
@@ -39,6 +42,11 @@ run = function() {
     extended: true
   }));
   app.use(express["static"](path.join(__dirname, '../client')));
+  app.get('/restart', function(req, res, next) {
+    res.status(200).send();
+    httpServer.close();
+    return run();
+  });
   app.get('/import', function(req, res, next) {
     var saveImage, uri;
     path = req.headers['directory'] + '/placeholder.png';
@@ -243,8 +251,6 @@ run = function() {
   return app.get('/annotationData', function(req, res, next) {
     var colors, componentToHex, finalDataObject, finishedCount, merge, nearest, processFiles, rgbToHex, round;
     path = req.headers['filepath'];
-    console.log("PATH OVERRIDE");
-    path = "/Users/jlupini/Avocado Video Dropbox/NF Active Prep/Fasting Webinar Aug-Sept 2019/20 Fasting-Mimicking Diet During Chemotherapy/Assets/PDF Pages/2007_pg01.pdf";
     colors = {
       "Highlight Yellow": "#facd5a",
       "Highlight Green": "#7dc768",
@@ -389,17 +395,22 @@ run = function() {
         };
         finalDataObject = dataObject;
         console.log('The data was grabbed (block 1)!');
-        res.status(200).send(finalDataObject);
+        res.status(200).send(jlpdf.processRawAnnotationData(finalDataObject));
       }), function(err) {
         console.error('Error: ' + err);
         console.log('The data was grabbed with error (block 2)!');
-        return res.status(200).send(finalDataObject);
+        return res.status(200).send(jlpdf.processRawAnnotationData(finalDataObject));
       });
     };
     return processFiles();
   });
 };
 
-module.exports = run;
+module.exports = {
+  run: run,
+  close: function() {
+    return httpServer.close();
+  }
+};
 
 console.log('is this working');
