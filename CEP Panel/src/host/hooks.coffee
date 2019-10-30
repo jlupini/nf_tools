@@ -7,3 +7,14 @@ openDocument = (location) ->
   fileRef = new File(location)
   docRef = app.open(fileRef)
   return
+
+loadNFLibraries = (directory) ->
+  loc = "/Users/jlupini/Documents/nf_tools/nf-scripts/build/runtimeLibraries.jsx"
+  $.evalFile(loc)
+  alert "NF Libraries Reloaded"
+
+getCompName = ->
+  return NFProject.activeComp().getName()
+
+getActivePage = ->
+  return NFProject.activeComp().getPDFLayer().layer.source.file.absoluteURI

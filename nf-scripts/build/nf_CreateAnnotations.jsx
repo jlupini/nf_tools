@@ -76,7 +76,7 @@ AnnotationBorderStyleTypeName = {
   5: "Underline"
 };
 
-recognizedAnnotationTypes = [annotationType.STRIKEOUT, annotationType.HIGHLIGHT, annotationType.UNDERLINE, annotationType.CIRCLE, annotationType.POLYGON];
+recognizedAnnotationTypes = [AnnotationType.STRIKEOUT, AnnotationType.HIGHLIGHT, AnnotationType.UNDERLINE, AnnotationType.CIRCLE, AnnotationType.POLYGON];
 
 convertColorJSON = function(obj) {
   var arr;

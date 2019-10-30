@@ -1,4 +1,4 @@
-var addToFinalData, colors, componentToHex, file, fileArr, finalDataObject, finishedCount, fs, j, len, merge, namedColors, nearest, nearestColor, pdfPath, pdfjsLib, processFiles, rgbToHex, round, strippedFileArr, testFolder;
+var addToFinalData, colors, componentToHex, file, fileArr, finalDataObject, finishedCount, fs, j, len, merge, namedColors, nearest, nearestColor, pdfjsLib, processFiles, rgbToHex, round, strippedFileArr, testFolder;
 
 pdfjsLib = require('pdfjs-dist');
 
@@ -63,9 +63,7 @@ merge = function(r1, r2) {
   };
 };
 
-pdfPath = process.argv[2] || '1000_pg01.pdf';
-
-testFolder = "/Users/jlupini/Avocado Video Dropbox/NF Active Prep/Volume 48/48-05 SUGAR Does Sugar Lead to Weight Gain?/48-05 Assets/PDF Pages";
+testFolder = "/Users/jlupini/Avocado Video Dropbox/NF Active Prep/Fasting Webinar Aug-Sept 2019/20 Fasting-Mimicking Diet During Chemotherapy/Assets/PDF Pages";
 
 fileArr = fs.readdirSync(testFolder);
 

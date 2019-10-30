@@ -71,11 +71,11 @@ AnnotationBorderStyleTypeName =
   5: "Underline"
 
 recognizedAnnotationTypes = [
-  annotationType.STRIKEOUT
-  annotationType.HIGHLIGHT
-  annotationType.UNDERLINE
-  annotationType.CIRCLE
-  annotationType.POLYGON
+  AnnotationType.STRIKEOUT
+  AnnotationType.HIGHLIGHT
+  AnnotationType.UNDERLINE
+  AnnotationType.CIRCLE
+  AnnotationType.POLYGON
 ]
 
 
