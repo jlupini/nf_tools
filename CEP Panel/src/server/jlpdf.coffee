@@ -1,5 +1,7 @@
 Rect = require "./Rect.js"
 
+nearestColor = require 'nearest-color'
+
 AnnotationTypeName =
   1: "Text"
   2: "Link"
@@ -79,6 +81,25 @@ RecognizedAnnotationTypes = [
   AnnotationType.POLYGON
 ]
 
+AnnotationColors =
+  "Highlight Yellow": "#facd5a"
+  "Highlight Green": "#7dc768"
+  "Highlight Pink": "#fb5c89"
+  "Highlight Purple": "#c885da"
+  "Highlight Blue": "#69b0f1"
+  "Yellow": "#ffff00"
+  "Red": "#ff0000"
+  "Brown": "#aa7942"
+  "Blue": "#0088ff"
+  "Orange": "#ff8800"
+  "Purple": "#942192"
+  "Pink": "#ff40ff"
+  "Black": "#000000"
+  "Grey": "#919191"
+  "White": "#ffffff"
+
+nearest = nearestColor.from AnnotationColors
+
 # Takes a array of rgb values between 0 and 256. Spits out as 0-1. Borks with anything but 3-length array
 convertColorJSON = (arr) ->
   return [arr[0]/256, arr[1]/256, arr[2]/256]
@@ -101,6 +122,23 @@ getRectFromTextItem = (textItem) ->
     left: textItem.left
     top: viewport[3] - textItem.bottom
 
+rgbToHex = (r, g, b) ->
+  componentToHex = (c) ->
+    hex = c.toString(16)
+    if hex.length == 1 then '0' + hex else hex
+
+  if r.length is 3
+    b = r[2]
+    g = r[1]
+    r = r[0]
+  '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
+
+trimColorArray = (arr) ->
+  [arr["0"], arr["1"], arr["2"]]
+
+nearestColorName = (color) ->
+  nearest(rgbToHex(trimColorArray(color))).name
+
 ###*
 Processes the raw annotation Data into something usable by AE. Does NOT import that data
 @memberof NFPDFManager
@@ -108,6 +146,8 @@ Processes the raw annotation Data into something usable by AE. Does NOT import t
 @returns {Object} the processed annotation data
 ###
 processRawAnnotationData = (rawAnnotationData) ->
+  console.log "Raw Data"
+  console.log rawAnnotationData
   annotationData = rawAnnotationData["annotations"]
   viewport = rawAnnotationData["viewport"]
   textContent = rawAnnotationData["textContent"]
@@ -141,6 +181,7 @@ processRawAnnotationData = (rawAnnotationData) ->
       lineCount = 0
     else
       matchingLines = []
+      matchingLineString = ""
       lineHeightSum = 0
       for textItem in textContent
         textRect = new Rect textItem
@@ -151,7 +192,9 @@ processRawAnnotationData = (rawAnnotationData) ->
               overlapExists = yes if matchedLine.yOverlapWith(textRect) isnt 0
           unless overlapExists
             matchingLines.push textRect
+            matchingLineString = matchingLineString + textItem.str
             lineHeightSum += textRect.height
+
 
       lineCount = matchingLines.length
 
@@ -190,10 +233,14 @@ processRawAnnotationData = (rawAnnotationData) ->
       cleanName: cleanName
       expand: expandColor
       matchingLines: matchingLines
+      text: matchingLineString
 
   return exportData
 
 # Export relevant stuff
 module.exports =
   RecognizedAnnotationTypes: RecognizedAnnotationTypes
+  AnnotationColors: AnnotationColors
   processRawAnnotationData: processRawAnnotationData
+  nearestColorName: nearestColorName
+  trimColorArray: trimColorArray

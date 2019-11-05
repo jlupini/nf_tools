@@ -1,6 +1,8 @@
-var AnnotationBorderStyleType, AnnotationBorderStyleTypeName, AnnotationType, AnnotationTypeName, RecognizedAnnotationTypes, Rect, convertCartesian, convertColorJSON, getRectFromTextItem, processRawAnnotationData;
+var AnnotationBorderStyleType, AnnotationBorderStyleTypeName, AnnotationColors, AnnotationType, AnnotationTypeName, RecognizedAnnotationTypes, Rect, convertCartesian, convertColorJSON, getRectFromTextItem, nearest, nearestColor, nearestColorName, processRawAnnotationData, rgbToHex, trimColorArray;
 
 Rect = require("./Rect.js");
+
+nearestColor = require('nearest-color');
 
 AnnotationTypeName = {
   1: "Text",
@@ -78,6 +80,26 @@ AnnotationBorderStyleTypeName = {
 
 RecognizedAnnotationTypes = [AnnotationType.STRIKEOUT, AnnotationType.HIGHLIGHT, AnnotationType.UNDERLINE, AnnotationType.CIRCLE, AnnotationType.SQUARE, AnnotationType.POLYGON];
 
+AnnotationColors = {
+  "Highlight Yellow": "#facd5a",
+  "Highlight Green": "#7dc768",
+  "Highlight Pink": "#fb5c89",
+  "Highlight Purple": "#c885da",
+  "Highlight Blue": "#69b0f1",
+  "Yellow": "#ffff00",
+  "Red": "#ff0000",
+  "Brown": "#aa7942",
+  "Blue": "#0088ff",
+  "Orange": "#ff8800",
+  "Purple": "#942192",
+  "Pink": "#ff40ff",
+  "Black": "#000000",
+  "Grey": "#919191",
+  "White": "#ffffff"
+};
+
+nearest = nearestColor.from(AnnotationColors);
+
 convertColorJSON = function(arr) {
   return [arr[0] / 256, arr[1] / 256, arr[2] / 256];
 };
@@ -105,6 +127,33 @@ getRectFromTextItem = function(textItem) {
   };
 };
 
+rgbToHex = function(r, g, b) {
+  var componentToHex;
+  componentToHex = function(c) {
+    var hex;
+    hex = c.toString(16);
+    if (hex.length === 1) {
+      return '0' + hex;
+    } else {
+      return hex;
+    }
+  };
+  if (r.length === 3) {
+    b = r[2];
+    g = r[1];
+    r = r[0];
+  }
+  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+};
+
+trimColorArray = function(arr) {
+  return [arr["0"], arr["1"], arr["2"]];
+};
+
+nearestColorName = function(color) {
+  return nearest(rgbToHex(trimColorArray(color))).name;
+};
+
 
 /**
 Processes the raw annotation Data into something usable by AE. Does NOT import that data
@@ -114,7 +163,9 @@ Processes the raw annotation Data into something usable by AE. Does NOT import t
  */
 
 processRawAnnotationData = function(rawAnnotationData) {
-  var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, averageLineHeight, cleanName, closestDistance, distance, distanceCheckAnnotation, distanceCheckAnnotationRect, expString, expandColor, exportData, i, j, k, l, len, len1, len2, len3, len4, len5, lineCount, lineHeightSum, m, matchedLine, matchingLines, n, o, overlapExists, p, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
+  var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, averageLineHeight, cleanName, closestDistance, distance, distanceCheckAnnotation, distanceCheckAnnotationRect, expString, expandColor, exportData, i, j, k, l, len, len1, len2, len3, len4, len5, lineCount, lineHeightSum, m, matchedLine, matchingLineString, matchingLines, n, o, overlapExists, p, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
+  console.log("Raw Data");
+  console.log(rawAnnotationData);
   annotationData = rawAnnotationData["annotations"];
   viewport = rawAnnotationData["viewport"];
   textContent = rawAnnotationData["textContent"];
@@ -151,6 +202,7 @@ processRawAnnotationData = function(rawAnnotationData) {
       lineCount = 0;
     } else {
       matchingLines = [];
+      matchingLineString = "";
       lineHeightSum = 0;
       for (n = 0, len3 = textContent.length; n < len3; n++) {
         textItem = textContent[n];
@@ -167,6 +219,7 @@ processRawAnnotationData = function(rawAnnotationData) {
           }
           if (!overlapExists) {
             matchingLines.push(textRect);
+            matchingLineString = matchingLineString + textItem.str;
             lineHeightSum += textRect.height;
           }
         }
@@ -211,7 +264,8 @@ processRawAnnotationData = function(rawAnnotationData) {
       type: typeList,
       cleanName: cleanName,
       expand: expandColor,
-      matchingLines: matchingLines
+      matchingLines: matchingLines,
+      text: matchingLineString
     });
   }
   return exportData;
@@ -219,5 +273,8 @@ processRawAnnotationData = function(rawAnnotationData) {
 
 module.exports = {
   RecognizedAnnotationTypes: RecognizedAnnotationTypes,
-  processRawAnnotationData: processRawAnnotationData
+  AnnotationColors: AnnotationColors,
+  processRawAnnotationData: processRawAnnotationData,
+  nearestColorName: nearestColorName,
+  trimColorArray: trimColorArray
 };

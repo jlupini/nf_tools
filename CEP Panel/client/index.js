@@ -8,20 +8,6 @@ $(document).ready(function() {
   $('#reload-button').click(function() {
     return window.location.reload(true);
   });
-  $('#restart-server-button').click(function() {
-    var url;
-    url = 'http://localhost:3200/restart';
-    return $.ajax({
-      type: 'GET',
-      url: url,
-      success: function(response) {
-        return console.log("Restarted Server");
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        return alert(errorThrown, jqXHR.responseJSON);
-      }
-    });
-  });
   $('#hook-button').click(function() {
     return hook("loadNFLibraries()");
   });

@@ -13,15 +13,15 @@ $(document).ready ->
   #
   $('#reload-button').click ->
     window.location.reload true
-  $('#restart-server-button').click ->
-    url = 'http://localhost:3200/restart'
-    $.ajax
-      type: 'GET'
-      url: url
-      success: (response) ->
-        console.log "Restarted Server"
-      error: (jqXHR, textStatus, errorThrown) ->
-        alert errorThrown, jqXHR.responseJSON
+  # $('#restart-server-button').click ->
+  #   url = 'http://localhost:3200/restart'
+  #   $.ajax
+  #     type: 'GET'
+  #     url: url
+  #     success: (response) ->
+  #       console.log "Restarted Server"
+  #     error: (jqXHR, textStatus, errorThrown) ->
+  #       alert errorThrown, jqXHR.responseJSON
   # $('#import-button').click ->
   #   url = 'http://localhost:3200/import'
   #   $.ajax
