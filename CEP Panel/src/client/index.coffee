@@ -54,7 +54,14 @@ $(document).ready ->
           disp = $("#annotation-display")
           disp.empty()
           for annotation, i in response
-            disp.append "<li id='annotation-#{i}' class='annotation-item #{annotation.colorName.replace(/\s+/g, '-').toLowerCase()}'>#{annotation.cleanName}</li>"
+            dispID = "annotation-#{i}"
+            colorClassName = annotation.colorName.replace(/\s+/g, '-').toLowerCase()
+            disp.append "<li id='#{dispID}' class='annotation-item #{colorClassName}'></li>"
+            dispElement = $("##{dispID}")
+            dispElement.append "<div class='clean-name'>#{annotation.cleanName}</div><div class='highlight-text'>#{annotation.text}</div>"
+            annotationDataString = JSON.stringify annotation
+            dispElement.click {param: annotationDataString}, (e) ->
+              hook "createHighlightFromAnnotation('#{e.data.param}')"
           # hook "processRawAnnotationData()"
         error: (jqXHR, textStatus, errorThrown) ->
           alert errorThrown, jqXHR.responseJSON

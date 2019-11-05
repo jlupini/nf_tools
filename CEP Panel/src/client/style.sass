@@ -16,8 +16,12 @@ $annot-black: #000000
 $annot-grey: #919191
 $annot-white: #ffffff
 
+$light-font: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
+$regular-font: "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
+$medium-font: "HelveticaNeue-Medium", "Helvetica Neue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
+
 body
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
+  font-family: $light-font
   background-color: $bgColor
   color: white
 
@@ -25,33 +29,78 @@ h1
   font-weight: 100
 
 li.annotation-item
+  padding: 5px
+  margin-bottom: 5px
+  color: black
+  list-style-type: none
+  cursor: pointer
+
+  .clean-name
+    font-family: $medium-font
+    margin-bottom: 4px
+  .highlight-text
+    font-family: $regular-font
+    font-size: 10px
+
   &.highlight-yellow
     background-color: $annot-highlight-yellow
+    &:hover
+      background-color: lighten($annot-highlight-yellow, 20)
   &.highlight-green
     background-color: $annot-highlight-green
+    &:hover
+      background-color: lighten($annot-highlight-green, 20)
   &.highlight-pink
     background-color: $annot-highlight-pink
+    &:hover
+      background-color: lighten($annot-highlight-pink, 20)
   &.highlight-purple
     background-color: $annot-highlight-purple
+    &:hover
+      background-color: lighten($annot-highlight-purple, 20)
   &.highlight-blue
     background-color: $annot-highlight-blue
+    &:hover
+      background-color: lighten($annot-highlight-blue, 20)
   &.yellow
     background-color: $annot-yellow
+    &:hover
+      background-color: lighten($annot-yellow, 20)
   &.red
     background-color: $annot-red
+    &:hover
+      background-color: lighten($annot-red, 20)
   &.brown
     background-color: $annot-brown
+    &:hover
+      background-color: lighten($annot-brown, 20)
   &.blue
     background-color: $annot-blue
+    &:hover
+      background-color: lighten($annot-blue, 20)
   &.orange
     background-color: $annot-orange
+    &:hover
+      background-color: lighten($annot-orange, 20)
   &.purple
     background-color: $annot-purple
+    &:hover
+      background-color: lighten($annot-purple, 20)
   &.pink
     background-color: $annot-pink
+    &:hover
+      background-color: lighten($annot-pink, 20)
   &.black
     background-color: $annot-black
+    &:hover
+      background-color: lighten($annot-black, 20)
+    color: white
   &.grey
     background-color: $annot-grey
+    color: white
+    &:hover
+      background-color: lighten($annot-grey, 20)
   &.white
     background-color: $annot-white
+    &:hover
+      background-color: darken($annot-white, 20)

@@ -182,6 +182,7 @@ processRawAnnotationData = (rawAnnotationData) ->
     else
       matchingLines = []
       matchingLineString = ""
+      matchingLineStringArray = []
       lineHeightSum = 0
       for textItem in textContent
         textRect = new Rect textItem
@@ -193,6 +194,7 @@ processRawAnnotationData = (rawAnnotationData) ->
           unless overlapExists
             matchingLines.push textRect
             matchingLineString = matchingLineString + textItem.str
+            matchingLineStringArray.push textItem.str
             lineHeightSum += textRect.height
 
 
@@ -233,6 +235,7 @@ processRawAnnotationData = (rawAnnotationData) ->
       cleanName: cleanName
       expand: expandColor
       matchingLines: matchingLines
+      lineArr: matchingLineStringArray
       text: matchingLineString
 
   return exportData

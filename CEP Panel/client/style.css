@@ -6,49 +6,79 @@ body {
 h1 {
   font-weight: 100; }
 
-li.annotation-item.highlight-yellow {
-  background-color: #facd5a; }
-
-li.annotation-item.highlight-green {
-  background-color: #7dc768; }
-
-li.annotation-item.highlight-pink {
-  background-color: #fb5c89; }
-
-li.annotation-item.highlight-purple {
-  background-color: #c885da; }
-
-li.annotation-item.highlight-blue {
-  background-color: #69b0f1; }
-
-li.annotation-item.yellow {
-  background-color: #ffff00; }
-
-li.annotation-item.red {
-  background-color: #ff0000; }
-
-li.annotation-item.brown {
-  background-color: #aa7942; }
-
-li.annotation-item.blue {
-  background-color: #0088ff; }
-
-li.annotation-item.orange {
-  background-color: #ff8800; }
-
-li.annotation-item.purple {
-  background-color: #942192; }
-
-li.annotation-item.pink {
-  background-color: #ff40ff; }
-
-li.annotation-item.black {
-  background-color: #000000; }
-
-li.annotation-item.grey {
-  background-color: #919191; }
-
-li.annotation-item.white {
-  background-color: #ffffff; }
+li.annotation-item {
+  padding: 5px;
+  margin-bottom: 5px;
+  color: black;
+  list-style-type: none;
+  cursor: pointer; }
+  li.annotation-item .clean-name {
+    font-family: "HelveticaNeue-Medium", "Helvetica Neue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    margin-bottom: 4px; }
+  li.annotation-item .highlight-text {
+    font-family: "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-size: 10px; }
+  li.annotation-item.highlight-yellow {
+    background-color: #facd5a; }
+    li.annotation-item.highlight-yellow:hover {
+      background-color: #fdebbd; }
+  li.annotation-item.highlight-green {
+    background-color: #7dc768; }
+    li.annotation-item.highlight-green:hover {
+      background-color: #bde3b2; }
+  li.annotation-item.highlight-pink {
+    background-color: #fb5c89; }
+    li.annotation-item.highlight-pink:hover {
+      background-color: #fdc0d1; }
+  li.annotation-item.highlight-purple {
+    background-color: #c885da; }
+    li.annotation-item.highlight-purple:hover {
+      background-color: #ebd3f2; }
+  li.annotation-item.highlight-blue {
+    background-color: #69b0f1; }
+    li.annotation-item.highlight-blue:hover {
+      background-color: #c6e1fa; }
+  li.annotation-item.yellow {
+    background-color: #ffff00; }
+    li.annotation-item.yellow:hover {
+      background-color: #ffff66; }
+  li.annotation-item.red {
+    background-color: #ff0000; }
+    li.annotation-item.red:hover {
+      background-color: #ff6666; }
+  li.annotation-item.brown {
+    background-color: #aa7942; }
+    li.annotation-item.brown:hover {
+      background-color: #cfab83; }
+  li.annotation-item.blue {
+    background-color: #0088ff; }
+    li.annotation-item.blue:hover {
+      background-color: #66b8ff; }
+  li.annotation-item.orange {
+    background-color: #ff8800; }
+    li.annotation-item.orange:hover {
+      background-color: #ffb866; }
+  li.annotation-item.purple {
+    background-color: #942192; }
+    li.annotation-item.purple:hover {
+      background-color: #d645d3; }
+  li.annotation-item.pink {
+    background-color: #ff40ff; }
+    li.annotation-item.pink:hover {
+      background-color: #ffa6ff; }
+  li.annotation-item.black {
+    background-color: #000000;
+    color: white; }
+    li.annotation-item.black:hover {
+      background-color: #333333; }
+  li.annotation-item.grey {
+    background-color: #919191;
+    color: white; }
+    li.annotation-item.grey:hover {
+      background-color: #c4c4c4; }
+  li.annotation-item.white {
+    background-color: #ffffff; }
+    li.annotation-item.white:hover {
+      background-color: #cccccc; }
 
 /*# sourceMappingURL=style.css.map */

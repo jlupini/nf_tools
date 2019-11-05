@@ -163,7 +163,7 @@ Processes the raw annotation Data into something usable by AE. Does NOT import t
  */
 
 processRawAnnotationData = function(rawAnnotationData) {
-  var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, averageLineHeight, cleanName, closestDistance, distance, distanceCheckAnnotation, distanceCheckAnnotationRect, expString, expandColor, exportData, i, j, k, l, len, len1, len2, len3, len4, len5, lineCount, lineHeightSum, m, matchedLine, matchingLineString, matchingLines, n, o, overlapExists, p, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
+  var alreadyAddedAnnotation, alreadyAddedAnnotationRect, annotationData, annotationRect, annotationsOverlap, averageLineHeight, cleanName, closestDistance, distance, distanceCheckAnnotation, distanceCheckAnnotationRect, expString, expandColor, exportData, i, j, k, l, len, len1, len2, len3, len4, len5, lineCount, lineHeightSum, m, matchedLine, matchingLineString, matchingLineStringArray, matchingLines, n, o, overlapExists, p, testAnnotation, testAnnotationRect, textContent, textItem, textRect, trimmedAnnotationData, typeList, viewport;
   console.log("Raw Data");
   console.log(rawAnnotationData);
   annotationData = rawAnnotationData["annotations"];
@@ -203,6 +203,7 @@ processRawAnnotationData = function(rawAnnotationData) {
     } else {
       matchingLines = [];
       matchingLineString = "";
+      matchingLineStringArray = [];
       lineHeightSum = 0;
       for (n = 0, len3 = textContent.length; n < len3; n++) {
         textItem = textContent[n];
@@ -220,6 +221,7 @@ processRawAnnotationData = function(rawAnnotationData) {
           if (!overlapExists) {
             matchingLines.push(textRect);
             matchingLineString = matchingLineString + textItem.str;
+            matchingLineStringArray.push(textItem.str);
             lineHeightSum += textRect.height;
           }
         }
@@ -265,6 +267,7 @@ processRawAnnotationData = function(rawAnnotationData) {
       cleanName: cleanName,
       expand: expandColor,
       matchingLines: matchingLines,
+      lineArr: matchingLineStringArray,
       text: matchingLineString
     });
   }

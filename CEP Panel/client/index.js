@@ -41,14 +41,24 @@ $(document).ready(function() {
           'filepath': result
         },
         success: function(response) {
-          var annotation, disp, i, j, len, results;
+          var annotation, annotationDataString, colorClassName, disp, dispElement, dispID, i, j, len, results;
           console.log(response);
           disp = $("#annotation-display");
           disp.empty();
           results = [];
           for (i = j = 0, len = response.length; j < len; i = ++j) {
             annotation = response[i];
-            results.push(disp.append("<li id='annotation-" + i + "' class='annotation-item " + (annotation.colorName.replace(/\s+/g, '-').toLowerCase()) + "'>" + annotation.cleanName + "</li>"));
+            dispID = "annotation-" + i;
+            colorClassName = annotation.colorName.replace(/\s+/g, '-').toLowerCase();
+            disp.append("<li id='" + dispID + "' class='annotation-item " + colorClassName + "'></li>");
+            dispElement = $("#" + dispID);
+            dispElement.append("<div class='clean-name'>" + annotation.cleanName + "</div><div class='highlight-text'>" + annotation.text + "</div>");
+            annotationDataString = JSON.stringify(annotation);
+            results.push(dispElement.click({
+              param: annotationDataString
+            }, function(e) {
+              return hook("createHighlightFromAnnotation('" + e.data.param + "')");
+            }));
           }
           return results;
         },
