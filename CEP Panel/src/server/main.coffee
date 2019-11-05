@@ -237,9 +237,6 @@ run = ->
     console.log "Processing PDF: #{path}"
 
     afterLoad = (doc) ->
-      numPages = doc.numPages
-      lastPromise = doc.getMetadata().then (data) ->
-        return null
 
       loadPage = (pageNum) ->
         doc.getPage(pageNum).then (page) ->
@@ -302,6 +299,9 @@ run = ->
 
       # Loading of the first page will wait on metadata and subsequent loadings
       # will wait on the previous pages.
+      numPages = doc.numPages
+      lastPromise = doc.getMetadata().then (data) -> return null
+
       i = 1
       while i <= numPages
         lastPromise = lastPromise.then loadPage.bind(null, i)

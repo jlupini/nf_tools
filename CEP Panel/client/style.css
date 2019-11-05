@@ -6,4 +6,49 @@ body {
 h1 {
   font-weight: 100; }
 
+li.annotation-item.highlight-yellow {
+  background-color: #facd5a; }
+
+li.annotation-item.highlight-green {
+  background-color: #7dc768; }
+
+li.annotation-item.highlight-pink {
+  background-color: #fb5c89; }
+
+li.annotation-item.highlight-purple {
+  background-color: #c885da; }
+
+li.annotation-item.highlight-blue {
+  background-color: #69b0f1; }
+
+li.annotation-item.yellow {
+  background-color: #ffff00; }
+
+li.annotation-item.red {
+  background-color: #ff0000; }
+
+li.annotation-item.brown {
+  background-color: #aa7942; }
+
+li.annotation-item.blue {
+  background-color: #0088ff; }
+
+li.annotation-item.orange {
+  background-color: #ff8800; }
+
+li.annotation-item.purple {
+  background-color: #942192; }
+
+li.annotation-item.pink {
+  background-color: #ff40ff; }
+
+li.annotation-item.black {
+  background-color: #000000; }
+
+li.annotation-item.grey {
+  background-color: #919191; }
+
+li.annotation-item.white {
+  background-color: #ffffff; }
+
 /*# sourceMappingURL=style.css.map */

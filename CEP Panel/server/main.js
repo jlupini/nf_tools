@@ -90,10 +90,6 @@ run = function() {
     console.log("Processing PDF: " + path);
     afterLoad = function(doc) {
       var i, lastPromise, loadPage, numPages;
-      numPages = doc.numPages;
-      lastPromise = doc.getMetadata().then(function(data) {
-        return null;
-      });
       loadPage = function(pageNum) {
         return doc.getPage(pageNum).then(function(page) {
           var processAnnotations, processTextContent;
@@ -162,6 +158,10 @@ run = function() {
           return page.getTextContent().then(processTextContent);
         });
       };
+      numPages = doc.numPages;
+      lastPromise = doc.getMetadata().then(function(data) {
+        return null;
+      });
       i = 1;
       while (i <= numPages) {
         lastPromise = lastPromise.then(loadPage.bind(null, i));

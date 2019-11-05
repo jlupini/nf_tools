@@ -9,34 +9,26 @@ $(document).ready ->
     csInterface.evalScript hookString, callback
 
   #
+  # Helper Functions
+  #
+  rgbToHex = (r, g, b) ->
+    componentToHex = (c) ->
+      hex = c.toString(16)
+      if hex.length == 1 then '0' + hex else hex
+
+    if r.length is 3
+      b = r[2]
+      g = r[1]
+      r = r[0]
+    '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
+
+  #
   # Bindings
   #
   $('#reload-button').click ->
     window.location.reload true
-  # $('#restart-server-button').click ->
-  #   url = 'http://localhost:3200/restart'
-  #   $.ajax
-  #     type: 'GET'
-  #     url: url
-  #     success: (response) ->
-  #       console.log "Restarted Server"
-  #     error: (jqXHR, textStatus, errorThrown) ->
-  #       alert errorThrown, jqXHR.responseJSON
-  # $('#import-button').click ->
-  #   url = 'http://localhost:3200/import'
-  #   $.ajax
-  #     type: 'GET'
-  #     url: url
-  #     headers: 'directory': extensionDirectory
-  #     success: (response) ->
-  #       hook "openDocument('#{response}')"
-  #     error: (jqXHR, textStatus, errorThrown) ->
-  #       alert errorThrown, jqXHR.responseJSON
   $('#hook-button').click ->
     hook "loadNFLibraries()"
-  # $('#comp-button').click ->
-  #   hook "getCompName()", (result) ->
-  #     $("#tempDisplayText").text "Comp Name is... #{result}"
   # $('#annotation-button').click ->
   #   url = 'http://localhost:3200/annotations'
   #   $.ajax
@@ -59,6 +51,10 @@ $(document).ready ->
         headers: 'filepath': result
         success: (response) ->
           console.log response
+          disp = $("#annotation-display")
+          disp.empty()
+          for annotation, i in response
+            disp.append "<li id='annotation-#{i}' class='annotation-item #{annotation.colorName.replace(/\s+/g, '-').toLowerCase()}'>#{annotation.cleanName}</li>"
           # hook "processRawAnnotationData()"
         error: (jqXHR, textStatus, errorThrown) ->
           alert errorThrown, jqXHR.responseJSON
