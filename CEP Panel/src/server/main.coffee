@@ -205,7 +205,10 @@ run = ->
 
   app.get '/annotationData', (req, res, next) ->
     path = req.headers['filepath']
-    # console.log "PATH OVERRIDE"
+
+    viewport = 1
+    annotations = 1
+    textContent = 1
 
     round = (value, precision = 4) ->
       multiplier = 10 ** (precision or 0)
@@ -220,111 +223,94 @@ run = ->
         height: height
       }
 
-    finalDataObject = {}
+    handleError = (reason) ->
+      console.error 'Error processing PDF: ' + reason
+      res.status(500).send()
 
-    # Will be using promises to load document, pages and misc data instead of
-    # callback.
-    finishedCount = 0
-    # for file in strippedFileArr
-    processFiles = ->
-      viewport = 1
-      annotations = 1
-      textContent = 1
+    handleSuccess = ->
+      console.log 'PDF Processing success'
+      res.status(200).send jlpdf.processRawAnnotationData
+        annotations: annotations
+        viewport: viewport.viewBox
+        textContent: textContent
 
-      console.log "Processing PDF: #{path}"
+    console.log "Processing PDF: #{path}"
 
-      
+    afterLoad = (doc) ->
+      numPages = doc.numPages
+      lastPromise = doc.getMetadata().then (data) ->
+        return null
 
-      loadingTask = pdfjsLib.getDocument(path)
-      loadingTask.promise.then((doc) ->
-        numPages = doc.numPages
-        lastPromise = doc.getMetadata().then (data) ->
-          return null
+      loadPage = (pageNum) ->
+        doc.getPage(pageNum).then (page) ->
+          viewport = page.getViewport(1.0)
 
-        loadPage = (pageNum) ->
-          doc.getPage(pageNum).then (page) ->
-            viewport = page.getViewport(1.0)
+          processAnnotations = (content) ->
+            annotations = []
+            for annotation, i in content
+              unless annotation.subtype is "Link"
+                console.log annotation.color
+                annotations.push
+                  borderStyle: annotation.borderStyle.style
+                  color: jlpdf.trimColorArray(annotation.color)
+                  rect: annotation.rect
+                  subtype: annotation.subtype
+                  annotationType: annotation.annotationType
+                  colorName: jlpdf.nearestColorName(annotation.color)
 
-            # Get the annotations
-            page.getAnnotations().then (content) ->
-              annotations = []
-              for annotation, i in content
-                unless annotation.subtype is "Link"
-                  console.log annotation.color
-                  annotations.push
-                    borderStyle: annotation.borderStyle.style
-                    color: jlpdf.trimColorArray(annotation.color)
-                    rect: annotation.rect
-                    subtype: annotation.subtype
-                    annotationType: annotation.annotationType
-                    colorName: jlpdf.nearestColorName(annotation.color)
+          processTextContent = (content) ->
 
-            # Get the text content
-            page.getTextContent().then (content) ->
+            textItems = []
+            prevItem = {}
+            mergeCount = 0
+            content.items.forEach (item) ->
+              tx = pdfjsLib.Util.transform(viewport.transform, item.transform)
+              fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3]))
 
-              textItems = []
-              prevItem = {}
-              mergeCount = 0
-              content.items.forEach (item) ->
-                tx = pdfjsLib.Util.transform(viewport.transform, item.transform)
-                fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3]))
+              newItem =
+                str: item.str
+                # tx: tx
+                fontHeight: fontHeight
+                width: round(item.width)
+                height: round(item.height/fontHeight)
+                left: round(tx[4])
+                top: round(tx[5] - fontHeight)
 
-                newItem =
-                  str: item.str
-                  # tx: tx
-                  fontHeight: fontHeight
-                  width: round(item.width)
-                  height: round(item.height/fontHeight)
-                  left: round(tx[4])
-                  top: round(tx[5] - fontHeight)
+              # Combine together items on the same lines to reduce JSON file size
+              prevItem = textItems[textItems.length - 1] if textItems.length isnt 0
+              # console.log "Ding:  #{Math.abs(prevItem.top - newItem.top) < prevItem.height}"
+              if prevItem? and ( Math.abs(prevItem.top - newItem.top) < prevItem.height )
+                mergedRect = merge prevItem, newItem
+                # console.log "merged"
+                mergeCount++
+                combinedItem =
+                  str: "#{prevItem.str} // #{newItem.str}"
+                  width: round(mergedRect.width)
+                  height: round(mergedRect.height)
+                  left: round(mergedRect.left)
+                  top: round(mergedRect.top)
+                textItems[textItems.length - 1] = combinedItem
+              else
+                textItems.push newItem
+              return
+            console.log "Merged #{mergeCount} objects"
 
-                # Combine together items on the same lines to reduce JSON file size
-                prevItem = textItems[textItems.length - 1] if textItems.length isnt 0
-                # console.log "Ding:  #{Math.abs(prevItem.top - newItem.top) < prevItem.height}"
-                if prevItem? and ( Math.abs(prevItem.top - newItem.top) < prevItem.height )
-                  mergedRect = merge prevItem, newItem
-                  # console.log "merged"
-                  mergeCount++
-                  combinedItem =
-                    str: "#{prevItem.str} // #{newItem.str}"
-                    width: round(mergedRect.width)
-                    height: round(mergedRect.height)
-                    left: round(mergedRect.left)
-                    top: round(mergedRect.top)
-                  textItems[textItems.length - 1] = combinedItem
-                else
-                  textItems.push newItem
-                return
-              console.log "Merged #{mergeCount} objects"
+            textContent = textItems
 
-              textContent = textItems
+          page.getAnnotations().then processAnnotations
+          page.getTextContent().then processTextContent
 
-        # Loading of the first page will wait on metadata and subsequent loadings
-        # will wait on the previous pages.
-        i = 1
-        while i <= numPages
-          lastPromise = lastPromise.then(loadPage.bind(null, i))
-          i++
-        lastPromise
-      ).then ( ->
-        console.log '# End of Document'
+      # Loading of the first page will wait on metadata and subsequent loadings
+      # will wait on the previous pages.
+      i = 1
+      while i <= numPages
+        lastPromise = lastPromise.then loadPage.bind(null, i)
+        i++
+      lastPromise
 
-        dataObject =
-          annotations: annotations
-          viewport: viewport.viewBox
-          textContent: textContent
+    loadingTask = pdfjsLib.getDocument(path)
+    loadingTask.promise.then(afterLoad).then handleSuccess, handleError
 
-        finalDataObject = dataObject
-
-        console.log 'PDF Processing success'
-        # finalDataObject['test'] = jlpdf.test()
-        res.status(200).send jlpdf.processRawAnnotationData finalDataObject
-      ), (reason) ->
-        # PDF Loading Error
-        console.error 'Error processing PDF: ' + reason
-        res.status(500).send()
-
-    processFiles()
 
 module.exports =
   run: run

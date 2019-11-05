@@ -51,8 +51,11 @@ run = function() {
     });
   });
   return app.get('/annotationData', function(req, res, next) {
-    var finalDataObject, finishedCount, merge, processFiles, round;
+    var afterLoad, annotations, handleError, handleSuccess, loadingTask, merge, round, textContent, viewport;
     path = req.headers['filepath'];
+    viewport = 1;
+    annotations = 1;
+    textContent = 1;
     round = function(value, precision) {
       var multiplier;
       if (precision == null) {
@@ -72,109 +75,102 @@ run = function() {
         height: height
       };
     };
-    finalDataObject = {};
-    finishedCount = 0;
-    processFiles = function() {
-      var annotations, loadingTask, textContent, viewport;
-      viewport = 1;
-      annotations = 1;
-      textContent = 1;
-      console.log("Processing PDF: " + path);
-      loadingTask = pdfjsLib.getDocument(path);
-      return loadingTask.promise.then(function(doc) {
-        var i, lastPromise, loadPage, numPages;
-        numPages = doc.numPages;
-        lastPromise = doc.getMetadata().then(function(data) {
-          return null;
-        });
-        loadPage = function(pageNum) {
-          return doc.getPage(pageNum).then(function(page) {
-            viewport = page.getViewport(1.0);
-            page.getAnnotations().then(function(content) {
-              var annotation, i, j, len, results;
-              annotations = [];
-              results = [];
-              for (i = j = 0, len = content.length; j < len; i = ++j) {
-                annotation = content[i];
-                if (annotation.subtype !== "Link") {
-                  console.log(annotation.color);
-                  results.push(annotations.push({
-                    borderStyle: annotation.borderStyle.style,
-                    color: jlpdf.trimColorArray(annotation.color),
-                    rect: annotation.rect,
-                    subtype: annotation.subtype,
-                    annotationType: annotation.annotationType,
-                    colorName: jlpdf.nearestColorName(annotation.color)
-                  }));
-                } else {
-                  results.push(void 0);
-                }
-              }
-              return results;
-            });
-            return page.getTextContent().then(function(content) {
-              var mergeCount, prevItem, textItems;
-              textItems = [];
-              prevItem = {};
-              mergeCount = 0;
-              content.items.forEach(function(item) {
-                var combinedItem, fontHeight, mergedRect, newItem, tx;
-                tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
-                fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3]));
-                newItem = {
-                  str: item.str,
-                  fontHeight: fontHeight,
-                  width: round(item.width),
-                  height: round(item.height / fontHeight),
-                  left: round(tx[4]),
-                  top: round(tx[5] - fontHeight)
-                };
-                if (textItems.length !== 0) {
-                  prevItem = textItems[textItems.length - 1];
-                }
-                if ((prevItem != null) && (Math.abs(prevItem.top - newItem.top) < prevItem.height)) {
-                  mergedRect = merge(prevItem, newItem);
-                  mergeCount++;
-                  combinedItem = {
-                    str: prevItem.str + " // " + newItem.str,
-                    width: round(mergedRect.width),
-                    height: round(mergedRect.height),
-                    left: round(mergedRect.left),
-                    top: round(mergedRect.top)
-                  };
-                  textItems[textItems.length - 1] = combinedItem;
-                } else {
-                  textItems.push(newItem);
-                }
-              });
-              console.log("Merged " + mergeCount + " objects");
-              return textContent = textItems;
-            });
-          });
-        };
-        i = 1;
-        while (i <= numPages) {
-          lastPromise = lastPromise.then(loadPage.bind(null, i));
-          i++;
-        }
-        return lastPromise;
-      }).then((function() {
-        var dataObject;
-        console.log('# End of Document');
-        dataObject = {
-          annotations: annotations,
-          viewport: viewport.viewBox,
-          textContent: textContent
-        };
-        finalDataObject = dataObject;
-        console.log('PDF Processing success');
-        return res.status(200).send(jlpdf.processRawAnnotationData(finalDataObject));
-      }), function(reason) {
-        console.error('Error processing PDF: ' + reason);
-        return res.status(500).send();
-      });
+    handleError = function(reason) {
+      console.error('Error processing PDF: ' + reason);
+      return res.status(500).send();
     };
-    return processFiles();
+    handleSuccess = function() {
+      console.log('PDF Processing success');
+      return res.status(200).send(jlpdf.processRawAnnotationData({
+        annotations: annotations,
+        viewport: viewport.viewBox,
+        textContent: textContent
+      }));
+    };
+    console.log("Processing PDF: " + path);
+    afterLoad = function(doc) {
+      var i, lastPromise, loadPage, numPages;
+      numPages = doc.numPages;
+      lastPromise = doc.getMetadata().then(function(data) {
+        return null;
+      });
+      loadPage = function(pageNum) {
+        return doc.getPage(pageNum).then(function(page) {
+          var processAnnotations, processTextContent;
+          viewport = page.getViewport(1.0);
+          processAnnotations = function(content) {
+            var annotation, i, j, len, results;
+            annotations = [];
+            results = [];
+            for (i = j = 0, len = content.length; j < len; i = ++j) {
+              annotation = content[i];
+              if (annotation.subtype !== "Link") {
+                console.log(annotation.color);
+                results.push(annotations.push({
+                  borderStyle: annotation.borderStyle.style,
+                  color: jlpdf.trimColorArray(annotation.color),
+                  rect: annotation.rect,
+                  subtype: annotation.subtype,
+                  annotationType: annotation.annotationType,
+                  colorName: jlpdf.nearestColorName(annotation.color)
+                }));
+              } else {
+                results.push(void 0);
+              }
+            }
+            return results;
+          };
+          processTextContent = function(content) {
+            var mergeCount, prevItem, textItems;
+            textItems = [];
+            prevItem = {};
+            mergeCount = 0;
+            content.items.forEach(function(item) {
+              var combinedItem, fontHeight, mergedRect, newItem, tx;
+              tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+              fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3]));
+              newItem = {
+                str: item.str,
+                fontHeight: fontHeight,
+                width: round(item.width),
+                height: round(item.height / fontHeight),
+                left: round(tx[4]),
+                top: round(tx[5] - fontHeight)
+              };
+              if (textItems.length !== 0) {
+                prevItem = textItems[textItems.length - 1];
+              }
+              if ((prevItem != null) && (Math.abs(prevItem.top - newItem.top) < prevItem.height)) {
+                mergedRect = merge(prevItem, newItem);
+                mergeCount++;
+                combinedItem = {
+                  str: prevItem.str + " // " + newItem.str,
+                  width: round(mergedRect.width),
+                  height: round(mergedRect.height),
+                  left: round(mergedRect.left),
+                  top: round(mergedRect.top)
+                };
+                textItems[textItems.length - 1] = combinedItem;
+              } else {
+                textItems.push(newItem);
+              }
+            });
+            console.log("Merged " + mergeCount + " objects");
+            return textContent = textItems;
+          };
+          page.getAnnotations().then(processAnnotations);
+          return page.getTextContent().then(processTextContent);
+        });
+      };
+      i = 1;
+      while (i <= numPages) {
+        lastPromise = lastPromise.then(loadPage.bind(null, i));
+        i++;
+      }
+      return lastPromise;
+    };
+    loadingTask = pdfjsLib.getDocument(path);
+    return loadingTask.promise.then(afterLoad).then(handleSuccess, handleError);
   });
 };
 
