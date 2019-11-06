@@ -1,22 +1,24 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
 
         {
             "type": "extendscript-debug",
             "request": "launch",
-            "name": "Tool Panel",
-            "program": "${workspaceFolder}/build/NF Tool Panel.jsx",
-            "stopOnEntry": false
+            "name": "Current File (2019)",
+            "program": "${file}",
+            // "trace": true,
+            "targetSpecifier": "aftereffects-16.0",
+            "engineName": "main"
         },
         {
             "type": "extendscript-debug",
             "request": "launch",
-            "name": "Current File",
-            "program": "${file}"
+            "name": "Current File (2020)",
+            "program": "${file}",
+            // "trace": true,
+            "targetSpecifier": "aftereffects-17.0",
+            "engineName": "main"
         },
         {
             "type": "extendscript-debug",
