@@ -1,8 +1,4 @@
-var createHighlightFromAnnotation, getActivePage, getCompName, loadNFLibraries, makeAlert, openDocument, processRawAnnotationData;
-
-makeAlert = function() {
-  alert('Oh dayummmmm');
-};
+var createHighlightFromAnnotation, getActivePage, getCompName, loadNFLibraries, openDocument, processRawAnnotationData;
 
 openDocument = function(location) {
   var docRef, fileRef;
@@ -11,11 +7,10 @@ openDocument = function(location) {
   docRef = app.open(fileRef);
 };
 
-loadNFLibraries = function(directory) {
+loadNFLibraries = function() {
   var loc;
   loc = "/Users/jlupini/Documents/nf_tools/nf-scripts/build/runtimeLibraries.jsx";
-  $.evalFile(loc);
-  return alert("NF Libraries Reloaded");
+  return $.evalFile(loc);
 };
 
 getCompName = function() {
@@ -23,7 +18,13 @@ getCompName = function() {
 };
 
 getActivePage = function() {
-  return NFProject.activeComp().getPDFLayer().layer.source.file.fsName;
+  var activeComp;
+  activeComp = NFProject.activeComp();
+  if (activeComp instanceof NFPageComp) {
+    return activeComp.getPDFLayer().layer.source.file.fsName;
+  } else {
+    return null;
+  }
 };
 
 processRawAnnotationData = function(rawData) {

@@ -1,23 +1,23 @@
-makeAlert = ->
-  alert 'Oh dayummmmm'
-  return
-
 openDocument = (location) ->
   alert 'Testing server'
   fileRef = new File(location)
   docRef = app.open(fileRef)
   return
 
-loadNFLibraries = (directory) ->
+loadNFLibraries = ->
+  # FIXME: Include this in the CEP package in future
+  # alert "Loading NF Libraries\n WARNING to JESSE Make sure these libraries are contained within the project before bundling!"
   loc = "/Users/jlupini/Documents/nf_tools/nf-scripts/build/runtimeLibraries.jsx"
   $.evalFile(loc)
-  alert "NF Libraries Reloaded"
 
 getCompName = ->
   return NFProject.activeComp().getName()
 
 getActivePage = ->
-  return NFProject.activeComp().getPDFLayer().layer.source.file.fsName
+  activeComp = NFProject.activeComp()
+  if activeComp instanceof NFPageComp
+    return activeComp.getPDFLayer().layer.source.file.fsName
+  else return null
 
 processRawAnnotationData = (rawData) ->
   return NFPDFManager.processRawAnnotationData rawData

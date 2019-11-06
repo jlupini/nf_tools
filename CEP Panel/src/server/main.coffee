@@ -246,7 +246,6 @@ run = ->
             annotations = []
             for annotation, i in content
               unless annotation.subtype is "Link"
-                console.log annotation.color
                 annotations.push
                   borderStyle: annotation.borderStyle.style
                   color: jlpdf.trimColorArray(annotation.color)
@@ -269,7 +268,8 @@ run = ->
                 # tx: tx
                 fontHeight: fontHeight
                 width: round(item.width)
-                height: round(item.height/fontHeight)
+                # height: round(item.height/fontHeight)
+                height: round(item.height)
                 left: round(tx[4])
                 top: round(tx[5] - fontHeight)
 
@@ -290,7 +290,7 @@ run = ->
               else
                 textItems.push newItem
               return
-            console.log "Merged #{mergeCount} objects"
+            # console.log "Merged #{mergeCount} objects"
 
             textContent = textItems
 

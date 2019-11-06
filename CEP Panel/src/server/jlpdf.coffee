@@ -146,7 +146,6 @@ Processes the raw annotation Data into something usable by AE. Does NOT import t
 @returns {Object} the processed annotation data
 ###
 processRawAnnotationData = (rawAnnotationData) ->
-  console.log "Raw Data"
   console.log rawAnnotationData
   annotationData = rawAnnotationData["annotations"]
   viewport = rawAnnotationData["viewport"]
@@ -184,9 +183,21 @@ processRawAnnotationData = (rawAnnotationData) ->
       matchingLineString = ""
       matchingLineStringArray = []
       lineHeightSum = 0
-      for textItem in textContent
+
+      printPrev = true
+      if i is 0
+        console.log "annotation #{annotationRect}"
+      for textItem, j in textContent
+
         textRect = new Rect textItem
         if annotationRect.contains(textRect) or textRect.contains(annotationRect)
+          if i is 0
+            if printPrev
+              printPrev = false
+              console.log "NUTTY ONE: #{textContent[j-1].str} (j is #{j-1})"
+              console.log new Rect textContent[j-1]
+            console.log "str: '#{textItem.str}'"
+            console.log textRect
           overlapExists = no
           if matchingLines.length isnt 0
             for matchedLine in matchingLines

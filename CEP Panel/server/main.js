@@ -101,7 +101,6 @@ run = function() {
             for (i = j = 0, len = content.length; j < len; i = ++j) {
               annotation = content[i];
               if (annotation.subtype !== "Link") {
-                console.log(annotation.color);
                 results.push(annotations.push({
                   borderStyle: annotation.borderStyle.style,
                   color: jlpdf.trimColorArray(annotation.color),
@@ -129,7 +128,7 @@ run = function() {
                 str: item.str,
                 fontHeight: fontHeight,
                 width: round(item.width),
-                height: round(item.height / fontHeight),
+                height: round(item.height),
                 left: round(tx[4]),
                 top: round(tx[5] - fontHeight)
               };
@@ -151,7 +150,6 @@ run = function() {
                 textItems.push(newItem);
               }
             });
-            console.log("Merged " + mergeCount + " objects");
             return textContent = textItems;
           };
           page.getAnnotations().then(processAnnotations);
