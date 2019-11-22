@@ -1,4 +1,4 @@
-var BOTTOM_PADDING, EDGE_PADDING, _, getPanelUI, importPDFAnnotationData, loadAutoHighlightDataIntoView, loadContentIntoView, main, openScript, panelTest;
+var BOTTOM_PADDING, EDGE_PADDING, PAGE_OFFSCREEN_POSITION, PAGE_ONSCREEN_POSITION, PAGE_SCALE, _, getPanelUI, importPDFAnnotationData, loadAutoHighlightDataIntoView, loadContentIntoView, main, openScript, panelTest;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
@@ -9,6 +9,12 @@ _ = {};
 EDGE_PADDING = 80;
 
 BOTTOM_PADDING = 150;
+
+PAGE_SCALE = 28;
+
+PAGE_OFFSCREEN_POSITION = [1560, -150];
+
+PAGE_ONSCREEN_POSITION = [349, 274];
 
 panelTest = this;
 
@@ -115,7 +121,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, circle, citeButton, customPrepButton, goButton, hideButton, importPrepButton, linkButton, looseFocus, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, tightFocus, treePrepView, treeView, visGroup;
+  var addButton, animateTab, buttonGroup, buttonPanel, circle, citeButton, goButton, hideButton, linkButton, looseFocus, panel, panelType, refreshButton, tPanel, tightFocus, treeView, visGroup;
   if (_.panel != null) {
     return _.panel;
   }
@@ -132,97 +138,6 @@ getPanelUI = function() {
   tPanel = panel.add("tabbedpanel");
   tPanel.alignment = ['fill', 'fill'];
   tPanel.alignChildren = ["fill", "fill"];
-  prepTab = tPanel.add("tab", void 0, "Highlight Importer");
-  prepTab.alignment = ['fill', 'fill'];
-  prepTab.alignChildren = "fill";
-  buttonPrepPanel = prepTab.add('panel', void 0, void 0, {
-    borderStyle: 'none'
-  });
-  buttonPrepPanel.alignment = ['fill', 'fill'];
-  buttonPrepPanel.alignChildren = 'left';
-  buttonPrepPanel.margins.top = 16;
-  treePrepView = buttonPrepPanel.add('treeview', void 0);
-  treePrepView.preferredSize = [220, 250];
-  treePrepView.alignment = ['fill', 'fill'];
-  buttonPrepGroup = buttonPrepPanel.add('group', void 0);
-  buttonPrepGroup.maximumSize = [200, 50];
-  addPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.add);
-  addPrepButton.onClick = function(w) {
-    var annotationLayer, choice, key, newColor, ref1, ref2, targetComp, testColor;
-    choice = (ref1 = treePrepView.selection) != null ? ref1.data : void 0;
-    if (choice == null) {
-      return alert("Invalid Selection!");
-    }
-    app.beginUndoGroup("NF Selector");
-    targetComp = NFProject.activeComp();
-    annotationLayer = targetComp.addShapeLayer();
-    annotationLayer.addRectangle({
-      fillColor: choice.color,
-      rect: choice.rect
-    });
-    annotationLayer.transform().scale.setValue(targetComp != null ? targetComp.getPDFLayer().transform().scale.value : void 0);
-    if (choice.lineCount === 0) {
-      annotationLayer.transform("Opacity").setValue(20);
-      annotationLayer.setName("Imported PDF Shape: " + choice.cleanName);
-    } else {
-      ref2 = NFHighlightLayer.COLOR;
-      for (key in ref2) {
-        testColor = ref2[key];
-        if (choice.colorName.indexOf(testColor.str) >= 0) {
-          newColor = testColor;
-        }
-      }
-      targetComp.createHighlight({
-        shapeLayer: annotationLayer,
-        lines: choice.lineCount,
-        name: choice.cleanName,
-        color: newColor
-      });
-      annotationLayer.remove();
-    }
-    return app.endUndoGroup();
-  };
-  customPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.path);
-  customPrepButton.onClick = function(w) {
-    var key, lineCount, newColor, newName, ref1, ref2, selectedLayer, testColor;
-    selectedLayer = (ref1 = NFProject.selectedLayers()) != null ? ref1.get(0) : void 0;
-    if (!((selectedLayer != null) && selectedLayer instanceof NFShapeLayer)) {
-      return alert("No Valid Shape Layer Selected");
-    }
-    lineCount = parseInt(prompt('How many initial highlight lines would you like to create?'));
-    newName = selectedLayer.getName().replace("Imported PDF Shape: ", "");
-    ref2 = NFHighlightLayer.COLOR;
-    for (key in ref2) {
-      testColor = ref2[key];
-      if (newName.indexOf(testColor.str) >= 0) {
-        newColor = testColor;
-      }
-    }
-    selectedLayer.containingComp().createHighlight({
-      shapeLayer: selectedLayer,
-      lines: lineCount,
-      name: newName,
-      color: newColor != null ? newColor : NFHighlightLayer.COLOR.YELLOW
-    });
-    return selectedLayer.remove();
-  };
-  refreshPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.refresh);
-  refreshPrepButton.onClick = function(w) {
-    loadAutoHighlightDataIntoView(treePrepView);
-    return this.active = false;
-  };
-  importPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button["import"]);
-  importPrepButton.onClick = function(w) {
-    var result;
-    alert("Importing Auto Highlight Data\nThis can take a little while, so be patient.");
-    result = importPDFAnnotationData();
-    if (result) {
-      alert("Success\nNow hit the refresh button with a PDF Comp active.");
-    } else {
-      alert("Failed\nLook for annotationData.json file in the PDF Pages directory");
-    }
-    return this.active = false;
-  };
   animateTab = tPanel.add("tab", void 0, "Animator");
   animateTab.alignChildren = "fill";
   animateTab.alignment = ['fill', 'fill'];
@@ -239,7 +154,7 @@ getPanelUI = function() {
   buttonGroup.maximumSize = [300, 50];
   addButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.add);
   addButton.onClick = function(w) {
-    var activeHighlight, activeHighlightRect, activeRefComp, activeRefs, alphabet, anchorProp, anchorValues, baseName, bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, i, idx, j, keyIn, keyOut, layerAbove, layersForPage, layersWithName, mask, newMask, newPageLayer, newPosition, newScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionProp, ref1, ref2, ref3, ref4, refLayer, refLayers, refPosition, refTargetName, relRect, scaleProp, shadowProp, shouldExpand, startTime, targetPageLayer, thisPart;
+    var activeHighlight, activeHighlightRect, activeNonRefPageLayer, activeRefComp, activeRefs, alphabet, anchorProp, anchorValues, baseName, bgSolid, boxBottom, choice, choicePage, choiceRect, compBottom, controlLayer, currTime, delta, group, gsLayer, highlightThickness, i, idx, j, keyIn, keyOut, layerAbove, layersForPage, layersWithName, mask, newMask, newPageLayer, newPosition, newScale, paddedChoiceRect, pickedHighlight, pickedPage, pickedShape, positionProp, ref1, ref2, ref3, ref4, refLayer, refLayers, refPosition, refTargetName, relRect, scaleProp, shadowProp, shouldExpand, shouldFadeIn, startTime, targetPageLayer, thisPart;
     choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
     if (choice == null) {
       return alert("Invalid Selection!");
@@ -313,8 +228,8 @@ getPanelUI = function() {
         newPageLayer.layer.inPoint = currTime;
       }
       group = newPageLayer.getPaperLayerGroup();
-      newPageLayer.transform('Scale').setValue([23, 23, 23]);
-      newPageLayer.transform('Position').setValue([1560, -150]);
+      newPageLayer.transform('Scale').setValue([PAGE_SCALE, PAGE_SCALE, PAGE_SCALE]);
+      newPageLayer.transform('Position').setValue(PAGE_OFFSCREEN_POSITION);
       if (newPageLayer.effect('Drop Shadow') != null) {
         newPageLayer.effect('Drop Shadow').enabled = false;
       }
@@ -480,10 +395,29 @@ getPanelUI = function() {
         controlLayer = choice.getControlLayer();
         controlLayer.removeSpotlights();
       }
-    } else if (pickedPage) {
-      targetPageLayer.transform('Position').setValue([439, 202]);
-      targetPageLayer.slideIn();
-      targetPageLayer.getPaperLayerGroup().getCitationLayer().show();
+    }
+    if (group == null) {
+      group = targetPageLayer.getPaperLayerGroup();
+    }
+    activeNonRefPageLayer = null;
+    shouldFadeIn = null;
+    group.getPages().forEach((function(_this) {
+      return function(page) {
+        if (page.isnt(targetPageLayer) && page.isOnScreen() && !page.isReferenceLayer()) {
+          shouldFadeIn = true;
+          return activeNonRefPageLayer = page;
+        }
+      };
+    })(this));
+    if (pickedPage || shouldFadeIn) {
+      targetPageLayer.transform('Position').setValue(PAGE_ONSCREEN_POSITION);
+      if (shouldFadeIn) {
+        targetPageLayer.fadeIn();
+        activeNonRefPageLayer.layer.outPoint = targetPageLayer.getCompTime() + 1.0;
+      } else {
+        targetPageLayer.slideIn();
+        group.getCitationLayer().show();
+      }
       gsLayer = thisPart.greenscreenLayer();
       if (gsLayer != null) {
         targetPageLayer.moveAfter(gsLayer);

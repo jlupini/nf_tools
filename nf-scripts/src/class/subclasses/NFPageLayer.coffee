@@ -386,9 +386,9 @@ class NFPageLayer extends NFLayer
     model.in ?= yes
 
     if model.in
-      @log "Sliding in at time: #{@containingComp().getTime()}"
+      @log "Sliding in at time: #{@getCompTime()}"
     else
-      @log("Sliding out at time: #{@containingComp().getTime()}")
+      @log("Sliding out at time: #{@getCompTime()}")
 
     # If .fromEdge is AUTO, figure out which edge to use.
     if model.fromEdge is NFComp.AUTO
@@ -401,7 +401,7 @@ class NFPageLayer extends NFLayer
       else
         model.fromEdge = NFComp.RIGHT
 
-    positionProperty = @layer.property("Transform").property("Position")
+    positionProperty = @transform("Position")
 
     animatingX = model.fromEdge is NFComp.RIGHT or model.fromEdge is NFComp.LEFT
     animatingY = model.fromEdge is NFComp.TOP or model.fromEdge is NFComp.BOTTOM

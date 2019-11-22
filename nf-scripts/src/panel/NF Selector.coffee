@@ -4,6 +4,10 @@ _ = {}
 EDGE_PADDING = 80
 BOTTOM_PADDING = 150
 
+PAGE_SCALE = 28
+PAGE_OFFSCREEN_POSITION = [1560, -150]
+PAGE_ONSCREEN_POSITION = [349, 274]
+
 panelTest = this
 
 openScript = (targetScript) ->
@@ -116,92 +120,6 @@ getPanelUI = ->
   tPanel.alignment = ['fill','fill']
   tPanel.alignChildren = ["fill", "fill"]
 
-  # Prep Tab
-  prepTab = tPanel.add("tab", undefined, "Highlight Importer")
-  prepTab.alignment = ['fill','fill']
-  prepTab.alignChildren = "fill"
-
-  buttonPrepPanel = prepTab.add 'panel', undefined, undefined, {borderStyle:'none'}
-  buttonPrepPanel.alignment = ['fill','fill']
-  buttonPrepPanel.alignChildren = 'left'
-  buttonPrepPanel.margins.top = 16
-
-  treePrepView = buttonPrepPanel.add 'treeview', undefined #[0, 0, 250, 150]
-  treePrepView.preferredSize = [220, 250]
-  treePrepView.alignment = ['fill','fill']
-
-  buttonPrepGroup = buttonPrepPanel.add 'group', undefined
-  buttonPrepGroup.maximumSize = [200,50]
-
-  addPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.add)
-  addPrepButton.onClick = (w) ->
-    choice = treePrepView.selection?.data
-
-    return alert "Invalid Selection!" unless choice?
-    app.beginUndoGroup "NF Selector"
-
-    targetComp = NFProject.activeComp()
-
-    # Actually add the shapes and stuff
-    annotationLayer = targetComp.addShapeLayer()
-    annotationLayer.addRectangle
-      fillColor: choice.color
-      rect: choice.rect
-
-    annotationLayer.transform().scale.setValue targetComp?.getPDFLayer().transform().scale.value
-
-    if choice.lineCount is 0
-      annotationLayer.transform("Opacity").setValue 20
-      annotationLayer.setName "Imported PDF Shape: #{choice.cleanName}"
-    else
-      for key, testColor of NFHighlightLayer.COLOR
-        newColor = testColor if choice.colorName.indexOf(testColor.str) >= 0
-
-      # Create the highlight effect
-      targetComp.createHighlight
-        shapeLayer: annotationLayer
-        lines: choice.lineCount
-        name: choice.cleanName
-        color: newColor
-
-      annotationLayer.remove()
-
-    app.endUndoGroup()
-
-  customPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.path)
-  customPrepButton.onClick = (w) ->
-    selectedLayer = NFProject.selectedLayers()?.get(0)
-    return alert "No Valid Shape Layer Selected" unless selectedLayer? and selectedLayer instanceof NFShapeLayer
-    lineCount = parseInt prompt('How many initial highlight lines would you like to create?')
-    # Create the highlight effect
-    newName = selectedLayer.getName().replace("Imported PDF Shape: ", "")
-    for key, testColor of NFHighlightLayer.COLOR
-      newColor = testColor if newName.indexOf(testColor.str) >= 0
-    selectedLayer.containingComp().createHighlight
-      shapeLayer: selectedLayer
-      lines: lineCount
-      name: newName
-      color: newColor ? NFHighlightLayer.COLOR.YELLOW
-
-
-    selectedLayer.remove()
-
-  refreshPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.refresh)
-  refreshPrepButton.onClick = (w) ->
-    loadAutoHighlightDataIntoView treePrepView
-
-    @active = false
-
-  importPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.import)
-  importPrepButton.onClick = (w) ->
-    alert "Importing Auto Highlight Data\nThis can take a little while, so be patient."
-    result = importPDFAnnotationData()
-    if result
-      alert "Success\nNow hit the refresh button with a PDF Comp active."
-    else
-      alert "Failed\nLook for annotationData.json file in the PDF Pages directory"
-    @active = false
-
 
   # Animate Tab
   animateTab = tPanel.add("tab", undefined, "Animator")
@@ -293,8 +211,8 @@ getPanelUI = ->
         newPageLayer.layer.startTime = startTime
         newPageLayer.layer.inPoint = currTime
       group = newPageLayer.getPaperLayerGroup()
-      newPageLayer.transform('Scale').setValue [23,23,23]
-      newPageLayer.transform('Position').setValue [1560, -150]
+      newPageLayer.transform('Scale').setValue [PAGE_SCALE, PAGE_SCALE, PAGE_SCALE]
+      newPageLayer.transform('Position').setValue PAGE_OFFSCREEN_POSITION
       newPageLayer.effect('Drop Shadow').enabled = no if newPageLayer.effect('Drop Shadow')?
       targetPageLayer = newPageLayer
 
@@ -453,13 +371,31 @@ getPanelUI = ->
         controlLayer.removeSpotlights()
 
 
-    else if pickedPage
-      # Position it onscreen and slide it in.
-      targetPageLayer.transform('Position').setValue [439, 202]
-      targetPageLayer.slideIn()
+    # If the page is currently on the screen, check if it's hidden and reveal,
+    # or mark it to be faded in later if it's not on screen
+    group ?= targetPageLayer.getPaperLayerGroup()
+    activeNonRefPageLayer = null
+    shouldFadeIn = null
+    group.getPages().forEach (page) =>
+      if page.isnt(targetPageLayer) and page.isOnScreen() and not page.isReferenceLayer()
+        shouldFadeIn = yes
+        activeNonRefPageLayer = page
+    # if pickedShape or pickedHighlight
+    #   shouldFadeIn = not targetPageLayer.isOnScreen()
+    # else if pickedPage
 
-      # Show the citation
-      targetPageLayer.getPaperLayerGroup().getCitationLayer().show()
+
+    if pickedPage or shouldFadeIn
+      # Position it onscreen
+      targetPageLayer.transform('Position').setValue PAGE_ONSCREEN_POSITION
+      # either slide or fade
+      if shouldFadeIn
+        targetPageLayer.fadeIn()
+        activeNonRefPageLayer.layer.outPoint = targetPageLayer.getCompTime() + 1.0
+      else
+        targetPageLayer.slideIn()
+        # Show the citation since we're coming in for the first time
+        group.getCitationLayer().show()
 
       # Move the target layer below the greenscreen
       gsLayer = thisPart.greenscreenLayer()

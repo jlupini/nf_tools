@@ -820,11 +820,55 @@ NFLayer = (function(superClass) {
 
   NFLayer.prototype.isActiveAtTime = function(time) {
     var currentTime, isActive;
-    currentTime = this.containingComp().getTime();
-    this.containingComp().setTime(time);
+    currentTime = this.getCompTime();
+    this.setCompTime(time);
     isActive = this.isActive();
-    this.containingComp().setTime(currentTime);
+    this.setCompTime(currentTime);
     return isActive;
+  };
+
+
+  /**
+  Checks if this layer is both active and is on screen (rect is partially within comp bounds)
+  @memberof NFLayer
+  @param {float} [time] = the time to check at
+  @returns {boolean} if this is an on screen and active layer
+   */
+
+  NFLayer.prototype.isOnScreen = function(time) {
+    var currentTime, sourceRect;
+    if (!this.isActive()) {
+      return false;
+    }
+    currentTime = this.getCompTime();
+    time = time != null ? time : currentTime;
+    sourceRect = this.sourceRect(time);
+    this.setCompTime(currentTime);
+    return sourceRect.intersectsWith(this.containingComp().getRect());
+  };
+
+
+  /**
+  Shortcut for this.containingComp().getTime()
+  @memberof NFLayer
+  @returns {float} the containing comp's time
+   */
+
+  NFLayer.prototype.getCompTime = function() {
+    return this.containingComp().getTime();
+  };
+
+
+  /**
+  Shortcut for this.containingComp().setTime(time)
+  @memberof NFLayer
+  @param {float} time - the time to set it top
+  @returns {NFLayer} self
+   */
+
+  NFLayer.prototype.setCompTime = function(time) {
+    this.containingComp().setTime(time);
+    return this;
   };
 
   NFLayer.prototype.isHighlightLayer = function() {
@@ -1006,6 +1050,17 @@ NFLayer = (function(superClass) {
 
 
   /**
+  Shorthand for the inverse of #is
+  @memberof NFLayer
+  @returns {boolean} True if the two layers are not the same
+   */
+
+  NFLayer.prototype.isnt = function(testLayer) {
+    return !this.is(testLayer);
+  };
+
+
+  /**
   Returns the containing NFComp
   @memberof NFLayer
   @returns {NFComp} the containing comp
@@ -1013,6 +1068,48 @@ NFLayer = (function(superClass) {
 
   NFLayer.prototype.containingComp = function() {
     return NFComp.specializedComp(this.layer.containingComp);
+  };
+
+
+  /**
+  Fades in using markers
+  @memberof NFLayer
+  @returns {NFLayer} self
+  @param {float} [length=1.0] - the length of the transition
+   */
+
+  NFLayer.prototype.fadeIn = function(length) {
+    if (length == null) {
+      length = 1.0;
+    }
+    this.addInOutMarkersForProperty({
+      property: this.transform("Opacity"),
+      startEquation: EasingEquation.linear,
+      startValue: 0,
+      length: length
+    });
+    return this;
+  };
+
+
+  /**
+  Fades out using markers
+  @memberof NFLayer
+  @param {float} [length=1.0] - the length of the transition
+  @returns {NFLayer} self
+   */
+
+  NFLayer.prototype.fadeOut = function(length) {
+    if (length == null) {
+      length = 1.0;
+    }
+    this.addInOutMarkersForProperty({
+      property: this.transform("Opacity"),
+      endEquation: EasingEquation.linear,
+      endValue: 0,
+      length: length
+    });
+    return this;
   };
 
 
@@ -5257,9 +5354,9 @@ NFPageLayer = (function(superClass) {
       model["in"] = true;
     }
     if (model["in"]) {
-      this.log("Sliding in at time: " + (this.containingComp().getTime()));
+      this.log("Sliding in at time: " + (this.getCompTime()));
     } else {
-      this.log("Sliding out at time: " + (this.containingComp().getTime()));
+      this.log("Sliding out at time: " + (this.getCompTime()));
     }
     if (model.fromEdge === NFComp.AUTO) {
       layerCenter = this.relativeCenterPoint();
@@ -5272,7 +5369,7 @@ NFPageLayer = (function(superClass) {
         model.fromEdge = NFComp.RIGHT;
       }
     }
-    positionProperty = this.layer.property("Transform").property("Position");
+    positionProperty = this.transform("Position");
     animatingX = model.fromEdge === NFComp.RIGHT || model.fromEdge === NFComp.LEFT;
     animatingY = model.fromEdge === NFComp.TOP || model.fromEdge === NFComp.BOTTOM;
     if (!(animatingX || animatingY)) {

@@ -83,11 +83,43 @@ class NFLayer extends NFObject
   @returns {boolean} if this is an active layer
   ###
   isActiveAtTime: (time) ->
-    currentTime = @containingComp().getTime()
-    @containingComp().setTime time
+    currentTime = @getCompTime()
+    @setCompTime time
     isActive = @isActive()
-    @containingComp().setTime currentTime
+    @setCompTime currentTime
     return isActive
+
+  ###*
+  Checks if this layer is both active and is on screen (rect is partially within comp bounds)
+  @memberof NFLayer
+  @param {float} [time] = the time to check at
+  @returns {boolean} if this is an on screen and active layer
+  ###
+  isOnScreen: (time) ->
+    return no unless @isActive()
+    currentTime = @getCompTime()
+    time = time ? currentTime
+    sourceRect = @sourceRect time
+    @setCompTime currentTime
+    return sourceRect.intersectsWith @containingComp().getRect()
+
+  ###*
+  Shortcut for this.containingComp().getTime()
+  @memberof NFLayer
+  @returns {float} the containing comp's time
+  ###
+  getCompTime: ->
+    return @containingComp().getTime()
+
+  ###*
+  Shortcut for this.containingComp().setTime(time)
+  @memberof NFLayer
+  @param {float} time - the time to set it top
+  @returns {NFLayer} self
+  ###
+  setCompTime: (time) ->
+    @containingComp().setTime time
+    return @
 
   isHighlightLayer: ->
     return NFHighlightLayer.isHighlightLayer(@layer)
@@ -218,12 +250,50 @@ class NFLayer extends NFObject
     return @layer.index == testLayer.layer.index and @layer.containingComp.id == testLayer.layer.containingComp.id
 
   ###*
+  Shorthand for the inverse of #is
+  @memberof NFLayer
+  @returns {boolean} True if the two layers are not the same
+  ###
+  isnt: (testLayer) ->
+    return not @is testLayer
+
+  ###*
   Returns the containing NFComp
   @memberof NFLayer
   @returns {NFComp} the containing comp
   ###
   containingComp: ->
     return  NFComp.specializedComp @layer.containingComp
+
+  ###*
+  Fades in using markers
+  @memberof NFLayer
+  @returns {NFLayer} self
+  @param {float} [length=1.0] - the length of the transition
+  ###
+  fadeIn: (length) ->
+    length ?= 1.0
+    @addInOutMarkersForProperty
+      property: @transform("Opacity")
+      startEquation: EasingEquation.linear
+      startValue: 0
+      length: length
+    @
+
+  ###*
+  Fades out using markers
+  @memberof NFLayer
+  @param {float} [length=1.0] - the length of the transition
+  @returns {NFLayer} self
+  ###
+  fadeOut: (length) ->
+    length ?= 1.0
+    @addInOutMarkersForProperty
+      property: @transform("Opacity")
+      endEquation: EasingEquation.linear
+      endValue: 0
+      length: length
+    @
 
   ###*
   Creates a new null parent to this layer, positioned above it. Will override previous parenting.
