@@ -395,6 +395,19 @@ toolRegistry =
 
           guideAVComp.layers[1].enabled = !guideAVComp.layers[1].enabled
 
+      fixExtendedPageSlides:
+        name: "Fix Extended Page Slides"
+        description: "Looks for any places where a bug has caused a page to slider
+                      out very very very slowly, and fixes those instances."
+        callback: ->
+          # 'threshold' is the number of seconds over which we assume something has buggered up
+          threshold = 2.5
+          fixedValue = 2.0
+          NFProject.activeComp().allLayers().forEach (layer) =>
+            if layer instanceof NFPageLayer and layer.getOutMarkerTime()?
+              if layer.$.outPoint - layer.getOutMarkerTime() > threshold
+                layer.$.outPoint = layer.getOutMarkerTime() + fixedValue
+
   development:
     name: "Dev"
     tools:
@@ -580,6 +593,7 @@ getPanelUI = ->
   buttonGroup.maximumSize = [200,50]
 
   goButton = buttonGroup.add('button', undefined, 'Do it!')
+  helpButton = buttonGroup.add('button', undefined, '?')
 
   goButton.onClick = (w) ->
     choice = treeView.selection.data if treeView.selection?.data && treeView.selection?.type is 'item'
@@ -591,6 +605,11 @@ getPanelUI = ->
     else
       openScript choice.callbackScript
     @active = false
+  helpButton.onClick = (w) ->
+    choice = treeView.selection.data if treeView.selection?.data && treeView.selection?.type is 'item'
+    return alert "No Tool Selected!" unless choice?
+    description = choice.description ? "No description provided"
+    return alert "Tool Description:\n#{description}"
 
   # Layout + Resize handling
   panel.layout.layout(true)

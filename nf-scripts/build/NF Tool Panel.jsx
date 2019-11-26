@@ -436,6 +436,24 @@ toolRegistry = {
           }
           return guideAVComp.layers[1].enabled = !guideAVComp.layers[1].enabled;
         }
+      },
+      fixExtendedPageSlides: {
+        name: "Fix Extended Page Slides",
+        description: "Looks for any places where a bug has caused a page to slider out very very very slowly, and fixes those instances.",
+        callback: function() {
+          var fixedValue, threshold;
+          threshold = 2.5;
+          fixedValue = 2.0;
+          return NFProject.activeComp().allLayers().forEach((function(_this) {
+            return function(layer) {
+              if (layer instanceof NFPageLayer && (layer.getOutMarkerTime() != null)) {
+                if (layer.$.outPoint - layer.getOutMarkerTime() > threshold) {
+                  return layer.$.outPoint = layer.getOutMarkerTime() + fixedValue;
+                }
+              }
+            };
+          })(this));
+        }
       }
     }
   },
@@ -607,7 +625,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var buttonGroup, buttonPanel, category, goButton, key, panel, panelType, thisCategoryNode, thisTool, thisToolItem, toolKey, treeView;
+  var buttonGroup, buttonPanel, category, goButton, helpButton, key, panel, panelType, thisCategoryNode, thisTool, thisToolItem, toolKey, treeView;
   if (_.panel != null) {
     return _.panel;
   }
@@ -643,6 +661,7 @@ getPanelUI = function() {
   buttonGroup = buttonPanel.add('group', void 0);
   buttonGroup.maximumSize = [200, 50];
   goButton = buttonGroup.add('button', void 0, 'Do it!');
+  helpButton = buttonGroup.add('button', void 0, '?');
   goButton.onClick = function(w) {
     var choice, ref, ref1;
     if (((ref = treeView.selection) != null ? ref.data : void 0) && ((ref1 = treeView.selection) != null ? ref1.type : void 0) === 'item') {
@@ -659,6 +678,17 @@ getPanelUI = function() {
       openScript(choice.callbackScript);
     }
     return this.active = false;
+  };
+  helpButton.onClick = function(w) {
+    var choice, description, ref, ref1, ref2;
+    if (((ref = treeView.selection) != null ? ref.data : void 0) && ((ref1 = treeView.selection) != null ? ref1.type : void 0) === 'item') {
+      choice = treeView.selection.data;
+    }
+    if (choice == null) {
+      return alert("No Tool Selected!");
+    }
+    description = (ref2 = choice.description) != null ? ref2 : "No description provided";
+    return alert("Tool Description:\n" + description);
   };
   panel.layout.layout(true);
   panel.layout.resize();
