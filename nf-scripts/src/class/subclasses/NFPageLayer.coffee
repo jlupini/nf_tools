@@ -15,7 +15,7 @@ class NFPageLayer extends NFLayer
     @
   # MARK: Instance Methods
   toString: ->
-    return "NFPageLayer: '#{@layer.name}'"
+    return "NFPageLayer: '#{@$.name}'"
 
   ###*
   Returns a connected paper parent layer. Not to be confused with {@link NFPageLayer#findPaperParentLayer} which will return a non-connected one
@@ -23,8 +23,8 @@ class NFPageLayer extends NFLayer
   @returns {NFPaperParentLayer | null} The paper parent layer if found
   ###
   getPaperParentLayer: ->
-    if @layer.parent?
-      return new NFPaperParentLayer(@layer.parent)
+    if @$.parent?
+      return new NFPaperParentLayer(@$.parent)
     else
       return null
 
@@ -35,7 +35,7 @@ class NFPageLayer extends NFLayer
   @returns {NFComp} The containing Comp
   ###
   containingComp: ->
-    return new NFComp @layer.containingComp
+    return new NFComp @$.containingComp
 
   ###*
   Returns the pageComp for this layer
@@ -109,7 +109,7 @@ class NFPageLayer extends NFLayer
   @returns {boolean} the init state
   ###
   isInitted: ->
-    return @layer.name.indexOf("[+]") >= 0
+    return @$.name.indexOf("[+]") >= 0
 
   ###*
   Returns the base page name (everything before the space)
@@ -117,7 +117,7 @@ class NFPageLayer extends NFLayer
   @returns {String} the page base name
   ###
   getPageBaseName: ->
-    return @layer.name.substr(0, @layer.name.indexOf(' '))
+    return @$.name.substr(0, @$.name.indexOf(' '))
 
   ###*
   Changes the page name to mark the page layer as initted, and updates bubbled highlights
@@ -129,7 +129,7 @@ class NFPageLayer extends NFLayer
       bubbledHighlights = @bubbledHighlights()
       if bubbledHighlights.count() > 0
         bubbledHighlights.fixExpressionsAfterInit()
-      @layer.name = @layer.name.replace " NFPage", " [+]"
+      @$.name = @$.name.replace " NFPage", " [+]"
       bubbledHighlights.resetExpressionErrors()
     @
 
@@ -139,7 +139,7 @@ class NFPageLayer extends NFLayer
   @returns {NFPageLayer} self
   ###
   init: ->
-    @layer.motionBlur = true
+    @$.motionBlur = true
     @setDropShadow()
     @markInitted()
     @
@@ -173,8 +173,8 @@ class NFPageLayer extends NFLayer
   @returns {boolean} whether or not the size was updated
   ###
   setInitSize: ->
-    return false if @layer.property('Transform').property('Scale').numKeys > 0
-    @layer.property('Transform').property('Scale').setValue [50,50,50]
+    return false if @$.property('Transform').property('Scale').numKeys > 0
+    @$.property('Transform').property('Scale').setValue [50,50,50]
     return true
 
   ###*
@@ -183,14 +183,14 @@ class NFPageLayer extends NFLayer
   @returns {boolean} whether or not the position was updated
   ###
   setInitPosition: ->
-    if @layer.property('Transform').property('Position').numKeys > 0
+    if @$.property('Transform').property('Position').numKeys > 0
       return false
     else
-      layerHeight = @layer.height
-      oldPosition = @layer.property('Transform').property('Position').value
+      layerHeight = @$.height
+      oldPosition = @$.property('Transform').property('Position').value
       newPosition = oldPosition
       newPosition[1] = layerHeight / 4
-      @layer.property('Transform').property('Position').setValue(newPosition)
+      @$.property('Transform').property('Position').setValue(newPosition)
     return true
 
   ###*
@@ -227,8 +227,8 @@ class NFPageLayer extends NFLayer
     rect =
       left: 0
       top: 0
-      width: @layer.source.width
-      height: @containingComp().comp.height
+      width: @$.source.width
+      height: @containingComp().$.height
       padding: 0
     @relativeRect rect
 
@@ -272,7 +272,7 @@ class NFPageLayer extends NFLayer
   duplicateAsReferenceLayer: ->
     oldName = @getName()
     refLayer = @duplicate()
-    refLayer.layer.name = oldName.replace("+", "ref")
+    refLayer.$.name = oldName.replace("+", "ref")
     return refLayer
 
   ###*
@@ -311,7 +311,7 @@ class NFPageLayer extends NFLayer
           internalEndTime = theInstance.internalEndTime()
           latestInternalEndTime = internalEndTime if internalEndTime > latestInternalEndTime
 
-    @beginAt latestInternalEndTime + @containingComp().comp.frameDuration
+    @beginAt latestInternalEndTime + @containingComp().$.frameDuration
     @
 
   ###*
@@ -412,7 +412,7 @@ class NFPageLayer extends NFLayer
     startOffset = switch
       when model.fromEdge is NFComp.RIGHT then 3000
       when model.fromEdge is NFComp.LEFT then -3000
-      when model.fromEdge is NFComp.BOTTOM then @containingComp().comp.height * 1.1
+      when model.fromEdge is NFComp.BOTTOM then @containingComp().$.height * 1.1
       when model.fromEdge is NFComp.TOP then @sourceRect().height * 1.1
       else 0
     slider = @addSlider("Start Offset", startOffset)
@@ -518,8 +518,8 @@ class NFPageLayer extends NFLayer
   pageTurnDownPosition: ->
     comp = @getPageComp()
     pageSize =
-      width: comp.comp.width
-      height: comp.comp.height
+      width: comp.$.width
+      height: comp.$.height
     downPosition = [pageSize.width, pageSize.height]
 
   ###*
@@ -532,8 +532,8 @@ class NFPageLayer extends NFLayer
   pageTurnUpPosition: ->
     comp = @getPageComp()
     pageSize =
-      width: comp.comp.width
-      height: comp.comp.height
+      width: comp.$.width
+      height: comp.$.height
     upPosition = [-pageSize.width, -pageSize.height]
 
   ###*
@@ -587,7 +587,7 @@ class NFPageLayer extends NFLayer
 
     # Trim if necessary
     unless model.trim is no
-      @layer.outPoint = endTime
+      @$.outPoint = endTime
 
     @
 
@@ -698,7 +698,7 @@ class NFPageLayer extends NFLayer
 
 
     rect = model.rect ? @sourceRectForHighlight model.highlight, model.time
-    compWidth = @containingComp().comp.width
+    compWidth = @containingComp().$.width
     targetRectWidth = model.fillPercentage / 100 * compWidth
     scaleFactor = targetRectWidth / rect.width
 
@@ -763,7 +763,7 @@ class NFPageLayer extends NFLayer
     rect = model.rect ? @sourceRectForHighlight model.highlight, model.time
 
     rectCenterPoint = [rect.left + rect.width / 2, rect.top + rect.height / 2]
-    compCenterPoint = [@containingComp().comp.width / 2, @containingComp().comp.height / 2]
+    compCenterPoint = [@containingComp().$.width / 2, @containingComp().$.height / 2]
     delta = [compCenterPoint[0] - rectCenterPoint[0], compCenterPoint[1] - rectCenterPoint[1]]
 
     # Adjust to prevent falling off the page
@@ -777,10 +777,10 @@ class NFPageLayer extends NFLayer
         delta[0] -= rectAfterReposition.left
       if rectAfterReposition.top > 0
         delta[1] -= rectAfterReposition.top
-      if rectAfterReposition.left + rectAfterReposition.width < @containingComp().comp.width
-        delta[0] += @containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width)
-      if rectAfterReposition.top + rectAfterReposition.height < @containingComp().comp.height
-        delta[1] += @containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height)
+      if rectAfterReposition.left + rectAfterReposition.width < @containingComp().$.width
+        delta[0] += @containingComp().$.width - (rectAfterReposition.left + rectAfterReposition.width)
+      if rectAfterReposition.top + rectAfterReposition.height < @containingComp().$.height
+        delta[1] += @containingComp().$.height - (rectAfterReposition.top + rectAfterReposition.height)
 
     delta
 

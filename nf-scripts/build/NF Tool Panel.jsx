@@ -64,7 +64,7 @@ toolRegistry = {
           bashFile = new File(start_folder.fsName + '/lib/stt/systemcall.sh');
           sttFolder = File(start_folder.fsName + '/lib/stt/');
           audioLayer = NFProject.mainComp().audioLayers().getBottommostLayer();
-          audioFile = audioLayer.layer.source.file;
+          audioFile = audioLayer.$.source.file;
           cmdLineString = "sh '" + bashFile.fsName + "' '" + sttFolder.fsName + "' '" + audioFile.fsName + "' '" + project_folder.fsName + "'";
           termfile = new File(File($.fileName).parent.fsName + '/command.term');
           command = cmdLineString;
@@ -158,8 +158,8 @@ toolRegistry = {
                 name: "Instructions"
               });
               instructionLayer.moveBefore(lineLayer);
-              lineLayer.layer.guideLayer = instructionLayer.layer.guideLayer = true;
-              lineLayer.layer.enabled = instructionLayer.layer.enabled = false;
+              lineLayer.$.guideLayer = instructionLayer.$.guideLayer = true;
+              lineLayer.$.enabled = instructionLayer.$.enabled = false;
               for (k = 0, len1 = parsedInstructions.length; k < len1; k++) {
                 ins = parsedInstructions[k];
                 lineText = ins.line.length > 15 ? ins.line.insertAt(15, lineWrap) : ins.line;
@@ -203,7 +203,7 @@ toolRegistry = {
             spotlightLayers = part.searchLayers("Spotlight");
             results.push(spotlightLayers.forEach((function(_this) {
               return function(spotlight) {
-                return spotlight.layer.enabled = true;
+                return spotlight.$.enabled = true;
               };
             })(this)));
           }
@@ -225,7 +225,7 @@ toolRegistry = {
             spotlightLayers = part.searchLayers("Spotlight");
             spotlightLayers.forEach((function(_this) {
               return function(spotlight) {
-                return spotlight.layer.enabled = true;
+                return spotlight.$.enabled = true;
               };
             })(this));
           }
@@ -278,9 +278,9 @@ toolRegistry = {
             results.push(spotlightLayers.forEach((function(_this) {
               return function(spotlight) {
                 if (targetValue === null) {
-                  targetValue = !spotlight.layer.enabled;
+                  targetValue = !spotlight.$.enabled;
                 }
-                return spotlight.layer.enabled = targetValue;
+                return spotlight.$.enabled = targetValue;
               };
             })(this)));
           }
@@ -376,7 +376,7 @@ toolRegistry = {
               highlight.resetExpressionErrors();
               if (highlight.isBroken()) {
                 highlight.disconnect();
-                return NFTools.log("Disconnected highlight: " + (highlight.getName()) + " in page: " + (highlight.getPageComp().comp.name) + "\n", "NFToolPanel#disconnectBrokenHighlights");
+                return NFTools.log("Disconnected highlight: " + (highlight.getName()) + " in page: " + (highlight.getPageComp().$.name) + "\n", "NFToolPanel#disconnectBrokenHighlights");
               }
             };
           })(this));

@@ -78,10 +78,10 @@ loadContentIntoView = (treeView) ->
 
         shapeLayers.forEach (shapeLayer) =>
           if shapeLayer instanceof NFHighlightLayer
-            itemName = shapeLayer.layer.name + " (HL)"
+            itemName = shapeLayer.$.name + " (HL)"
             icon = NFIcon.tree.highlight
           else
-            itemName = shapeLayer.layer.name + " (Shape)"
+            itemName = shapeLayer.$.name + " (Shape)"
             icon = NFIcon.tree.star
           thisShapeItem = thisPageNode.add 'item', itemName
           thisShapeItem.data = shapeLayer
@@ -171,7 +171,7 @@ getPanelUI = ->
     startTime = null
     unless layersForPage.isEmpty()
       layersForPage.forEach (layer) =>
-        startTime = layer.layer.startTime
+        startTime = layer.$.startTime
         targetPageLayer = layer if layer.isActive()
 
     # FIXME: All the positioning stuff fails if there's already a version of the
@@ -208,8 +208,8 @@ getPanelUI = ->
         page: choicePage
         continuous: yes
       if startTime?
-        newPageLayer.layer.startTime = startTime
-        newPageLayer.layer.inPoint = currTime
+        newPageLayer.$.startTime = startTime
+        newPageLayer.$.inPoint = currTime
       group = newPageLayer.getPaperLayerGroup()
       newPageLayer.transform('Scale').setValue [PAGE_SCALE, PAGE_SCALE, PAGE_SCALE]
       newPageLayer.transform('Position').setValue PAGE_OFFSCREEN_POSITION
@@ -228,7 +228,7 @@ getPanelUI = ->
         # Unique naming
         layersWithName = refLayer.containingComp().searchLayers baseName, yes, "Backing"
         alphabet = 'abcdefghijklmnopqrstuvwxyz'.split ''
-        refLayer.layer.name = "#{baseName} {#{alphabet[layersWithName.count()]}}"
+        refLayer.$.name = "#{baseName} {#{alphabet[layersWithName.count()]}}"
 
         positionProp = refLayer.transform("Position")
         scaleProp = refLayer.transform("Scale")
@@ -244,7 +244,7 @@ getPanelUI = ->
       # Frame up that baby
       choiceRect = choice.sourceRect()
       if shouldExpand
-        activeRefComp = new NFPageComp refLayer.layer.source
+        activeRefComp = new NFPageComp refLayer.$.source
         activeHighlight = activeRefComp.layerWithName refTargetName
         activeHighlightRect = activeHighlight.sourceRect()
         choiceRect = choiceRect.combineWith activeHighlightRect
@@ -295,15 +295,15 @@ getPanelUI = ->
         newMask.maskExpansion.setValue 3
         refLayer.effect("Drop Shadow").remove()
         refLayer.effects().addProperty("ADBE Brightness & Contrast 2").property("Contrast").setValue(99)
-        refLayer.layer.blendingMode = BlendingMode.DARKEN
+        refLayer.$.blendingMode = BlendingMode.DARKEN
 
       # Create a white BG box and attach it to the ref layer
       unless shouldExpand
         bgSolid = thisPart.addSolid
           color: [1,1,1]
-          name: "Backing for '#{refLayer.layer.name}'"
+          name: "Backing for '#{refLayer.$.name}'"
         bgSolid.transform("Opacity").setValue 90
-        bgSolid.layer.motionBlur = true
+        bgSolid.$.motionBlur = true
         bgSolid.setShy yes
 
         newMask = bgSolid.mask().addProperty "Mask"
@@ -326,7 +326,7 @@ getPanelUI = ->
       else
         relRect = refLayer.relativeRect paddedChoiceRect
       boxBottom = relRect.top + relRect.height + (EDGE_PADDING / 4)
-      compBottom = thisPart.comp.height
+      compBottom = thisPart.$.height
       delta = compBottom - boxBottom
 
       if shouldExpand
@@ -346,7 +346,7 @@ getPanelUI = ->
         layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
         refLayer.moveAfter layerAbove
         unless shouldExpand
-          refLayer.layer.inPoint = thisPart.getTime()
+          refLayer.$.inPoint = thisPart.getTime()
 
       # Animate In
       unless shouldExpand
@@ -391,7 +391,7 @@ getPanelUI = ->
       # either slide or fade
       if shouldFadeIn
         targetPageLayer.fadeIn()
-        activeNonRefPageLayer.layer.outPoint = targetPageLayer.getCompTime() + 1.0
+        activeNonRefPageLayer.$.outPoint = targetPageLayer.getCompTime() + 1.0
       else
         targetPageLayer.slideIn()
         # Show the citation since we're coming in for the first time
@@ -489,8 +489,8 @@ getPanelUI = ->
       if selectedLayer instanceof NFPageLayer
         # If the layer is a visible, initted page layer, and is active at the moment
         if selectedLayer.getName().indexOf("[+]") >= 0 and partComp.getRect().intersectsWith(selectedLayer.sourceRect(time))
-          if selectedLayer.layer.outPoint >= time
-            selectedLayer.layer.outPoint = time
+          if selectedLayer.$.outPoint >= time
+            selectedLayer.$.outPoint = time
             selectedLayer.slideOut()
         else if selectedLayer.getName().indexOf("[ref]") >= 0
           # Let's get all the layers that are children of this layer and end them here too
@@ -512,7 +512,7 @@ getPanelUI = ->
               layersToTrim.add pLayer unless partComp.getRect().intersectsWith(pLayer.sourceRect(time)) or pLayer.getOutMarkerTime()?
 
           layersToTrim.forEach (layer) =>
-            layer.layer.outPoint = time
+            layer.$.outPoint = time
 
           selectedLayer.addInOutMarkersForProperty
             property: selectedLayer.transform "Scale"
@@ -548,7 +548,7 @@ getPanelUI = ->
           color: [1,0,0.7]
           width: 10
           height: 10
-        nullLayer.layer.enabled = no
+        nullLayer.$.enabled = no
 
         nullLayer.setName NFPaperParentLayer.getPaperParentNameForObject(choice)
         paperParentLayer = new NFPaperParentLayer(nullLayer)
@@ -580,7 +580,7 @@ getPanelUI = ->
     NFProject.activeComp().allLayers().forEach (layer) =>
       layer.setShy no unless layer.getName().indexOf("Backing for") >= 0
 
-    NFProject.activeComp().comp.hideShyLayers = yes
+    NFProject.activeComp().$.hideShyLayers = yes
 
     app.endUndoGroup()
 
@@ -606,7 +606,7 @@ getPanelUI = ->
     activeComp.allLayers().forEach (layer) =>
       layer.setShy not looseLayers.containsLayer(layer)
 
-    activeComp.comp.hideShyLayers = yes
+    activeComp.$.hideShyLayers = yes
 
     app.endUndoGroup()
 
@@ -628,12 +628,12 @@ getPanelUI = ->
 
         time = activeComp.getTime()
         group.getControlLayers().forEach (control) =>
-          tightLayers.add control if control.layer.inPoint <= time and control.layer.outPoint >= time
+          tightLayers.add control if control.$.inPoint <= time and control.$.outPoint >= time
 
     activeComp.allLayers().forEach (layer) =>
       layer.setShy not tightLayers.containsLayer(layer)
 
-    activeComp.comp.hideShyLayers = yes
+    activeComp.$.hideShyLayers = yes
 
     app.endUndoGroup()
 

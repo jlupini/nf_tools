@@ -222,7 +222,7 @@ class NFPartComp extends NFComp
                   fillPercentage: model.fillPercentage
 
               # Trim the old layer to the end of the page turn
-              activePageLayer.layer.outPoint = @getTime() - 0.5 + 2.0
+              activePageLayer.$.outPoint = @getTime() - 0.5 + 2.0
 
               group.trimActivePlaceholder @getTime()
               group.trimActiveSpotlights @getTime() + 0.5
@@ -297,7 +297,7 @@ class NFPartComp extends NFComp
             prevGroup?.trim trimTime
             @hideGaussy trimTime + 1
           else
-            trimTime = targetPageLayer.layer.inPoint + 2.0
+            trimTime = targetPageLayer.$.inPoint + 2.0
             prevGroup?.trim trimTime
             @hideGaussy @getTime()
             activePageLayer.slideOut()
@@ -336,7 +336,7 @@ class NFPartComp extends NFComp
   and .at
   ###
   insertPage: (model) ->
-    @log "Inserting page: #{model.page.comp.name}"
+    @log "Inserting page: #{model.page.$.name}"
     throw new Error "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
 
     model.at = 0 unless model.above? or model.below? or model.at?
@@ -389,7 +389,7 @@ class NFPartComp extends NFComp
   ###
   addPlaceholder: (model) ->
     model.time = model.time ? @getTime()
-    model.duration = model.duration ? @comp.duration - model.time
+    model.duration = model.duration ? @$.duration - model.time
 
     activePDF = @activePDF model.time
     if activePDF?
@@ -408,7 +408,7 @@ class NFPartComp extends NFComp
         justification: ParagraphJustification.CENTER_JUSTIFY
         fontSize: 60
       placeholder.transform().property("Position").setValue [960, 980]
-      placeholder.layer.name = "INSTRUCTION: #{model.text}"
+      placeholder.$.name = "INSTRUCTION: #{model.text}"
 
     else
       # FIXME: Should be able to catch these non-attached ones and trim...
@@ -423,7 +423,7 @@ class NFPartComp extends NFComp
         justification: ParagraphJustification.CENTER_JUSTIFY
         fontSize: 60
       placeholder.transform().property("Position").setValue [960, 980]
-      placeholder.layer.name = "INSTRUCTION: #{model.text}"
+      placeholder.$.name = "INSTRUCTION: #{model.text}"
 
     @
 
@@ -442,7 +442,7 @@ class NFPartComp extends NFComp
   addGaussy: (model) ->
     model ?= {}
     model.time = model.time ? @getTime()
-    model.duration = model.duration ? @comp.duration - model.time
+    model.duration = model.duration ? @$.duration - model.time
 
     activePDF = @activePDF model.time
     if activePDF?
@@ -456,7 +456,7 @@ class NFPartComp extends NFComp
         unless children.isEmpty()
           children.forEach (testChild) =>
             if testChild.layer instanceof TextLayer
-              testChild.layer.outPoint = model.time
+              testChild.$.outPoint = model.time
               belowTarget = testChild
         belowTarget = belowTarget ? activeGaussy
 
@@ -480,7 +480,7 @@ class NFPartComp extends NFComp
           justification: ParagraphJustification.CENTER_JUSTIFY
           fontSize: 100
         placeholder.setParent activeGaussy ? gaussy
-        placeholder.layer.name = "FIXME: #{model.placeholder}"
+        placeholder.$.name = "FIXME: #{model.placeholder}"
 
     else
       throw new Error "No active group to create a gaussy layer on top of"
@@ -497,13 +497,13 @@ class NFPartComp extends NFComp
     time = time ? @getTime()
     activeGaussies = @activeLayers(time).searchLayers "Gaussy"
     activeGaussies.forEach (testLayer) =>
-      if testLayer.layer.isSolid()
+      if testLayer.$.isSolid()
         @log "Hiding gaussy layer at time: #{time}"
-        testLayer.layer.outPoint = time
+        testLayer.$.outPoint = time
         children = testLayer.getChildren()
         unless children.isEmpty()
           children.forEach (child) =>
-            child.layer.outPoint = time unless child.layer.outPoint < time
+            child.$.outPoint = time unless child.$.outPoint < time
 
     @
 
@@ -524,7 +524,7 @@ class NFPartComp extends NFComp
   ###
   trimTo: (time) ->
     @activeLayers(time).forEach (layer) =>
-      layer.layer.outPoint = time
+      layer.$.outPoint = time
 
   ###*
   Returns an active gaussy if one exists, or null. DIFFERENT FROM #gaussyActive
@@ -541,7 +541,7 @@ class NFPartComp extends NFComp
     else
       gaussyFound = null
       searchResults.forEach (testLayer) =>
-        gaussyFound = testLayer if testLayer.layer.isSolid()
+        gaussyFound = testLayer if testLayer.$.isSolid()
       return gaussyFound
 
 

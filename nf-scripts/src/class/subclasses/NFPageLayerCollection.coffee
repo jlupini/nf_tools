@@ -149,7 +149,7 @@ class NFPageLayerCollection extends NFLayerCollection
           bubbledToFix.forEach (highlight) =>
             highlight.fixExpressionWithDiffLetter(alphabet[i])
 
-        theLayer.layer.name += " (#{alphabet[i]})"
+        theLayer.$.name += " (#{alphabet[i]})"
         bubbledToFix.resetExpressionErrors()
     else
       lastUsedLetterIndex = null
@@ -170,7 +170,7 @@ class NFPageLayerCollection extends NFLayerCollection
           bubbledToFix.forEach (highlight) =>
             highlight.fixExpressionWithDiffLetter(alphabet[lastUsedLetterIndex+1]).resetExpressionErrors()
 
-        theLayer.layer.name += " (#{alphabet[lastUsedLetterIndex+1]})"
+        theLayer.$.name += " (#{alphabet[lastUsedLetterIndex+1]})"
         bubbledToFix.resetExpressionErrors()
 
     @

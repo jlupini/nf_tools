@@ -11,7 +11,7 @@ class NFGaussyLayer extends NFLayer
     NFLayer.call(this, layer)
     @
   toString: ->
-    return "NFGaussyLayer: '#{@layer.name}'"
+    return "NFGaussyLayer: '#{@$.name}'"
 
 NFGaussyLayer = Object.assign NFGaussyLayer,
 

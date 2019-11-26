@@ -496,21 +496,21 @@ NFProject =
         audioMarkers.removeKey nearestKeyIndex
 
         audioLayer.addMarker
-          time: testIns.time - thisComp.comp.frameDuration
+          time: testIns.time - thisComp.$.frameDuration
           comment: markerComment + " - ADJUSTED"
 
-        if oldMarkerTime-1 < audioLayer.layer.inPoint < oldMarkerTime+1
-          oldOutPoint = audioLayer.layer.outPoint
-          audioLayer.layer.inPoint = testIns.time - thisComp.comp.frameDuration
-          audioLayer.layer.outPoint = oldOutPoint
+        if oldMarkerTime-1 < audioLayer.$.inPoint < oldMarkerTime+1
+          oldOutPoint = audioLayer.$.outPoint
+          audioLayer.$.inPoint = testIns.time - thisComp.$.frameDuration
+          audioLayer.$.outPoint = oldOutPoint
 
 
           # Adjust start time of part layer in main comp if we've done a big move
           unless thisComp.is mainComp
             partLayer = NFProject.mainComp().layerWithName thisComp.getName()
-            outPoint = partLayer.layer.outPoint
-            partLayer.layer.inPoint = testIns.time - 1 if testIns.time <= partLayer.layer.inPoint
-            partLayer.layer.outPoint = outPoint
+            outPoint = partLayer.$.outPoint
+            partLayer.$.inPoint = testIns.time - 1 if testIns.time <= partLayer.$.inPoint
+            partLayer.$.outPoint = outPoint
 
       null
 

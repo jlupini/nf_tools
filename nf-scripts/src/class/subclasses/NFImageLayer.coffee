@@ -12,4 +12,4 @@ class NFImageLayer extends NFLayer
     @
   # MARK: Instance Methods
   toString: ->
-    return "NFImageLayer: '#{@layer.name}'"
+    return "NFImageLayer: '#{@$.name}'"

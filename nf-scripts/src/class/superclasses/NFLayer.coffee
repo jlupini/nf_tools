@@ -3,26 +3,23 @@ Creates a new NFLayer from a given AVLayer
 @class NFLayer
 @classdesc NF Wrapper object for an AVLayer
 @param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer (in which case we use it's AVLayer)
-@property {AVLayer} layer - the wrapped AVLayer
-@property {AVLayer} $ - the wrapped AVLayer (alternative access)
+@property {AVLayer} $ - the wrapped AVLayer
 @throws Will throw an error if not given a valid AVLayer object
 ###
 class NFLayer extends NFObject
   constructor: (layer) ->
     NFObject.call(this)
     if layer.isAVLayer()
-      @layer = layer
-      @$ = @layer
+      @$ = layer
     else if layer instanceof NFLayer
-      @layer  = layer.layer
-      @$ = @layer
+      @$  = layer.layer
     else
       throw new Error "Can only create a new NFLayer with a valid AVLayer or NFLayer object"
     @
 
   # MARK: Instance Methods
   toString: ->
-    return "NFLayer: '#{@layer.name}'"
+    return "NFLayer: '#{@$.name}'"
 
   ###*
   Returns the name of the layer
@@ -30,7 +27,7 @@ class NFLayer extends NFObject
   @returns {string} the layer name
   ###
   getName: ->
-    return @layer.name
+    return @$.name
 
   ###*
   Sets the name of the layer
@@ -39,7 +36,7 @@ class NFLayer extends NFObject
   @returns {NFLayer} self
   ###
   setName: (newName) ->
-    @layer.name = newName
+    @$.name = newName
     return @
 
   ###*
@@ -49,7 +46,7 @@ class NFLayer extends NFObject
   @returns {NFLayer} self
   ###
   setShy: (state) ->
-    @layer.shy = state
+    @$.shy = state
     return @
 
   ###*
@@ -66,7 +63,7 @@ class NFLayer extends NFObject
   @returns {boolean} if this is a null layer
   ###
   isNullLayer: ->
-    return @layer.nullLayer
+    return @$.nullLayer
 
   ###*
   Checks if this layer is active
@@ -74,7 +71,7 @@ class NFLayer extends NFObject
   @returns {boolean} if this is an active layer
   ###
   isActive: ->
-    return @layer.active
+    return @$.active
 
   ###*
   Checks if this layer is active
@@ -170,7 +167,7 @@ class NFLayer extends NFObject
   @returns {int} the layer's index
   ###
   index: ->
-    return @layer.index
+    return @$.index
 
   ###*
   Returns true if the layer has a null parent
@@ -178,8 +175,8 @@ class NFLayer extends NFObject
   @returns {boolean} Whether this layer has a parent which is a null layer
   ###
   hasNullParent: ->
-    if @layer.parent?
-      return @layer.parent.nullLayer
+    if @$.parent?
+      return @$.parent.nullLayer
     return false
 
   ###*
@@ -188,7 +185,7 @@ class NFLayer extends NFObject
   @returns {Property} the effects property
   ###
   effects: ->
-    return @layer.Effects
+    return @$.Effects
 
   ###*
   Returns the mask Property for the layer, or a given mask if provided
@@ -198,13 +195,13 @@ class NFLayer extends NFObject
   ###
   mask: (maskName) ->
     if maskName?
-      mask = @layer.mask maskName
+      mask = @$.mask maskName
       if mask?
         return mask
       else
         return null
     else
-      return @layer.mask
+      return @$.mask
 
   ###*
   Returns the transform Property for the layer. Can optionally specify a root
@@ -215,9 +212,9 @@ class NFLayer extends NFObject
   ###
   transform: (prop) ->
     if prop?
-      return @layer.transform.property(prop)
+      return @$.transform.property(prop)
     else
-      return @layer.transform
+      return @$.transform
 
   ###*
   Returns the effect property with a given name, only one level under Effects.
@@ -227,7 +224,7 @@ class NFLayer extends NFObject
   @returns {Property | null} the property or null if not found
   ###
   effect: (effectName) ->
-    return @layer.Effects.property(effectName)
+    return @$.Effects.property(effectName)
 
   ###*
   Returns the root property on the layer with the given name. Saves you a `.layer`
@@ -237,7 +234,7 @@ class NFLayer extends NFObject
   @returns {Property | null} the property or null if not found
   ###
   property: (propName) ->
-    return @layer.property(propName)
+    return @$.property(propName)
 
   ###*
   Checks to see if a given NFLayer's layer is the same as this one's
@@ -247,7 +244,7 @@ class NFLayer extends NFObject
   ###
   is: (testLayer) ->
     return no unless testLayer?
-    return @layer.index == testLayer.layer.index and @layer.containingComp.id == testLayer.layer.containingComp.id
+    return @$.index == testLayer.$.index and @$.containingComp.id == testLayer.$.containingComp.id
 
   ###*
   Shorthand for the inverse of #is
@@ -263,7 +260,7 @@ class NFLayer extends NFObject
   @returns {NFComp} the containing comp
   ###
   containingComp: ->
-    return  NFComp.specializedComp @layer.containingComp
+    return  NFComp.specializedComp @$.containingComp
 
   ###*
   Fades in using markers
@@ -308,7 +305,7 @@ class NFLayer extends NFObject
         color: color
         width: 10
         height: 10
-      newNull.layer.enabled = no
+      newNull.$.enabled = no
     else
       newNull = @containingComp().addNull()
     @setParent newNull
@@ -326,12 +323,12 @@ class NFLayer extends NFObject
     # Look for all layers in the comp this layer is in whose parents are this layer
     # NOTE: We're working with AVLayers
     recursive = no unless recursive?
-    allLayers = @containingComp().comp.layers.toArr()
+    allLayers = @containingComp().$.layers.toArr()
     childLayers = []
 
     for theLayer in allLayers
       testLayer = new NFLayer theLayer
-      if testLayer.layer.parent is @layer
+      if testLayer.$.parent is @layer
         testLayer = testLayer.getSpecializedLayer()
         childLayers.push testLayer
         if recursive
@@ -346,7 +343,7 @@ class NFLayer extends NFObject
   @returns {NFLayer | null} the parent layer, or null if no parent
   ###
   getParent: ->
-    return new NFLayer(@layer.parent).getSpecializedLayer() if @layer.parent?
+    return new NFLayer(@$.parent).getSpecializedLayer() if @$.parent?
     return null
 
   ###*
@@ -358,11 +355,11 @@ class NFLayer extends NFObject
   ###
   setParent: (newParent) ->
     if not newParent?
-      @layer.parent = null
+      @$.parent = null
     else if newParent.isAVLayer()
-      @layer.parent = newParent
+      @$.parent = newParent
     else if newParent instanceof NFLayer
-      @layer.parent = newParent?.layer
+      @$.parent = newParent?.layer
     else
       throw new Error "Can only set an NFLayer's parent to another NFLayer or AVLayer"
     return @
@@ -377,7 +374,7 @@ class NFLayer extends NFObject
   ###
   moveBefore: (targetLayer) ->
     throw new Error "Can't run moveBefore on a non-NFLayer" unless targetLayer instanceof NFLayer
-    @layer.moveBefore targetLayer.layer
+    @$.moveBefore targetLayer.layer
     return @
 
   ###*
@@ -389,7 +386,7 @@ class NFLayer extends NFObject
   ###
   moveAfter: (targetLayer) ->
     throw new Error "Can't run moveAfter on a non-NFLayer" unless targetLayer instanceof NFLayer
-    @layer.moveAfter targetLayer.layer
+    @$.moveAfter targetLayer.layer
     return @
 
   ###*
@@ -398,7 +395,7 @@ class NFLayer extends NFObject
   @returns {Property} Marker property
   ###
   markers: ->
-    return @layer.property("Marker")
+    return @$.property("Marker")
 
   ###*
   Adds a marker at a given time.
@@ -434,10 +431,10 @@ class NFLayer extends NFObject
   @returns {float} The absolute scale
   ###
   getAbsoluteScale: ->
-  	layerParent = @layer.parent
-  	@layer.parent = null
+  	layerParent = @$.parent
+  	@$.parent = null
   	absoluteScale = @transform().scale.value
-  	@layer.parent = layerParent
+  	@$.parent = layerParent
   	absoluteScale
 
   ###*
@@ -505,11 +502,11 @@ class NFLayer extends NFObject
     # Add the in and/or out markers if given a start/end value
     if options.startValue? and not inMarker?
       @addMarker
-        time: @layer.inPoint + options.length
+        time: @$.inPoint + options.length
         comment: inComm
     if options.endValue? and not outMarker?
       @addMarker
-        time: @layer.outPoint - options.length
+        time: @$.outPoint - options.length
         comment: outComm
 
     # Get our base expression. If there's an existing expression with an in or
@@ -625,7 +622,7 @@ class NFLayer extends NFObject
   @returns {null} null
   ###
   remove: ->
-    @layer.remove()
+    @$.remove()
     return null
 
   ###*
@@ -634,7 +631,7 @@ class NFLayer extends NFObject
   @returns {NFLayer} the new layer
   ###
   duplicate: ->
-    return NFLayer.getSpecializedLayerFromAVLayer @layer.duplicate()
+    return NFLayer.getSpecializedLayerFromAVLayer @$.duplicate()
 
   ###*
   Moves startTime of a layer without moving the inPoint such that the inPoint
@@ -644,8 +641,8 @@ class NFLayer extends NFObject
   @returns {NFLayer} self
   ###
   beginAt: (time) ->
-    @layer.startTime = @layer.inPoint-time
-    @layer.inPoint = @layer.startTime + time
+    @$.startTime = @$.inPoint-time
+    @$.inPoint = @$.startTime + time
     @
 
   ###*
@@ -654,7 +651,7 @@ class NFLayer extends NFObject
   @returns {float} the result
   ###
   internalEndTime: ->
-    @layer.outPoint - @layer.startTime
+    @$.outPoint - @$.startTime
 
   ###*
   Returns the time in the layer's page comp that this layer starts.
@@ -662,7 +659,7 @@ class NFLayer extends NFObject
   @returns {float} the result
   ###
   internalStartTime: ->
-    @layer.inPoint - @layer.startTime
+    @$.inPoint - @$.startTime
 
 
   ###*
@@ -727,7 +724,7 @@ class NFLayer extends NFObject
     targetTime = targetTime ? @containingComp().getTime()
 
     tempNull = @containingComp().addNull()
-    tempNull.transform().position.expression = "a = thisComp.layer(#{@layer.index}).toComp([#{sourcePoint[0]}, #{sourcePoint[1]}]);\na"
+    tempNull.transform().position.expression = "a = thisComp.layer(#{@$.index}).toComp([#{sourcePoint[0]}, #{sourcePoint[1]}]);\na"
 
     newPoint = tempNull.transform().position.valueAtTime targetTime, false
 

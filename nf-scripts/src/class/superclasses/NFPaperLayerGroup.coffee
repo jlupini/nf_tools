@@ -191,7 +191,7 @@ class NFPaperLayerGroup extends NFObject
     time = time ? @containingComp().getTime()
 
     activePH = @containingComp().activePlaceholder time
-    activePH.layer.outPoint = time if activePH?
+    activePH.$.outPoint = time if activePH?
     @
 
   ###*
@@ -210,9 +210,9 @@ class NFPaperLayerGroup extends NFObject
     @trimActiveSpotlights time - 0.75
     @trimActivePlaceholder time
     @getChildren().forEach (layer) =>
-      layer.layer.outPoint = time if layer.layer.outPoint > time
-    @getCitationLayer()?.layer.outPoint = time
-    @getSpotlight()?.layer.outPoint = time
+      layer.$.outPoint = time if layer.$.outPoint > time
+    @getCitationLayer()?.$.outPoint = time
+    @getSpotlight()?.$.outPoint = time
     @
 
   ###*
@@ -225,9 +225,9 @@ class NFPaperLayerGroup extends NFObject
   extend: ->
     @log "Extending group"
 
-    compDuration = @containingComp().comp.duration
-    @getCitationLayer()?.layer.outPoint = compDuration
-    @getSpotlight()?.layer.outPoint = compDuration
+    compDuration = @containingComp().$.duration
+    @getCitationLayer()?.$.outPoint = compDuration
+    @getSpotlight()?.$.outPoint = compDuration
     @
 
 
@@ -294,8 +294,8 @@ class NFPaperLayerGroup extends NFObject
               propExpressionName = "highlight-property-expression"
 
             sourceExpression = NFTools.readExpression propExpressionName,
-              TARGET_COMP_NAME: targetComp.comp.name
-              CONTROL_LAYER_NAME: controlLayer.layer.name
+              TARGET_COMP_NAME: targetComp.$.name
+              CONTROL_LAYER_NAME: controlLayer.$.name
               PAGE_BASE_NAME: highlight.getPageComp().getPageBaseName()
               HIGHLIGHT_NAME: highlight.getName()
               HIGHLIGHTER_PROPERTY: highlighterProperty

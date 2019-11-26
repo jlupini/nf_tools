@@ -54,7 +54,7 @@ toolRegistry =
           bashFile = new File(start_folder.fsName + '/lib/stt/systemcall.sh')
           sttFolder = File(start_folder.fsName + '/lib/stt/')
           audioLayer = NFProject.mainComp().audioLayers().getBottommostLayer()
-          audioFile = audioLayer.layer.source.file
+          audioFile = audioLayer.$.source.file
 
           cmdLineString = "sh '#{bashFile.fsName}' '#{sttFolder.fsName}' '#{audioFile.fsName}' '#{project_folder.fsName}'"
 
@@ -174,8 +174,8 @@ toolRegistry =
                 name: "Instructions"
               instructionLayer.moveBefore lineLayer
 
-              lineLayer.layer.guideLayer = instructionLayer.layer.guideLayer = yes
-              lineLayer.layer.enabled = instructionLayer.layer.enabled = no
+              lineLayer.$.guideLayer = instructionLayer.$.guideLayer = yes
+              lineLayer.$.enabled = instructionLayer.$.enabled = no
 
               for ins in parsedInstructions
                 lineText = if ins.line.length > 15 then ins.line.insertAt(15, lineWrap) else ins.line
@@ -214,7 +214,7 @@ toolRegistry =
           for part in parts
             spotlightLayers = part.searchLayers "Spotlight"
             spotlightLayers.forEach (spotlight) =>
-              spotlight.layer.enabled = yes
+              spotlight.$.enabled = yes
 
       prepareForStandardRender:
         name: "Arm Settings for Fast Render"
@@ -229,7 +229,7 @@ toolRegistry =
           for part in parts
             spotlightLayers = part.searchLayers "Spotlight"
             spotlightLayers.forEach (spotlight) =>
-              spotlight.layer.enabled = yes
+              spotlight.$.enabled = yes
 
           # Set Motion Blur on/resolution full
           mainComp = NFProject.mainComp().comp
@@ -275,8 +275,8 @@ toolRegistry =
           for part in parts
             spotlightLayers = part.searchLayers "Spotlight"
             spotlightLayers.forEach (spotlight) =>
-              targetValue = !spotlight.layer.enabled if targetValue is null
-              spotlight.layer.enabled = targetValue
+              targetValue = !spotlight.$.enabled if targetValue is null
+              spotlight.$.enabled = targetValue
 
       showCitation:
         name: "Add Citation Marker"
@@ -349,7 +349,7 @@ toolRegistry =
             if highlight.isBroken()
               highlight.disconnect()
               NFTools.log "Disconnected highlight: #{highlight.getName()} in
-                           page: #{highlight.getPageComp().comp.name}\n", "NFToolPanel#disconnectBrokenHighlights"
+                           page: #{highlight.getPageComp().$.name}\n", "NFToolPanel#disconnectBrokenHighlights"
           allBackings = NFProject.allBackingLayers()
           allBackings.forEach (backing) =>
             opacityProp = backing.transform("Opacity")

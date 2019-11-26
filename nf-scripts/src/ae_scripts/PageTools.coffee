@@ -91,7 +91,7 @@ presentUI = ->
 
 			curTime = _.mainComp.getTime()
 			topLayer = _.selectedPages.getTopmostLayer()
-			_.mainComp.setTime topLayer.layer.startTime
+			_.mainComp.setTime topLayer.$.startTime
 
 			_.selectedPages.initLayerTransforms() if initLayerTransformsCheckbox.value is yes
 			_.selectedPages.initLayers()
@@ -105,7 +105,7 @@ presentUI = ->
 			if animatePageCheckbox.value
 				topLayer.slideIn()
 				_.selectedPages.forEach (layer) =>
-					layer.layer.startTime = topLayer.getInMarkerTime() unless layer.is topLayer
+					layer.$.startTime = topLayer.getInMarkerTime() unless layer.is topLayer
 
 			highlightChoices.disconnectHighlights()
 			group.assignControlLayer highlightChoices

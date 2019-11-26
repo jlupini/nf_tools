@@ -11,7 +11,7 @@ class NFCitationLayer extends NFLayer
     NFLayer.call(this, layer)
     @
   toString: ->
-    return "NFCitationLayer: '#{@layer.name}'"
+    return "NFCitationLayer: '#{@$.name}'"
 
   ###*
   Adds a citation visible marker at the given time
@@ -245,12 +245,12 @@ NFCitationLayer = Object.assign NFCitationLayer,
     citeLayer = group.containingComp().insertComp
       comp: citationComp
       below: group.paperParent
-      time: group.paperParent.layer.inPoint
-    citeLayer.layer.collapseTransformation = yes
+      time: group.paperParent.$.inPoint
+    citeLayer.$.collapseTransformation = yes
     if group.getPages().isEmpty()
-      citeLayer.layer.startTime = group.containingComp().getTime()
+      citeLayer.$.startTime = group.containingComp().getTime()
     else
-      citeLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint
+      citeLayer.$.startTime = group.getPages().getEarliestLayer().$.inPoint
 
     sourceExpression = NFTools.readExpression "citation-opacity-expression"
     citeLayer.transform().property("Opacity").expression = sourceExpression
@@ -277,7 +277,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
     citeLayer = containingComp.insertComp
       comp: citationComp
       time: time ? containingComp.getTime()
-    citeLayer.layer.collapseTransformation = yes
+    citeLayer.$.collapseTransformation = yes
 
     sourceExpression = NFTools.readExpression "citation-opacity-expression"
     citeLayer.transform().property("Opacity").expression = sourceExpression

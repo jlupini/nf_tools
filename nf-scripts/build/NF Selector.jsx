@@ -97,10 +97,10 @@ loadContentIntoView = function(treeView) {
           return function(shapeLayer) {
             var icon, itemName, thisShapeItem;
             if (shapeLayer instanceof NFHighlightLayer) {
-              itemName = shapeLayer.layer.name + " (HL)";
+              itemName = shapeLayer.$.name + " (HL)";
               icon = NFIcon.tree.highlight;
             } else {
-              itemName = shapeLayer.layer.name + " (Shape)";
+              itemName = shapeLayer.$.name + " (Shape)";
               icon = NFIcon.tree.star;
             }
             thisShapeItem = thisPageNode.add('item', itemName);
@@ -181,7 +181,7 @@ getPanelUI = function() {
     if (!layersForPage.isEmpty()) {
       layersForPage.forEach((function(_this) {
         return function(layer) {
-          startTime = layer.layer.startTime;
+          startTime = layer.$.startTime;
           if (layer.isActive()) {
             return targetPageLayer = layer;
           }
@@ -224,8 +224,8 @@ getPanelUI = function() {
         continuous: true
       });
       if (startTime != null) {
-        newPageLayer.layer.startTime = startTime;
-        newPageLayer.layer.inPoint = currTime;
+        newPageLayer.$.startTime = startTime;
+        newPageLayer.$.inPoint = currTime;
       }
       group = newPageLayer.getPaperLayerGroup();
       newPageLayer.transform('Scale').setValue([PAGE_SCALE, PAGE_SCALE, PAGE_SCALE]);
@@ -241,7 +241,7 @@ getPanelUI = function() {
         baseName = (refLayer.getName()) + " <" + (choice.getName()) + ">";
         layersWithName = refLayer.containingComp().searchLayers(baseName, true, "Backing");
         alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-        refLayer.layer.name = baseName + " {" + alphabet[layersWithName.count()] + "}";
+        refLayer.$.name = baseName + " {" + alphabet[layersWithName.count()] + "}";
         positionProp = refLayer.transform("Position");
         scaleProp = refLayer.transform("Scale");
         if (newPageLayer == null) {
@@ -260,7 +260,7 @@ getPanelUI = function() {
       }
       choiceRect = choice.sourceRect();
       if (shouldExpand) {
-        activeRefComp = new NFPageComp(refLayer.layer.source);
+        activeRefComp = new NFPageComp(refLayer.$.source);
         activeHighlight = activeRefComp.layerWithName(refTargetName);
         activeHighlightRect = activeHighlight.sourceRect();
         choiceRect = choiceRect.combineWith(activeHighlightRect);
@@ -315,15 +315,15 @@ getPanelUI = function() {
         newMask.maskExpansion.setValue(3);
         refLayer.effect("Drop Shadow").remove();
         refLayer.effects().addProperty("ADBE Brightness & Contrast 2").property("Contrast").setValue(99);
-        refLayer.layer.blendingMode = BlendingMode.DARKEN;
+        refLayer.$.blendingMode = BlendingMode.DARKEN;
       }
       if (!shouldExpand) {
         bgSolid = thisPart.addSolid({
           color: [1, 1, 1],
-          name: "Backing for '" + refLayer.layer.name + "'"
+          name: "Backing for '" + refLayer.$.name + "'"
         });
         bgSolid.transform("Opacity").setValue(90);
-        bgSolid.layer.motionBlur = true;
+        bgSolid.$.motionBlur = true;
         bgSolid.setShy(true);
         newMask = bgSolid.mask().addProperty("Mask");
         newMask.maskShape.expression = NFTools.readExpression("backing-mask-expression", {
@@ -347,7 +347,7 @@ getPanelUI = function() {
         relRect = refLayer.relativeRect(paddedChoiceRect);
       }
       boxBottom = relRect.top + relRect.height + (EDGE_PADDING / 4);
-      compBottom = thisPart.comp.height;
+      compBottom = thisPart.$.height;
       delta = compBottom - boxBottom;
       if (shouldExpand) {
         refPosition = positionProp.valueAtTime(keyOut, true);
@@ -370,7 +370,7 @@ getPanelUI = function() {
         layerAbove = (ref4 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref4 : targetPageLayer.getPaperLayerGroup().paperParent;
         refLayer.moveAfter(layerAbove);
         if (!shouldExpand) {
-          refLayer.layer.inPoint = thisPart.getTime();
+          refLayer.$.inPoint = thisPart.getTime();
         }
       }
       if (!shouldExpand) {
@@ -413,7 +413,7 @@ getPanelUI = function() {
       targetPageLayer.transform('Position').setValue(PAGE_ONSCREEN_POSITION);
       if (shouldFadeIn) {
         targetPageLayer.fadeIn();
-        activeNonRefPageLayer.layer.outPoint = targetPageLayer.getCompTime() + 1.0;
+        activeNonRefPageLayer.$.outPoint = targetPageLayer.getCompTime() + 1.0;
       } else {
         targetPageLayer.slideIn();
         group.getCitationLayer().show();
@@ -516,8 +516,8 @@ getPanelUI = function() {
       }
       if (selectedLayer instanceof NFPageLayer) {
         if (selectedLayer.getName().indexOf("[+]") >= 0 && partComp.getRect().intersectsWith(selectedLayer.sourceRect(time))) {
-          if (selectedLayer.layer.outPoint >= time) {
-            selectedLayer.layer.outPoint = time;
+          if (selectedLayer.$.outPoint >= time) {
+            selectedLayer.$.outPoint = time;
             selectedLayer.slideOut();
           }
         } else if (selectedLayer.getName().indexOf("[ref]") >= 0) {
@@ -544,7 +544,7 @@ getPanelUI = function() {
           }
           layersToTrim.forEach((function(_this) {
             return function(layer) {
-              return layer.layer.outPoint = time;
+              return layer.$.outPoint = time;
             };
           })(this));
           selectedLayer.addInOutMarkersForProperty({
@@ -585,7 +585,7 @@ getPanelUI = function() {
           width: 10,
           height: 10
         });
-        nullLayer.layer.enabled = false;
+        nullLayer.$.enabled = false;
         nullLayer.setName(NFPaperParentLayer.getPaperParentNameForObject(choice));
         paperParentLayer = new NFPaperParentLayer(nullLayer);
         group = new NFPaperLayerGroup(paperParentLayer);
@@ -615,7 +615,7 @@ getPanelUI = function() {
         }
       };
     })(this));
-    NFProject.activeComp().comp.hideShyLayers = true;
+    NFProject.activeComp().$.hideShyLayers = true;
     return app.endUndoGroup();
   };
   looseFocus = visGroup.add('iconbutton', void 0, NFIcon.button.looseFocus);
@@ -649,7 +649,7 @@ getPanelUI = function() {
         return layer.setShy(!looseLayers.containsLayer(layer));
       };
     })(this));
-    activeComp.comp.hideShyLayers = true;
+    activeComp.$.hideShyLayers = true;
     return app.endUndoGroup();
   };
   tightFocus = visGroup.add('iconbutton', void 0, NFIcon.button.tightFocus);
@@ -674,7 +674,7 @@ getPanelUI = function() {
           tightLayers.add(group.getCitationLayer());
           time = activeComp.getTime();
           return group.getControlLayers().forEach(function(control) {
-            if (control.layer.inPoint <= time && control.layer.outPoint >= time) {
+            if (control.$.inPoint <= time && control.$.outPoint >= time) {
               return tightLayers.add(control);
             }
           });
@@ -686,7 +686,7 @@ getPanelUI = function() {
         return layer.setShy(!tightLayers.containsLayer(layer));
       };
     })(this));
-    activeComp.comp.hideShyLayers = true;
+    activeComp.$.hideShyLayers = true;
     return app.endUndoGroup();
   };
   panel.layout.layout(true);

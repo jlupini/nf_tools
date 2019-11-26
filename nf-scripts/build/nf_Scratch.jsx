@@ -10,6 +10,6 @@ path = Folder(File($.fileName).parent.parent.fsName).fsName + '/lib/NF Greenscre
 
 gsPreset = File(path);
 
-testLayer.layer.applyPreset(gsPreset);
+testLayer.$.applyPreset(gsPreset);
 
 app.endUndoGroup();

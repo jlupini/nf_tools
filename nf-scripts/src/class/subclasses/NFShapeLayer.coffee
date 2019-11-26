@@ -11,7 +11,7 @@ class NFShapeLayer extends NFLayer
     NFLayer.call(this, layer)
     @
   toString: ->
-    return "NFShapeLayer: '#{@layer.name}'"
+    return "NFShapeLayer: '#{@$.name}'"
 
   ###*
   Adds a new rectangle to the shape layer

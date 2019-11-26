@@ -58,9 +58,7 @@ NFObject = (function() {
 Creates a new NFComp and sets its comp property.
 @class NFComp
 @classdesc NF Wrapper object for a CompItem that allows for access to and maniplation of its layers.
-@property {CompItem} comp - the CompItem for this NFComp
-@property {String} name - the name of the comp
-@property {String} id - the comp's ID
+@property {CompItem} $ - the CompItem for this NFComp
 @param {CompItem | NFComp} comp - the CompItem for this NFComp
 @throws Will throw an error if not given a valid CompItem at initialization
  */
@@ -81,7 +79,7 @@ NFComp = (function(superClass) {
     } else {
       throw new Error("Cannot create an NFComp without a valid CompItem or NFComp");
     }
-    this.comp = item;
+    this.$ = item;
     this;
   }
 
@@ -97,7 +95,7 @@ NFComp = (function(superClass) {
    */
 
   NFComp.prototype.getName = function() {
-    return this.comp.name;
+    return this.$.name;
   };
 
 
@@ -111,8 +109,8 @@ NFComp = (function(superClass) {
     return new Rect({
       left: 0,
       top: 0,
-      width: this.comp.width,
-      height: this.comp.height
+      width: this.$.width,
+      height: this.$.height
     });
   };
 
@@ -124,7 +122,7 @@ NFComp = (function(superClass) {
    */
 
   NFComp.prototype.getID = function() {
-    return this.comp.id;
+    return this.$.id;
   };
 
 
@@ -151,7 +149,7 @@ NFComp = (function(superClass) {
    */
 
   NFComp.prototype.selectedLayers = function() {
-    return new NFLayerCollection(this.comp.selectedLayers);
+    return new NFLayerCollection(this.$.selectedLayers);
   };
 
 
@@ -162,7 +160,7 @@ NFComp = (function(superClass) {
    */
 
   NFComp.prototype.allLayers = function() {
-    return new NFLayerCollection(this.comp.layers);
+    return new NFLayerCollection(this.$.layers);
   };
 
 
@@ -177,7 +175,7 @@ NFComp = (function(superClass) {
     audioLayers = new NFLayerCollection;
     this.allLayers().forEach((function(_this) {
       return function(layer) {
-        if (layer.layer.hasAudio && !layer.layer.hasVideo) {
+        if (layer.$.hasAudio && !layer.$.hasVideo) {
           return audioLayers.add(layer);
         }
       };
@@ -245,7 +243,7 @@ NFComp = (function(superClass) {
 
   NFComp.prototype.layerWithName = function(name) {
     var foundLayer, ref, theLayer;
-    theLayer = (ref = this.comp.layers) != null ? ref.byName(name) : void 0;
+    theLayer = (ref = this.$.layers) != null ? ref.byName(name) : void 0;
     if (theLayer != null) {
       foundLayer = new NFLayer(theLayer);
       return foundLayer.getSpecializedLayer();
@@ -324,7 +322,7 @@ NFComp = (function(superClass) {
    */
 
   NFComp.prototype.setTime = function(newTime) {
-    this.comp.time = newTime;
+    this.$.time = newTime;
     return this;
   };
 
@@ -336,7 +334,7 @@ NFComp = (function(superClass) {
    */
 
   NFComp.prototype.getTime = function(newTime) {
-    return this.comp.time;
+    return this.$.time;
   };
 
 
@@ -347,7 +345,7 @@ NFComp = (function(superClass) {
    */
 
   NFComp.prototype.centerPoint = function() {
-    return [this.comp.width / 2, this.comp.height / 2];
+    return [this.$.width / 2, this.$.height / 2];
   };
 
 
@@ -367,7 +365,7 @@ NFComp = (function(superClass) {
     if (position == null) {
       position = null;
     }
-    newNull = new NFLayer(this.comp.layers.addNull());
+    newNull = new NFLayer(this.$.layers.addNull());
     if (position != null) {
       newNull.transform("Position").setValue(position);
     }
@@ -401,10 +399,10 @@ NFComp = (function(superClass) {
         }
       })(),
       name: (ref1 = model.name) != null ? ref1 : "New Solid",
-      width: (ref2 = model.width) != null ? ref2 : this.comp.width,
-      height: (ref3 = model.height) != null ? ref3 : this.comp.height
+      width: (ref2 = model.width) != null ? ref2 : this.$.width,
+      height: (ref3 = model.height) != null ? ref3 : this.$.height
     };
-    solidAVLayer = this.comp.layers.addSolid(model.color, model.name, model.width, model.height, 1);
+    solidAVLayer = this.$.layers.addSolid(model.color, model.name, model.width, model.height, 1);
     return NFLayer.getSpecializedLayerFromAVLayer(solidAVLayer);
   };
 
@@ -417,7 +415,7 @@ NFComp = (function(superClass) {
 
   NFComp.prototype.addShapeLayer = function() {
     var shapeAVLayer, shapeLayer;
-    shapeAVLayer = this.comp.layers.addShape();
+    shapeAVLayer = this.$.layers.addShape();
     shapeLayer = NFLayer.getSpecializedLayerFromAVLayer(shapeAVLayer);
     shapeLayer.transform("Position").setValue([0, 0]);
     return shapeLayer;
@@ -466,11 +464,11 @@ NFComp = (function(superClass) {
     xPadding = lineHeight / 5;
     yPadding = lineHeight / 7 / model.lines;
     paddedLineHeight = lineHeight + yPadding;
-    highlightLayer = new NFLayer(this.comp.layers.addShape());
+    highlightLayer = new NFLayer(this.$.layers.addShape());
     highlightLayer.setName(model.name);
     highlightLayer.transform().property("Position").setValue([0, 0]);
     highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]';
-    highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY;
+    highlightLayer.$.blendingMode = BlendingMode.MULTIPLY;
     highlightProperty = highlightLayer.effects().addProperty('AV_Highlighter');
     highlightProperty.property("Spacing").setValue(paddedLineHeight);
     highlightProperty.property("Thickness").setValue(paddedLineHeight + 4);
@@ -536,7 +534,7 @@ NFComp = (function(superClass) {
     }
     model = {
       time: model.time,
-      duration: (ref = model.duration) != null ? ref : this.comp.duration - model.time,
+      duration: (ref = model.duration) != null ? ref : this.$.duration - model.time,
       below: model.below,
       above: model.above,
       at: model.at,
@@ -586,7 +584,7 @@ NFComp = (function(superClass) {
     if (tooManyIndices) {
       throw new Error("Can only provide one of .above, .below, or .at when inserting text layer");
     }
-    textAVLayer = this.comp.layers.addText(new TextDocument(model.text));
+    textAVLayer = this.$.layers.addText(new TextDocument(model.text));
     textDocProp = textAVLayer.property("ADBE Text Properties").property("ADBE Text Document");
     textDoc = textDocProp.value;
     textDoc.applyFill = model.applyFill;
@@ -600,7 +598,7 @@ NFComp = (function(superClass) {
     textDoc.justification = model.justification;
     textDocProp.setValue(textDoc);
     if (index !== 0) {
-      textAVLayer.moveBefore(this.comp.layers[index + 2]);
+      textAVLayer.moveBefore(this.$.layers[index + 2]);
     }
     textAVLayer.startTime = model.time;
     return new NFLayer(textAVLayer);
@@ -665,13 +663,13 @@ NFComp = (function(superClass) {
     if (tooManyIndices) {
       throw new Error("Can only provide one of .above, .below, or .at when inserting page");
     }
-    newAVLayer = this.comp.layers.add(model.comp.comp);
+    newAVLayer = this.$.layers.add(model.$.comp);
     newAVLayer.startTime = (ref = model.time) != null ? ref : this.getTime();
     if (index !== 0) {
-      if (index + 1 === this.comp.layers.length) {
-        newAVLayer.moveAfter(this.comp.layers[index + 1]);
+      if (index + 1 === this.$.layers.length) {
+        newAVLayer.moveAfter(this.$.layers[index + 1]);
       } else {
-        newAVLayer.moveBefore(this.comp.layers[index + 2]);
+        newAVLayer.moveBefore(this.$.layers[index + 2]);
       }
     }
     return NFLayer.getSpecializedLayerFromAVLayer(newAVLayer);
@@ -711,8 +709,7 @@ Creates a new NFLayer from a given AVLayer
 @class NFLayer
 @classdesc NF Wrapper object for an AVLayer
 @param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer (in which case we use it's AVLayer)
-@property {AVLayer} layer - the wrapped AVLayer
-@property {AVLayer} $ - the wrapped AVLayer (alternative access)
+@property {AVLayer} $ - the wrapped AVLayer
 @throws Will throw an error if not given a valid AVLayer object
  */
 var NFLayer,
@@ -725,11 +722,9 @@ NFLayer = (function(superClass) {
   function NFLayer(layer) {
     NFObject.call(this);
     if (layer.isAVLayer()) {
-      this.layer = layer;
-      this.$ = this.layer;
+      this.$ = layer;
     } else if (layer instanceof NFLayer) {
-      this.layer = layer.layer;
-      this.$ = this.layer;
+      this.$ = layer.layer;
     } else {
       throw new Error("Can only create a new NFLayer with a valid AVLayer or NFLayer object");
     }
@@ -737,7 +732,7 @@ NFLayer = (function(superClass) {
   }
 
   NFLayer.prototype.toString = function() {
-    return "NFLayer: '" + this.layer.name + "'";
+    return "NFLayer: '" + this.$.name + "'";
   };
 
 
@@ -748,7 +743,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.getName = function() {
-    return this.layer.name;
+    return this.$.name;
   };
 
 
@@ -760,7 +755,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.setName = function(newName) {
-    this.layer.name = newName;
+    this.$.name = newName;
     return this;
   };
 
@@ -773,7 +768,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.setShy = function(state) {
-    this.layer.shy = state;
+    this.$.shy = state;
     return this;
   };
 
@@ -796,7 +791,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.isNullLayer = function() {
-    return this.layer.nullLayer;
+    return this.$.nullLayer;
   };
 
 
@@ -807,7 +802,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.isActive = function() {
-    return this.layer.active;
+    return this.$.active;
   };
 
 
@@ -940,7 +935,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.index = function() {
-    return this.layer.index;
+    return this.$.index;
   };
 
 
@@ -951,8 +946,8 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.hasNullParent = function() {
-    if (this.layer.parent != null) {
-      return this.layer.parent.nullLayer;
+    if (this.$.parent != null) {
+      return this.$.parent.nullLayer;
     }
     return false;
   };
@@ -965,7 +960,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.effects = function() {
-    return this.layer.Effects;
+    return this.$.Effects;
   };
 
 
@@ -979,14 +974,14 @@ NFLayer = (function(superClass) {
   NFLayer.prototype.mask = function(maskName) {
     var mask;
     if (maskName != null) {
-      mask = this.layer.mask(maskName);
+      mask = this.$.mask(maskName);
       if (mask != null) {
         return mask;
       } else {
         return null;
       }
     } else {
-      return this.layer.mask;
+      return this.$.mask;
     }
   };
 
@@ -1001,9 +996,9 @@ NFLayer = (function(superClass) {
 
   NFLayer.prototype.transform = function(prop) {
     if (prop != null) {
-      return this.layer.transform.property(prop);
+      return this.$.transform.property(prop);
     } else {
-      return this.layer.transform;
+      return this.$.transform;
     }
   };
 
@@ -1017,7 +1012,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.effect = function(effectName) {
-    return this.layer.Effects.property(effectName);
+    return this.$.Effects.property(effectName);
   };
 
 
@@ -1030,7 +1025,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.property = function(propName) {
-    return this.layer.property(propName);
+    return this.$.property(propName);
   };
 
 
@@ -1045,7 +1040,7 @@ NFLayer = (function(superClass) {
     if (testLayer == null) {
       return false;
     }
-    return this.layer.index === testLayer.layer.index && this.layer.containingComp.id === testLayer.layer.containingComp.id;
+    return this.$.index === testLayer.$.index && this.$.containingComp.id === testLayer.$.containingComp.id;
   };
 
 
@@ -1067,7 +1062,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.containingComp = function() {
-    return NFComp.specializedComp(this.layer.containingComp);
+    return NFComp.specializedComp(this.$.containingComp);
   };
 
 
@@ -1129,7 +1124,7 @@ NFLayer = (function(superClass) {
         width: 10,
         height: 10
       });
-      newNull.layer.enabled = false;
+      newNull.$.enabled = false;
     } else {
       newNull = this.containingComp().addNull();
     }
@@ -1152,12 +1147,12 @@ NFLayer = (function(superClass) {
     if (recursive == null) {
       recursive = false;
     }
-    allLayers = this.containingComp().comp.layers.toArr();
+    allLayers = this.containingComp().$.layers.toArr();
     childLayers = [];
     for (j = 0, len = allLayers.length; j < len; j++) {
       theLayer = allLayers[j];
       testLayer = new NFLayer(theLayer);
-      if (testLayer.layer.parent === this.layer) {
+      if (testLayer.$.parent === this.layer) {
         testLayer = testLayer.getSpecializedLayer();
         childLayers.push(testLayer);
         if (recursive) {
@@ -1180,8 +1175,8 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.getParent = function() {
-    if (this.layer.parent != null) {
-      return new NFLayer(this.layer.parent).getSpecializedLayer();
+    if (this.$.parent != null) {
+      return new NFLayer(this.$.parent).getSpecializedLayer();
     }
     return null;
   };
@@ -1197,11 +1192,11 @@ NFLayer = (function(superClass) {
 
   NFLayer.prototype.setParent = function(newParent) {
     if (newParent == null) {
-      this.layer.parent = null;
+      this.$.parent = null;
     } else if (newParent.isAVLayer()) {
-      this.layer.parent = newParent;
+      this.$.parent = newParent;
     } else if (newParent instanceof NFLayer) {
-      this.layer.parent = newParent != null ? newParent.layer : void 0;
+      this.$.parent = newParent != null ? newParent.layer : void 0;
     } else {
       throw new Error("Can only set an NFLayer's parent to another NFLayer or AVLayer");
     }
@@ -1221,7 +1216,7 @@ NFLayer = (function(superClass) {
     if (!(targetLayer instanceof NFLayer)) {
       throw new Error("Can't run moveBefore on a non-NFLayer");
     }
-    this.layer.moveBefore(targetLayer.layer);
+    this.$.moveBefore(targetLayer.layer);
     return this;
   };
 
@@ -1238,7 +1233,7 @@ NFLayer = (function(superClass) {
     if (!(targetLayer instanceof NFLayer)) {
       throw new Error("Can't run moveAfter on a non-NFLayer");
     }
-    this.layer.moveAfter(targetLayer.layer);
+    this.$.moveAfter(targetLayer.layer);
     return this;
   };
 
@@ -1250,7 +1245,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.markers = function() {
-    return this.layer.property("Marker");
+    return this.$.property("Marker");
   };
 
 
@@ -1296,10 +1291,10 @@ NFLayer = (function(superClass) {
 
   NFLayer.prototype.getAbsoluteScale = function() {
     var absoluteScale, layerParent;
-    layerParent = this.layer.parent;
-    this.layer.parent = null;
+    layerParent = this.$.parent;
+    this.$.parent = null;
     absoluteScale = this.transform().scale.value;
-    this.layer.parent = layerParent;
+    this.$.parent = layerParent;
     return absoluteScale;
   };
 
@@ -1389,13 +1384,13 @@ NFLayer = (function(superClass) {
     }
     if ((options.startValue != null) && (inMarker == null)) {
       this.addMarker({
-        time: this.layer.inPoint + options.length,
+        time: this.$.inPoint + options.length,
         comment: inComm
       });
     }
     if ((options.endValue != null) && (outMarker == null)) {
       this.addMarker({
-        time: this.layer.outPoint - options.length,
+        time: this.$.outPoint - options.length,
         comment: outComm
       });
     }
@@ -1535,7 +1530,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.remove = function() {
-    this.layer.remove();
+    this.$.remove();
     return null;
   };
 
@@ -1547,7 +1542,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.duplicate = function() {
-    return NFLayer.getSpecializedLayerFromAVLayer(this.layer.duplicate());
+    return NFLayer.getSpecializedLayerFromAVLayer(this.$.duplicate());
   };
 
 
@@ -1560,8 +1555,8 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.beginAt = function(time) {
-    this.layer.startTime = this.layer.inPoint - time;
-    this.layer.inPoint = this.layer.startTime + time;
+    this.$.startTime = this.$.inPoint - time;
+    this.$.inPoint = this.$.startTime + time;
     return this;
   };
 
@@ -1573,7 +1568,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.internalEndTime = function() {
-    return this.layer.outPoint - this.layer.startTime;
+    return this.$.outPoint - this.$.startTime;
   };
 
 
@@ -1584,7 +1579,7 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.internalStartTime = function() {
-    return this.layer.inPoint - this.layer.startTime;
+    return this.$.inPoint - this.$.startTime;
   };
 
 
@@ -1668,7 +1663,7 @@ NFLayer = (function(superClass) {
     }
     targetTime = targetTime != null ? targetTime : this.containingComp().getTime();
     tempNull = this.containingComp().addNull();
-    tempNull.transform().position.expression = "a = thisComp.layer(" + this.layer.index + ").toComp([" + sourcePoint[0] + ", " + sourcePoint[1] + "]);\na";
+    tempNull.transform().position.expression = "a = thisComp.layer(" + this.$.index + ").toComp([" + sourcePoint[0] + ", " + sourcePoint[1] + "]);\na";
     newPoint = tempNull.transform().position.valueAtTime(targetTime, false);
     tempNull.remove();
     return newPoint;
@@ -2156,7 +2151,7 @@ NFLayerCollection = (function(superClass) {
     ref = this.layers;
     for (j = 0, len = ref.length; j < len; j++) {
       layer = ref[j];
-      if (layer.layer.index < topmostLayer.layer.index) {
+      if (layer.$.index < topmostLayer.$.index) {
         topmostLayer = layer;
       }
     }
@@ -2183,7 +2178,7 @@ NFLayerCollection = (function(superClass) {
     ref = this.layers;
     for (j = 0, len = ref.length; j < len; j++) {
       layer = ref[j];
-      if (layer.layer.index > bottommostLayer.layer.index) {
+      if (layer.$.index > bottommostLayer.$.index) {
         bottommostLayer = layer;
       }
     }
@@ -2252,7 +2247,7 @@ NFLayerCollection = (function(superClass) {
     ref = this.layers;
     for (j = 0, len = ref.length; j < len; j++) {
       layer = ref[j];
-      if (layer.layer.inPoint < earliestLayer.layer.inPoint) {
+      if (layer.$.inPoint < earliestLayer.$.inPoint) {
         earliestLayer = layer;
       }
     }
@@ -2280,7 +2275,7 @@ NFLayerCollection = (function(superClass) {
     ref = this.layers;
     for (j = 0, len = ref.length; j < len; j++) {
       layer = ref[j];
-      if (layer.layer.outPoint > latestLayer.layer.outPoint) {
+      if (layer.$.outPoint > latestLayer.$.outPoint) {
         latestLayer = layer;
       }
     }
@@ -3007,7 +3002,7 @@ NFPaperLayerGroup = (function(superClass) {
     time = time != null ? time : this.containingComp().getTime();
     activePH = this.containingComp().activePlaceholder(time);
     if (activePH != null) {
-      activePH.layer.outPoint = time;
+      activePH.$.outPoint = time;
     }
     return this;
   };
@@ -3031,16 +3026,16 @@ NFPaperLayerGroup = (function(superClass) {
     this.trimActivePlaceholder(time);
     this.getChildren().forEach((function(_this) {
       return function(layer) {
-        if (layer.layer.outPoint > time) {
-          return layer.layer.outPoint = time;
+        if (layer.$.outPoint > time) {
+          return layer.$.outPoint = time;
         }
       };
     })(this));
     if ((ref = this.getCitationLayer()) != null) {
-      ref.layer.outPoint = time;
+      ref.$.outPoint = time;
     }
     if ((ref1 = this.getSpotlight()) != null) {
-      ref1.layer.outPoint = time;
+      ref1.$.outPoint = time;
     }
     return this;
   };
@@ -3057,12 +3052,12 @@ NFPaperLayerGroup = (function(superClass) {
   NFPaperLayerGroup.prototype.extend = function() {
     var compDuration, ref, ref1;
     this.log("Extending group");
-    compDuration = this.containingComp().comp.duration;
+    compDuration = this.containingComp().$.duration;
     if ((ref = this.getCitationLayer()) != null) {
-      ref.layer.outPoint = compDuration;
+      ref.$.outPoint = compDuration;
     }
     if ((ref1 = this.getSpotlight()) != null) {
-      ref1.layer.outPoint = compDuration;
+      ref1.$.outPoint = compDuration;
     }
     return this;
   };
@@ -3125,8 +3120,8 @@ NFPaperLayerGroup = (function(superClass) {
                 propExpressionName = "highlight-property-expression";
               }
               sourceExpression = NFTools.readExpression(propExpressionName, {
-                TARGET_COMP_NAME: targetComp.comp.name,
-                CONTROL_LAYER_NAME: controlLayer.layer.name,
+                TARGET_COMP_NAME: targetComp.$.name,
+                CONTROL_LAYER_NAME: controlLayer.$.name,
                 PAGE_BASE_NAME: highlight.getPageComp().getPageBaseName(),
                 HIGHLIGHT_NAME: highlight.getName(),
                 HIGHLIGHTER_PROPERTY: highlighterProperty
@@ -3373,7 +3368,7 @@ NFCitationLayer = (function(superClass) {
   }
 
   NFCitationLayer.prototype.toString = function() {
-    return "NFCitationLayer: '" + this.layer.name + "'";
+    return "NFCitationLayer: '" + this.$.name + "'";
   };
 
 
@@ -3607,13 +3602,13 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     citeLayer = group.containingComp().insertComp({
       comp: citationComp,
       below: group.paperParent,
-      time: group.paperParent.layer.inPoint
+      time: group.paperParent.$.inPoint
     });
-    citeLayer.layer.collapseTransformation = true;
+    citeLayer.$.collapseTransformation = true;
     if (group.getPages().isEmpty()) {
-      citeLayer.layer.startTime = group.containingComp().getTime();
+      citeLayer.$.startTime = group.containingComp().getTime();
     } else {
-      citeLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint;
+      citeLayer.$.startTime = group.getPages().getEarliestLayer().$.inPoint;
     }
     sourceExpression = NFTools.readExpression("citation-opacity-expression");
     citeLayer.transform().property("Opacity").expression = sourceExpression;
@@ -3640,7 +3635,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
       comp: citationComp,
       time: time != null ? time : containingComp.getTime()
     });
-    citeLayer.layer.collapseTransformation = true;
+    citeLayer.$.collapseTransformation = true;
     sourceExpression = NFTools.readExpression("citation-opacity-expression");
     citeLayer.transform().property("Opacity").expression = sourceExpression;
     return citeLayer;
@@ -3669,7 +3664,7 @@ NFEmphasisLayer = (function(superClass) {
   }
 
   NFEmphasisLayer.prototype.toString = function() {
-    return "NFEmphasisLayer: '" + this.layer.name + "'";
+    return "NFEmphasisLayer: '" + this.$.name + "'";
   };
 
   return NFEmphasisLayer;
@@ -3698,7 +3693,7 @@ NFGaussyLayer = (function(superClass) {
   }
 
   NFGaussyLayer.prototype.toString = function() {
-    return "NFGaussyLayer: '" + this.layer.name + "'";
+    return "NFGaussyLayer: '" + this.$.name + "'";
   };
 
   return NFGaussyLayer;
@@ -3813,7 +3808,7 @@ NFHighlightControlLayer = (function(superClass) {
   }
 
   NFHighlightControlLayer.prototype.toString = function() {
-    return "NFHighlightControlLayer: '" + this.layer.name + "'";
+    return "NFHighlightControlLayer: '" + this.$.name + "'";
   };
 
 
@@ -3968,7 +3963,7 @@ NFHighlightControlLayer = (function(superClass) {
    */
 
   NFHighlightControlLayer.prototype.highlighterEffect = function() {
-    return this.layer.Effects.property("AV_Highlighter");
+    return this.$.Effects.property("AV_Highlighter");
   };
 
 
@@ -3990,7 +3985,7 @@ NFHighlightControlLayer = (function(superClass) {
    */
 
   NFHighlightControlLayer.prototype.highlightControlEffect = function() {
-    return this.layer.Effects.property("AV_Highlight_Control");
+    return this.$.Effects.property("AV_Highlight_Control");
   };
 
 
@@ -4001,7 +3996,7 @@ NFHighlightControlLayer = (function(superClass) {
    */
 
   NFHighlightControlLayer.prototype.spotlightEffect = function() {
-    return this.layer.Effects.property("AV_Spotlight");
+    return this.$.Effects.property("AV_Spotlight");
   };
 
 
@@ -4012,7 +4007,7 @@ NFHighlightControlLayer = (function(superClass) {
    */
 
   NFHighlightControlLayer.prototype.removeSpotlights = function() {
-    this.layer.removeMarker("Spotlight");
+    this.$.removeMarker("Spotlight");
     return this;
   };
 
@@ -4068,7 +4063,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
       width: 10,
       height: 10
     });
-    controlLayer.layer.enabled = false;
+    controlLayer.$.enabled = false;
     citationLayer = model.group.getCitationLayer();
     existingControlLayers = model.group.getControlLayers();
     if (!existingControlLayers.isEmpty()) {
@@ -4078,20 +4073,20 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     } else {
       controlLayer.moveAfter(model.group.paperParent);
     }
-    controlLayer.layer.startTime = (ref = model.time) != null ? ref : partComp.getTime();
-    controlLayer.layer.endTime = controlLayer.layer.startTime + 5;
+    controlLayer.$.startTime = (ref = model.time) != null ? ref : partComp.getTime();
+    controlLayer.$.endTime = controlLayer.$.startTime + 5;
     controlLayer.setParent(model.group.paperParent);
     effects = controlLayer.effects();
     if (!model.highlight.isBubbled()) {
       highlighterEffect = effects.addProperty("AV_Highlighter");
-      highlighterEffect.name = model.highlight.layer.name;
+      highlighterEffect.name = model.highlight.$.name;
       controlEffect = effects.addProperty("AV_Highlight_Control");
       controlEffect.name = "Highlight Control";
       controlEffect.property("Endless").setValue(true);
     }
     controlLayer.addMarker({
       comment: "Spotlight",
-      time: controlLayer.layer.startTime + 1,
+      time: controlLayer.$.startTime + 1,
       duration: 10
     });
     return controlLayer;
@@ -4124,7 +4119,7 @@ NFHighlightLayer = (function(superClass) {
   }
 
   NFHighlightLayer.prototype.toString = function() {
-    return "NFHighlightLayer: '" + this.layer.name + "'";
+    return "NFHighlightLayer: '" + this.$.name + "'";
   };
 
 
@@ -4232,7 +4227,7 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.getPageComp = function() {
-    return new NFPageComp(this.layer.containingComp);
+    return new NFPageComp(this.$.containingComp);
   };
 
 
@@ -4265,7 +4260,7 @@ NFHighlightLayer = (function(superClass) {
    */
 
   NFHighlightLayer.prototype.highlighterEffect = function() {
-    return this.layer.Effects.property("AV_Highlighter");
+    return this.$.Effects.property("AV_Highlighter");
   };
 
 
@@ -4626,7 +4621,7 @@ NFImageLayer = (function(superClass) {
   }
 
   NFImageLayer.prototype.toString = function() {
-    return "NFImageLayer: '" + this.layer.name + "'";
+    return "NFImageLayer: '" + this.$.name + "'";
   };
 
   return NFImageLayer;
@@ -4727,7 +4722,7 @@ NFPageComp = (function(superClass) {
 
   NFPageComp.prototype.highlights = function() {
     var highlightLayers, i, len, sourceLayers, theLayer;
-    sourceLayers = NF.Util.collectionToArray(this.comp.layers);
+    sourceLayers = NF.Util.collectionToArray(this.$.layers);
     highlightLayers = new NFHighlightLayerCollection();
     for (i = 0, len = sourceLayers.length; i < len; i++) {
       theLayer = sourceLayers[i];
@@ -4770,7 +4765,7 @@ NFPageComp = (function(superClass) {
 
   NFPageComp.prototype.addHighlightDataLayerFor = function(targetComp) {
     var currTime, dataLayer, expression, targetCompName;
-    targetCompName = targetComp.comp.name;
+    targetCompName = targetComp.$.name;
     if (this.layerWithName(targetCompName) == null) {
       currTime = targetComp.getTime();
       dataLayer = this.addTextLayer({
@@ -4785,8 +4780,8 @@ NFPageComp = (function(superClass) {
         PAGE_BASE_NAME: this.getPageBaseName()
       });
       dataLayer.property("Text").property("Source Text").expression = expression;
-      dataLayer.layer.enabled = false;
-      dataLayer.layer.name = "HighData-" + targetCompName;
+      dataLayer.$.enabled = false;
+      dataLayer.$.name = "HighData-" + targetCompName;
     }
     return this;
   };
@@ -4833,7 +4828,7 @@ NFPageLayer = (function(superClass) {
   }
 
   NFPageLayer.prototype.toString = function() {
-    return "NFPageLayer: '" + this.layer.name + "'";
+    return "NFPageLayer: '" + this.$.name + "'";
   };
 
 
@@ -4844,8 +4839,8 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.getPaperParentLayer = function() {
-    if (this.layer.parent != null) {
-      return new NFPaperParentLayer(this.layer.parent);
+    if (this.$.parent != null) {
+      return new NFPaperParentLayer(this.$.parent);
     } else {
       return null;
     }
@@ -4860,7 +4855,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.containingComp = function() {
-    return new NFComp(this.layer.containingComp);
+    return new NFComp(this.$.containingComp);
   };
 
 
@@ -4970,7 +4965,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.isInitted = function() {
-    return this.layer.name.indexOf("[+]") >= 0;
+    return this.$.name.indexOf("[+]") >= 0;
   };
 
 
@@ -4981,7 +4976,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.getPageBaseName = function() {
-    return this.layer.name.substr(0, this.layer.name.indexOf(' '));
+    return this.$.name.substr(0, this.$.name.indexOf(' '));
   };
 
 
@@ -4998,7 +4993,7 @@ NFPageLayer = (function(superClass) {
       if (bubbledHighlights.count() > 0) {
         bubbledHighlights.fixExpressionsAfterInit();
       }
-      this.layer.name = this.layer.name.replace(" NFPage", " [+]");
+      this.$.name = this.$.name.replace(" NFPage", " [+]");
       bubbledHighlights.resetExpressionErrors();
     }
     return this;
@@ -5012,7 +5007,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.init = function() {
-    this.layer.motionBlur = true;
+    this.$.motionBlur = true;
     this.setDropShadow();
     this.markInitted();
     return this;
@@ -5056,10 +5051,10 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.setInitSize = function() {
-    if (this.layer.property('Transform').property('Scale').numKeys > 0) {
+    if (this.$.property('Transform').property('Scale').numKeys > 0) {
       return false;
     }
-    this.layer.property('Transform').property('Scale').setValue([50, 50, 50]);
+    this.$.property('Transform').property('Scale').setValue([50, 50, 50]);
     return true;
   };
 
@@ -5072,14 +5067,14 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.setInitPosition = function() {
     var layerHeight, newPosition, oldPosition;
-    if (this.layer.property('Transform').property('Position').numKeys > 0) {
+    if (this.$.property('Transform').property('Position').numKeys > 0) {
       return false;
     } else {
-      layerHeight = this.layer.height;
-      oldPosition = this.layer.property('Transform').property('Position').value;
+      layerHeight = this.$.height;
+      oldPosition = this.$.property('Transform').property('Position').value;
       newPosition = oldPosition;
       newPosition[1] = layerHeight / 4;
-      this.layer.property('Transform').property('Position').setValue(newPosition);
+      this.$.property('Transform').property('Position').setValue(newPosition);
     }
     return true;
   };
@@ -5130,8 +5125,8 @@ NFPageLayer = (function(superClass) {
     rect = {
       left: 0,
       top: 0,
-      width: this.layer.source.width,
-      height: this.containingComp().comp.height,
+      width: this.$.source.width,
+      height: this.containingComp().$.height,
       padding: 0
     };
     return this.relativeRect(rect);
@@ -5198,7 +5193,7 @@ NFPageLayer = (function(superClass) {
     var oldName, refLayer;
     oldName = this.getName();
     refLayer = this.duplicate();
-    refLayer.layer.name = oldName.replace("+", "ref");
+    refLayer.$.name = oldName.replace("+", "ref");
     return refLayer;
   };
 
@@ -5252,7 +5247,7 @@ NFPageLayer = (function(superClass) {
         };
       })(this));
     }
-    this.beginAt(latestInternalEndTime + this.containingComp().comp.frameDuration);
+    this.beginAt(latestInternalEndTime + this.containingComp().$.frameDuration);
     return this;
   };
 
@@ -5382,7 +5377,7 @@ NFPageLayer = (function(superClass) {
         case model.fromEdge !== NFComp.LEFT:
           return -3000;
         case model.fromEdge !== NFComp.BOTTOM:
-          return this.containingComp().comp.height * 1.1;
+          return this.containingComp().$.height * 1.1;
         case model.fromEdge !== NFComp.TOP:
           return this.sourceRect().height * 1.1;
         default:
@@ -5518,8 +5513,8 @@ NFPageLayer = (function(superClass) {
     var comp, downPosition, pageSize;
     comp = this.getPageComp();
     pageSize = {
-      width: comp.comp.width,
-      height: comp.comp.height
+      width: comp.$.width,
+      height: comp.$.height
     };
     return downPosition = [pageSize.width, pageSize.height];
   };
@@ -5537,8 +5532,8 @@ NFPageLayer = (function(superClass) {
     var comp, pageSize, upPosition;
     comp = this.getPageComp();
     pageSize = {
-      width: comp.comp.width,
-      height: comp.comp.height
+      width: comp.$.width,
+      height: comp.$.height
     };
     return upPosition = [-pageSize.width, -pageSize.height];
   };
@@ -5600,7 +5595,7 @@ NFPageLayer = (function(superClass) {
       keyTimes: times
     });
     if (model.trim !== false) {
-      this.layer.outPoint = endTime;
+      this.$.outPoint = endTime;
     }
     return this;
   };
@@ -5721,7 +5716,7 @@ NFPageLayer = (function(superClass) {
       maxScale: (ref2 = model.maxScale) != null ? ref2 : 115
     };
     rect = (ref3 = model.rect) != null ? ref3 : this.sourceRectForHighlight(model.highlight, model.time);
-    compWidth = this.containingComp().comp.width;
+    compWidth = this.containingComp().$.width;
     targetRectWidth = model.fillPercentage / 100 * compWidth;
     scaleFactor = targetRectWidth / rect.width;
     absoluteScale = this.getAbsoluteScale();
@@ -5790,7 +5785,7 @@ NFPageLayer = (function(superClass) {
     model.preventFalloff = (ref = model.preventFalloff) != null ? ref : true;
     rect = (ref1 = model.rect) != null ? ref1 : this.sourceRectForHighlight(model.highlight, model.time);
     rectCenterPoint = [rect.left + rect.width / 2, rect.top + rect.height / 2];
-    compCenterPoint = [this.containingComp().comp.width / 2, this.containingComp().comp.height / 2];
+    compCenterPoint = [this.containingComp().$.width / 2, this.containingComp().$.height / 2];
     delta = [compCenterPoint[0] - rectCenterPoint[0], compCenterPoint[1] - rectCenterPoint[1]];
     if (model.preventFalloff) {
       rectAfterReposition = this.sourceRect(model.time);
@@ -5802,11 +5797,11 @@ NFPageLayer = (function(superClass) {
       if (rectAfterReposition.top > 0) {
         delta[1] -= rectAfterReposition.top;
       }
-      if (rectAfterReposition.left + rectAfterReposition.width < this.containingComp().comp.width) {
-        delta[0] += this.containingComp().comp.width - (rectAfterReposition.left + rectAfterReposition.width);
+      if (rectAfterReposition.left + rectAfterReposition.width < this.containingComp().$.width) {
+        delta[0] += this.containingComp().$.width - (rectAfterReposition.left + rectAfterReposition.width);
       }
-      if (rectAfterReposition.top + rectAfterReposition.height < this.containingComp().comp.height) {
-        delta[1] += this.containingComp().comp.height - (rectAfterReposition.top + rectAfterReposition.height);
+      if (rectAfterReposition.top + rectAfterReposition.height < this.containingComp().$.height) {
+        delta[1] += this.containingComp().$.height - (rectAfterReposition.top + rectAfterReposition.height);
       }
     }
     return delta;
@@ -6066,7 +6061,7 @@ NFPageLayerCollection = (function(superClass) {
             };
           })(this));
         }
-        theLayer.layer.name += " (" + alphabet[i] + ")";
+        theLayer.$.name += " (" + alphabet[i] + ")";
         bubbledToFix.resetExpressionErrors();
       }
     } else {
@@ -6098,7 +6093,7 @@ NFPageLayerCollection = (function(superClass) {
             };
           })(this));
         }
-        theLayer.layer.name += " (" + alphabet[lastUsedLetterIndex + 1] + ")";
+        theLayer.$.name += " (" + alphabet[lastUsedLetterIndex + 1] + ")";
         bubbledToFix.resetExpressionErrors();
       }
     }
@@ -6185,14 +6180,14 @@ NFPaperParentLayer = (function(superClass) {
 
   function NFPaperParentLayer(layer) {
     NFLayer.call(this, layer);
-    if (!this.layer.isSolid()) {
+    if (!this.$.isSolid()) {
       throw new Error("Can only create a NFPaperParentLayer from a solid layer");
     }
     this;
   }
 
   NFPaperParentLayer.prototype.toString = function() {
-    return "NFPaperParentLayer: '" + this.layer.name + "'";
+    return "NFPaperParentLayer: '" + this.$.name + "'";
   };
 
 
@@ -6457,7 +6452,7 @@ NFPartComp = (function(superClass) {
                 fillPercentage: model.fillPercentage
               });
             }
-            activePageLayer.layer.outPoint = this.getTime() - 0.5 + 2.0;
+            activePageLayer.$.outPoint = this.getTime() - 0.5 + 2.0;
             group.trimActivePlaceholder(this.getTime());
             group.trimActiveSpotlights(this.getTime() + 0.5);
             this.hideGaussy(this.getTime());
@@ -6524,7 +6519,7 @@ NFPartComp = (function(superClass) {
             }
             this.hideGaussy(trimTime + 1);
           } else {
-            trimTime = targetPageLayer.layer.inPoint + 2.0;
+            trimTime = targetPageLayer.$.inPoint + 2.0;
             if (prevGroup != null) {
               prevGroup.trim(trimTime);
             }
@@ -6573,7 +6568,7 @@ NFPartComp = (function(superClass) {
 
   NFPartComp.prototype.insertPage = function(model) {
     var group, layersForPage, pageLayer, ref, ref1, ref2;
-    this.log("Inserting page: " + model.page.comp.name);
+    this.log("Inserting page: " + model.page.$.name);
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
       throw new Error("No page given to insert...");
     }
@@ -6634,7 +6629,7 @@ NFPartComp = (function(superClass) {
   NFPartComp.prototype.addPlaceholder = function(model) {
     var activeGroup, activePDF, placeholder, ref, ref1;
     model.time = (ref = model.time) != null ? ref : this.getTime();
-    model.duration = (ref1 = model.duration) != null ? ref1 : this.comp.duration - model.time;
+    model.duration = (ref1 = model.duration) != null ? ref1 : this.$.duration - model.time;
     activePDF = this.activePDF(model.time);
     if (activePDF != null) {
       activeGroup = this.groupFromPDF(activePDF);
@@ -6652,7 +6647,7 @@ NFPartComp = (function(superClass) {
         fontSize: 60
       });
       placeholder.transform().property("Position").setValue([960, 980]);
-      placeholder.layer.name = "INSTRUCTION: " + model.text;
+      placeholder.$.name = "INSTRUCTION: " + model.text;
     } else {
       placeholder = this.addTextLayer({
         text: model.text,
@@ -6666,7 +6661,7 @@ NFPartComp = (function(superClass) {
         fontSize: 60
       });
       placeholder.transform().property("Position").setValue([960, 980]);
-      placeholder.layer.name = "INSTRUCTION: " + model.text;
+      placeholder.$.name = "INSTRUCTION: " + model.text;
     }
     return this;
   };
@@ -6691,7 +6686,7 @@ NFPartComp = (function(superClass) {
       model = {};
     }
     model.time = (ref = model.time) != null ? ref : this.getTime();
-    model.duration = (ref1 = model.duration) != null ? ref1 : this.comp.duration - model.time;
+    model.duration = (ref1 = model.duration) != null ? ref1 : this.$.duration - model.time;
     activePDF = this.activePDF(model.time);
     if (activePDF != null) {
       activeGroup = this.groupFromPDF(activePDF);
@@ -6703,7 +6698,7 @@ NFPartComp = (function(superClass) {
           children.forEach((function(_this) {
             return function(testChild) {
               if (testChild.layer instanceof TextLayer) {
-                testChild.layer.outPoint = model.time;
+                testChild.$.outPoint = model.time;
                 return belowTarget = testChild;
               }
             };
@@ -6730,7 +6725,7 @@ NFPartComp = (function(superClass) {
           fontSize: 100
         });
         placeholder.setParent(activeGaussy != null ? activeGaussy : gaussy);
-        placeholder.layer.name = "FIXME: " + model.placeholder;
+        placeholder.$.name = "FIXME: " + model.placeholder;
       }
     } else {
       throw new Error("No active group to create a gaussy layer on top of");
@@ -6753,14 +6748,14 @@ NFPartComp = (function(superClass) {
     activeGaussies.forEach((function(_this) {
       return function(testLayer) {
         var children;
-        if (testLayer.layer.isSolid()) {
+        if (testLayer.$.isSolid()) {
           _this.log("Hiding gaussy layer at time: " + time);
-          testLayer.layer.outPoint = time;
+          testLayer.$.outPoint = time;
           children = testLayer.getChildren();
           if (!children.isEmpty()) {
             return children.forEach(function(child) {
-              if (!(child.layer.outPoint < time)) {
-                return child.layer.outPoint = time;
+              if (!(child.$.outPoint < time)) {
+                return child.$.outPoint = time;
               }
             });
           }
@@ -6793,7 +6788,7 @@ NFPartComp = (function(superClass) {
   NFPartComp.prototype.trimTo = function(time) {
     return this.activeLayers(time).forEach((function(_this) {
       return function(layer) {
-        return layer.layer.outPoint = time;
+        return layer.$.outPoint = time;
       };
     })(this));
   };
@@ -6816,7 +6811,7 @@ NFPartComp = (function(superClass) {
       gaussyFound = null;
       searchResults.forEach((function(_this) {
         return function(testLayer) {
-          if (testLayer.layer.isSolid()) {
+          if (testLayer.$.isSolid()) {
             return gaussyFound = testLayer;
           }
         };
@@ -6991,7 +6986,7 @@ NFShapeLayer = (function(superClass) {
   }
 
   NFShapeLayer.prototype.toString = function() {
-    return "NFShapeLayer: '" + this.layer.name + "'";
+    return "NFShapeLayer: '" + this.$.name + "'";
   };
 
 
@@ -7071,7 +7066,7 @@ NFSpotlightLayer = (function(superClass) {
   }
 
   NFSpotlightLayer.prototype.toString = function() {
-    return "NFSpotlightLayer: '" + this.layer.name + "'";
+    return "NFSpotlightLayer: '" + this.$.name + "'";
   };
 
 
@@ -7182,8 +7177,8 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
       });
       expression = NFTools.readExpression("spotlight-data-expression");
       dataLayer.property("Text").property("Source Text").expression = expression;
-      dataLayer.layer.enabled = false;
-      dataLayer.layer.name = "SpotData";
+      dataLayer.$.enabled = false;
+      dataLayer.$.name = "SpotData";
     }
     existingSpot = group.getSpotlight();
     if (existingSpot != null) {
@@ -7199,7 +7194,7 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
     } else {
       spotlightLayer.moveBefore(controlLayers.getTopmostLayer());
     }
-    spotlightLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint;
+    spotlightLayer.$.startTime = group.getPages().getEarliestLayer().$.inPoint;
     newMask = spotlightLayer.mask().addProperty("Mask");
     newMask.name = "Dummy";
     newMask.maskShape.expression = "ori = [0, 0];createPath(points = [ori, ori, ori, ori], inTangents = [], outTangents = [], is_closed = true);";

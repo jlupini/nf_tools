@@ -2,9 +2,7 @@
 Creates a new NFComp and sets its comp property.
 @class NFComp
 @classdesc NF Wrapper object for a CompItem that allows for access to and maniplation of its layers.
-@property {CompItem} comp - the CompItem for this NFComp
-@property {String} name - the name of the comp
-@property {String} id - the comp's ID
+@property {CompItem} $ - the CompItem for this NFComp
 @param {CompItem | NFComp} comp - the CompItem for this NFComp
 @throws Will throw an error if not given a valid CompItem at initialization
 ###
@@ -17,7 +15,7 @@ class NFComp extends NFObject
       item = comp.comp
     else
       throw new Error "Cannot create an NFComp without a valid CompItem or NFComp"
-    @comp = item
+    @$ = item
     @
   toString: ->
     return "NFComp: '#{@getName()}'"
@@ -28,7 +26,7 @@ class NFComp extends NFObject
   @returns {String} The comp's name
   ###
   getName: ->
-    return @comp.name
+    return @$.name
 
   ###*
   Gets the comp's rect
@@ -39,8 +37,8 @@ class NFComp extends NFObject
     return new Rect
       left: 0
       top: 0
-      width: @comp.width
-      height: @comp.height
+      width: @$.width
+      height: @$.height
 
   ###*
   Gets the comp's unique ID
@@ -48,7 +46,7 @@ class NFComp extends NFObject
   @returns {String} The comp's ID
   ###
   getID: ->
-    return @comp.id
+    return @$.id
 
   ###*
   Checks to see if two NFComps have the same ID
@@ -67,7 +65,7 @@ class NFComp extends NFObject
   @returns {NFLayerCollection} collection of the selected layers in the comp
   ###
   selectedLayers: ->
-    return new NFLayerCollection @comp.selectedLayers
+    return new NFLayerCollection @$.selectedLayers
 
   ###*
   Gets all the layers in this comp
@@ -75,7 +73,7 @@ class NFComp extends NFObject
   @returns {NFLayerCollection} collection of the layers in the comp
   ###
   allLayers: ->
-    return new NFLayerCollection @comp.layers
+    return new NFLayerCollection @$.layers
 
   ###*
   Gets all the audio layers in this comp
@@ -85,7 +83,7 @@ class NFComp extends NFObject
   audioLayers: ->
     audioLayers = new NFLayerCollection
     @allLayers().forEach (layer) =>
-      audioLayers.add layer if layer.layer.hasAudio and not layer.layer.hasVideo
+      audioLayers.add layer if layer.$.hasAudio and not layer.$.hasVideo
     return audioLayers
 
   ###*
@@ -127,7 +125,7 @@ class NFComp extends NFObject
   # @returns {NFLayer|null} The found layer or null
   ###
   layerWithName: (name) ->
-    theLayer = @comp.layers?.byName(name)
+    theLayer = @$.layers?.byName(name)
     if theLayer?
       foundLayer = new NFLayer(theLayer)
       return foundLayer.getSpecializedLayer()
@@ -173,7 +171,7 @@ class NFComp extends NFObject
   @returns {NFComp} self
   ###
   setTime: (newTime) ->
-    @comp.time = newTime
+    @$.time = newTime
     @
 
   ###*
@@ -182,7 +180,7 @@ class NFComp extends NFObject
   @returns {float} the time
   ###
   getTime: (newTime) ->
-    return @comp.time
+    return @$.time
 
   ###*
   Gets the center point of the comp
@@ -190,7 +188,7 @@ class NFComp extends NFObject
   @returns {Point} the center point
   ###
   centerPoint: ->
-    return [@comp.width / 2, @comp.height / 2]
+    return [@$.width / 2, @$.height / 2]
 
   ###*
   # Creates and returns a new null layer in this comp
@@ -200,7 +198,7 @@ class NFComp extends NFObject
   # @returns {NFLayer} The newly created null layer
   ###
   addNull: (name = null, position = null) ->
-    newNull = new NFLayer @comp.layers.addNull()
+    newNull = new NFLayer @$.layers.addNull()
 
     newNull.transform("Position").setValue position if position?
     newNull.setName name if name?
@@ -222,9 +220,9 @@ class NFComp extends NFObject
     model =
       color: model.color ? throw new Error "Solids need a color"
       name: model.name ? "New Solid"
-      width: model.width ? @comp.width
-      height: model.height ? @comp.height
-    solidAVLayer = @comp.layers.addSolid(model.color, model.name, model.width, model.height, 1)
+      width: model.width ? @$.width
+      height: model.height ? @$.height
+    solidAVLayer = @$.layers.addSolid(model.color, model.name, model.width, model.height, 1)
     return NFLayer.getSpecializedLayerFromAVLayer solidAVLayer
 
 
@@ -234,7 +232,7 @@ class NFComp extends NFObject
   @returns {NFShapeLayer} The newly created shape layer
   ###
   addShapeLayer: ->
-    shapeAVLayer = @comp.layers.addShape()
+    shapeAVLayer = @$.layers.addShape()
     shapeLayer = NFLayer.getSpecializedLayerFromAVLayer shapeAVLayer
     shapeLayer.transform("Position").setValue([0,0])
     return shapeLayer
@@ -270,11 +268,11 @@ class NFComp extends NFObject
     paddedLineHeight = lineHeight + yPadding
 
     # Boom done. Now we'll make a new Shape Layer and Build the Highlight
-    highlightLayer = new NFLayer @comp.layers.addShape()
+    highlightLayer = new NFLayer @$.layers.addShape()
     highlightLayer.setName model.name
     highlightLayer.transform().property("Position").setValue [0,0]
     highlightLayer.transform().property("Position").expression = '[transform.position[0]+ effect("AV Highlighter")("Offset")[0], transform.position[1]+ effect("AV Highlighter")("Offset")[1]]'
-    highlightLayer.layer.blendingMode = BlendingMode.MULTIPLY
+    highlightLayer.$.blendingMode = BlendingMode.MULTIPLY
 
     # Setup AV Highlighter
     highlightProperty = highlightLayer.effects().addProperty('AV_Highlighter')
@@ -344,7 +342,7 @@ class NFComp extends NFObject
     model.time ?= @getTime()
     model =
       time: model.time
-      duration: model.duration ? @comp.duration - model.time
+      duration: model.duration ? @$.duration - model.time
       below: model.below
       above: model.above
       at: model.at
@@ -381,7 +379,7 @@ class NFComp extends NFObject
     throw new Error "Can only provide one of .above, .below, or .at when inserting text layer" if tooManyIndices
 
 
-    textAVLayer = @comp.layers.addText new TextDocument model.text
+    textAVLayer = @$.layers.addText new TextDocument model.text
     textDocProp = textAVLayer.property("ADBE Text Properties").property("ADBE Text Document")
     textDoc = textDocProp.value
 
@@ -397,7 +395,7 @@ class NFComp extends NFObject
 
     textDocProp.setValue textDoc
 
-    textAVLayer.moveBefore @comp.layers[index+2] unless index is 0
+    textAVLayer.moveBefore @$.layers[index+2] unless index is 0
     textAVLayer.startTime = model.time
 
 
@@ -445,16 +443,16 @@ class NFComp extends NFObject
     throw new Error "Can only provide one of .above, .below, or .at when inserting page" if tooManyIndices
 
     # Gonna do some work with AV Layers
-    newAVLayer = @comp.layers.add(model.comp.comp)
+    newAVLayer = @$.layers.add(model.$.comp)
     newAVLayer.startTime = model.time ? @getTime()
     # Note: we're doing moveBefore with index + 2 to account for both
     #       the new layer that's been added AND the obnoxious 1-indexing
     #       of adobe's LayerCollections
     unless index is 0
-      if index + 1 is @comp.layers.length
-        newAVLayer.moveAfter @comp.layers[index+1]
+      if index + 1 is @$.layers.length
+        newAVLayer.moveAfter @$.layers[index+1]
       else
-        newAVLayer.moveBefore @comp.layers[index+2]
+        newAVLayer.moveBefore @$.layers[index+2]
 
     # Convert back to an NFLayer for the return
     return NFLayer.getSpecializedLayerFromAVLayer newAVLayer

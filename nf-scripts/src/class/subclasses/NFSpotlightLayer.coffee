@@ -15,7 +15,7 @@ class NFSpotlightLayer extends NFLayer
     @
 
   toString: ->
-    return "NFSpotlightLayer: '#{@layer.name}'"
+    return "NFSpotlightLayer: '#{@$.name}'"
 
   ###*
   Start tracking a highlight
@@ -112,8 +112,8 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
         time: 0
       expression = NFTools.readExpression "spotlight-data-expression"
       dataLayer.property("Text").property("Source Text").expression = expression
-      dataLayer.layer.enabled = no
-      dataLayer.layer.name = "SpotData"
+      dataLayer.$.enabled = no
+      dataLayer.$.name = "SpotData"
 
     existingSpot = group.getSpotlight()
     return existingSpot if existingSpot?
@@ -128,7 +128,7 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
     else
       spotlightLayer.moveBefore controlLayers.getTopmostLayer()
 
-    spotlightLayer.layer.startTime = group.getPages().getEarliestLayer().layer.inPoint
+    spotlightLayer.$.startTime = group.getPages().getEarliestLayer().$.inPoint
 
     # Set up the dummy mask
     newMask = spotlightLayer.mask().addProperty "Mask"

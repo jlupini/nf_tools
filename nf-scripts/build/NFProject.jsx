@@ -597,20 +597,20 @@ NFProject = {
         markerComment = markerValue.comment;
         audioMarkers.removeKey(nearestKeyIndex);
         audioLayer.addMarker({
-          time: testIns.time - thisComp.comp.frameDuration,
+          time: testIns.time - thisComp.$.frameDuration,
           comment: markerComment + " - ADJUSTED"
         });
-        if ((oldMarkerTime - 1 < (ref = audioLayer.layer.inPoint) && ref < oldMarkerTime + 1)) {
-          oldOutPoint = audioLayer.layer.outPoint;
-          audioLayer.layer.inPoint = testIns.time - thisComp.comp.frameDuration;
-          audioLayer.layer.outPoint = oldOutPoint;
+        if ((oldMarkerTime - 1 < (ref = audioLayer.$.inPoint) && ref < oldMarkerTime + 1)) {
+          oldOutPoint = audioLayer.$.outPoint;
+          audioLayer.$.inPoint = testIns.time - thisComp.$.frameDuration;
+          audioLayer.$.outPoint = oldOutPoint;
           if (!thisComp.is(mainComp)) {
             partLayer = NFProject.mainComp().layerWithName(thisComp.getName());
-            outPoint = partLayer.layer.outPoint;
-            if (testIns.time <= partLayer.layer.inPoint) {
-              partLayer.layer.inPoint = testIns.time - 1;
+            outPoint = partLayer.$.outPoint;
+            if (testIns.time <= partLayer.$.inPoint) {
+              partLayer.$.inPoint = testIns.time - 1;
             }
-            partLayer.layer.outPoint = outPoint;
+            partLayer.$.outPoint = outPoint;
           }
         }
       }

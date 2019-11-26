@@ -15,7 +15,7 @@ class NFHighlightControlLayer extends NFLayer
       throw new Error "NF Highlight Control Layer is invalid and the wrapper class cannot be created"
     @
   toString: ->
-    return "NFHighlightControlLayer: '#{@layer.name}'"
+    return "NFHighlightControlLayer: '#{@$.name}'"
 
   ###*
   Returns the spotlight markers
@@ -146,7 +146,7 @@ class NFHighlightControlLayer extends NFLayer
   @returns {Property} the AV Highlighter Property on the control layer
   ###
   highlighterEffect: ->
-    return @layer.Effects.property("AV_Highlighter")
+    return @$.Effects.property("AV_Highlighter")
 
   ###*
   Returns the highlight name
@@ -162,7 +162,7 @@ class NFHighlightControlLayer extends NFLayer
   @returns {Property} the AV Highlighter Control property on the control layer
   ###
   highlightControlEffect: ->
-    return @layer.Effects.property("AV_Highlight_Control")
+    return @$.Effects.property("AV_Highlight_Control")
 
   ###*
   Returns the AV Spotlight effect
@@ -170,7 +170,7 @@ class NFHighlightControlLayer extends NFLayer
   @returns {Property} the AV Spotlight property on the control layer
   ###
   spotlightEffect: ->
-    return @layer.Effects.property("AV_Spotlight")
+    return @$.Effects.property("AV_Spotlight")
 
   ###*
   Removes Spotlight markers from this layer
@@ -178,7 +178,7 @@ class NFHighlightControlLayer extends NFLayer
   @returns {NFHighlightControlLayer} self
   ###
   removeSpotlights: ->
-    @layer.removeMarker("Spotlight")
+    @$.removeMarker("Spotlight")
     return @
 
 NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
@@ -224,7 +224,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
       name: NFHighlightControlLayer.nameForPDFNumberAndHighlight model.group.getPDFNumber(), model.highlight
       width: 10
       height: 10
-    controlLayer.layer.enabled = no
+    controlLayer.$.enabled = no
 
     citationLayer = model.group.getCitationLayer()
     existingControlLayers = model.group.getControlLayers()
@@ -235,8 +235,8 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
     else
       controlLayer.moveAfter model.group.paperParent
 
-    controlLayer.layer.startTime = model.time ? partComp.getTime()
-    controlLayer.layer.endTime = controlLayer.layer.startTime + 5
+    controlLayer.$.startTime = model.time ? partComp.getTime()
+    controlLayer.$.endTime = controlLayer.$.startTime + 5
     controlLayer.setParent model.group.paperParent
 
     effects = controlLayer.effects()
@@ -244,7 +244,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
     unless model.highlight.isBubbled()
       # Add the highlighter effect
       highlighterEffect = effects.addProperty "AV_Highlighter"
-      highlighterEffect.name = model.highlight.layer.name
+      highlighterEffect.name = model.highlight.$.name
 
       # Add the control effect
       controlEffect = effects.addProperty "AV_Highlight_Control"
@@ -254,7 +254,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
     # Add the spotlight markers
     controlLayer.addMarker
       comment: "Spotlight"
-      time: controlLayer.layer.startTime + 1
+      time: controlLayer.$.startTime + 1
       duration: 10
 
     return controlLayer

@@ -200,7 +200,7 @@ class NFLayerCollection extends NFObject
     throw new Error "Can't get topmost layer of layers in different comps" unless @inSameComp()
     topmostLayer = @layers[0]
     for layer in @layers
-      topmostLayer = layer if layer.layer.index < topmostLayer.layer.index
+      topmostLayer = layer if layer.$.index < topmostLayer.$.index
     return topmostLayer
 
   ###*
@@ -214,7 +214,7 @@ class NFLayerCollection extends NFObject
     throw new Error "Can't get bottommost layer of layers in different comps" unless @inSameComp()
     bottommostLayer = @layers[0]
     for layer in @layers
-      bottommostLayer = layer if layer.layer.index > bottommostLayer.layer.index
+      bottommostLayer = layer if layer.$.index > bottommostLayer.$.index
     return bottommostLayer
 
   ###*
@@ -254,7 +254,7 @@ class NFLayerCollection extends NFObject
     throw new Error "Can't get earliest layer of layers in different comps" unless @inSameComp()
     earliestLayer = @layers[0]
     for layer in @layers
-      earliestLayer = layer if layer.layer.inPoint < earliestLayer.layer.inPoint
+      earliestLayer = layer if layer.$.inPoint < earliestLayer.$.inPoint
     return earliestLayer
 
   ###*
@@ -269,5 +269,5 @@ class NFLayerCollection extends NFObject
     throw new Error "Can't get latest layer of layers in different comps" unless @inSameComp()
     latestLayer = @layers[0]
     for layer in @layers
-      latestLayer = layer if layer.layer.outPoint > latestLayer.layer.outPoint
+      latestLayer = layer if layer.$.outPoint > latestLayer.$.outPoint
     return earliestLayer

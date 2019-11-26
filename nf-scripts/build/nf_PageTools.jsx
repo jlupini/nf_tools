@@ -98,7 +98,7 @@ presentUI = function() {
       })(this));
       curTime = _.mainComp.getTime();
       topLayer = _.selectedPages.getTopmostLayer();
-      _.mainComp.setTime(topLayer.layer.startTime);
+      _.mainComp.setTime(topLayer.$.startTime);
       if (initLayerTransformsCheckbox.value === true) {
         _.selectedPages.initLayerTransforms();
       }
@@ -111,7 +111,7 @@ presentUI = function() {
         _.selectedPages.forEach((function(_this) {
           return function(layer) {
             if (!layer.is(topLayer)) {
-              return layer.layer.startTime = topLayer.getInMarkerTime();
+              return layer.$.startTime = topLayer.getInMarkerTime();
             }
           };
         })(this));

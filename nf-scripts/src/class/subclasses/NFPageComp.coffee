@@ -61,7 +61,7 @@ class NFPageComp extends NFComp
   ###
   highlights: ->
     # We're working with AVLayers here
-    sourceLayers = NF.Util.collectionToArray(@comp.layers)
+    sourceLayers = NF.Util.collectionToArray(@$.layers)
     highlightLayers = new NFHighlightLayerCollection()
     for theLayer in sourceLayers
       if NFHighlightLayer.isHighlightLayer(theLayer)
@@ -88,7 +88,7 @@ class NFPageComp extends NFComp
   @returns {NFPageComp} self
   ###
   addHighlightDataLayerFor: (targetComp) ->
-    targetCompName = targetComp.comp.name
+    targetCompName = targetComp.$.name
     unless @layerWithName(targetCompName)?
       currTime = targetComp.getTime()
       dataLayer = @addTextLayer
@@ -99,8 +99,8 @@ class NFPageComp extends NFComp
         TARGET_COMP_NAME: targetCompName
         PAGE_BASE_NAME: @getPageBaseName()
       dataLayer.property("Text").property("Source Text").expression = expression
-      dataLayer.layer.enabled = no
-      dataLayer.layer.name = "HighData-#{targetCompName}"
+      dataLayer.$.enabled = no
+      dataLayer.$.name = "HighData-#{targetCompName}"
     @
 
   ###*
