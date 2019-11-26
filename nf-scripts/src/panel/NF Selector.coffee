@@ -64,7 +64,7 @@ loadContentIntoView = (treeView) ->
       pageLayers = pageComp.allLayers()
       shapeLayers = new NFLayerCollection
       pageLayers.forEach (layer) =>
-        shapeLayers.add layer if layer.layer instanceof ShapeLayer
+        shapeLayers.add layer if layer.$ instanceof ShapeLayer
       pageNumber = pageComp.getPageNumber()
 
       if shapeLayers.isEmpty()

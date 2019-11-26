@@ -443,7 +443,7 @@ class NFComp extends NFObject
     throw new Error "Can only provide one of .above, .below, or .at when inserting page" if tooManyIndices
 
     # Gonna do some work with AV Layers
-    newAVLayer = @$.layers.add(model.$.comp)
+    newAVLayer = @$.layers.add(model.comp.$)
     newAVLayer.startTime = model.time ? @getTime()
     # Note: we're doing moveBefore with index + 2 to account for both
     #       the new layer that's been added AND the obnoxious 1-indexing

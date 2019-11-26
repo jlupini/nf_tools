@@ -79,7 +79,7 @@ loadContentIntoView = function(treeView) {
       shapeLayers = new NFLayerCollection;
       pageLayers.forEach((function(_this) {
         return function(layer) {
-          if (layer.layer instanceof ShapeLayer) {
+          if (layer.$ instanceof ShapeLayer) {
             return shapeLayers.add(layer);
           }
         };

@@ -45,7 +45,7 @@ NFGaussyLayer = Object.assign NFGaussyLayer,
     gaussyLayer = model.group.containingComp().addSolid
       color: [0.45, 0.93, 0.89]
       name: newName
-    gaussyAVLayer = gaussyLayer.layer
+    gaussyAVLayer = gaussyLayer.$
 
     gaussyAVLayer.adjustmentLayer = true
 

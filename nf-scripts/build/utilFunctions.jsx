@@ -574,7 +574,7 @@ NF.Util.markerDrivenExpression = function(model) {
   if (NF.Util.isNonEmptyString(model.layer)) {
     layerName = model.layer;
   } else {
-    layerName = model.$.name;
+    layerName = model.layer.name;
   }
   durationString = generalValueExpression("duration");
   valueAString = generalValueExpression("valueA");

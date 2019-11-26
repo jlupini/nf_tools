@@ -663,7 +663,7 @@ NFComp = (function(superClass) {
     if (tooManyIndices) {
       throw new Error("Can only provide one of .above, .below, or .at when inserting page");
     }
-    newAVLayer = this.$.layers.add(model.$.comp);
+    newAVLayer = this.$.layers.add(model.comp.$);
     newAVLayer.startTime = (ref = model.time) != null ? ref : this.getTime();
     if (index !== 0) {
       if (index + 1 === this.$.layers.length) {
@@ -724,7 +724,7 @@ NFLayer = (function(superClass) {
     if (layer.isAVLayer()) {
       this.$ = layer;
     } else if (layer instanceof NFLayer) {
-      this.$ = layer.layer;
+      this.$ = layer.$;
     } else {
       throw new Error("Can only create a new NFLayer with a valid AVLayer or NFLayer object");
     }
@@ -867,35 +867,35 @@ NFLayer = (function(superClass) {
   };
 
   NFLayer.prototype.isHighlightLayer = function() {
-    return NFHighlightLayer.isHighlightLayer(this.layer);
+    return NFHighlightLayer.isHighlightLayer(this.$);
   };
 
   NFLayer.prototype.isPaperParentLayer = function() {
-    return NFPaperParentLayer.isPaperParentLayer(this.layer);
+    return NFPaperParentLayer.isPaperParentLayer(this.$);
   };
 
   NFLayer.prototype.isHighlightControlLayer = function() {
-    return NFHighlightControlLayer.isHighlightControlLayer(this.layer);
+    return NFHighlightControlLayer.isHighlightControlLayer(this.$);
   };
 
   NFLayer.prototype.isSpotlightLayer = function() {
-    return NFSpotlightLayer.isSpotlightLayer(this.layer);
+    return NFSpotlightLayer.isSpotlightLayer(this.$);
   };
 
   NFLayer.prototype.isCitationLayer = function() {
-    return NFCitationLayer.isCitationLayer(this.layer);
+    return NFCitationLayer.isCitationLayer(this.$);
   };
 
   NFLayer.prototype.isPageLayer = function() {
-    return NFPageLayer.isPageLayer(this.layer);
+    return NFPageLayer.isPageLayer(this.$);
   };
 
   NFLayer.prototype.isGaussyLayer = function() {
-    return NFGaussyLayer.isGaussyLayer(this.layer);
+    return NFGaussyLayer.isGaussyLayer(this.$);
   };
 
   NFLayer.prototype.isShapeLayer = function() {
-    return NFShapeLayer.isShapeLayer(this.layer);
+    return NFShapeLayer.isShapeLayer(this.$);
   };
 
 
@@ -907,21 +907,21 @@ NFLayer = (function(superClass) {
 
   NFLayer.prototype.getSpecializedLayer = function() {
     if (this.isPageLayer()) {
-      return new NFPageLayer(this.layer);
+      return new NFPageLayer(this.$);
     } else if (this.isHighlightLayer()) {
-      return new NFHighlightLayer(this.layer);
+      return new NFHighlightLayer(this.$);
     } else if (this.isPaperParentLayer()) {
-      return new NFPaperParentLayer(this.layer);
+      return new NFPaperParentLayer(this.$);
     } else if (this.isHighlightControlLayer()) {
-      return new NFHighlightControlLayer(this.layer);
+      return new NFHighlightControlLayer(this.$);
     } else if (this.isSpotlightLayer()) {
-      return new NFSpotlightLayer(this.layer);
+      return new NFSpotlightLayer(this.$);
     } else if (this.isCitationLayer()) {
-      return new NFCitationLayer(this.layer);
+      return new NFCitationLayer(this.$);
     } else if (this.isGaussyLayer()) {
-      return new NFGaussyLayer(this.layer);
+      return new NFGaussyLayer(this.$);
     } else if (this.isShapeLayer()) {
-      return new NFShapeLayer(this.layer);
+      return new NFShapeLayer(this.$);
     } else {
       return this;
     }
@@ -1152,7 +1152,7 @@ NFLayer = (function(superClass) {
     for (j = 0, len = allLayers.length; j < len; j++) {
       theLayer = allLayers[j];
       testLayer = new NFLayer(theLayer);
-      if (testLayer.$.parent === this.layer) {
+      if (testLayer.$.parent === this.$) {
         testLayer = testLayer.getSpecializedLayer();
         childLayers.push(testLayer);
         if (recursive) {
@@ -1196,7 +1196,7 @@ NFLayer = (function(superClass) {
     } else if (newParent.isAVLayer()) {
       this.$.parent = newParent;
     } else if (newParent instanceof NFLayer) {
-      this.$.parent = newParent != null ? newParent.layer : void 0;
+      this.$.parent = newParent != null ? newParent.$ : void 0;
     } else {
       throw new Error("Can only set an NFLayer's parent to another NFLayer or AVLayer");
     }
@@ -1216,7 +1216,7 @@ NFLayer = (function(superClass) {
     if (!(targetLayer instanceof NFLayer)) {
       throw new Error("Can't run moveBefore on a non-NFLayer");
     }
-    this.$.moveBefore(targetLayer.layer);
+    this.$.moveBefore(targetLayer.$);
     return this;
   };
 
@@ -1233,7 +1233,7 @@ NFLayer = (function(superClass) {
     if (!(targetLayer instanceof NFLayer)) {
       throw new Error("Can't run moveAfter on a non-NFLayer");
     }
-    this.$.moveAfter(targetLayer.layer);
+    this.$.moveAfter(targetLayer.$);
     return this;
   };
 
@@ -3740,7 +3740,7 @@ NFGaussyLayer = Object.assign(NFGaussyLayer, {
       color: [0.45, 0.93, 0.89],
       name: newName
     });
-    gaussyAVLayer = gaussyLayer.layer;
+    gaussyAVLayer = gaussyLayer.$;
     gaussyAVLayer.adjustmentLayer = true;
     spotlightLayer = model.group.getSpotlight();
     if (spotlightLayer != null) {
@@ -3801,7 +3801,7 @@ NFHighlightControlLayer = (function(superClass) {
 
   function NFHighlightControlLayer(layer) {
     NFLayer.call(this, layer);
-    if (!NFHighlightControlLayer.isHighlightControlLayer(this.layer)) {
+    if (!NFHighlightControlLayer.isHighlightControlLayer(this.$)) {
       throw new Error("NF Highlight Control Layer is invalid and the wrapper class cannot be created");
     }
     this;
@@ -4026,7 +4026,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
    */
   nameForPDFNumberAndHighlight: function(num, highlight) {
     var highlightName, ref;
-    highlightName = ((ref = highlight.layer) != null ? ref.name : void 0) || highlight;
+    highlightName = ((ref = highlight.$) != null ? ref.name : void 0) || highlight;
     return num + " - " + highlightName + " Highlight Control";
   },
 
@@ -4112,7 +4112,7 @@ NFHighlightLayer = (function(superClass) {
 
   function NFHighlightLayer(layer) {
     NFLayer.call(this, layer);
-    if (!NFHighlightLayer.isHighlightLayer(this.layer)) {
+    if (!NFHighlightLayer.isHighlightLayer(this.$)) {
       throw new Error("NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect");
     }
     this;
@@ -6697,7 +6697,7 @@ NFPartComp = (function(superClass) {
         if (!children.isEmpty()) {
           children.forEach((function(_this) {
             return function(testChild) {
-              if (testChild.layer instanceof TextLayer) {
+              if (testChild.$ instanceof TextLayer) {
                 testChild.$.outPoint = model.time;
                 return belowTarget = testChild;
               }
@@ -7059,7 +7059,7 @@ NFSpotlightLayer = (function(superClass) {
 
   function NFSpotlightLayer(layer) {
     NFLayer.call(this, layer);
-    if (!NFSpotlightLayer.isSpotlightLayer(this.layer)) {
+    if (!NFSpotlightLayer.isSpotlightLayer(this.$)) {
       throw new Error("NF Spotlight Layer is invalid and the wrapper class cannot be created");
     }
     this;

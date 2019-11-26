@@ -10,7 +10,7 @@ Creates a new NFHighlightLayer from a given AVLayer
 class NFHighlightLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
-    unless NFHighlightLayer.isHighlightLayer(@layer)
+    unless NFHighlightLayer.isHighlightLayer(@$)
       throw new Error "NF Highlight Layer must contain a shape layer with the 'AV Highlighter' effect"
     @
   toString: ->

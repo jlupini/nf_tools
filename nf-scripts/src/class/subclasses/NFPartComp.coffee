@@ -455,7 +455,7 @@ class NFPartComp extends NFComp
         belowTarget = null
         unless children.isEmpty()
           children.forEach (testChild) =>
-            if testChild.layer instanceof TextLayer
+            if testChild.$ instanceof TextLayer
               testChild.$.outPoint = model.time
               belowTarget = testChild
         belowTarget = belowTarget ? activeGaussy

@@ -11,7 +11,7 @@ Creates a new NFHighlightControlLayer from a given AVLayer
 class NFHighlightControlLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
-    unless NFHighlightControlLayer.isHighlightControlLayer(@layer)
+    unless NFHighlightControlLayer.isHighlightControlLayer(@$)
       throw new Error "NF Highlight Control Layer is invalid and the wrapper class cannot be created"
     @
   toString: ->
@@ -191,7 +191,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
   @returns {String} the appropriate name
   ###
   nameForPDFNumberAndHighlight: (num, highlight) ->
-    highlightName = highlight.layer?.name or highlight
+    highlightName = highlight.$?.name or highlight
     return "#{num} - #{highlightName} Highlight Control"
 
   ###*

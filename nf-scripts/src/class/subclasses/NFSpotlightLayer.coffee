@@ -10,7 +10,7 @@ class NFSpotlightLayer extends NFLayer
 
   constructor: (layer) ->
     NFLayer.call(this, layer)
-    unless NFSpotlightLayer.isSpotlightLayer(@layer)
+    unless NFSpotlightLayer.isSpotlightLayer(@$)
       throw new Error "NF Spotlight Layer is invalid and the wrapper class cannot be created"
     @
 

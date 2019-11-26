@@ -12,7 +12,7 @@ class NFLayer extends NFObject
     if layer.isAVLayer()
       @$ = layer
     else if layer instanceof NFLayer
-      @$  = layer.layer
+      @$  = layer.$
     else
       throw new Error "Can only create a new NFLayer with a valid AVLayer or NFLayer object"
     @
@@ -119,21 +119,21 @@ class NFLayer extends NFObject
     return @
 
   isHighlightLayer: ->
-    return NFHighlightLayer.isHighlightLayer(@layer)
+    return NFHighlightLayer.isHighlightLayer(@$)
   isPaperParentLayer: ->
-    return NFPaperParentLayer.isPaperParentLayer(@layer)
+    return NFPaperParentLayer.isPaperParentLayer(@$)
   isHighlightControlLayer: ->
-    return NFHighlightControlLayer.isHighlightControlLayer(@layer)
+    return NFHighlightControlLayer.isHighlightControlLayer(@$)
   isSpotlightLayer: ->
-    return NFSpotlightLayer.isSpotlightLayer(@layer)
+    return NFSpotlightLayer.isSpotlightLayer(@$)
   isCitationLayer: ->
-    return NFCitationLayer.isCitationLayer(@layer)
+    return NFCitationLayer.isCitationLayer(@$)
   isPageLayer: ->
-    return NFPageLayer.isPageLayer(@layer)
+    return NFPageLayer.isPageLayer(@$)
   isGaussyLayer: ->
-    return NFGaussyLayer.isGaussyLayer(@layer)
+    return NFGaussyLayer.isGaussyLayer(@$)
   isShapeLayer: ->
-    return NFShapeLayer.isShapeLayer(@layer)
+    return NFShapeLayer.isShapeLayer(@$)
 
   ###*
   Returns a new layer of a specialized type for the contents of this layer
@@ -143,21 +143,21 @@ class NFLayer extends NFObject
   getSpecializedLayer: ->
     # FIXME: Also add cases for image layers, Gaussy layers, Emphasis Layers
     if @isPageLayer()
-      return new NFPageLayer @layer
+      return new NFPageLayer @$
     else if @isHighlightLayer()
-      return new NFHighlightLayer @layer
+      return new NFHighlightLayer @$
     else if @isPaperParentLayer()
-      return new NFPaperParentLayer @layer
+      return new NFPaperParentLayer @$
     else if @isHighlightControlLayer()
-      return new NFHighlightControlLayer @layer
+      return new NFHighlightControlLayer @$
     else if @isSpotlightLayer()
-      return new NFSpotlightLayer @layer
+      return new NFSpotlightLayer @$
     else if @isCitationLayer()
-      return new NFCitationLayer @layer
+      return new NFCitationLayer @$
     else if @isGaussyLayer()
-      return new NFGaussyLayer @layer
+      return new NFGaussyLayer @$
     else if @isShapeLayer()
-      return new NFShapeLayer @layer
+      return new NFShapeLayer @$
     else
       return @
 
@@ -328,7 +328,7 @@ class NFLayer extends NFObject
 
     for theLayer in allLayers
       testLayer = new NFLayer theLayer
-      if testLayer.$.parent is @layer
+      if testLayer.$.parent is @$
         testLayer = testLayer.getSpecializedLayer()
         childLayers.push testLayer
         if recursive
@@ -359,7 +359,7 @@ class NFLayer extends NFObject
     else if newParent.isAVLayer()
       @$.parent = newParent
     else if newParent instanceof NFLayer
-      @$.parent = newParent?.layer
+      @$.parent = newParent?.$
     else
       throw new Error "Can only set an NFLayer's parent to another NFLayer or AVLayer"
     return @
@@ -374,7 +374,7 @@ class NFLayer extends NFObject
   ###
   moveBefore: (targetLayer) ->
     throw new Error "Can't run moveBefore on a non-NFLayer" unless targetLayer instanceof NFLayer
-    @$.moveBefore targetLayer.layer
+    @$.moveBefore targetLayer.$
     return @
 
   ###*
@@ -386,7 +386,7 @@ class NFLayer extends NFObject
   ###
   moveAfter: (targetLayer) ->
     throw new Error "Can't run moveAfter on a non-NFLayer" unless targetLayer instanceof NFLayer
-    @$.moveAfter targetLayer.layer
+    @$.moveAfter targetLayer.$
     return @
 
   ###*
