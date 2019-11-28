@@ -29,15 +29,6 @@ class NFPageLayer extends NFLayer
       return null
 
   ###*
-  Gets the comp this layer is in
-  @memberof NFPageLayer
-  @override
-  @returns {NFComp} The containing Comp
-  ###
-  containingComp: ->
-    return new NFComp @$.containingComp
-
-  ###*
   Returns the pageComp for this layer
   @memberof NFPageLayer
   @returns {NFPageComp} The page item

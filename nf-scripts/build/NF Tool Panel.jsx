@@ -340,6 +340,7 @@ toolRegistry = {
       },
       autoSlideIn: {
         name: "Auto Slide In",
+        description: "Creates a marker-based transition on the selected layer",
         callback: function() {
           var activeComp, selectedLayers, theLayer;
           activeComp = NFProject.activeComp();
@@ -354,6 +355,7 @@ toolRegistry = {
       },
       autoSlideOut: {
         name: "Auto Slide Out",
+        description: "Creates a marker-based transition on the selected layer",
         callback: function() {
           var activeComp, selectedLayers, theLayer;
           activeComp = NFProject.activeComp();
@@ -361,6 +363,51 @@ toolRegistry = {
           if (selectedLayers.count() === 1) {
             theLayer = selectedLayers.get(0);
             return theLayer.slideOut();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
+      fadeIn: {
+        name: "Fade In",
+        description: "Creates a marker-based transition on the selected layer",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.fadeIn();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
+      fadeOut: {
+        name: "Fade Out",
+        description: "Creates a marker-based transition on the selected layer",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.fadeOut();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
+      clearTransitions: {
+        name: "Clear NF Transitions",
+        description: "Removes NF In and NF Out markers on the selected layer, killing those expressions",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.removeNFMarkers();
           } else {
             return alert("Error\nPlease select a single Layer and try again");
           }
@@ -453,6 +500,52 @@ toolRegistry = {
               }
             };
           })(this));
+        }
+      },
+      migrateToFadeStyle: {
+        name: "Migrate to Fade Style",
+        description: "Migrates old 'front-page-only' style to new style, where we fade between pages as quotes from them appear.",
+        callback: function() {
+          var allLayers, lastShuffledLayer, newPageOnscreenPosition, newPageScale, offscreenPosition, oldPageOnscreenPosition, oldPageScale, updateCount;
+          newPageScale = 28;
+          newPageOnscreenPosition = [349, 274];
+          oldPageScale = 23;
+          oldPageOnscreenPosition = [439, 202];
+          offscreenPosition = [1560, -150];
+          updateCount = 0;
+          lastShuffledLayer = null;
+          allLayers = NFProject.activeComp().allLayers();
+          allLayers.forEach((function(_this) {
+            return function(layer) {
+              var position, scale;
+              if (layer instanceof NFPageLayer && !layer.isReferenceLayer()) {
+                scale = layer.transform("Scale");
+                position = layer.transform("Position");
+                if (position.numKeys === 0) {
+                  if (scale.value[0] === oldPageScale && scale.value[1] === oldPageScale) {
+                    scale.setValue([newPageScale, newPageScale, newPageScale]);
+                    if (position.numKeys === 0 && position.value[0] === oldPageOnscreenPosition[0] && position.value[1] === oldPageOnscreenPosition[1]) {
+                      position.setValue(newPageOnscreenPosition);
+                    }
+                    updateCount++;
+                  }
+                  if (position.value[0] === offscreenPosition[0] && position.value[1] === offscreenPosition[1]) {
+                    scale.setValue([newPageScale, newPageScale, newPageScale]);
+                    position.setValue(newPageOnscreenPosition);
+                    if (lastShuffledLayer != null) {
+                      layer.moveBefore(lastShuffledLayer);
+                    } else {
+                      layer.moveAfter(layer.containingComp().greenscreenLayer());
+                      lastShuffledLayer = layer;
+                    }
+                    layer.fadeIn();
+                    return updateCount++;
+                  }
+                }
+              }
+            };
+          })(this));
+          return alert("Migration Complete!\n " + updateCount + " page layers were resized/repositioned. You'll need to manually check the fading layers and fix their ins and outs.");
         }
       }
     }

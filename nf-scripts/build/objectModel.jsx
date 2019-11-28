@@ -1486,14 +1486,13 @@ NFLayer = (function(superClass) {
 
 
   /**
-  Removes the NF in and out markers. Does not clear expressions though. For now
-  you have to do that manually #FIXME: Add this functionality.
+  Removes the NF in and out markers.
   @memberof NFLayer
   @returns {NFLayer} self
    */
 
   NFLayer.prototype.removeNFMarkers = function() {
-    var inMarkerTime, outMarkerTime;
+    var inMarkerTime, j, len, outMarkerTime, prop, props;
     inMarkerTime = this.getInMarkerTime();
     outMarkerTime = this.getOutMarkerTime();
     if (inMarkerTime != null) {
@@ -1501,6 +1500,13 @@ NFLayer = (function(superClass) {
     }
     if (outMarkerTime != null) {
       this.markers().removeKey(this.markers().nearestKeyIndex(outMarkerTime));
+    }
+    props = ["Scale", "Position", "Opacity"];
+    for (j = 0, len = props.length; j < len; j++) {
+      prop = props[j];
+      if (this.transform(prop).expression.indexOf("easeAndWizz()") >= 0) {
+        this.transform(prop).expression = "";
+      }
     }
     return null;
   };
@@ -4848,18 +4854,6 @@ NFPageLayer = (function(superClass) {
 
 
   /**
-  Gets the comp this layer is in
-  @memberof NFPageLayer
-  @override
-  @returns {NFComp} The containing Comp
-   */
-
-  NFPageLayer.prototype.containingComp = function() {
-    return new NFComp(this.$.containingComp);
-  };
-
-
-  /**
   Returns the pageComp for this layer
   @memberof NFPageLayer
   @returns {NFPageComp} The page item
@@ -5940,6 +5934,48 @@ NFPageLayerCollection = (function(superClass) {
       };
     })(this));
     return foundHighlights;
+  };
+
+
+  /**
+  Returns a NFPageLayerCollection of the pagelayers in the collection which
+  are NOT referenceLayers
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} the proper layers
+   */
+
+  NFPageLayerCollection.prototype.properLayers = function() {
+    var properLayers;
+    properLayers = new NFPageLayerCollection;
+    this.forEach((function(_this) {
+      return function(theLayer) {
+        if (!theLayer.isReferenceLayer()) {
+          return properLayers.add(theLayer);
+        }
+      };
+    })(this));
+    return properLayers;
+  };
+
+
+  /**
+  Returns a NFPageLayerCollection of the pagelayers in the collection which
+  ARE referenceLayers
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} the reference layers
+   */
+
+  NFPageLayerCollection.prototype.referenceLayers = function() {
+    var referenceLayers;
+    referenceLayers = new NFPageLayerCollection;
+    this.forEach((function(_this) {
+      return function(theLayer) {
+        if (theLayer.isReferenceLayer()) {
+          return referenceLayers.add(theLayer);
+        }
+      };
+    })(this));
+    return referenceLayers;
   };
 
 

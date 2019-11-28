@@ -321,6 +321,7 @@ toolRegistry =
 
       autoSlideIn:
         name: "Auto Slide In"
+        description: "Creates a marker-based transition on the selected layer"
         callback: ->
           activeComp = NFProject.activeComp()
           selectedLayers = NFProject.selectedLayers()
@@ -331,12 +332,46 @@ toolRegistry =
             alert "Error\nPlease select a single Layer and try again"
       autoSlideOut:
         name: "Auto Slide Out"
+        description: "Creates a marker-based transition on the selected layer"
         callback: ->
           activeComp = NFProject.activeComp()
           selectedLayers = NFProject.selectedLayers()
           if selectedLayers.count() is 1
             theLayer = selectedLayers.get 0
             theLayer.slideOut()
+          else
+            alert "Error\nPlease select a single Layer and try again"
+      fadeIn:
+        name: "Fade In"
+        description: "Creates a marker-based transition on the selected layer"
+        callback: ->
+          activeComp = NFProject.activeComp()
+          selectedLayers = NFProject.selectedLayers()
+          if selectedLayers.count() is 1
+            theLayer = selectedLayers.get 0
+            theLayer.fadeIn()
+          else
+            alert "Error\nPlease select a single Layer and try again"
+      fadeOut:
+        name: "Fade Out"
+        description: "Creates a marker-based transition on the selected layer"
+        callback: ->
+          activeComp = NFProject.activeComp()
+          selectedLayers = NFProject.selectedLayers()
+          if selectedLayers.count() is 1
+            theLayer = selectedLayers.get 0
+            theLayer.fadeOut()
+          else
+            alert "Error\nPlease select a single Layer and try again"
+      clearTransitions:
+        name: "Clear NF Transitions"
+        description: "Removes NF In and NF Out markers on the selected layer, killing those expressions"
+        callback: ->
+          activeComp = NFProject.activeComp()
+          selectedLayers = NFProject.selectedLayers()
+          if selectedLayers.count() is 1
+            theLayer = selectedLayers.get 0
+            theLayer.removeNFMarkers()
           else
             alert "Error\nPlease select a single Layer and try again"
 
@@ -407,6 +442,58 @@ toolRegistry =
             if layer instanceof NFPageLayer and layer.getOutMarkerTime()?
               if layer.$.outPoint - layer.getOutMarkerTime() > threshold
                 layer.$.outPoint = layer.getOutMarkerTime() + fixedValue
+
+      migrateToFadeStyle:
+        name: "Migrate to Fade Style"
+        description: "Migrates old 'front-page-only' style to new style, where
+                      we fade between pages as quotes from them appear."
+        callback: ->
+          newPageScale = 28
+          newPageOnscreenPosition = [349, 274]
+
+          oldPageScale = 23
+          oldPageOnscreenPosition = [439, 202]
+
+          offscreenPosition = [1560, -150]
+
+          updateCount = 0
+          lastShuffledLayer = null
+
+          allLayers = NFProject.activeComp().allLayers()
+          allLayers.forEach (layer) =>
+            if layer instanceof NFPageLayer and not layer.isReferenceLayer()
+              scale = layer.transform "Scale"
+              position = layer.transform "Position"
+
+              if position.numKeys is 0
+
+                # If it's a visible page (title page)
+                if scale.value[0] is oldPageScale and scale.value[1] is oldPageScale
+                  scale.setValue [newPageScale, newPageScale, newPageScale]
+                  if position.numKeys is 0 and position.value[0] is oldPageOnscreenPosition[0] and position.value[1] is oldPageOnscreenPosition[1]
+                    position.setValue newPageOnscreenPosition
+                  updateCount++
+
+                # if it's an offscreen page
+                if position.value[0] is offscreenPosition[0] and position.value[1] is offscreenPosition[1]
+                  scale.setValue [newPageScale, newPageScale, newPageScale]
+                  position.setValue newPageOnscreenPosition
+
+                  # move it behind the greenscreen layer
+                  if lastShuffledLayer?
+                    layer.moveBefore lastShuffledLayer
+                  else
+                    layer.moveAfter layer.containingComp().greenscreenLayer()
+                    lastShuffledLayer = layer
+
+                  # fade in
+                  layer.fadeIn()
+                  updateCount++
+
+
+          alert "Migration Complete!\n #{updateCount} page layers were
+                 resized/repositioned. You'll need to manually check the fading
+                 layers and fix their ins and outs."
 
   development:
     name: "Dev"

@@ -72,6 +72,32 @@ class NFPageLayerCollection extends NFLayerCollection
     return foundHighlights
 
   ###*
+  Returns a NFPageLayerCollection of the pagelayers in the collection which
+  are NOT referenceLayers
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} the proper layers
+  ###
+  properLayers: ->
+    properLayers = new NFPageLayerCollection
+    @forEach (theLayer) =>
+      unless theLayer.isReferenceLayer()
+        properLayers.add theLayer
+    return properLayers
+
+  ###*
+  Returns a NFPageLayerCollection of the pagelayers in the collection which
+  ARE referenceLayers
+  @memberof NFPageLayerCollection
+  @returns {NFPageLayerCollection} the reference layers
+  ###
+  referenceLayers: ->
+    referenceLayers = new NFPageLayerCollection
+    @forEach (theLayer) =>
+      if theLayer.isReferenceLayer()
+        referenceLayers.add theLayer
+    return referenceLayers
+
+  ###*
   Bubbles up the highlights in the given NFHighlightLayerCollection onto the
   page layers in this collection
   @memberof NFPageLayerCollection

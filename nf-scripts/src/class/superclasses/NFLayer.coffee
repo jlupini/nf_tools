@@ -589,8 +589,7 @@ class NFLayer extends NFObject
     return null
 
   ###*
-  Removes the NF in and out markers. Does not clear expressions though. For now
-  you have to do that manually #FIXME: Add this functionality.
+  Removes the NF in and out markers.
   @memberof NFLayer
   @returns {NFLayer} self
   ###
@@ -601,6 +600,13 @@ class NFLayer extends NFObject
       @markers().removeKey @markers().nearestKeyIndex(inMarkerTime)
     if outMarkerTime?
       @markers().removeKey @markers().nearestKeyIndex(outMarkerTime)
+
+    # Remove the expressions
+    # FIXME: Make this actually crawl the properties properly instead of just
+    #        checking a few possibilities
+    props = ["Scale", "Position", "Opacity"]
+    for prop in props
+      @transform(prop).expression = "" if @transform(prop).expression.indexOf("easeAndWizz()") >= 0
     return null
 
   ###*
