@@ -503,7 +503,7 @@ toolRegistry =
           newPageScale = 28
           newPageOnscreenPosition = [349, 274]
           selection = NFProject.selectedLayers()
-          return alert "Invalid selection" unless selection.count() is 0
+          return alert "Invalid selection" if selection.count() is 0
           selection.forEach (layer) =>
 
             if layer instanceof NFPageLayer

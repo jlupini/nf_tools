@@ -557,7 +557,7 @@ toolRegistry = {
           newPageScale = 28;
           newPageOnscreenPosition = [349, 274];
           selection = NFProject.selectedLayers();
-          if (selection.count() !== 0) {
+          if (selection.count() === 0) {
             return alert("Invalid selection");
           }
           return selection.forEach((function(_this) {
