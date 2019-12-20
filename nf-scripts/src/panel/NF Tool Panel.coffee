@@ -464,18 +464,19 @@ toolRegistry =
             if layer instanceof NFPageLayer and not layer.isReferenceLayer()
               scale = layer.transform "Scale"
               position = layer.transform "Position"
+              t = layer.$.inPoint
 
               if position.numKeys is 0
 
                 # If it's a visible page (title page)
-                if scale.value[0] is oldPageScale and scale.value[1] is oldPageScale
+                if scale.valueAtTime(t, true)[0] is oldPageScale and scale.valueAtTime(t, true)[1] is oldPageScale
                   scale.setValue [newPageScale, newPageScale, newPageScale]
-                  if position.numKeys is 0 and position.value[0] is oldPageOnscreenPosition[0] and position.value[1] is oldPageOnscreenPosition[1]
+                  if position.numKeys is 0 and position.valueAtTime(t, true)[0] is oldPageOnscreenPosition[0] and position.valueAtTime(t, true)[1] is oldPageOnscreenPosition[1]
                     position.setValue newPageOnscreenPosition
                   updateCount++
 
                 # if it's an offscreen page
-                if position.value[0] is offscreenPosition[0] and position.value[1] is offscreenPosition[1]
+                if position.valueAtTime(t, true)[0] is offscreenPosition[0] and position.valueAtTime(t, true)[1] is offscreenPosition[1]
                   scale.setValue [newPageScale, newPageScale, newPageScale]
                   position.setValue newPageOnscreenPosition
 
@@ -494,6 +495,32 @@ toolRegistry =
           alert "Migration Complete!\n #{updateCount} page layers were
                  resized/repositioned. You'll need to manually check the fading
                  layers and fix their ins and outs."
+
+      resetPageTransforms:
+        name: "Reset Page Transform"
+        description: "Resets the selected page's position and scale to the default"
+        callback: ->
+          newPageScale = 28
+          newPageOnscreenPosition = [349, 274]
+          selection = NFProject.selectedLayers()
+          return alert "Invalid selection" unless selection.count() is 0
+          selection.forEach (layer) =>
+
+            if layer instanceof NFPageLayer
+
+              scale = layer.transform "Scale"
+              position = layer.transform "Position"
+
+              return alert "This layer has keyframes so I can't adjust. However, you
+                            can manually set the following properties:\n
+                            \n
+                            Scale: #{newPageScale[0].toString()}\n
+                            Position: #{newPageOnscreenPosition.toString()}" if position.numKeys isnt 0
+
+              scale.setValue [newPageScale, newPageScale, newPageScale]
+              position.setValue newPageOnscreenPosition
+
+
 
   development:
     name: "Dev"

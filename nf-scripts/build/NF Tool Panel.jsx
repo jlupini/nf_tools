@@ -517,19 +517,20 @@ toolRegistry = {
           allLayers = NFProject.activeComp().allLayers();
           allLayers.forEach((function(_this) {
             return function(layer) {
-              var position, scale;
+              var position, scale, t;
               if (layer instanceof NFPageLayer && !layer.isReferenceLayer()) {
                 scale = layer.transform("Scale");
                 position = layer.transform("Position");
+                t = layer.$.inPoint;
                 if (position.numKeys === 0) {
-                  if (scale.value[0] === oldPageScale && scale.value[1] === oldPageScale) {
+                  if (scale.valueAtTime(t, true)[0] === oldPageScale && scale.valueAtTime(t, true)[1] === oldPageScale) {
                     scale.setValue([newPageScale, newPageScale, newPageScale]);
-                    if (position.numKeys === 0 && position.value[0] === oldPageOnscreenPosition[0] && position.value[1] === oldPageOnscreenPosition[1]) {
+                    if (position.numKeys === 0 && position.valueAtTime(t, true)[0] === oldPageOnscreenPosition[0] && position.valueAtTime(t, true)[1] === oldPageOnscreenPosition[1]) {
                       position.setValue(newPageOnscreenPosition);
                     }
                     updateCount++;
                   }
-                  if (position.value[0] === offscreenPosition[0] && position.value[1] === offscreenPosition[1]) {
+                  if (position.valueAtTime(t, true)[0] === offscreenPosition[0] && position.valueAtTime(t, true)[1] === offscreenPosition[1]) {
                     scale.setValue([newPageScale, newPageScale, newPageScale]);
                     position.setValue(newPageOnscreenPosition);
                     if (lastShuffledLayer != null) {
@@ -546,6 +547,33 @@ toolRegistry = {
             };
           })(this));
           return alert("Migration Complete!\n " + updateCount + " page layers were resized/repositioned. You'll need to manually check the fading layers and fix their ins and outs.");
+        }
+      },
+      resetPageTransforms: {
+        name: "Reset Page Transform",
+        description: "Resets the selected page's position and scale to the default",
+        callback: function() {
+          var newPageOnscreenPosition, newPageScale, selection;
+          newPageScale = 28;
+          newPageOnscreenPosition = [349, 274];
+          selection = NFProject.selectedLayers();
+          if (selection.count() !== 0) {
+            return alert("Invalid selection");
+          }
+          return selection.forEach((function(_this) {
+            return function(layer) {
+              var position, scale;
+              if (layer instanceof NFPageLayer) {
+                scale = layer.transform("Scale");
+                position = layer.transform("Position");
+                if (position.numKeys !== 0) {
+                  return alert("This layer has keyframes so I can't adjust. However, you can manually set the following properties:\n \n Scale: " + (newPageScale[0].toString()) + "\n Position: " + (newPageOnscreenPosition.toString()));
+                }
+                scale.setValue([newPageScale, newPageScale, newPageScale]);
+                return position.setValue(newPageOnscreenPosition);
+              }
+            };
+          })(this));
         }
       }
     }
