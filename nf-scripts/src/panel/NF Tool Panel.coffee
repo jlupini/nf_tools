@@ -206,7 +206,7 @@ toolRegistry =
             app.project.gpuAccelType = GpuAccelType.SOFTWARE
 
           # Set Motion Blur on/resolution full
-          mainComp = NFProject.mainComp().comp
+          mainComp = NFProject.mainComp().$
           mainComp.motionBlur = on
           mainComp.resolutionFactor = [1,1]
 
@@ -232,7 +232,7 @@ toolRegistry =
               spotlight.$.enabled = yes
 
           # Set Motion Blur on/resolution full
-          mainComp = NFProject.mainComp().comp
+          mainComp = NFProject.mainComp().$
           mainComp.motionBlur = on
           mainComp.resolutionFactor = [1,1]
 
@@ -246,7 +246,7 @@ toolRegistry =
             app.project.gpuAccelType = GpuAccelType.CUDA
 
           # Set Motion Blur off/resolution half
-          mainComp = NFProject.mainComp().comp
+          mainComp = NFProject.mainComp().$
           mainComp.motionBlur = off
           mainComp.resolutionFactor = [2,2]
 
