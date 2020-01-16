@@ -638,6 +638,95 @@ getPanelUI = ->
     app.endUndoGroup()
 
 
+  # Prep Tab
+  prepTab = tPanel.add("tab", undefined, "Highlight Importer")
+  prepTab.alignment = ['fill','fill']
+  prepTab.alignChildren = "fill"
+
+  buttonPrepPanel = prepTab.add 'panel', undefined, undefined, {borderStyle:'none'}
+  buttonPrepPanel.alignment = ['fill','fill']
+  buttonPrepPanel.alignChildren = 'left'
+  buttonPrepPanel.margins.top = 16
+
+  treePrepView = buttonPrepPanel.add 'treeview', undefined #[0, 0, 250, 150]
+  treePrepView.preferredSize = [220, 250]
+  treePrepView.alignment = ['fill','fill']
+
+  buttonPrepGroup = buttonPrepPanel.add 'group', undefined
+  buttonPrepGroup.maximumSize = [200,50]
+
+  addPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.add)
+  addPrepButton.onClick = (w) ->
+    choice = treePrepView.selection?.data
+
+    return alert "Invalid Selection!" unless choice?
+    app.beginUndoGroup "NF Selector"
+
+    targetComp = NFProject.activeComp()
+
+    # Actually add the shapes and stuff
+    annotationLayer = targetComp.addShapeLayer()
+    annotationLayer.addRectangle
+      fillColor: choice.color
+      rect: choice.rect
+
+    annotationLayer.transform().scale.setValue targetComp?.getPDFLayer().transform().scale.value
+
+    if choice.lineCount is 0
+      annotationLayer.transform("Opacity").setValue 20
+      annotationLayer.setName "Imported PDF Shape: #{choice.cleanName}"
+    else
+      for key, testColor of NFHighlightLayer.COLOR
+        newColor = testColor if choice.colorName.indexOf(testColor.str) >= 0
+
+      # Create the highlight effect
+      targetComp.createHighlight
+        shapeLayer: annotationLayer
+        lines: choice.lineCount
+        name: choice.cleanName
+        color: newColor
+
+      annotationLayer.remove()
+
+    app.endUndoGroup()
+
+  customPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.path)
+  customPrepButton.onClick = (w) ->
+    selectedLayer = NFProject.selectedLayers()?.get(0)
+    return alert "No Valid Shape Layer Selected" unless selectedLayer? and selectedLayer instanceof NFShapeLayer
+    lineCount = parseInt prompt('How many initial highlight lines would you like to create?')
+    # Create the highlight effect
+    newName = selectedLayer.getName().replace("Imported PDF Shape: ", "")
+    for key, testColor of NFHighlightLayer.COLOR
+      newColor = testColor if newName.indexOf(testColor.str) >= 0
+    selectedLayer.containingComp().createHighlight
+      shapeLayer: selectedLayer
+      lines: lineCount
+      name: newName
+      color: newColor ? NFHighlightLayer.COLOR.YELLOW
+
+
+    selectedLayer.remove()
+
+  refreshPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.refresh)
+  refreshPrepButton.onClick = (w) ->
+    loadAutoHighlightDataIntoView treePrepView
+
+    @active = false
+
+  importPrepButton = buttonPrepGroup.add('iconbutton', undefined, NFIcon.button.import)
+  importPrepButton.onClick = (w) ->
+    alert "Importing Auto Highlight Data\nThis can take a little while, so be patient."
+    result = importPDFAnnotationData()
+    if result
+      alert "Success\nNow hit the refresh button with a PDF Comp active."
+    else
+      alert "Failed\nLook for annotationData.json file in the PDF Pages directory"
+    @active = false
+
+
+
+
   # Layout + Resize handling
   panel.layout.layout(true)
   panel.layout.resize()

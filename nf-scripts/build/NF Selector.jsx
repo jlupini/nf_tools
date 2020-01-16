@@ -121,7 +121,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, animateTab, buttonGroup, buttonPanel, circle, citeButton, goButton, hideButton, linkButton, looseFocus, panel, panelType, refreshButton, tPanel, tightFocus, treeView, visGroup;
+  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, circle, citeButton, customPrepButton, goButton, hideButton, importPrepButton, linkButton, looseFocus, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, tightFocus, treePrepView, treeView, visGroup;
   if (_.panel != null) {
     return _.panel;
   }
@@ -688,6 +688,97 @@ getPanelUI = function() {
     })(this));
     activeComp.$.hideShyLayers = true;
     return app.endUndoGroup();
+  };
+  prepTab = tPanel.add("tab", void 0, "Highlight Importer");
+  prepTab.alignment = ['fill', 'fill'];
+  prepTab.alignChildren = "fill";
+  buttonPrepPanel = prepTab.add('panel', void 0, void 0, {
+    borderStyle: 'none'
+  });
+  buttonPrepPanel.alignment = ['fill', 'fill'];
+  buttonPrepPanel.alignChildren = 'left';
+  buttonPrepPanel.margins.top = 16;
+  treePrepView = buttonPrepPanel.add('treeview', void 0);
+  treePrepView.preferredSize = [220, 250];
+  treePrepView.alignment = ['fill', 'fill'];
+  buttonPrepGroup = buttonPrepPanel.add('group', void 0);
+  buttonPrepGroup.maximumSize = [200, 50];
+  addPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.add);
+  addPrepButton.onClick = function(w) {
+    var annotationLayer, choice, key, newColor, ref1, ref2, targetComp, testColor;
+    choice = (ref1 = treePrepView.selection) != null ? ref1.data : void 0;
+    if (choice == null) {
+      return alert("Invalid Selection!");
+    }
+    app.beginUndoGroup("NF Selector");
+    targetComp = NFProject.activeComp();
+    annotationLayer = targetComp.addShapeLayer();
+    annotationLayer.addRectangle({
+      fillColor: choice.color,
+      rect: choice.rect
+    });
+    annotationLayer.transform().scale.setValue(targetComp != null ? targetComp.getPDFLayer().transform().scale.value : void 0);
+    if (choice.lineCount === 0) {
+      annotationLayer.transform("Opacity").setValue(20);
+      annotationLayer.setName("Imported PDF Shape: " + choice.cleanName);
+    } else {
+      ref2 = NFHighlightLayer.COLOR;
+      for (key in ref2) {
+        testColor = ref2[key];
+        if (choice.colorName.indexOf(testColor.str) >= 0) {
+          newColor = testColor;
+        }
+      }
+      targetComp.createHighlight({
+        shapeLayer: annotationLayer,
+        lines: choice.lineCount,
+        name: choice.cleanName,
+        color: newColor
+      });
+      annotationLayer.remove();
+    }
+    return app.endUndoGroup();
+  };
+  customPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.path);
+  customPrepButton.onClick = function(w) {
+    var key, lineCount, newColor, newName, ref1, ref2, selectedLayer, testColor;
+    selectedLayer = (ref1 = NFProject.selectedLayers()) != null ? ref1.get(0) : void 0;
+    if (!((selectedLayer != null) && selectedLayer instanceof NFShapeLayer)) {
+      return alert("No Valid Shape Layer Selected");
+    }
+    lineCount = parseInt(prompt('How many initial highlight lines would you like to create?'));
+    newName = selectedLayer.getName().replace("Imported PDF Shape: ", "");
+    ref2 = NFHighlightLayer.COLOR;
+    for (key in ref2) {
+      testColor = ref2[key];
+      if (newName.indexOf(testColor.str) >= 0) {
+        newColor = testColor;
+      }
+    }
+    selectedLayer.containingComp().createHighlight({
+      shapeLayer: selectedLayer,
+      lines: lineCount,
+      name: newName,
+      color: newColor != null ? newColor : NFHighlightLayer.COLOR.YELLOW
+    });
+    return selectedLayer.remove();
+  };
+  refreshPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button.refresh);
+  refreshPrepButton.onClick = function(w) {
+    loadAutoHighlightDataIntoView(treePrepView);
+    return this.active = false;
+  };
+  importPrepButton = buttonPrepGroup.add('iconbutton', void 0, NFIcon.button["import"]);
+  importPrepButton.onClick = function(w) {
+    var result;
+    alert("Importing Auto Highlight Data\nThis can take a little while, so be patient.");
+    result = importPDFAnnotationData();
+    if (result) {
+      alert("Success\nNow hit the refresh button with a PDF Comp active.");
+    } else {
+      alert("Failed\nLook for annotationData.json file in the PDF Pages directory");
+    }
+    return this.active = false;
   };
   panel.layout.layout(true);
   panel.layout.resize();
