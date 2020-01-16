@@ -250,6 +250,86 @@ toolRegistry = {
       }
     }
   },
+  transitions: {
+    name: "Transitions",
+    tools: {
+      slideIn: {
+        name: "Slide In",
+        description: "Creates a marker-based transition on the selected layer",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.slideIn();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
+      slideOut: {
+        name: "Slide Out",
+        description: "Creates a marker-based transition on the selected layer",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.slideOut();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
+      fadeIn: {
+        name: "Fade In",
+        description: "Creates a marker-based transition on the selected layer",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.fadeIn();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
+      fadeOut: {
+        name: "Fade Out",
+        description: "Creates a marker-based transition on the selected layer",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.fadeOut();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      },
+      clearAllTransitions: {
+        name: "Clear All NF Transitions",
+        description: "Removes NF In and NF Out markers on the selected layer, killing those expressions",
+        callback: function() {
+          var activeComp, selectedLayers, theLayer;
+          activeComp = NFProject.activeComp();
+          selectedLayers = NFProject.selectedLayers();
+          if (selectedLayers.count() === 1) {
+            theLayer = selectedLayers.get(0);
+            return theLayer.removeNFMarkers();
+          } else {
+            return alert("Error\nPlease select a single Layer and try again");
+          }
+        }
+      }
+    }
+  },
   animation: {
     name: "Animation",
     tools: {
@@ -335,81 +415,6 @@ toolRegistry = {
             }
           } else {
             return alert("Error\nPlease select a single Highlight Control Layer and try again");
-          }
-        }
-      },
-      autoSlideIn: {
-        name: "Auto Slide In",
-        description: "Creates a marker-based transition on the selected layer",
-        callback: function() {
-          var activeComp, selectedLayers, theLayer;
-          activeComp = NFProject.activeComp();
-          selectedLayers = NFProject.selectedLayers();
-          if (selectedLayers.count() === 1) {
-            theLayer = selectedLayers.get(0);
-            return theLayer.slideIn();
-          } else {
-            return alert("Error\nPlease select a single Layer and try again");
-          }
-        }
-      },
-      autoSlideOut: {
-        name: "Auto Slide Out",
-        description: "Creates a marker-based transition on the selected layer",
-        callback: function() {
-          var activeComp, selectedLayers, theLayer;
-          activeComp = NFProject.activeComp();
-          selectedLayers = NFProject.selectedLayers();
-          if (selectedLayers.count() === 1) {
-            theLayer = selectedLayers.get(0);
-            return theLayer.slideOut();
-          } else {
-            return alert("Error\nPlease select a single Layer and try again");
-          }
-        }
-      },
-      fadeIn: {
-        name: "Fade In",
-        description: "Creates a marker-based transition on the selected layer",
-        callback: function() {
-          var activeComp, selectedLayers, theLayer;
-          activeComp = NFProject.activeComp();
-          selectedLayers = NFProject.selectedLayers();
-          if (selectedLayers.count() === 1) {
-            theLayer = selectedLayers.get(0);
-            return theLayer.fadeIn();
-          } else {
-            return alert("Error\nPlease select a single Layer and try again");
-          }
-        }
-      },
-      fadeOut: {
-        name: "Fade Out",
-        description: "Creates a marker-based transition on the selected layer",
-        callback: function() {
-          var activeComp, selectedLayers, theLayer;
-          activeComp = NFProject.activeComp();
-          selectedLayers = NFProject.selectedLayers();
-          if (selectedLayers.count() === 1) {
-            theLayer = selectedLayers.get(0);
-            return theLayer.fadeOut();
-          } else {
-            return alert("Error\nPlease select a single Layer and try again");
-          }
-        }
-      },
-      clearTransitions: {
-        name: "Clear NF Transitions",
-        description: "Removes NF In and NF Out markers on the selected layer, killing those expressions",
-        callback: function() {
-          var activeComp, selectedLayers, theLayer;
-          activeComp = NFProject.activeComp();
-          selectedLayers = NFProject.selectedLayers();
-          if (selectedLayers.count() === 1) {
-            theLayer = selectedLayers.get(0);
-            return theLayer.removeNFMarkers();
-          } else {
-            return alert("Error\nPlease select a single Layer and try again");
           }
         }
       },
