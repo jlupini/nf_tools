@@ -653,5 +653,53 @@ NFProject = {
     if (result != null) {
       return alert(result);
     }
+  },
+
+  /**
+  Toggle the guide layers on or off
+  @memberof NFProject
+  @returns {null} null
+   */
+  toggleGuideLayers: function() {
+    var guideAVComp, guideCompFolderName, guideCompName, guideEffect, guideLayer, guideLayerName, j, k, len, len1, newLayer, oldEffectName, opacityProp, precompsFolder, ref, ref1, thePageComp, thePartComp;
+    guideCompFolderName = "Precomps";
+    guideLayerName = "Guide Visibility";
+    guideCompName = "Guide Reference";
+    oldEffectName = "Guide Layer";
+    guideAVComp = NFProject.findItem(guideCompName);
+    if (guideAVComp == null) {
+      precompsFolder = NFProject.findItem(guideCompFolderName);
+      if (precompsFolder == null) {
+        precompsFolder = NFProject.findItem("Assets").item.addFolder(guideCompFolderName);
+      }
+      guideAVComp = precompsFolder.items.addComp(guideCompName, 100, 100, 1.0, 1, 30);
+      newLayer = guideAVComp.layers.addNull();
+      newLayer.name = guideLayerName;
+      ref = NFProject.allPageComps();
+      for (j = 0, len = ref.length; j < len; j++) {
+        thePageComp = ref[j];
+        guideLayer = thePageComp.layerWithName("Annotation Guide");
+        if (guideLayer != null) {
+          guideEffect = guideLayer.effect(oldEffectName);
+          if (guideEffect != null) {
+            guideEffect.remove();
+          }
+          opacityProp = guideLayer.property("Transform").property("Opacity");
+          opacityProp.expression = "comp(\"" + guideCompName + "\") .layer(\"" + guideLayerName + "\") .enabled * 60";
+        }
+      }
+      ref1 = NFProject.allPartComps();
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        thePartComp = ref1[k];
+        thePartComp.allLayers().forEach((function(_this) {
+          return function(layer) {
+            var ref2;
+            return (ref2 = layer.effect(oldEffectName)) != null ? ref2.remove() : void 0;
+          };
+        })(this));
+      }
+    }
+    guideAVComp.layers[1].enabled = !guideAVComp.layers[1].enabled;
+    return null;
   }
 };
