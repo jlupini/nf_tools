@@ -1922,6 +1922,9 @@ NFLayerCollection = (function(superClass) {
 
   NFLayerCollection.prototype.add = function(newLayer) {
     var layerToAdd;
+    if (newLayer == null) {
+      return this;
+    }
     if (newLayer instanceof NFLayer) {
       if (!this.containsLayer(layerToAdd)) {
         this.layers.push(newLayer);

@@ -109,6 +109,21 @@ NFProject = {
   },
 
   /**
+  Returns the single selected layer, if there's only one. otherwise null
+  @memberof NFProject
+  @returns {NFLayer} - the selected layer or null
+   */
+  singleSelectedLayer: function() {
+    var selectedLayers;
+    selectedLayers = NFProject.selectedLayers();
+    if (selectedLayers.count() === 1) {
+      return selectedLayers.get(0);
+    } else {
+      return null;
+    }
+  },
+
+  /**
   Given a string with the name of an item to find and it's parent folder,
   returns the folderItem, or null of none is found.
   @memberof NFProject

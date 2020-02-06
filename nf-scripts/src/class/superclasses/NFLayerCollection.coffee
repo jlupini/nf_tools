@@ -52,6 +52,7 @@ class NFLayerCollection extends NFObject
   @returns {NFLayerCollection} self
   ###
   add: (newLayer) ->
+    return @ unless newLayer?
     if newLayer instanceof NFLayer
       @layers.push newLayer unless @containsLayer layerToAdd
     else if newLayer.isAVLayer?()

@@ -87,6 +87,17 @@ NFProject =
     return NFProject.activeComp().selectedLayers()
 
   ###*
+  Returns the single selected layer, if there's only one. otherwise null
+  @memberof NFProject
+  @returns {NFLayer} - the selected layer or null
+  ###
+  singleSelectedLayer: ->
+    selectedLayers = NFProject.selectedLayers()
+    if selectedLayers.count() is 1
+      return selectedLayers.get 0
+    else return null
+
+  ###*
   Given a string with the name of an item to find and it's parent folder,
   returns the folderItem, or null of none is found.
   @memberof NFProject
