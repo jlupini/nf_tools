@@ -1298,8 +1298,8 @@ NFLayer = (function(superClass) {
   NFLayer.prototype.addEmphasisLayer = function(model) {
     var emphLayer;
     emphLayer = this.containingComp().addShapeLayer();
-    emphLayer.setParent(this);
-    emphLayer.moveBefore(this);
+    emphLayer.setName(NFEmphasisLayer.nameForLayer(this));
+    emphLayer.setParent(this).moveBefore(this);
     return emphLayer;
   };
 

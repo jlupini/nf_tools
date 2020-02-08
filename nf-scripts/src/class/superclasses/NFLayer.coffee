@@ -435,8 +435,8 @@ class NFLayer extends NFObject
   ###
   addEmphasisLayer: (model) ->
     emphLayer = @containingComp().addShapeLayer()
-    emphLayer.setParent @
-    emphLayer.moveBefore @
+    emphLayer.setName NFEmphasisLayer.nameForLayer(@)
+    emphLayer.setParent(@).moveBefore(@)
     return emphLayer
 
   ###*
