@@ -132,6 +132,8 @@ class NFLayer extends NFObject
     return NFPageLayer.isPageLayer(@$)
   isGaussyLayer: ->
     return NFGaussyLayer.isGaussyLayer(@$)
+  isEmphasisLayer: ->
+    return NFEmphasisLayer.isEmphasisLayer(@$)
   isShapeLayer: ->
     return NFShapeLayer.isShapeLayer(@$)
 
@@ -156,6 +158,8 @@ class NFLayer extends NFObject
       return new NFCitationLayer @$
     else if @isGaussyLayer()
       return new NFGaussyLayer @$
+    else if @isEmphasisLayer()
+      return new NFEmphasisLayer @$
     else if @isShapeLayer()
       return new NFShapeLayer @$
     else
@@ -423,6 +427,17 @@ class NFLayer extends NFObject
     markerValue.duration = model.duration if model.duration?
     markers.setValueAtTime model.time, markerValue
     markers
+
+  ###*
+  Adds an emphasis layer to this layer
+  @memberof NFLayer
+  @returns {NFEmphasisLayer} The new emphasis layer
+  ###
+  addEmphasisLayer: (model) ->
+    emphLayer = @containingComp().addShapeLayer()
+    emphLayer.setParent @
+    emphLayer.moveBefore @
+    return emphLayer
 
   ###*
   Returns the layer's absolute scale, which is the scale of the layer if it had

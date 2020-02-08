@@ -895,6 +895,10 @@ NFLayer = (function(superClass) {
     return NFGaussyLayer.isGaussyLayer(this.$);
   };
 
+  NFLayer.prototype.isEmphasisLayer = function() {
+    return NFEmphasisLayer.isEmphasisLayer(this.$);
+  };
+
   NFLayer.prototype.isShapeLayer = function() {
     return NFShapeLayer.isShapeLayer(this.$);
   };
@@ -921,6 +925,8 @@ NFLayer = (function(superClass) {
       return new NFCitationLayer(this.$);
     } else if (this.isGaussyLayer()) {
       return new NFGaussyLayer(this.$);
+    } else if (this.isEmphasisLayer()) {
+      return new NFEmphasisLayer(this.$);
     } else if (this.isShapeLayer()) {
       return new NFShapeLayer(this.$);
     } else {
@@ -1280,6 +1286,21 @@ NFLayer = (function(superClass) {
     }
     markers.setValueAtTime(model.time, markerValue);
     return markers;
+  };
+
+
+  /**
+  Adds an emphasis layer to this layer
+  @memberof NFLayer
+  @returns {NFEmphasisLayer} The new emphasis layer
+   */
+
+  NFLayer.prototype.addEmphasisLayer = function(model) {
+    var emphLayer;
+    emphLayer = this.containingComp().addShapeLayer();
+    emphLayer.setParent(this);
+    emphLayer.moveBefore(this);
+    return emphLayer;
   };
 
 
@@ -3679,7 +3700,30 @@ NFEmphasisLayer = (function(superClass) {
 
   return NFEmphasisLayer;
 
-})(NFLayer);
+})(NFShapeLayer);
+
+NFEmphasisLayer = Object.assign(NFEmphasisLayer, {
+
+  /**
+  Returns the name to use for an emphasis layer on the given layer
+  @memberof NFEmphasisLayer
+  @param {NFLayer} the layer to check for
+  @returns {String} the name
+   */
+  nameForLayer: function(theLayer) {
+    return (theLayer.getName()) + " - Emphasis";
+  },
+
+  /**
+  Returns whether or not the given AVLayer is a valid Emphasis Layer
+  @memberof NFEmphasisLayer
+  @param {AVLayer} the layer to check
+  @returns {boolean} whether the AV layer is a valid emphasis layer
+   */
+  isEmphasisLayer: function(theLayer) {
+    return theLayer.name.indexOf("Emphasis") >= 0 && theLayer instanceof ShapeLayer;
+  }
+});
 
 
 /**
