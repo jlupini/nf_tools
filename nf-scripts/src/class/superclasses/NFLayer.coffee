@@ -433,10 +433,12 @@ class NFLayer extends NFObject
   @memberof NFLayer
   @returns {NFEmphasisLayer} The new emphasis layer
   ###
-  addEmphasisLayer: (model) ->
+  addEmphasisLayer: () ->
     emphLayer = @containingComp().addShapeLayer()
     emphLayer.setName NFEmphasisLayer.nameForLayer(@)
     emphLayer.setParent(@).moveBefore(@)
+    emphLayer.$.inPoint = @$.inPoint
+    emphLayer.$.outPoint = @$.outPoint
     return emphLayer
 
   ###*

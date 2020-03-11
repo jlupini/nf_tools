@@ -1295,11 +1295,13 @@ NFLayer = (function(superClass) {
   @returns {NFEmphasisLayer} The new emphasis layer
    */
 
-  NFLayer.prototype.addEmphasisLayer = function(model) {
+  NFLayer.prototype.addEmphasisLayer = function() {
     var emphLayer;
     emphLayer = this.containingComp().addShapeLayer();
     emphLayer.setName(NFEmphasisLayer.nameForLayer(this));
     emphLayer.setParent(this).moveBefore(this);
+    emphLayer.$.inPoint = this.$.inPoint;
+    emphLayer.$.outPoint = this.$.outPoint;
     return emphLayer;
   };
 
