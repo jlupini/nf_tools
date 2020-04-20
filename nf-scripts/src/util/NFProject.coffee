@@ -207,7 +207,7 @@ NFProject =
         activeComp.animateTo
           highlight: highlight
           time: layoutInstruction.time
-          skipTitle: layoutInstruction.flags.skipTitle
+          skipTitle: layoutInstruction.flags?.skipTitle
       when NFLayoutType.INSTRUCTION
         targetPDF = NFPDF.fromPDFNumber layoutInstruction.pdf # Use only explicit PDFs here
         switch layoutInstruction.instruction.behavior
@@ -302,9 +302,9 @@ NFProject =
           thisPart.animateTo
             highlight: highlight
             time: instructionTime
-            skipTitle: layoutInstruction.flags.skipTitle
-            expand: layoutInstruction.flags.expand
-            expandUp: layoutInstruction.flags.expandUp
+            skipTitle: layoutInstruction.flags?.skipTitle
+            expand: layoutInstruction.flags?.expand
+            expandUp: layoutInstruction.flags?.expandUp
         when NFLayoutType.INSTRUCTION
           targetPDF = NFPDF.fromPDFNumber layoutInstruction.pdf # Use only explicit PDFs here
           switch layoutInstruction.instruction.behavior

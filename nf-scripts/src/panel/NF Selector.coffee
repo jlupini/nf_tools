@@ -404,29 +404,9 @@ getPanelUI = ->
     @active = false
     app.endUndoGroup()
 
-  linkButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.link)
-  linkButton.onClick = (w) ->
-    choice = treeView.selection?.data
-
-    return alert "Invalid Selection!" unless choice?
-    app.beginUndoGroup "NF Selector"
-
-    pickedHighlight = choice instanceof NFHighlightLayer
-    return alert "Must select a highlight layer" unless pickedHighlight
-
-    # make sure the PDF group exists here to link to
-    thisPart = NFProject.activeComp()
-    return alert "This operation can only be performed in a part comp." unless thisPart instanceof NFPartComp
-    group = thisPart.groupFromPDF(choice.getPDF())
-    return alert "Can't find this PDF's group (##{choice.getPDFNumber()}) in this part"  unless group?
-
-    group.assignControlLayer(choice, null, no)
-
-    controlLayer = choice.getControlLayer()
-    controlLayer.removeSpotlights()
-
 
   goButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.play)
+  goButton.enabled = no
   goButton.onClick = (w) ->
     choice = treeView.selection?.data
 
@@ -530,39 +510,6 @@ getPanelUI = ->
 
     app.endUndoGroup()
 
-  citeButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.book)
-  citeButton.onClick = (w) ->
-    choice = treeView.selection?.data
-    return alert "Invalid Selection!" unless choice?
-    app.beginUndoGroup "Add Citation (via NF Selector)"
-
-    if choice instanceof NFPDF
-      thisPart = NFProject.activeComp()
-
-      # If the PDF already has a paperParentLayer in this comp
-      parentLayer = thisPart.layerWithName(choice.getName())
-      if parentLayer?
-        group = parentLayer.getGroup()
-      else
-        nullLayer = thisPart.addSolid
-          color: [1,0,0.7]
-          width: 10
-          height: 10
-        nullLayer.$.enabled = no
-
-        nullLayer.setName NFPaperParentLayer.getPaperParentNameForObject(choice)
-        paperParentLayer = new NFPaperParentLayer(nullLayer)
-        group = new NFPaperLayerGroup paperParentLayer
-
-      citationLayer = group.assignCitationLayer()
-      citationLayer.show()
-
-
-    else alert "Error\nMake sure you've selected a PDF to cite, or try
-                refreshing the Selector Panel"
-
-    app.endUndoGroup()
-
 
   refreshButton = buttonGroup.add('iconbutton', undefined, NFIcon.button.refresh)
   refreshButton.onClick = (w) ->
@@ -635,6 +582,69 @@ getPanelUI = ->
 
     activeComp.$.hideShyLayers = yes
 
+    app.endUndoGroup()
+
+
+  toolGroup = buttonPanel.add 'group', undefined
+  toolGroup.maximumSize = [300,50]
+
+  citeButton = toolGroup.add('iconbutton', undefined, NFIcon.button.book)
+  citeButton.onClick = (w) ->
+    choice = treeView.selection?.data
+    return alert "Invalid Selection!" unless choice?
+    app.beginUndoGroup "Add Citation (via NF Selector)"
+
+    if choice instanceof NFPDF
+      thisPart = NFProject.activeComp()
+
+      # If the PDF already has a paperParentLayer in this comp
+      parentLayer = thisPart.layerWithName(choice.getName())
+      if parentLayer?
+        group = parentLayer.getGroup()
+      else
+        nullLayer = thisPart.addSolid
+          color: [1,0,0.7]
+          width: 10
+          height: 10
+        nullLayer.$.enabled = no
+
+        nullLayer.setName NFPaperParentLayer.getPaperParentNameForObject(choice)
+        paperParentLayer = new NFPaperParentLayer(nullLayer)
+        group = new NFPaperLayerGroup paperParentLayer
+
+      citationLayer = group.assignCitationLayer()
+      citationLayer.show()
+
+
+    else alert "Error\nMake sure you've selected a PDF to cite, or try
+                refreshing the Selector Panel"
+
+    app.endUndoGroup()
+
+  gaussyButton = toolGroup.add 'iconbutton', undefined, NFIcon.button.blur
+  gaussyButton.onClick = (w) ->
+    app.beginUndoGroup "Gaussy (NF Selector)"
+    NFProject.activeComp().addGaussy()
+    app.endUndoGroup()
+
+  emphButton = toolGroup.add 'iconbutton', undefined, NFIcon.button.highlight
+  emphButton.onClick = (w) ->
+
+    start_folder = new Folder(new File($.fileName).parent.fsName)
+    scriptFile = new File(start_folder.fsName + "/nf_Emphasizer.jsx")
+    $.evalFile scriptFile.fullName
+
+  spotButton = toolGroup.add 'iconbutton', undefined, NFIcon.button.spotlight
+  spotButton.enabled = no
+  spotButton.onClick = (w) ->
+    app.beginUndoGroup "Toggle Spotlight Visibility (Selector)"
+    parts = NFProject.allPartComps()
+    targetValue = null
+    for part in parts
+      spotlightLayers = part.searchLayers "Spotlight"
+      spotlightLayers.forEach (spotlight) =>
+        targetValue = !spotlight.$.enabled if targetValue is null
+        spotlight.$.enabled = targetValue
     app.endUndoGroup()
 
 
@@ -725,6 +735,35 @@ getPanelUI = ->
     @active = false
 
 
+  # Settings Tab
+  settingsTab = tPanel.add("tab", undefined, "Settings")
+  settingsTab.alignment = ['fill','fill']
+  settingsTab.alignChildren = "fill"
+
+  buttonSettingsPanel = settingsTab.add 'panel', undefined, undefined, {borderStyle:'none'}
+  buttonSettingsPanel.alignment = ['fill','fill']
+  buttonSettingsPanel.alignChildren = 'left'
+  buttonSettingsPanel.margins.top = 16
+
+  buttonSettingsGroup = buttonSettingsPanel.add 'group', undefined
+  buttonSettingsGroup.maximumSize = [200,50]
+
+  toggleStyleText = buttonSettingsGroup.add('statictext', undefined, 'Talking Head', {multiline: true});
+  toggleStyleButton = buttonSettingsGroup.add('button', undefined, 'Toggle')
+  toggleStyleButton.onClick = (w) ->
+    if toggleStyleText.text is 'PDF Only'
+      toggleStyleText.text = 'Talking Head'
+      addButton.enabled = yes
+      goButton.enabled = no
+      hideButton.enabled = yes
+      spotButton.enabled = no
+    else
+      toggleStyleText.text = 'PDF Only'
+      addButton.enabled = no
+      goButton.enabled = yes
+      hideButton.enabled = no
+      spotButton.enabled = yes
+    panel.layout.resize()
 
 
   # Layout + Resize handling

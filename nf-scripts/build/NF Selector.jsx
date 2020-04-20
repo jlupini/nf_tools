@@ -121,7 +121,7 @@ main = function() {
 };
 
 getPanelUI = function() {
-  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, circle, citeButton, customPrepButton, goButton, hideButton, importPrepButton, linkButton, looseFocus, panel, panelType, prepTab, refreshButton, refreshPrepButton, tPanel, tightFocus, treePrepView, treeView, visGroup;
+  var addButton, addPrepButton, animateTab, buttonGroup, buttonPanel, buttonPrepGroup, buttonPrepPanel, buttonSettingsGroup, buttonSettingsPanel, circle, citeButton, customPrepButton, emphButton, gaussyButton, goButton, hideButton, importPrepButton, looseFocus, panel, panelType, prepTab, refreshButton, refreshPrepButton, settingsTab, spotButton, tPanel, tightFocus, toggleStyleButton, toggleStyleText, toolGroup, treePrepView, treeView, visGroup;
   if (_.panel != null) {
     return _.panel;
   }
@@ -426,31 +426,8 @@ getPanelUI = function() {
     this.active = false;
     return app.endUndoGroup();
   };
-  linkButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.link);
-  linkButton.onClick = function(w) {
-    var choice, controlLayer, group, pickedHighlight, ref1, thisPart;
-    choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
-    if (choice == null) {
-      return alert("Invalid Selection!");
-    }
-    app.beginUndoGroup("NF Selector");
-    pickedHighlight = choice instanceof NFHighlightLayer;
-    if (!pickedHighlight) {
-      return alert("Must select a highlight layer");
-    }
-    thisPart = NFProject.activeComp();
-    if (!(thisPart instanceof NFPartComp)) {
-      return alert("This operation can only be performed in a part comp.");
-    }
-    group = thisPart.groupFromPDF(choice.getPDF());
-    if (group == null) {
-      return alert("Can't find this PDF's group (#" + (choice.getPDFNumber()) + ") in this part");
-    }
-    group.assignControlLayer(choice, null, false);
-    controlLayer = choice.getControlLayer();
-    return controlLayer.removeSpotlights();
-  };
   goButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.play);
+  goButton.enabled = false;
   goButton.onClick = function(w) {
     var choice, choicePage, dictObject, expandLookString, instruction, key, option, pickedHighlight, pickedPage, pickedShape, ref1, result;
     choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
@@ -566,37 +543,6 @@ getPanelUI = function() {
     }
     return app.endUndoGroup();
   };
-  citeButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.book);
-  citeButton.onClick = function(w) {
-    var choice, citationLayer, group, nullLayer, paperParentLayer, parentLayer, ref1, thisPart;
-    choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
-    if (choice == null) {
-      return alert("Invalid Selection!");
-    }
-    app.beginUndoGroup("Add Citation (via NF Selector)");
-    if (choice instanceof NFPDF) {
-      thisPart = NFProject.activeComp();
-      parentLayer = thisPart.layerWithName(choice.getName());
-      if (parentLayer != null) {
-        group = parentLayer.getGroup();
-      } else {
-        nullLayer = thisPart.addSolid({
-          color: [1, 0, 0.7],
-          width: 10,
-          height: 10
-        });
-        nullLayer.$.enabled = false;
-        nullLayer.setName(NFPaperParentLayer.getPaperParentNameForObject(choice));
-        paperParentLayer = new NFPaperParentLayer(nullLayer);
-        group = new NFPaperLayerGroup(paperParentLayer);
-      }
-      citationLayer = group.assignCitationLayer();
-      citationLayer.show();
-    } else {
-      alert("Error\nMake sure you've selected a PDF to cite, or try refreshing the Selector Panel");
-    }
-    return app.endUndoGroup();
-  };
   refreshButton = buttonGroup.add('iconbutton', void 0, NFIcon.button.refresh);
   refreshButton.onClick = function(w) {
     loadContentIntoView(treeView);
@@ -689,6 +635,73 @@ getPanelUI = function() {
     activeComp.$.hideShyLayers = true;
     return app.endUndoGroup();
   };
+  toolGroup = buttonPanel.add('group', void 0);
+  toolGroup.maximumSize = [300, 50];
+  citeButton = toolGroup.add('iconbutton', void 0, NFIcon.button.book);
+  citeButton.onClick = function(w) {
+    var choice, citationLayer, group, nullLayer, paperParentLayer, parentLayer, ref1, thisPart;
+    choice = (ref1 = treeView.selection) != null ? ref1.data : void 0;
+    if (choice == null) {
+      return alert("Invalid Selection!");
+    }
+    app.beginUndoGroup("Add Citation (via NF Selector)");
+    if (choice instanceof NFPDF) {
+      thisPart = NFProject.activeComp();
+      parentLayer = thisPart.layerWithName(choice.getName());
+      if (parentLayer != null) {
+        group = parentLayer.getGroup();
+      } else {
+        nullLayer = thisPart.addSolid({
+          color: [1, 0, 0.7],
+          width: 10,
+          height: 10
+        });
+        nullLayer.$.enabled = false;
+        nullLayer.setName(NFPaperParentLayer.getPaperParentNameForObject(choice));
+        paperParentLayer = new NFPaperParentLayer(nullLayer);
+        group = new NFPaperLayerGroup(paperParentLayer);
+      }
+      citationLayer = group.assignCitationLayer();
+      citationLayer.show();
+    } else {
+      alert("Error\nMake sure you've selected a PDF to cite, or try refreshing the Selector Panel");
+    }
+    return app.endUndoGroup();
+  };
+  gaussyButton = toolGroup.add('iconbutton', void 0, NFIcon.button.blur);
+  gaussyButton.onClick = function(w) {
+    app.beginUndoGroup("Gaussy (NF Selector)");
+    NFProject.activeComp().addGaussy();
+    return app.endUndoGroup();
+  };
+  emphButton = toolGroup.add('iconbutton', void 0, NFIcon.button.highlight);
+  emphButton.onClick = function(w) {
+    var scriptFile, start_folder;
+    start_folder = new Folder(new File($.fileName).parent.fsName);
+    scriptFile = new File(start_folder.fsName + "/nf_Emphasizer.jsx");
+    return $.evalFile(scriptFile.fullName);
+  };
+  spotButton = toolGroup.add('iconbutton', void 0, NFIcon.button.spotlight);
+  spotButton.enabled = false;
+  spotButton.onClick = function(w) {
+    var i, len, part, parts, spotlightLayers, targetValue;
+    app.beginUndoGroup("Toggle Spotlight Visibility (Selector)");
+    parts = NFProject.allPartComps();
+    targetValue = null;
+    for (i = 0, len = parts.length; i < len; i++) {
+      part = parts[i];
+      spotlightLayers = part.searchLayers("Spotlight");
+      spotlightLayers.forEach((function(_this) {
+        return function(spotlight) {
+          if (targetValue === null) {
+            targetValue = !spotlight.$.enabled;
+          }
+          return spotlight.$.enabled = targetValue;
+        };
+      })(this));
+    }
+    return app.endUndoGroup();
+  };
   prepTab = tPanel.add("tab", void 0, "Highlight Importer");
   prepTab.alignment = ['fill', 'fill'];
   prepTab.alignChildren = "fill";
@@ -779,6 +792,37 @@ getPanelUI = function() {
       alert("Failed\nLook for annotationData.json file in the PDF Pages directory");
     }
     return this.active = false;
+  };
+  settingsTab = tPanel.add("tab", void 0, "Settings");
+  settingsTab.alignment = ['fill', 'fill'];
+  settingsTab.alignChildren = "fill";
+  buttonSettingsPanel = settingsTab.add('panel', void 0, void 0, {
+    borderStyle: 'none'
+  });
+  buttonSettingsPanel.alignment = ['fill', 'fill'];
+  buttonSettingsPanel.alignChildren = 'left';
+  buttonSettingsPanel.margins.top = 16;
+  buttonSettingsGroup = buttonSettingsPanel.add('group', void 0);
+  buttonSettingsGroup.maximumSize = [200, 50];
+  toggleStyleText = buttonSettingsGroup.add('statictext', void 0, 'Talking Head', {
+    multiline: true
+  });
+  toggleStyleButton = buttonSettingsGroup.add('button', void 0, 'Toggle');
+  toggleStyleButton.onClick = function(w) {
+    if (toggleStyleText.text === 'PDF Only') {
+      toggleStyleText.text = 'Talking Head';
+      addButton.enabled = true;
+      goButton.enabled = false;
+      hideButton.enabled = true;
+      spotButton.enabled = false;
+    } else {
+      toggleStyleText.text = 'PDF Only';
+      addButton.enabled = false;
+      goButton.enabled = true;
+      hideButton.enabled = false;
+      spotButton.enabled = true;
+    }
+    return panel.layout.resize();
   };
   panel.layout.layout(true);
   panel.layout.resize();

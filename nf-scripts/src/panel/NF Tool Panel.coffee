@@ -194,62 +194,6 @@ toolRegistry =
             alert "No import data found!\nRun 'Import Script/Instructions' before
                    validating or laying out."
 
-  render:
-    name: "Render"
-    tools:
-
-      prepareForSafeRender:
-        name: "Arm Settings for Software Render"
-        callback: ->
-          # Set the GPU settings
-          if app.availableGPUAccelTypes.indexOf GpuAccelType.SOFTWARE >= 0
-            app.project.gpuAccelType = GpuAccelType.SOFTWARE
-
-          # Set Motion Blur on/resolution full
-          mainComp = NFProject.mainComp().$
-          mainComp.motionBlur = on
-          mainComp.resolutionFactor = [1,1]
-
-          parts = NFProject.allPartComps()
-          for part in parts
-            spotlightLayers = part.searchLayers "Spotlight"
-            spotlightLayers.forEach (spotlight) =>
-              spotlight.$.enabled = yes
-
-      prepareForStandardRender:
-        name: "Arm Settings for Fast Render"
-        callback: ->
-          # Set the GPU settings
-          if app.availableGPUAccelTypes.indexOf GpuAccelType.OPENCL >= 0
-            app.project.gpuAccelType = GpuAccelType.OPENCL
-          else if app.availableGPUAccelTypes.indexOf GpuAccelType.CUDA >= 0
-            app.project.gpuAccelType = GpuAccelType.CUDA
-
-          parts = NFProject.allPartComps()
-          for part in parts
-            spotlightLayers = part.searchLayers "Spotlight"
-            spotlightLayers.forEach (spotlight) =>
-              spotlight.$.enabled = yes
-
-          # Set Motion Blur on/resolution full
-          mainComp = NFProject.mainComp().$
-          mainComp.motionBlur = on
-          mainComp.resolutionFactor = [1,1]
-
-      prepareForEditing:
-        name: "Arm Settings for Editing"
-        callback: ->
-          # Set the GPU settings
-          if app.availableGPUAccelTypes.indexOf GpuAccelType.OPENCL >= 0
-            app.project.gpuAccelType = GpuAccelType.OPENCL
-          else if app.availableGPUAccelTypes.indexOf GpuAccelType.CUDA >= 0
-            app.project.gpuAccelType = GpuAccelType.CUDA
-
-          # Set Motion Blur off/resolution half
-          mainComp = NFProject.mainComp().$
-          mainComp.motionBlur = off
-          mainComp.resolutionFactor = [2,2]
-
   transitions:
     name: "Transitions"
     tools:

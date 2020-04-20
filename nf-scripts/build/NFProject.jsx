@@ -222,7 +222,7 @@ NFProject = {
   @returns {String} A message to display to the user
    */
   layoutSingleInstruction: function(layoutInstruction) {
-    var activeComp, highlight, lookString, ref, targetPDF, titlePage;
+    var activeComp, highlight, lookString, ref, ref1, targetPDF, titlePage;
     activeComp = NFProject.activeComp();
     if (!(activeComp instanceof NFPartComp)) {
       return "Cannot layout an instruction in a non-part comp.";
@@ -256,7 +256,7 @@ NFProject = {
         activeComp.animateTo({
           highlight: highlight,
           time: layoutInstruction.time,
-          skipTitle: layoutInstruction.flags.skipTitle
+          skipTitle: (ref1 = layoutInstruction.flags) != null ? ref1.skipTitle : void 0
         });
         break;
       case NFLayoutType.INSTRUCTION:
@@ -325,7 +325,7 @@ NFProject = {
   @returns {String} A message to display to the user
    */
   autoLayout: function(layoutInstructions) {
-    var allParts, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, targetPDF, thisPart, titlePage;
+    var allParts, existingPages, highlight, instructionTime, j, k, lastPart, layoutInstruction, len, len1, lookString, part, ref, ref1, ref2, ref3, targetPDF, thisPart, titlePage;
     allParts = NFProject.allPartComps();
     existingPages = false;
     for (j = 0, len = allParts.length; j < len; j++) {
@@ -374,9 +374,9 @@ NFProject = {
           thisPart.animateTo({
             highlight: highlight,
             time: instructionTime,
-            skipTitle: layoutInstruction.flags.skipTitle,
-            expand: layoutInstruction.flags.expand,
-            expandUp: layoutInstruction.flags.expandUp
+            skipTitle: (ref1 = layoutInstruction.flags) != null ? ref1.skipTitle : void 0,
+            expand: (ref2 = layoutInstruction.flags) != null ? ref2.expand : void 0,
+            expandUp: (ref3 = layoutInstruction.flags) != null ? ref3.expandUp : void 0
           });
           break;
         case NFLayoutType.INSTRUCTION:
