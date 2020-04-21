@@ -656,6 +656,42 @@ NFProject = {
   },
 
   /**
+  Toggle the spotlight layers on or off
+  @memberof NFProject
+  @returns {null} null
+   */
+  toggleSpotlightLayers: function() {
+    var j, len, newLayer, part, precompsFolder, ref, spotlightAVComp, spotlightCompFolderName, spotlightCompName, spotlightLayerName, spotlightLayers;
+    spotlightCompFolderName = "Precomps";
+    spotlightLayerName = "Spotlight Visibility";
+    spotlightCompName = "Spotlight Reference";
+    spotlightAVComp = NFProject.findItem(spotlightCompName);
+    if (spotlightAVComp == null) {
+      precompsFolder = NFProject.findItem(spotlightCompFolderName);
+      if (precompsFolder == null) {
+        precompsFolder = NFProject.findItem("Assets").item.addFolder(spotlightCompFolderName);
+      }
+      spotlightAVComp = precompsFolder.items.addComp(spotlightCompName, 100, 100, 1.0, 1, 30);
+      newLayer = spotlightAVComp.layers.addNull();
+      newLayer.name = spotlightLayerName;
+      ref = NFProject.allPartComps();
+      for (j = 0, len = ref.length; j < len; j++) {
+        part = ref[j];
+        spotlightLayers = part.searchLayers("Spotlight");
+        spotlightLayers.forEach((function(_this) {
+          return function(spotlightLayer) {
+            var opacityProp;
+            opacityProp = spotlightLayer.property("Transform").property("Opacity");
+            return opacityProp.expression = "comp(\"" + spotlightCompName + "\") .layer(\"" + spotlightLayerName + "\") .enabled * 100";
+          };
+        })(this));
+      }
+    }
+    spotlightAVComp.layers[1].enabled = !spotlightAVComp.layers[1].enabled;
+    return null;
+  },
+
+  /**
   Toggle the guide layers on or off
   @memberof NFProject
   @returns {null} null

@@ -684,22 +684,8 @@ getPanelUI = function() {
   spotButton = toolGroup.add('iconbutton', void 0, NFIcon.button.spotlight);
   spotButton.enabled = false;
   spotButton.onClick = function(w) {
-    var i, len, part, parts, spotlightLayers, targetValue;
     app.beginUndoGroup("Toggle Spotlight Visibility (Selector)");
-    parts = NFProject.allPartComps();
-    targetValue = null;
-    for (i = 0, len = parts.length; i < len; i++) {
-      part = parts[i];
-      spotlightLayers = part.searchLayers("Spotlight");
-      spotlightLayers.forEach((function(_this) {
-        return function(spotlight) {
-          if (targetValue === null) {
-            targetValue = !spotlight.$.enabled;
-          }
-          return spotlight.$.enabled = targetValue;
-        };
-      })(this));
-    }
+    NFProject.toggleSpotlightLayers();
     return app.endUndoGroup();
   };
   prepTab = tPanel.add("tab", void 0, "Highlight Importer");

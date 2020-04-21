@@ -638,13 +638,7 @@ getPanelUI = ->
   spotButton.enabled = no
   spotButton.onClick = (w) ->
     app.beginUndoGroup "Toggle Spotlight Visibility (Selector)"
-    parts = NFProject.allPartComps()
-    targetValue = null
-    for part in parts
-      spotlightLayers = part.searchLayers "Spotlight"
-      spotlightLayers.forEach (spotlight) =>
-        targetValue = !spotlight.$.enabled if targetValue is null
-        spotlight.$.enabled = targetValue
+    NFProject.toggleSpotlightLayers()
     app.endUndoGroup()
 
 

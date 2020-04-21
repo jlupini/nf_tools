@@ -7201,7 +7201,7 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
   @returns {NFSpotlightLayer} the new spotlight layer
    */
   newSpotlightLayer: function(group) {
-    var containingComp, controlLayers, dataLayer, existingSpot, expression, newMask, spotlightLayer;
+    var containingComp, controlLayers, dataLayer, existingSpot, expression, newLayer, newMask, opacityProp, precompsFolder, spotlightAVComp, spotlightCompFolderName, spotlightCompName, spotlightLayer, spotlightLayerName;
     if (!(group instanceof NFPaperLayerGroup)) {
       throw new Error("group must be an NFPaperLayerGroup");
     }
@@ -7241,6 +7241,21 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
       PDF_NUMBER: group.getPDFNumber()
     });
     newMask.maskOpacity.expression = expression;
+    spotlightCompFolderName = "Precomps";
+    spotlightLayerName = "Spotlight Visibility";
+    spotlightCompName = "Spotlight Reference";
+    spotlightAVComp = NFProject.findItem(spotlightCompName);
+    if (spotlightAVComp == null) {
+      precompsFolder = NFProject.findItem(spotlightCompFolderName);
+      if (precompsFolder == null) {
+        precompsFolder = NFProject.findItem("Assets").item.addFolder(spotlightCompFolderName);
+      }
+      spotlightAVComp = precompsFolder.items.addComp(spotlightCompName, 100, 100, 1.0, 1, 30);
+      newLayer = spotlightAVComp.layers.addNull();
+      newLayer.name = spotlightLayerName;
+    }
+    opacityProp = spotlightLayer.property("Transform").property("Opacity");
+    opacityProp.expression = "comp(\"" + spotlightCompName + "\") .layer(\"" + spotlightLayerName + "\") .enabled * 100";
     return spotlightLayer;
   }
 });

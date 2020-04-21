@@ -144,4 +144,25 @@ NFSpotlightLayer = Object.assign NFSpotlightLayer,
 
     newMask.maskOpacity.expression = expression
 
+    # Set the layer opacity expression
+    spotlightCompFolderName = "Precomps"
+    spotlightLayerName = "Spotlight Visibility"
+    spotlightCompName = "Spotlight Reference"
+
+    spotlightAVComp = NFProject.findItem spotlightCompName
+    # If this project doesn't use this spotlight layer method, upgrade it.
+    unless spotlightAVComp?
+      precompsFolder = NFProject.findItem spotlightCompFolderName
+      unless precompsFolder?
+        precompsFolder = NFProject.findItem("Assets").item.addFolder spotlightCompFolderName
+
+      spotlightAVComp = precompsFolder.items.addComp spotlightCompName, 100, 100, 1.0, 1, 30
+      newLayer = spotlightAVComp.layers.addNull()
+      newLayer.name = spotlightLayerName
+
+    opacityProp = spotlightLayer.property("Transform").property("Opacity")
+    opacityProp.expression = "comp(\"#{spotlightCompName}\")
+                              .layer(\"#{spotlightLayerName}\")
+                              .enabled * 100"
+
     return spotlightLayer
