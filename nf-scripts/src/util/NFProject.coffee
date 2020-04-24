@@ -176,10 +176,10 @@ NFProject =
   layoutSingleInstruction: (layoutInstruction) ->
     activeComp = NFProject.activeComp()
     unless activeComp instanceof NFPartComp
-      return "Cannot layout an instruction in a non-part comp."
+      throw new Error "Cannot layout an instruction in a non-part comp."
 
     if NFProject.containsBrokenHighlights()
-      return "Aborting AutoLayout!\nThere are broken highlights in some page
+      throw new Error "Aborting AutoLayout!\nThere are broken highlights in some page
               comps. Fix before running again."
 
     # if the instruction is a highlight, let's call animateTo

@@ -225,10 +225,10 @@ NFProject = {
     var activeComp, highlight, lookString, ref, ref1, targetPDF, titlePage;
     activeComp = NFProject.activeComp();
     if (!(activeComp instanceof NFPartComp)) {
-      return "Cannot layout an instruction in a non-part comp.";
+      throw new Error("Cannot layout an instruction in a non-part comp.");
     }
     if (NFProject.containsBrokenHighlights()) {
-      return "Aborting AutoLayout!\nThere are broken highlights in some page comps. Fix before running again.";
+      throw new Error("Aborting AutoLayout!\nThere are broken highlights in some page comps. Fix before running again.");
     }
     switch (layoutInstruction.instruction.type) {
       case NFLayoutType.HIGHLIGHT:
