@@ -330,7 +330,7 @@ toolRegistry = {
       updateCitations: {
         name: "Update Citations",
         callback: function() {
-          var blurLayer, citeComps, comp, item, j, len, maskShape, newCiteText, pdfNum, pdfObj, results, sourceRect, suffix, textLayer;
+          var blurLayer, citeComps, comp, item, j, len, maskShape, newCiteText, pdfNum, results, sourceRect, suffix, textLayer;
           suffix = " - Citation";
           citeComps = NFProject.searchItems(suffix);
           results = [];
@@ -340,8 +340,7 @@ toolRegistry = {
               comp = new NFComp(item);
               pdfNum = comp.getName().substr(0, comp.getName().indexOf(suffix));
               writeLn("pdf num '" + pdfNum + "'");
-              pdfObj = NFPDF.fromPDFNumber(pdfNum);
-              newCiteText = NFCitationLayer.fetchCitation(pdfObj);
+              newCiteText = NFCitationLayer.fetchCitation(pdfNum);
               textLayer = comp.allLayers().getTopmostLayer();
               blurLayer = comp.allLayers().getBottommostLayer();
               textLayer.property("Text").property("Source Text").setValue(newCiteText);

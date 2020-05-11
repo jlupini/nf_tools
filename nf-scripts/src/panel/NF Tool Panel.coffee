@@ -314,8 +314,7 @@ toolRegistry =
               comp = new NFComp item
               pdfNum = comp.getName().substr 0, comp.getName().indexOf(suffix)
               writeLn "pdf num '#{pdfNum}'"
-              pdfObj = NFPDF.fromPDFNumber pdfNum
-              newCiteText = NFCitationLayer.fetchCitation pdfObj
+              newCiteText = NFCitationLayer.fetchCitation pdfNum
 
               textLayer = comp.allLayers().getTopmostLayer()
               blurLayer = comp.allLayers().getBottommostLayer()

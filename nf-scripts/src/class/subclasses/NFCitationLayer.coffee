@@ -86,12 +86,12 @@ NFCitationLayer = Object.assign NFCitationLayer,
   Fetches the citation from the citations.csv file found in the project
   directory.
   @memberof NFCitationLayer
-  @param {NFPDF} thePDF - the PDF to make the comp for
+  @param {NFPDF | int} thePDF - the PDF to make the comp for, or its number
   @returns {NFComp} the new comp
   @throw Throws an error if citations.csv could not be found or empty
   ###
   fetchCitation: (thePDF) ->
-    pdfKey = thePDF.getPDFNumber()
+    pdfKey = if thePDF instanceof NFPDF then thePDF.getPDFNumber() else thePDF
     if NFTools.testProjectFile "citations.csv"
       citationsFile = NFTools.readProjectFile "citations.csv", yes
       citationArray = citationsFile.splitCSV()
@@ -116,9 +116,9 @@ NFCitationLayer = Object.assign NFCitationLayer,
         citeObj[newKey] = newVal
 
       if citeObj[pdfKey]?
-        throw new Error "Found a citation for PDF #{thePDF.getPDFNumber()} but it's blank. Check citation file formatting." if citeObj[pdfKey] is ""
+        throw new Error "Found a citation for PDF #{pdfKey} but it's blank. Check citation file formatting." if citeObj[pdfKey] is ""
         return citeObj[pdfKey]
-      else return "#{thePDF.getName()} - NO CITATION FOUND IN FILE! FIX ME LATER."
+      else return "PDF #{pdfKey} - NO CITATION FOUND IN FILE! FIX ME LATER."
 
     if app.citationWarning isnt app.project.file.name
       alert "Warning!\nNo citation file found in the project directory. If your

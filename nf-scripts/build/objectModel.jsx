@@ -3463,13 +3463,13 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
   Fetches the citation from the citations.csv file found in the project
   directory.
   @memberof NFCitationLayer
-  @param {NFPDF} thePDF - the PDF to make the comp for
+  @param {NFPDF | int} thePDF - the PDF to make the comp for, or its number
   @returns {NFComp} the new comp
   @throw Throws an error if citations.csv could not be found or empty
    */
   fetchCitation: function(thePDF) {
     var citationArray, citationsFile, citeLine, citeLineItem, citeLineItemIdx, citeObj, i, j, len, newKey, newVal, pdfKey, ref, startColumn;
-    pdfKey = thePDF.getPDFNumber();
+    pdfKey = thePDF instanceof NFPDF ? thePDF.getPDFNumber() : thePDF;
     if (NFTools.testProjectFile("citations.csv")) {
       citationsFile = NFTools.readProjectFile("citations.csv", true);
       citationArray = citationsFile.splitCSV();
@@ -3499,11 +3499,11 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
       }
       if (citeObj[pdfKey] != null) {
         if (citeObj[pdfKey] === "") {
-          throw new Error("Found a citation for PDF " + (thePDF.getPDFNumber()) + " but it's blank. Check citation file formatting.");
+          throw new Error("Found a citation for PDF " + pdfKey + " but it's blank. Check citation file formatting.");
         }
         return citeObj[pdfKey];
       } else {
-        return (thePDF.getName()) + " - NO CITATION FOUND IN FILE! FIX ME LATER.";
+        return "PDF " + pdfKey + " - NO CITATION FOUND IN FILE! FIX ME LATER.";
       }
     }
     if (app.citationWarning !== app.project.file.name) {
