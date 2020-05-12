@@ -3,13 +3,13 @@ Creates a new NFPageComp from a given CompItem
 @class NFPageComp
 @classdesc NF Wrapper object for a page CompItem
 @extends NFComp
-@param {CompItem} comp - the CompItem to wrap
+@param {CompItem | NFComp} comp - the CompItem to wrap
 @property {CompItem} comp - the CompItem
 ###
 class NFPageComp extends NFComp
   constructor: (comp) ->
     NFComp.call(this, comp)
-    throw new Error "Can't create an NFPageComp from a non-page comp" unless @getName().indexOf("NFPage") >= 0
+    throw new Error "Can't create an NFPageComp from a non-page comp" unless NFPageComp.canBePageComp(@$)
     @
   toString: ->
     return "NFPageComp: '#{@getName()}'"
@@ -110,3 +110,15 @@ class NFPageComp extends NFComp
   ###
   getPDFLayer: ->
     return @layerWithName @getName().replace(" NFPage", ".pdf")
+
+# Class Methods
+NFPageComp = Object.assign NFPageComp,
+
+  ###*
+  # Returns whether the CompItem can be NFPageComp
+  # @memberof NFComp
+  # @param {CompItem}
+  # @returns {boolean} if the given CompItem fits the criteria to be a NFPageComp
+  ###
+  canBePageComp: (compItem) ->
+    return compItem.name.indexOf("NFPage") >= 0

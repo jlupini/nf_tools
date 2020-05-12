@@ -547,8 +547,9 @@ getPanelUI = ->
       # Add members in PDF group if we can find one
       if layer instanceof NFPageLayer
         group = layer.getPaperLayerGroup()
-        looseLayers.add group.getMembers()
-        looseLayers.add group.paperParent
+        if group?
+          looseLayers.add group.getMembers()
+          looseLayers.add group.paperParent
 
     activeComp.allLayers().forEach (layer) =>
       layer.setShy not looseLayers.containsLayer(layer)
@@ -570,12 +571,13 @@ getPanelUI = ->
       tightLayers.add layer unless layer instanceof NFCitationLayer or layer.getName().indexOf("Backing for") >= 0
       if layer instanceof NFPageLayer
         group = layer.getPaperLayerGroup()
-        tightLayers.add group.paperParent
-        tightLayers.add group.getCitationLayer()
+        if group?
+          tightLayers.add group.paperParent
+          tightLayers.add group.getCitationLayer()
 
-        time = activeComp.getTime()
-        group.getControlLayers().forEach (control) =>
-          tightLayers.add control if control.$.inPoint <= time and control.$.outPoint >= time
+          time = activeComp.getTime()
+          group.getControlLayers().forEach (control) =>
+            tightLayers.add control if control.$.inPoint <= time and control.$.outPoint >= time
 
     activeComp.allLayers().forEach (layer) =>
       layer.setShy not tightLayers.containsLayer(layer)

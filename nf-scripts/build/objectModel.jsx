@@ -688,12 +688,13 @@ NFComp = Object.assign(NFComp, {
    * @returns {NFComp | NFPageComp | NFPartComp} The new comp
    */
   specializedComp: function(comp) {
-    try {
+    var compItem;
+    compItem = comp instanceof CompItem ? comp : comp.$;
+    if (NFPageComp.canBePageComp(compItem)) {
       return new NFPageComp(comp);
-    } catch (undefined) {}
-    try {
+    } else if (NFPartComp.canBePartComp(compItem)) {
       return new NFPartComp(comp);
-    } catch (undefined) {}
+    }
     return new NFComp(comp);
   },
   TOP: 100,
@@ -4640,7 +4641,7 @@ Creates a new NFPageComp from a given CompItem
 @class NFPageComp
 @classdesc NF Wrapper object for a page CompItem
 @extends NFComp
-@param {CompItem} comp - the CompItem to wrap
+@param {CompItem | NFComp} comp - the CompItem to wrap
 @property {CompItem} comp - the CompItem
  */
 var NFPageComp,
@@ -4652,7 +4653,7 @@ NFPageComp = (function(superClass) {
 
   function NFPageComp(comp) {
     NFComp.call(this, comp);
-    if (!(this.getName().indexOf("NFPage") >= 0)) {
+    if (!NFPageComp.canBePageComp(this.$)) {
       throw new Error("Can't create an NFPageComp from a non-page comp");
     }
     this;
@@ -4806,6 +4807,19 @@ NFPageComp = (function(superClass) {
   return NFPageComp;
 
 })(NFComp);
+
+NFPageComp = Object.assign(NFPageComp, {
+
+  /**
+   * Returns whether the CompItem can be NFPageComp
+   * @memberof NFComp
+   * @param {CompItem}
+   * @returns {boolean} if the given CompItem fits the criteria to be a NFPageComp
+   */
+  canBePageComp: function(compItem) {
+    return compItem.name.indexOf("NFPage") >= 0;
+  }
+});
 
 
 /**
@@ -6283,7 +6297,7 @@ NFPartComp = (function(superClass) {
 
   function NFPartComp(comp) {
     NFComp.call(this, comp);
-    if (!(this.getName().indexOf("Part") >= 0)) {
+    if (!NFPartComp.canBePartComp(this.$)) {
       throw new Error("Can't create an NFPartComp from a non-part comp");
     }
     this;
@@ -6999,6 +7013,19 @@ NFPartComp = (function(superClass) {
   return NFPartComp;
 
 })(NFComp);
+
+NFPartComp = Object.assign(NFPartComp, {
+
+  /**
+   * Returns whether the CompItem can be NFPartComp
+   * @memberof NFComp
+   * @param {CompItem}
+   * @returns {boolean} if the given CompItem fits the criteria to be a NFPartComp
+   */
+  canBePartComp: function(compItem) {
+    return compItem.name.indexOf("Part") >= 0;
+  }
+});
 
 
 /**

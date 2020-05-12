@@ -467,9 +467,10 @@ NFComp = Object.assign NFComp,
   # @returns {NFComp | NFPageComp | NFPartComp} The new comp
   ###
   specializedComp: (comp) ->
-    try
+    compItem = if comp instanceof CompItem then comp else comp.$
+    if NFPageComp.canBePageComp compItem
       return new NFPageComp comp
-    try
+    else if NFPartComp.canBePartComp compItem
       return new NFPartComp comp
 
     return new NFComp comp

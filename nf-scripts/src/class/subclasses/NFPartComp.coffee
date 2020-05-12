@@ -10,7 +10,7 @@ Creates a new NFPartComp and sets its comp property.
 class NFPartComp extends NFComp
   constructor: (comp) ->
     NFComp.call(this, comp)
-    throw new Error "Can't create an NFPartComp from a non-part comp" unless @getName().indexOf("Part") >= 0
+    throw new Error "Can't create an NFPartComp from a non-part comp" unless NFPartComp.canBePartComp(@$)
     @
 
   toString: ->
@@ -646,3 +646,15 @@ class NFPartComp extends NFComp
         if includeReferenceLayers or not theLayer.isReferenceLayer()
           matchedPages.add theLayer
     return matchedPages
+
+# Class Methods
+NFPartComp = Object.assign NFPartComp,
+
+  ###*
+  # Returns whether the CompItem can be NFPartComp
+  # @memberof NFComp
+  # @param {CompItem}
+  # @returns {boolean} if the given CompItem fits the criteria to be a NFPartComp
+  ###
+  canBePartComp: (compItem) ->
+    return compItem.name.indexOf("Part") >= 0

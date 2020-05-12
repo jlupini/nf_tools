@@ -585,8 +585,10 @@ getPanelUI = function() {
         }
         if (layer instanceof NFPageLayer) {
           group = layer.getPaperLayerGroup();
-          looseLayers.add(group.getMembers());
-          return looseLayers.add(group.paperParent);
+          if (group != null) {
+            looseLayers.add(group.getMembers());
+            return looseLayers.add(group.paperParent);
+          }
         }
       };
     })(this));
@@ -616,14 +618,16 @@ getPanelUI = function() {
         }
         if (layer instanceof NFPageLayer) {
           group = layer.getPaperLayerGroup();
-          tightLayers.add(group.paperParent);
-          tightLayers.add(group.getCitationLayer());
-          time = activeComp.getTime();
-          return group.getControlLayers().forEach(function(control) {
-            if (control.$.inPoint <= time && control.$.outPoint >= time) {
-              return tightLayers.add(control);
-            }
-          });
+          if (group != null) {
+            tightLayers.add(group.paperParent);
+            tightLayers.add(group.getCitationLayer());
+            time = activeComp.getTime();
+            return group.getControlLayers().forEach(function(control) {
+              if (control.$.inPoint <= time && control.$.outPoint >= time) {
+                return tightLayers.add(control);
+              }
+            });
+          }
         }
       };
     })(this));
