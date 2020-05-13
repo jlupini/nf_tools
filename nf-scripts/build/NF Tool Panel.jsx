@@ -339,18 +339,22 @@ toolRegistry = {
             if (item instanceof CompItem) {
               comp = new NFComp(item);
               pdfNum = comp.getName().substr(0, comp.getName().indexOf(suffix));
-              writeLn("pdf num '" + pdfNum + "'");
-              newCiteText = NFCitationLayer.fetchCitation(pdfNum);
-              textLayer = comp.allLayers().getTopmostLayer();
-              blurLayer = comp.allLayers().getBottommostLayer();
-              textLayer.property("Text").property("Source Text").setValue(newCiteText);
-              sourceRect = textLayer.sourceRect();
-              maskShape = new Shape;
-              maskShape.vertices = [[sourceRect.left - 20, sourceRect.maxY() + 9], [sourceRect.left - 20, sourceRect.top - 11], [sourceRect.maxX() + 25, sourceRect.top - 11], [sourceRect.maxX() + 25, sourceRect.maxY() + 9]];
-              maskShape.closed = true;
-              blurLayer.transform("Position").setValue([960, 540]);
-              blurLayer.transform("Anchor Point").setValue([960, 540]);
-              results.push(blurLayer.mask("Mask 1").maskPath.setValue(maskShape));
+              if (!isNaN(parseInt(pdfNum))) {
+                writeLn("pdf num '" + pdfNum + "'");
+                newCiteText = NFCitationLayer.fetchCitation(pdfNum);
+                textLayer = comp.allLayers().getTopmostLayer();
+                blurLayer = comp.allLayers().getBottommostLayer();
+                textLayer.property("Text").property("Source Text").setValue(newCiteText);
+                sourceRect = textLayer.sourceRect();
+                maskShape = new Shape;
+                maskShape.vertices = [[sourceRect.left - 20, sourceRect.maxY() + 9], [sourceRect.left - 20, sourceRect.top - 11], [sourceRect.maxX() + 25, sourceRect.top - 11], [sourceRect.maxX() + 25, sourceRect.maxY() + 9]];
+                maskShape.closed = true;
+                blurLayer.transform("Position").setValue([960, 540]);
+                blurLayer.transform("Anchor Point").setValue([960, 540]);
+                results.push(blurLayer.mask("Mask 1").maskPath.setValue(maskShape));
+              } else {
+                results.push(void 0);
+              }
             } else {
               results.push(void 0);
             }

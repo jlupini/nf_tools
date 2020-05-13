@@ -313,28 +313,30 @@ toolRegistry =
             if item instanceof CompItem
               comp = new NFComp item
               pdfNum = comp.getName().substr 0, comp.getName().indexOf(suffix)
-              writeLn "pdf num '#{pdfNum}'"
-              newCiteText = NFCitationLayer.fetchCitation pdfNum
 
-              textLayer = comp.allLayers().getTopmostLayer()
-              blurLayer = comp.allLayers().getBottommostLayer()
+              unless isNaN parseInt(pdfNum)
+                writeLn "pdf num '#{pdfNum}'"
+                newCiteText = NFCitationLayer.fetchCitation pdfNum
 
-              textLayer.property("Text").property("Source Text").setValue newCiteText
+                textLayer = comp.allLayers().getTopmostLayer()
+                blurLayer = comp.allLayers().getBottommostLayer()
 
-              sourceRect = textLayer.sourceRect()
+                textLayer.property("Text").property("Source Text").setValue newCiteText
 
-              maskShape = new Shape
-              maskShape.vertices = [
-                [sourceRect.left - 20, sourceRect.maxY() + 9]
-                [sourceRect.left - 20, sourceRect.top - 11]
-                [sourceRect.maxX() + 25, sourceRect.top - 11]
-                [sourceRect.maxX() + 25, sourceRect.maxY() + 9]
-              ]
-              maskShape.closed = true
+                sourceRect = textLayer.sourceRect()
 
-              blurLayer.transform("Position").setValue [960, 540]
-              blurLayer.transform("Anchor Point").setValue [960, 540]
-              blurLayer.mask("Mask 1").maskPath.setValue maskShape
+                maskShape = new Shape
+                maskShape.vertices = [
+                  [sourceRect.left - 20, sourceRect.maxY() + 9]
+                  [sourceRect.left - 20, sourceRect.top - 11]
+                  [sourceRect.maxX() + 25, sourceRect.top - 11]
+                  [sourceRect.maxX() + 25, sourceRect.maxY() + 9]
+                ]
+                maskShape.closed = true
+
+                blurLayer.transform("Position").setValue [960, 540]
+                blurLayer.transform("Anchor Point").setValue [960, 540]
+                blurLayer.mask("Mask 1").maskPath.setValue maskShape
 
       addGaussyLayer:
         name: "Add Gaussy"
