@@ -285,6 +285,33 @@ Property.prototype.easyEaseKeys = function(model) {
 
 
 /**
+Iterates through each property in the propertyGroup. The given function can take
+three parameters: property, i, and propertyGroup. None of the parameters are required.
+IMPORTANT: Should be used with a fat arrow to call the callback function, so
+that scope is preserved. Don't add returns inside the function plz...
+@example
+myProp.forEach (property, i, properties) =>
+  return "Property number #{i} is called #{property.name}"
+@memberof PropertyGroup
+@param {function} fn - the function to use
+@returns {PropertyGroup} self
+ */
+
+PropertyGroup.prototype.forEach = function(fn) {
+  var i, j, prop, ref;
+  if (this.numProperties === 0) {
+    return null;
+  }
+  for (i = j = 1, ref = this.numProperties; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+    prop = this.property(i);
+    $.level = 2;
+    fn(prop, i, this);
+  }
+  return this;
+};
+
+
+/**
 The After Effects Layer Class
 @namespace Layer
  */

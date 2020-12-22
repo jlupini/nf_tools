@@ -21,6 +21,14 @@ class NFComp extends NFObject
     return "NFComp: '#{@getName()}'"
 
   ###*
+  Returns the aeq.Comp object
+  @memberof NFComp
+  @returns {aeq.Comp} the aequery comp
+  ###
+  aeq: ->
+    return new aeq.Comp @$
+
+  ###*
   Gets the comp's name
   @memberof NFComp
   @returns {String} The comp's name

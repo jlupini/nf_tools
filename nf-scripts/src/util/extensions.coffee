@@ -222,6 +222,26 @@ Property::easyEaseKeys = (model) ->
     @setSpatialTangentsAtKey key, spatialEaseArray if spatialEaseArray?
 
 ###*
+Iterates through each property in the propertyGroup. The given function can take
+three parameters: property, i, and propertyGroup. None of the parameters are required.
+IMPORTANT: Should be used with a fat arrow to call the callback function, so
+that scope is preserved. Don't add returns inside the function plz...
+@example
+myProp.forEach (property, i, properties) =>
+  return "Property number #{i} is called #{property.name}"
+@memberof PropertyGroup
+@param {function} fn - the function to use
+@returns {PropertyGroup} self
+###
+PropertyGroup::forEach = (fn) ->
+  return null if @numProperties is 0
+  for i in [1..@numProperties]
+    prop = @property(i)
+    $.level = 2
+    fn prop, i, @
+  @
+
+###*
 The After Effects Layer Class
 @namespace Layer
 ###

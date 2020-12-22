@@ -21,6 +21,7 @@
     "minami": "^1.2.3"
   },
   "dependencies": {
+    "aequery": "^0.6.0",
     "color-name-list": "^4.11.0",
     "nearest-color": "^0.4.4"
   }

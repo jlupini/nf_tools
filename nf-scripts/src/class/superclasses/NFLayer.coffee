@@ -17,6 +17,14 @@ class NFLayer extends NFObject
       throw new Error "Can only create a new NFLayer with a valid AVLayer or NFLayer object"
     @
 
+  ###*
+  Returns the aeq.Layer object
+  @memberof NFLayer
+  @returns {aeq.Layer} the aequery layer
+  ###
+  aeq: ->
+    return new aeq.Layer @$
+
   # MARK: Instance Methods
   toString: ->
     return "NFLayer: '#{@$.name}'"

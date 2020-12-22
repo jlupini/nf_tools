@@ -89,6 +89,17 @@ NFComp = (function(superClass) {
 
 
   /**
+  Returns the aeq.Comp object
+  @memberof NFComp
+  @returns {aeq.Comp} the aequery comp
+   */
+
+  NFComp.prototype.aeq = function() {
+    return new aeq.Comp(this.$);
+  };
+
+
+  /**
   Gets the comp's name
   @memberof NFComp
   @returns {String} The comp's name
@@ -731,6 +742,17 @@ NFLayer = (function(superClass) {
     }
     this;
   }
+
+
+  /**
+  Returns the aeq.Layer object
+  @memberof NFLayer
+  @returns {aeq.Layer} the aequery layer
+   */
+
+  NFLayer.prototype.aeq = function() {
+    return new aeq.Layer(this.$);
+  };
 
   NFLayer.prototype.toString = function() {
     return "NFLayer: '" + this.$.name + "'";
