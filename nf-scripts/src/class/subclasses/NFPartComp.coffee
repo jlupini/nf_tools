@@ -315,6 +315,37 @@ class NFPartComp extends NFComp
     return model.page or model.highlight
 
   ###*
+  Runs a command from the layout panel
+  @memberof NFPartComp
+  @returns {NFPartComp} self
+  @param {Object} model - the parameters
+  ###
+  runLayoutCommand: (model) ->
+    PAGE_SCALE = 100
+
+    # Actually... let's start by converting a type and identifier to an actual comp or layer
+    if model.target.type is "pageComp"
+      target = new NFPageComp aeq.getComp(model.target.compName)
+
+      #FIXME check if the layer exists first
+
+      if not targetPageLayer?
+        # Insert the page
+        newPageLayer = @insertPage
+          page: target
+          continuous: yes
+        # if startTime?
+        #   newPageLayer.$.startTime = startTime
+        #   newPageLayer.$.inPoint = currTime
+        group = newPageLayer.getPaperLayerGroup()
+        newPageLayer.transform('Scale').setValue [PAGE_SCALE, PAGE_SCALE, PAGE_SCALE]
+        # newPageLayer.transform('Position').setValue PAGE_OFFSCREEN_POSITION
+        newPageLayer.effect('Drop Shadow')?.enabled = no
+        targetPageLayer = newPageLayer
+
+
+
+  ###*
   Inserts a page at the current time
   @memberof NFPartComp
   @returns {NFPageLayer} the new page layer

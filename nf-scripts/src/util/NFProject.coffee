@@ -84,7 +84,7 @@ NFProject =
   @returns {NFLayerCollection} - the selected layers
   ###
   selectedLayers: ->
-    return NFProject.activeComp().selectedLayers()
+    return NFProject.activeComp()?.selectedLayers()
 
   ###*
   Returns the single selected layer, if there's only one. otherwise null
@@ -119,7 +119,9 @@ NFProject =
   @returns {NFComp | NFPartComp | NFPageComp} the found item or null
   ###
   activeComp: ->
-    return NFComp.specializedComp app.project.activeItem
+    if aeq.isComp app.project.activeItem
+      return NFComp.specializedComp app.project.activeItem
+    else return null
 
   ###*
   Returns all the page comps in the project

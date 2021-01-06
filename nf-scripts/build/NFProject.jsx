@@ -105,7 +105,8 @@ NFProject = {
   @returns {NFLayerCollection} - the selected layers
    */
   selectedLayers: function() {
-    return NFProject.activeComp().selectedLayers();
+    var ref;
+    return (ref = NFProject.activeComp()) != null ? ref.selectedLayers() : void 0;
   },
 
   /**
@@ -149,7 +150,11 @@ NFProject = {
   @returns {NFComp | NFPartComp | NFPageComp} the found item or null
    */
   activeComp: function() {
-    return NFComp.specializedComp(app.project.activeItem);
+    if (aeq.isComp(app.project.activeItem)) {
+      return NFComp.specializedComp(app.project.activeItem);
+    } else {
+      return null;
+    }
   },
 
   /**

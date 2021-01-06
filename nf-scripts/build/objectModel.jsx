@@ -6666,6 +6666,34 @@ NFPartComp = (function(superClass) {
 
 
   /**
+  Runs a command from the layout panel
+  @memberof NFPartComp
+  @returns {NFPartComp} self
+  @param {Object} model - the parameters
+   */
+
+  NFPartComp.prototype.runLayoutCommand = function(model) {
+    var PAGE_SCALE, group, newPageLayer, ref, target, targetPageLayer;
+    PAGE_SCALE = 100;
+    if (model.target.type === "pageComp") {
+      target = new NFPageComp(aeq.getComp(model.target.compName));
+      if (typeof targetPageLayer === "undefined" || targetPageLayer === null) {
+        newPageLayer = this.insertPage({
+          page: target,
+          continuous: true
+        });
+        group = newPageLayer.getPaperLayerGroup();
+        newPageLayer.transform('Scale').setValue([PAGE_SCALE, PAGE_SCALE, PAGE_SCALE]);
+        if ((ref = newPageLayer.effect('Drop Shadow')) != null) {
+          ref.enabled = false;
+        }
+        return targetPageLayer = newPageLayer;
+      }
+    }
+  };
+
+
+  /**
   Inserts a page at the current time
   @memberof NFPartComp
   @returns {NFPageLayer} the new page layer
