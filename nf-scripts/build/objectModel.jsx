@@ -870,17 +870,22 @@ NFLayer = (function(superClass) {
   /**
   Checks if this layer is active
   @memberof NFLayer
-  @param {float} time - the time to check at
-  @returns {boolean} if this is an active layer
+  @param {float} [time] - the time to check at
+  @returns {boolean} if this is an active layer, null if the time is < 0
    */
 
   NFLayer.prototype.isActiveAtTime = function(time) {
     var currentTime, isActive;
     currentTime = this.getCompTime();
-    this.setCompTime(time);
-    isActive = this.isActive();
-    this.setCompTime(currentTime);
-    return isActive;
+    time = time != null ? time : currentTime;
+    if (time >= 0) {
+      this.setCompTime(time);
+      isActive = this.isActive();
+      this.setCompTime(currentTime);
+      return isActive;
+    } else {
+      return null;
+    }
   };
 
 
@@ -2611,6 +2616,23 @@ NFPDF = (function(superClass) {
 
 
   /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFPDF
+  @returns {Object} the CEP Panel object
+   */
+
+  NFPDF.prototype.simplify = function() {
+    var obj;
+    obj = {
+      "class": "NFPDF",
+      name: "PDF " + (this.getPDFNumber()),
+      id: this.getPDFNumber()
+    };
+    return obj;
+  };
+
+
+  /**
   Adds an NFPageComp to the PDF
   @memberof NFPDF
   @param {NFPageComp} newPage - the page to add
@@ -3473,7 +3495,7 @@ NFCitationLayer = (function(superClass) {
 
   NFCitationLayer.prototype.simplify = function() {
     var obj;
-    obj = NFCitationLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFCitationLayer";
     return obj;
   };
@@ -3783,7 +3805,7 @@ NFEmphasisLayer = (function(superClass) {
 
   NFEmphasisLayer.prototype.simplify = function() {
     var obj;
-    obj = NFEmphasisLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFEmphasisLayer";
     return obj;
   };
@@ -3849,7 +3871,7 @@ NFGaussyLayer = (function(superClass) {
 
   NFGaussyLayer.prototype.simplify = function() {
     var obj;
-    obj = NFGaussyLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFGaussyLayer";
     return obj;
   };
@@ -3978,7 +4000,7 @@ NFHighlightControlLayer = (function(superClass) {
 
   NFHighlightControlLayer.prototype.simplify = function() {
     var obj;
-    obj = NFHighlightControlLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFHighlightControlLayer";
     return obj;
   };
@@ -4303,7 +4325,7 @@ NFHighlightLayer = (function(superClass) {
 
   NFHighlightLayer.prototype.simplify = function() {
     var obj;
-    obj = NFHighlightLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFHighlightLayer";
     return obj;
   };
@@ -4851,8 +4873,10 @@ NFPageComp = (function(superClass) {
 
   NFPageComp.prototype.simplify = function() {
     var obj;
-    obj = NFPageComp.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFComp.prototype.simplify.call(this);
     obj["class"] = "NFPageComp";
+    obj.pageNumber = this.getPageNumber();
+    obj.pdfNumber = this.getPDFNumber();
     return obj;
   };
 
@@ -5053,7 +5077,7 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.simplify = function() {
     var obj;
-    obj = NFPageLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFPageLayer";
     return obj;
   };
@@ -6456,7 +6480,7 @@ NFPaperParentLayer = (function(superClass) {
 
   NFPaperParentLayer.prototype.simplify = function() {
     var obj;
-    obj = NFPaperParentLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFPaperParentLayer";
     return obj;
   };
@@ -6537,7 +6561,7 @@ NFPartComp = (function(superClass) {
 
   NFPartComp.prototype.simplify = function() {
     var obj;
-    obj = NFPartComp.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFComp.prototype.simplify.call(this);
     obj["class"] = "NFPartComp";
     return obj;
   };
@@ -7332,7 +7356,7 @@ NFShapeLayer = (function(superClass) {
 
   NFShapeLayer.prototype.simplify = function() {
     var obj;
-    obj = NFShapeLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFShapeLayer";
     return obj;
   };

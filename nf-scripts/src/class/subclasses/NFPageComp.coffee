@@ -20,8 +20,10 @@ class NFPageComp extends NFComp
   @returns {Object} the CEP Panel object
   ###
   simplify: ->
-    obj = super.simplify()
+    obj = NFComp.prototype.simplify.call @
     obj.class = "NFPageComp"
+    obj.pageNumber = @getPageNumber()
+    obj.pdfNumber = @getPDFNumber()
     return obj
 
   ###*

@@ -99,15 +99,18 @@ class NFLayer extends NFObject
   ###*
   Checks if this layer is active
   @memberof NFLayer
-  @param {float} time - the time to check at
-  @returns {boolean} if this is an active layer
+  @param {float} [time] - the time to check at
+  @returns {boolean} if this is an active layer, null if the time is < 0
   ###
   isActiveAtTime: (time) ->
     currentTime = @getCompTime()
-    @setCompTime time
-    isActive = @isActive()
-    @setCompTime currentTime
-    return isActive
+    time = time ? currentTime
+    if time >= 0
+      @setCompTime time
+      isActive = @isActive()
+      @setCompTime currentTime
+      return isActive
+    else return null
 
   ###*
   Checks if this layer is both active and is on screen (rect is partially within comp bounds)

@@ -19,7 +19,7 @@ class NFGaussyLayer extends NFLayer
   @returns {Object} the CEP Panel object
   ###
   simplify: ->
-    obj = super.simplify()
+    obj = NFLayer.prototype.simplify.call @
     obj.class = "NFGaussyLayer"
     return obj
 

@@ -22,7 +22,7 @@ class NFPartComp extends NFComp
   @returns {Object} the CEP Panel object
   ###
   simplify: ->
-    obj = super.simplify()
+    obj = NFComp.prototype.simplify.call @
     obj.class = "NFPartComp"
     return obj
 

@@ -19,7 +19,7 @@ class NFEmphasisLayer extends NFShapeLayer
   @returns {Object} the CEP Panel object
   ###
   simplify: ->
-    obj = super.simplify()
+    obj = NFLayer.prototype.simplify.call @
     obj.class = "NFEmphasisLayer"
     return obj
 

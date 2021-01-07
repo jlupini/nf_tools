@@ -25,6 +25,17 @@ class NFPDF extends NFObject
   toString: ->
     return "NFPDF: #{@getPDFNumber()}"
 
+  ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFPDF
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj =
+      class: "NFPDF"
+      name: "PDF #{@getPDFNumber()}"
+      id: @getPDFNumber()
+    return obj
 
   ###*
   Adds an NFPageComp to the PDF
