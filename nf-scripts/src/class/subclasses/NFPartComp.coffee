@@ -18,7 +18,7 @@ class NFPartComp extends NFComp
 
   ###*
   Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFCitationLayer
+  @memberof NFPartComp
   @returns {Object} the CEP Panel object
   ###
   simplify: ->
@@ -340,14 +340,20 @@ class NFPartComp extends NFComp
     PAGE_SMALL_POSITION = [552, 32]
 
 
-    cmd_FST = "fullscreen-title"
+    cmd =
+      FST: "fullscreen-title"
+      SHRINK: "shrink-page"
 
-    # Actually... let's start by converting a type and identifier to an actual comp or layer
-    if model.target.type is "pageComp"
-      target = new NFPageComp aeq.getComp(model.target.compName)
+    if model.target.class is "NFPageLayer"
+      target = @layerWithName model.target.name
+      if model.command is cmd.SHRINK
+        alert 'shrink'
 
+    if model.target.class is "NFPageComp"
+      target = new NFPageComp aeq.getComp(model.target.name)
       #FIXME check if the layer exists first
 
+      #FIXME: we don't currently define targetpagelayer
       if not targetPageLayer?
         # Insert the page
         newPageLayer = @insertPage

@@ -4867,7 +4867,7 @@ NFPageComp = (function(superClass) {
 
   /**
   Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFCitationLayer
+  @memberof NFPageComp
   @returns {Object} the CEP Panel object
    */
 
@@ -5071,7 +5071,7 @@ NFPageLayer = (function(superClass) {
 
   /**
   Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFCitationLayer
+  @memberof NFPageLayer
   @returns {Object} the CEP Panel object
    */
 
@@ -6474,7 +6474,7 @@ NFPaperParentLayer = (function(superClass) {
 
   /**
   Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFCitationLayer
+  @memberof NFPaperParentLayer
   @returns {Object} the CEP Panel object
    */
 
@@ -6555,7 +6555,7 @@ NFPartComp = (function(superClass) {
 
   /**
   Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFCitationLayer
+  @memberof NFPartComp
   @returns {Object} the CEP Panel object
    */
 
@@ -6861,16 +6861,25 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, cmd_FST, group, newPageLayer, ref, target, targetPageLayer;
+    var BOTTOM_PADDING, EDGE_PADDING, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, cmd, group, newPageLayer, ref, target, targetPageLayer;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
     PAGE_SCALE_SMALL = 17;
     PAGE_LARGE_POSITION = [5, 761];
     PAGE_SMALL_POSITION = [552, 32];
-    cmd_FST = "fullscreen-title";
-    if (model.target.type === "pageComp") {
-      target = new NFPageComp(aeq.getComp(model.target.compName));
+    cmd = {
+      FST: "fullscreen-title",
+      SHRINK: "shrink-page"
+    };
+    if (model.target["class"] === "NFPageLayer") {
+      target = this.layerWithName(model.target.name);
+      if (model.command === cmd.SHRINK) {
+        alert('shrink');
+      }
+    }
+    if (model.target["class"] === "NFPageComp") {
+      target = new NFPageComp(aeq.getComp(model.target.name));
       if (typeof targetPageLayer === "undefined" || targetPageLayer === null) {
         newPageLayer = this.insertPage({
           page: target,
@@ -7350,7 +7359,7 @@ NFShapeLayer = (function(superClass) {
 
   /**
   Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFCitationLayer
+  @memberof NFShapeLayer
   @returns {Object} the CEP Panel object
    */
 

@@ -15,7 +15,7 @@ class NFShapeLayer extends NFLayer
 
   ###*
   Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFCitationLayer
+  @memberof NFShapeLayer
   @returns {Object} the CEP Panel object
   ###
   simplify: ->

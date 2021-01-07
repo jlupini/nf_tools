@@ -16,7 +16,7 @@ class NFPageComp extends NFComp
 
   ###*
   Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFCitationLayer
+  @memberof NFPageComp
   @returns {Object} the CEP Panel object
   ###
   simplify: ->
