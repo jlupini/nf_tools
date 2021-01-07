@@ -884,6 +884,36 @@ class NFLayer extends NFObject
     shadowProp.property('Softness').setValue model?.softness ? 100
     return shadowProp
 
+  ###*
+  Animates a set of properties on the layer
+  @memberof NFLayer
+  @returns {NFLayer} self
+  @param {Object} [model=null] data model
+  @param {float} model.time
+  @param {float} model.duration
+  @param {Array} model.properties
+  @param {Array} model.values
+  ###
+  animateProperties: (model) ->
+    # model =
+    #   time: x
+    #   duration: x
+    #   properties: []
+    #   values: []
+
+    for property, i in model.properties
+      beginValue = property.valueAtTime model.time, false
+      endValue = model.values[i]
+
+      keyframeTimes = [model.time, model.time + model.duration]
+      keyframeValues = [beginValue, endValue]
+
+      property.setValuesAtTimes keyframeTimes, keyframeValues
+
+      property.easyEaseKeyTimes
+        keyTimes: keyframeTimes
+
+
 # Class Methods
 NFLayer = Object.assign NFLayer,
 

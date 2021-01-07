@@ -1891,6 +1891,36 @@ NFLayer = (function(superClass) {
     return shadowProp;
   };
 
+
+  /**
+  Animates a set of properties on the layer
+  @memberof NFLayer
+  @returns {NFLayer} self
+  @param {Object} [model=null] data model
+  @param {float} model.time
+  @param {float} model.duration
+  @param {Array} model.properties
+  @param {Array} model.values
+   */
+
+  NFLayer.prototype.animateProperties = function(model) {
+    var beginValue, endValue, i, j, keyframeTimes, keyframeValues, len, property, ref, results;
+    ref = model.properties;
+    results = [];
+    for (i = j = 0, len = ref.length; j < len; i = ++j) {
+      property = ref[i];
+      beginValue = property.valueAtTime(model.time, false);
+      endValue = model.values[i];
+      keyframeTimes = [model.time, model.time + model.duration];
+      keyframeValues = [beginValue, endValue];
+      property.setValuesAtTimes(keyframeTimes, keyframeValues);
+      results.push(property.easyEaseKeyTimes({
+        keyTimes: keyframeTimes
+      }));
+    }
+    return results;
+  };
+
   return NFLayer;
 
 })(NFObject);
@@ -6861,13 +6891,14 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, cmd, group, newPageLayer, ref, target, targetPageLayer;
+    var BOTTOM_PADDING, EDGE_PADDING, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, SHRINK_DURATION, cmd, group, newPageLayer, ref, target, targetPageLayer;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
     PAGE_SCALE_SMALL = 17;
     PAGE_LARGE_POSITION = [5, 761];
     PAGE_SMALL_POSITION = [552, 32];
+    SHRINK_DURATION = 2;
     cmd = {
       FST: "fullscreen-title",
       SHRINK: "shrink-page"
@@ -6875,7 +6906,12 @@ NFPartComp = (function(superClass) {
     if (model.target["class"] === "NFPageLayer") {
       target = this.layerWithName(model.target.name);
       if (model.command === cmd.SHRINK) {
-        alert('shrink');
+        target.animateProperties({
+          time: this.getTime(),
+          duration: SHRINK_DURATION,
+          properties: [target.transform('Position'), target.transform('Scale')],
+          values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
+        });
       }
     }
     if (model.target["class"] === "NFPageComp") {

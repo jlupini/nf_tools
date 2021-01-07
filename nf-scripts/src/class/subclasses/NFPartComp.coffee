@@ -339,6 +339,8 @@ class NFPartComp extends NFComp
     PAGE_LARGE_POSITION = [5, 761]
     PAGE_SMALL_POSITION = [552, 32]
 
+    SHRINK_DURATION = 2
+
 
     cmd =
       FST: "fullscreen-title"
@@ -347,7 +349,11 @@ class NFPartComp extends NFComp
     if model.target.class is "NFPageLayer"
       target = @layerWithName model.target.name
       if model.command is cmd.SHRINK
-        alert 'shrink'
+        target.animateProperties
+          time: @getTime()
+          duration: SHRINK_DURATION
+          properties: [target.transform('Position'), target.transform('Scale')]
+          values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
 
     if model.target.class is "NFPageComp"
       target = new NFPageComp aeq.getComp(model.target.name)
