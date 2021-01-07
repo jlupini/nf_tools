@@ -89,6 +89,24 @@ NFComp = (function(superClass) {
 
 
   /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFComp
+  @returns {Object} the CEP Panel object
+   */
+
+  NFComp.prototype.simplify = function() {
+    var obj;
+    obj = {
+      "class": "NFComp",
+      name: this.getName(),
+      id: this.getID(),
+      numLayers: this.$.numLayers
+    };
+    return obj;
+  };
+
+
+  /**
   Returns the aeq.Comp object
   @memberof NFComp
   @returns {aeq.Comp} the aequery comp
@@ -742,6 +760,26 @@ NFLayer = (function(superClass) {
     }
     this;
   }
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFLayer.prototype.simplify = function() {
+    var obj;
+    obj = {
+      "class": "NFLayer",
+      name: this.getName(),
+      index: this.index(),
+      isActiveNow: this.isActiveAtTime(),
+      inPoint: this.$.inPoint,
+      outPoint: this.$.outPoint
+    };
+    return obj;
+  };
 
 
   /**
@@ -3428,6 +3466,20 @@ NFCitationLayer = (function(superClass) {
 
 
   /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFCitationLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFCitationLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFCitationLayer";
+    return obj;
+  };
+
+
+  /**
   Adds a citation visible marker at the given time
   @memberof NFCitationLayer
   @param {float} [time=currTime] - the time to add the marker
@@ -3722,6 +3774,20 @@ NFEmphasisLayer = (function(superClass) {
     return "NFEmphasisLayer: '" + this.$.name + "'";
   };
 
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFEmphasisLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFEmphasisLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFEmphasisLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFEmphasisLayer";
+    return obj;
+  };
+
   return NFEmphasisLayer;
 
 })(NFShapeLayer);
@@ -3772,6 +3838,20 @@ NFGaussyLayer = (function(superClass) {
 
   NFGaussyLayer.prototype.toString = function() {
     return "NFGaussyLayer: '" + this.$.name + "'";
+  };
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFGaussyLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFGaussyLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFGaussyLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFGaussyLayer";
+    return obj;
   };
 
   return NFGaussyLayer;
@@ -3887,6 +3967,20 @@ NFHighlightControlLayer = (function(superClass) {
 
   NFHighlightControlLayer.prototype.toString = function() {
     return "NFHighlightControlLayer: '" + this.$.name + "'";
+  };
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFHighlightControlLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFHighlightControlLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFHighlightControlLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFHighlightControlLayer";
+    return obj;
   };
 
 
@@ -4198,6 +4292,20 @@ NFHighlightLayer = (function(superClass) {
 
   NFHighlightLayer.prototype.toString = function() {
     return "NFHighlightLayer: '" + this.$.name + "'";
+  };
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFHighlightLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFHighlightLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFHighlightLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFHighlightLayer";
+    return obj;
   };
 
 
@@ -4736,6 +4844,20 @@ NFPageComp = (function(superClass) {
 
 
   /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFPageComp.prototype.simplify = function() {
+    var obj;
+    obj = NFPageComp.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFPageComp";
+    return obj;
+  };
+
+
+  /**
   Returns the PDF number as a String
   @memberof NFPageComp
   @throws Throws error if the number could not be found in this item
@@ -4920,6 +5042,20 @@ NFPageLayer = (function(superClass) {
 
   NFPageLayer.prototype.toString = function() {
     return "NFPageLayer: '" + this.$.name + "'";
+  };
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFPageLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFPageLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFPageLayer";
+    return obj;
   };
 
 
@@ -6313,6 +6449,20 @@ NFPaperParentLayer = (function(superClass) {
 
 
   /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFPaperParentLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFPaperParentLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFPaperParentLayer";
+    return obj;
+  };
+
+
+  /**
   Returns the NFPaperLayerGroup for this parent layer
   @memberof NFPaperParentLayer
   @returns {NFPaperLayerGroup} the group
@@ -6376,6 +6526,20 @@ NFPartComp = (function(superClass) {
 
   NFPartComp.prototype.toString = function() {
     return "NFPartComp: '" + (this.getName()) + "'";
+  };
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFPartComp.prototype.simplify = function() {
+    var obj;
+    obj = NFPartComp.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFPartComp";
+    return obj;
   };
 
 
@@ -6673,17 +6837,25 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var PAGE_SCALE, group, newPageLayer, ref, target, targetPageLayer;
-    PAGE_SCALE = 100;
+    var BOTTOM_PADDING, EDGE_PADDING, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, cmd_FST, group, newPageLayer, ref, target, targetPageLayer;
+    EDGE_PADDING = 80;
+    BOTTOM_PADDING = 150;
+    PAGE_SCALE_LARGE = 44;
+    PAGE_SCALE_SMALL = 17;
+    PAGE_LARGE_POSITION = [5, 761];
+    PAGE_SMALL_POSITION = [552, 32];
+    cmd_FST = "fullscreen-title";
     if (model.target.type === "pageComp") {
       target = new NFPageComp(aeq.getComp(model.target.compName));
       if (typeof targetPageLayer === "undefined" || targetPageLayer === null) {
         newPageLayer = this.insertPage({
           page: target,
-          continuous: true
+          continuous: true,
+          animate: model.command === cmd_FST
         });
         group = newPageLayer.getPaperLayerGroup();
-        newPageLayer.transform('Scale').setValue([PAGE_SCALE, PAGE_SCALE, PAGE_SCALE]);
+        newPageLayer.transform('Scale').setValue([PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]);
+        newPageLayer.transform('Position').setValue(PAGE_LARGE_POSITION);
         if ((ref = newPageLayer.effect('Drop Shadow')) != null) {
           ref.enabled = false;
         }
@@ -7149,6 +7321,20 @@ NFShapeLayer = (function(superClass) {
 
   NFShapeLayer.prototype.toString = function() {
     return "NFShapeLayer: '" + this.$.name + "'";
+  };
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFShapeLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFShapeLayer.__super__.simplify.apply(this, arguments).simplify();
+    obj["class"] = "NFShapeLayer";
+    return obj;
   };
 
 

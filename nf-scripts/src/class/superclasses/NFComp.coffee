@@ -21,6 +21,19 @@ class NFComp extends NFObject
     return "NFComp: '#{@getName()}'"
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFComp
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj =
+      class: "NFComp"
+      name: @getName()
+      id: @getID()
+      numLayers: @$.numLayers
+    return obj
+
+  ###*
   Returns the aeq.Comp object
   @memberof NFComp
   @returns {aeq.Comp} the aequery comp

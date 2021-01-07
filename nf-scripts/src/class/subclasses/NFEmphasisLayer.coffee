@@ -13,6 +13,16 @@ class NFEmphasisLayer extends NFShapeLayer
   toString: ->
     return "NFEmphasisLayer: '#{@$.name}'"
 
+  ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFEmphasisLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFEmphasisLayer"
+    return obj
+
 
 NFEmphasisLayer = Object.assign NFEmphasisLayer,
 

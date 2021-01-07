@@ -17,6 +17,16 @@ class NFPartComp extends NFComp
     return "NFPartComp: '#{@getName()}'"
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFPartComp"
+    return obj
+
+  ###*
   Animates to a given highlight or page, with options. Will throw an error if
   there are
   other animations that take place after the current time on the same PDF in
@@ -321,7 +331,16 @@ class NFPartComp extends NFComp
   @param {Object} model - the parameters
   ###
   runLayoutCommand: (model) ->
-    PAGE_SCALE = 100
+    EDGE_PADDING = 80
+    BOTTOM_PADDING = 150
+
+    PAGE_SCALE_LARGE = 44
+    PAGE_SCALE_SMALL = 17
+    PAGE_LARGE_POSITION = [5, 761]
+    PAGE_SMALL_POSITION = [552, 32]
+
+
+    cmd_FST = "fullscreen-title"
 
     # Actually... let's start by converting a type and identifier to an actual comp or layer
     if model.target.type is "pageComp"
@@ -334,12 +353,13 @@ class NFPartComp extends NFComp
         newPageLayer = @insertPage
           page: target
           continuous: yes
+          animate: model.command is cmd_FST
         # if startTime?
         #   newPageLayer.$.startTime = startTime
         #   newPageLayer.$.inPoint = currTime
         group = newPageLayer.getPaperLayerGroup()
-        newPageLayer.transform('Scale').setValue [PAGE_SCALE, PAGE_SCALE, PAGE_SCALE]
-        # newPageLayer.transform('Position').setValue PAGE_OFFSCREEN_POSITION
+        newPageLayer.transform('Scale').setValue [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
+        newPageLayer.transform('Position').setValue PAGE_LARGE_POSITION
         newPageLayer.effect('Drop Shadow')?.enabled = no
         targetPageLayer = newPageLayer
 

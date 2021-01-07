@@ -1,15 +1,13 @@
-var gsPreset, path, testLayer;
+var partComp, str;
 
 $.evalFile(File($.fileName).path + "/runtimeLibraries.jsx");
 
 app.beginUndoGroup('Run Scratch Script');
 
-testLayer = NFProject.activeComp().selectedLayers().get(0);
+partComp = NFProject.activeComp();
 
-path = Folder(File($.fileName).parent.parent.fsName).fsName + '/lib/NF Greenscreen Preset.ffx';
+str = '{"target":{"id":2679,"type":"pageComp","pageNumber":"02","displayName":"Page 02","compName":"26_pg02 NFPage","shapes":[{"type":"shape","layerName":"Highlighter 2","displayName":"Highlighter 2 (HL)","highlight":true},{"type":"shape","layerName":"Highlighter","displayName":"Highlighter (HL)","highlight":true}]}}';
 
-gsPreset = File(path);
-
-testLayer.$.applyPreset(gsPreset);
+partComp.runLayoutCommand(JSON.parse(str));
 
 app.endUndoGroup();

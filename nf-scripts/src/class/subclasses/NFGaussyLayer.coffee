@@ -13,6 +13,16 @@ class NFGaussyLayer extends NFLayer
   toString: ->
     return "NFGaussyLayer: '#{@$.name}'"
 
+  ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFGaussyLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFGaussyLayer"
+    return obj
+
 NFGaussyLayer = Object.assign NFGaussyLayer,
 
   ###*

@@ -14,6 +14,16 @@ class NFCitationLayer extends NFLayer
     return "NFCitationLayer: '#{@$.name}'"
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFCitationLayer"
+    return obj
+
+  ###*
   Adds a citation visible marker at the given time
   @memberof NFCitationLayer
   @param {float} [time=currTime] - the time to add the marker

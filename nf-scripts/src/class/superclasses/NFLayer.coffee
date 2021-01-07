@@ -18,6 +18,21 @@ class NFLayer extends NFObject
     @
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj =
+      class: "NFLayer"
+      name: @getName()
+      index: @index()
+      isActiveNow: @isActiveAtTime()
+      inPoint: @$.inPoint
+      outPoint: @$.outPoint
+    return obj
+
+  ###*
   Returns the aeq.Layer object
   @memberof NFLayer
   @returns {aeq.Layer} the aequery layer

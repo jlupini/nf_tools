@@ -18,6 +18,16 @@ class NFHighlightControlLayer extends NFLayer
     return "NFHighlightControlLayer: '#{@$.name}'"
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFHighlightControlLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFHighlightControlLayer"
+    return obj
+
+  ###*
   Returns the spotlight markers
   @memberof NFHighlightControlLayer
   @returns {Object[]} an array of markers, with each item being an object

@@ -18,6 +18,16 @@ class NFPageLayer extends NFLayer
     return "NFPageLayer: '#{@$.name}'"
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFPageLayer"
+    return obj
+
+  ###*
   Returns a connected paper parent layer. Not to be confused with {@link NFPageLayer#findPaperParentLayer} which will return a non-connected one
   @memberof NFPageLayer
   @returns {NFPaperParentLayer | null} The paper parent layer if found

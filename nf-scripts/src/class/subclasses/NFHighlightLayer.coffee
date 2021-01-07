@@ -17,6 +17,16 @@ class NFHighlightLayer extends NFLayer
     return "NFHighlightLayer: '#{@$.name}'"
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFHighlightLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFHighlightLayer"
+    return obj
+
+  ###*
   Returns whether this highlight is bubbled up or not
   @memberof NFHighlightLayer
   @returns {boolean} if the highlight is bubbled up

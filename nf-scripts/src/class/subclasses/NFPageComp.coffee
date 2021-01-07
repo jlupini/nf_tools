@@ -15,6 +15,16 @@ class NFPageComp extends NFComp
     return "NFPageComp: '#{@getName()}'"
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFPageComp"
+    return obj
+
+  ###*
   Returns the PDF number as a String
   @memberof NFPageComp
   @throws Throws error if the number could not be found in this item

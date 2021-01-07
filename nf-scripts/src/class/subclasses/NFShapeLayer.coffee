@@ -14,6 +14,16 @@ class NFShapeLayer extends NFLayer
     return "NFShapeLayer: '#{@$.name}'"
 
   ###*
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFCitationLayer
+  @returns {Object} the CEP Panel object
+  ###
+  simplify: ->
+    obj = super.simplify()
+    obj.class = "NFShapeLayer"
+    return obj
+
+  ###*
   Adds a new rectangle to the shape layer
   @memberof NFShapeLayer
   @param {Object} model
