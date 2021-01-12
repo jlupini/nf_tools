@@ -776,7 +776,8 @@ NFLayer = (function(superClass) {
       index: this.index(),
       isActiveNow: this.isActiveAtTime(),
       inPoint: this.$.inPoint,
-      outPoint: this.$.outPoint
+      outPoint: this.$.outPoint,
+      containingComp: this.containingComp().simplify()
     };
     return obj;
   };
@@ -5292,10 +5293,10 @@ NFPageLayer = (function(superClass) {
   NFPageLayer.prototype.setDropShadow = function() {
     var ref, shadowProp;
     shadowProp = (ref = this.effects().property('ADBE Drop Shadow')) != null ? ref : this.effects().addProperty('ADBE Drop Shadow');
-    shadowProp.property('Opacity').setValue(191.25);
-    shadowProp.property('Direction').setValue(0);
-    shadowProp.property('Distance').setValue(20);
-    shadowProp.property('Softness').setValue(300);
+    shadowProp.property('Opacity').setValue(51);
+    shadowProp.property('Direction').setValue(145);
+    shadowProp.property('Distance').setValue(10);
+    shadowProp.property('Softness').setValue(47);
     return this;
   };
 
@@ -6891,18 +6892,166 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, SHRINK_DURATION, cmd, group, newPageLayer, ref, target, targetPageLayer;
+    var ALPHABET, BOTTOM_PADDING, EDGE_PADDING, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, SHRINK_DURATION, activeHighlight, activeHighlightRect, baseName, choiceRect, cmd, currTime, group, highlightThickness, i, idx, j, layerAbove, layersForPage, layersWithName, mask, matchedLayers, newMask, newPageLayer, newPosition, newScale, paddedChoiceRect, pageComp, positionProp, ref, ref1, ref2, ref3, ref4, refLayer, scaleProp, shouldExpand, startTime, target, targetPageLayer;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
     PAGE_SCALE_SMALL = 17;
     PAGE_LARGE_POSITION = [5, 761];
     PAGE_SMALL_POSITION = [552, 32];
-    SHRINK_DURATION = 2;
+    SHRINK_DURATION = 1.2;
+    ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
     cmd = {
       FST: "fullscreen-title",
-      SHRINK: "shrink-page"
+      SHRINK: "shrink-page",
+      EXPOSE: "expose"
     };
+    if (model.target["class"] === "NFShapeLayer" || model.target["class"] === "NFHighlightLayer") {
+      pageComp = new NFPageComp(aeq.getComp(model.target.containingComp.name));
+      matchedLayers = pageComp.layersWithName(model.target.name);
+      if (matchedLayers.isEmpty()) {
+        throw new Error("Can't find layer!");
+      }
+      target = null;
+      matchedLayers.forEach((function(_this) {
+        return function(layer) {
+          if (layer.index() === model.target.index) {
+            return target = layer;
+          }
+        };
+      })(this));
+      if (model.command === cmd.EXPOSE) {
+        if (!(model.target["class"] === "NFShapeLayer" || model.target["class"] === "NFHighlightLayer")) {
+          throw new Error("Wrong target type!");
+        }
+        currTime = this.getTime();
+        layersForPage = this.layersForPage(pageComp);
+        startTime = null;
+        targetPageLayer = null;
+        if (!layersForPage.isEmpty()) {
+          layersForPage.forEach((function(_this) {
+            return function(layer) {
+              startTime = layer.$.startTime;
+              if (layer.isActive()) {
+                return targetPageLayer = layer;
+              }
+            };
+          })(this));
+        }
+        if (targetPageLayer == null) {
+          throw new Error("No target page layer found");
+        }
+        shouldExpand = false;
+        if (!shouldExpand) {
+          refLayer = targetPageLayer.duplicateAsReferenceLayer();
+          baseName = (refLayer.getName()) + " <" + model.target.name + ">";
+          layersWithName = refLayer.containingComp().searchLayers(baseName, true, "Backing");
+          refLayer.$.name = baseName + " {" + ALPHABET[layersWithName.count()] + "}";
+          positionProp = refLayer.transform("Position");
+          scaleProp = refLayer.transform("Scale");
+          if (typeof newPageLayer === "undefined" || newPageLayer === null) {
+            positionProp.expression = "";
+          }
+          if (positionProp.numKeys > 0) {
+            for (idx = i = ref = positionProp.numKeys; ref <= 1 ? i <= 1 : i >= 1; idx = ref <= 1 ? ++i : --i) {
+              positionProp.removeKey(idx);
+            }
+          }
+          if (scaleProp.numKeys > 0) {
+            for (idx = j = ref1 = scaleProp.numKeys; ref1 <= 1 ? j <= 1 : j >= 1; idx = ref1 <= 1 ? ++j : --j) {
+              scaleProp.removeKey(idx);
+            }
+          }
+        }
+        choiceRect = target.sourceRect();
+        if (shouldExpand) {
+          activeHighlight = pageComp.layerWithName(refTargetName);
+          activeHighlightRect = activeHighlight.sourceRect();
+          choiceRect = choiceRect.combineWith(activeHighlightRect);
+        }
+        if (this.getTime() !== currTime) {
+          this.setTime(currTime);
+        }
+        scaleProp = refLayer.transform("Scale");
+        newScale = refLayer.getAbsoluteScaleToFrameUp({
+          rect: refLayer.relativeRect(choiceRect),
+          fillPercentage: 75,
+          maxScale: 100
+        });
+        if (shouldExpand) {
+          scaleProp.setValuesAtTimes([keyIn, keyOut], [scaleProp.valueAtTime(currTime, true), [newScale, newScale]]);
+          scaleProp.easyEaseKeyTimes({
+            keyTimes: [keyIn, keyOut]
+          });
+        } else {
+          scaleProp.setValue([newScale, newScale]);
+        }
+        positionProp = refLayer.transform("Position");
+        newPosition = refLayer.getAbsolutePositionToFrameUp({
+          rect: refLayer.relativeRect(choiceRect),
+          preventFalloff: false
+        });
+        if (shouldExpand) {
+          positionProp.setValuesAtTimes([keyIn, keyOut], [positionProp.valueAtTime(currTime, true), newPosition]);
+          positionProp.easyEaseKeyTimes({
+            keyTimes: [keyIn, keyOut]
+          });
+        } else {
+          positionProp.setValue(newPosition);
+        }
+        if ((ref2 = refLayer.effect('Drop Shadow')) != null) {
+          ref2.enabled = true;
+        }
+        highlightThickness = model.target["class"] === "NFHighlightLayer" ? target.highlighterEffect().property("Thickness").value : 0;
+        paddedChoiceRect = {
+          left: choiceRect.left,
+          top: choiceRect.top - (highlightThickness / 2),
+          width: choiceRect.width,
+          height: choiceRect.height + highlightThickness
+        };
+        if (shouldExpand) {
+          mask = refLayer.mask().property(1);
+          mask.maskShape.setValuesAtTimes([keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, true), NFTools.shapeFromRect(paddedChoiceRect)]);
+          mask.maskShape.easyEaseKeyTimes({
+            keyTimes: [keyIn, keyOut]
+          });
+        } else {
+          newMask = refLayer.mask().addProperty("Mask");
+          newMask.maskShape.setValue(NFTools.shapeFromRect(paddedChoiceRect));
+          newMask.maskExpansion.setValue(26);
+        }
+        group = targetPageLayer.getPaperLayerGroup();
+        if (group == null) {
+          return alert("No group and null found for the target page layer (" + (targetPageLayer.getName()) + "). Try deleting it and adding again before running.");
+        }
+        if (model.target["class"] === "NFHighlightLayer") {
+          group.assignControlLayer(target, null, false);
+        }
+        if (typeof newPageLayer === "undefined" || newPageLayer === null) {
+          layerAbove = (ref3 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref3 : targetPageLayer.getPaperLayerGroup().paperParent;
+          refLayer.moveAfter(layerAbove);
+          if (!shouldExpand) {
+            refLayer.$.inPoint = this.getTime();
+          }
+        }
+        if (!shouldExpand) {
+          refLayer.centerAnchorPoint();
+          refLayer.removeNFMarkers();
+          refLayer.addInOutMarkersForProperty({
+            property: refLayer.transform("Scale"),
+            startEquation: EasingEquation.quart.out,
+            startValue: [0, 0, 0],
+            length: 1
+          });
+          refLayer.addInOutMarkersForProperty({
+            property: refLayer.transform("Opacity"),
+            startEquation: EasingEquation.quart.out,
+            startValue: 0,
+            length: 1
+          });
+        }
+      }
+    }
     if (model.target["class"] === "NFPageLayer") {
       target = this.layerWithName(model.target.name);
       if (model.command === cmd.SHRINK) {
@@ -6916,17 +7065,17 @@ NFPartComp = (function(superClass) {
     }
     if (model.target["class"] === "NFPageComp") {
       target = new NFPageComp(aeq.getComp(model.target.name));
-      if (typeof targetPageLayer === "undefined" || targetPageLayer === null) {
+      if (targetPageLayer == null) {
         newPageLayer = this.insertPage({
           page: target,
           continuous: true,
-          animate: model.command === cmd_FST
+          animate: model.command === cmd.FST
         });
         group = newPageLayer.getPaperLayerGroup();
         newPageLayer.transform('Scale').setValue([PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]);
         newPageLayer.transform('Position').setValue(PAGE_LARGE_POSITION);
-        if ((ref = newPageLayer.effect('Drop Shadow')) != null) {
-          ref.enabled = false;
+        if ((ref4 = newPageLayer.effect('Drop Shadow')) != null) {
+          ref4.enabled = false;
         }
         return targetPageLayer = newPageLayer;
       }

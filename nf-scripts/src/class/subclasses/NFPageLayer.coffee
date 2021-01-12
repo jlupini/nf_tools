@@ -153,10 +153,10 @@ class NFPageLayer extends NFLayer
   ###
   setDropShadow: ->
     shadowProp = @effects().property('ADBE Drop Shadow') ? @effects().addProperty('ADBE Drop Shadow')
-    shadowProp.property('Opacity').setValue(191.25)
-    shadowProp.property('Direction').setValue(0)
-    shadowProp.property('Distance').setValue(20)
-    shadowProp.property('Softness').setValue(300)
+    shadowProp.property('Opacity').setValue(51)
+    shadowProp.property('Direction').setValue(145)
+    shadowProp.property('Distance').setValue(10)
+    shadowProp.property('Softness').setValue(47)
     @
 
   ###*

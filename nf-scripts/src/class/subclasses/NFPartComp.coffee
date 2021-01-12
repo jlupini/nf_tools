@@ -339,12 +339,185 @@ class NFPartComp extends NFComp
     PAGE_LARGE_POSITION = [5, 761]
     PAGE_SMALL_POSITION = [552, 32]
 
-    SHRINK_DURATION = 2
+    SHRINK_DURATION = 1.2
 
+    ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split ''
 
     cmd =
       FST: "fullscreen-title"
       SHRINK: "shrink-page"
+      EXPOSE: "expose"
+
+    # Looks if we selected a shape or highlight
+    if model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
+
+      pageComp = new NFPageComp aeq.getComp(model.target.containingComp.name)
+      matchedLayers = pageComp.layersWithName model.target.name
+      throw new Error "Can't find layer!" if matchedLayers.isEmpty()
+      target = null
+      matchedLayers.forEach (layer) =>
+        target = layer if layer.index() is model.target.index
+
+      if model.command is cmd.EXPOSE
+        throw new Error "Wrong target type!" unless model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
+
+        currTime = @getTime()
+
+        # Let's get the target page layer first
+        layersForPage = @layersForPage pageComp
+        startTime = null
+        targetPageLayer = null
+        unless layersForPage.isEmpty()
+          layersForPage.forEach (layer) =>
+            startTime = layer.$.startTime
+            targetPageLayer = layer if layer.isActive()
+        throw new Error "No target page layer found" unless targetPageLayer?
+
+        # FIXME: Add expand logic here
+        shouldExpand = no
+        # alert "found layer: #{target.toString()} in comp: #{pageComp.toString()}!"
+        #
+        unless shouldExpand
+          # Duplicate and convert to reference layer
+          refLayer = targetPageLayer.duplicateAsReferenceLayer()
+
+          baseName = "#{refLayer.getName()} <#{model.target.name}>"
+
+          # Unique naming
+          layersWithName = refLayer.containingComp().searchLayers baseName, yes, "Backing"
+          refLayer.$.name = "#{baseName} {#{ALPHABET[layersWithName.count()]}}"
+
+          positionProp = refLayer.transform("Position")
+          scaleProp = refLayer.transform("Scale")
+
+          positionProp.expression = "" unless newPageLayer?
+          if positionProp.numKeys > 0
+            for idx in [positionProp.numKeys..1]
+              positionProp.removeKey idx
+          if scaleProp.numKeys > 0
+            for idx in [scaleProp.numKeys..1]
+              scaleProp.removeKey idx
+
+        # Frame up that baby
+        choiceRect = target.sourceRect()
+        if shouldExpand
+          # activeRefComp = new NFPageComp refLayer.$.source
+          activeHighlight = pageComp.layerWithName refTargetName
+          activeHighlightRect = activeHighlight.sourceRect()
+          choiceRect = choiceRect.combineWith activeHighlightRect
+        @setTime(currTime) unless @getTime() is currTime
+
+        scaleProp = refLayer.transform("Scale")
+        newScale = refLayer.getAbsoluteScaleToFrameUp
+          rect: refLayer.relativeRect choiceRect
+          fillPercentage: 75
+          maxScale: 100
+
+        if shouldExpand
+          scaleProp.setValuesAtTimes [keyIn, keyOut], [scaleProp.valueAtTime(currTime, yes), [newScale, newScale]]
+          scaleProp.easyEaseKeyTimes
+            keyTimes: [keyIn, keyOut]
+        else
+          scaleProp.setValue [newScale, newScale]
+
+        positionProp = refLayer.transform("Position")
+        newPosition = refLayer.getAbsolutePositionToFrameUp
+          rect: refLayer.relativeRect choiceRect
+          preventFalloff: no
+
+        if shouldExpand
+          positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(currTime, yes), newPosition]
+          positionProp.easyEaseKeyTimes
+            keyTimes: [keyIn, keyOut]
+        else
+          positionProp.setValue newPosition
+
+        refLayer.effect('Drop Shadow')?.enabled = yes
+
+
+        # Make a mask over the text
+        highlightThickness = if model.target.class is "NFHighlightLayer" then target.highlighterEffect().property("Thickness").value else 0
+        paddedChoiceRect =
+          left: choiceRect.left
+          top: choiceRect.top - (highlightThickness/2)
+          width: choiceRect.width
+          height: choiceRect.height + highlightThickness
+        if shouldExpand
+          mask = refLayer.mask().property(1)
+          mask.maskShape.setValuesAtTimes [keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, yes), NFTools.shapeFromRect(paddedChoiceRect)]
+          mask.maskShape.easyEaseKeyTimes
+            keyTimes: [keyIn, keyOut]
+        else
+          newMask = refLayer.mask().addProperty "Mask"
+          newMask.maskShape.setValue NFTools.shapeFromRect(paddedChoiceRect)
+          newMask.maskExpansion.setValue 26
+
+        # # Create a white BG box and attach it to the ref layer
+        # unless shouldExpand
+        #   bgSolid = thisPart.addSolid
+        #     color: [1,1,1]
+        #     name: "Backing for '#{refLayer.$.name}'"
+        #   bgSolid.transform("Opacity").setValue 90
+        #   bgSolid.$.motionBlur = true
+        #   bgSolid.setShy yes
+        #
+        #   newMask = bgSolid.mask().addProperty "Mask"
+        #   newMask.maskShape.expression = NFTools.readExpression "backing-mask-expression",
+        #     TARGET_LAYER_NAME: refLayer.getName()
+        #     EDGE_PADDING: EDGE_PADDING
+        #   #newMask.maskExpansion.setValue 24
+        #   bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
+        #     TARGET_LAYER_NAME: refLayer.getName()
+        #   shadowProp = bgSolid.addDropShadow()
+        #
+        # Move the whole thing to the bottom of the screen
+        # if shouldExpand
+        #   anchorValues = refLayer.getCenterAnchorPointValue(yes, keyOut)
+        #   anchorProp = refLayer.transform "Anchor Point"
+        #   anchorProp.setValuesAtTimes [keyIn, keyOut], [anchorProp.valueAtTime(keyIn, yes), anchorValues[1]]
+        #   anchorProp.easyEaseKeyTimes
+        #     keyTimes: [keyIn, keyOut]
+        #   relRect = refLayer.relativeRect paddedChoiceRect, keyOut
+        # else
+        #   relRect = refLayer.relativeRect paddedChoiceRect
+        # boxBottom = relRect.top + relRect.height + (EDGE_PADDING / 4)
+        # compBottom = thisPart.$.height
+        # delta = compBottom - boxBottom
+        #
+        # if shouldExpand
+        #   refPosition = positionProp.valueAtTime keyOut, yes
+        #   positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(keyIn, yes), [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]]
+        #   positionProp.easyEaseKeyTimes
+        #     keyTimes: [keyIn, keyOut]
+        # else
+        #   refPosition = positionProp.value
+        #   positionProp.setValue [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]
+        #
+        # Add the HCL
+        group = targetPageLayer.getPaperLayerGroup()
+        return alert "No group and null found for the target page layer (#{targetPageLayer.getName()}). Try deleting it and adding again before running." unless group?
+        group.assignControlLayer(target, null, no) if model.target.class is "NFHighlightLayer"
+        unless newPageLayer?
+          layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
+          refLayer.moveAfter layerAbove
+          unless shouldExpand
+            refLayer.$.inPoint = @getTime()
+
+        # Animate In
+        unless shouldExpand
+          refLayer.centerAnchorPoint()
+          refLayer.removeNFMarkers()
+          refLayer.addInOutMarkersForProperty
+            property: refLayer.transform "Scale"
+            startEquation: EasingEquation.quart.out
+            startValue: [0, 0, 0]
+            length: 1
+          refLayer.addInOutMarkersForProperty
+            property: refLayer.transform "Opacity"
+            startEquation: EasingEquation.quart.out
+            startValue: 0
+            length: 1
+
 
     if model.target.class is "NFPageLayer"
       target = @layerWithName model.target.name
@@ -365,7 +538,7 @@ class NFPartComp extends NFComp
         newPageLayer = @insertPage
           page: target
           continuous: yes
-          animate: model.command is cmd_FST
+          animate: model.command is cmd.FST
         # if startTime?
         #   newPageLayer.$.startTime = startTime
         #   newPageLayer.$.inPoint = currTime

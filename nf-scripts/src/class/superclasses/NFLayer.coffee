@@ -30,6 +30,7 @@ class NFLayer extends NFObject
       isActiveNow: @isActiveAtTime()
       inPoint: @$.inPoint
       outPoint: @$.outPoint
+      containingComp: @containingComp().simplify()
     return obj
 
   ###*
