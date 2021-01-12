@@ -21,29 +21,46 @@ if targetLayer.inPoint <= time <= targetLayer.outPoint
   # Let's get the source rect for the HIGHLIGHT OR SHAPE (expose)
   shapeRect = shapeLayer.sourceRectAtTime(sourceComp.duration)
   shapePoints =
-    lt: sourceLayer.toComp shapeLayer.toComp [shapeRect.left, shapeRect.top - vShapeAdj]
-    lb: sourceLayer.toComp shapeLayer.toComp [shapeRect.left, shapeRect.top + shapeRect.height + vShapeAdj]
-    rt: sourceLayer.toComp shapeLayer.toComp [shapeRect.left + shapeRect.width, shapeRect.top - vShapeAdj]
-    rb: sourceLayer.toComp shapeLayer.toComp [shapeRect.left + shapeRect.width, shapeRect.top + shapeRect.height + vShapeAdj]
+    lt: sourceLayer.toComp(shapeLayer.toComp([shapeRect.left, shapeRect.top - vShapeAdj]))
+    lb: sourceLayer.toComp(shapeLayer.toComp([shapeRect.left, shapeRect.top + shapeRect.height + vShapeAdj]))
+    rt: sourceLayer.toComp(shapeLayer.toComp([shapeRect.left + shapeRect.width, shapeRect.top - vShapeAdj]))
+    rb: sourceLayer.toComp(shapeLayer.toComp([shapeRect.left + shapeRect.width, shapeRect.top + shapeRect.height + vShapeAdj]))
+
+  shapeHeight = shapePoints.lb[1] - shapePoints.lt[1]
+  shapeOffset = Math.min maskExpansion, shapeHeight / 2
+
+  shapePoints =
+    lt: [ shapePoints.lt[0] + shapeOffset, shapePoints.lt[1] + shapeOffset ]
+    lb: [ shapePoints.lb[0] + shapeOffset, shapePoints.lb[1] - shapeOffset ]
+    rt: [ shapePoints.rt[0] - shapeOffset, shapePoints.rt[1] + shapeOffset ]
+    rb: [ shapePoints.rb[0] - shapeOffset, shapePoints.rb[1] - shapeOffset ]
 
   # Let's get the shape of the mask for the expose
   exposeMask = targetLayer.mask('Mask 1').maskPath
   maskPointSource = exposeMask.points()
   maskPoints =
-    lt: targetLayer.toComp [maskPointSource[0][0] - maskExpansion, maskPointSource[0][1] - maskExpansion]
-    rt: targetLayer.toComp [maskPointSource[1][0] + maskExpansion, maskPointSource[1][1] - maskExpansion]
-    rb: targetLayer.toComp [maskPointSource[2][0] + maskExpansion, maskPointSource[2][1] + maskExpansion]
-    lb: targetLayer.toComp [maskPointSource[3][0] - maskExpansion, maskPointSource[3][1] + maskExpansion]
+    lt: targetLayer.toComp maskPointSource[0]
+    rt: targetLayer.toComp maskPointSource[1]
+    rb: targetLayer.toComp maskPointSource[2]
+    lb: targetLayer.toComp maskPointSource[3]
 
-  # lt2 = [lt2[0] - (edgePadding / 2), lt2[1] - (edgePadding / 3)]
-  # rt2 = [rt2[0] + (edgePadding / 2), rt2[1] - (edgePadding / 3)]
-  # rb2 = [rb2[0] + (edgePadding / 2), rb2[1] + (edgePadding / 3)]
-  # lb2 = [lb2[0] - (edgePadding / 2), lb2[1] + (edgePadding / 3)]
+  flightPathShape = []
 
-  flightPathShape = [
-    maskPoints.lb, maskPoints.lt, maskPoints.rt,
-    shapePoints.rt, shapePoints.rb, shapePoints.lb
-  ]
+  if maskPoints.lb[1] + maskExpansion <= shapePoints.lb[1]
+    flightPathShape = [
+      maskPoints.lb, maskPoints.lt, maskPoints.rt,
+      shapePoints.rt, shapePoints.rb, shapePoints.lb
+    ]
+  else if maskPoints.lt[1] - maskExpansion >= shapePoints.lt[1]
+    flightPathShape = [
+      maskPoints.lt, maskPoints.lb, maskPoints.rb,
+      shapePoints.rb, shapePoints.rt, shapePoints.lt
+    ]
+  else
+    flightPathShape = [
+      maskPoints.rb, maskPoints.lb, maskPoints.lt, maskPoints.rt,
+      shapePoints.rt, shapePoints.rb
+    ]
 
   createPath points = flightPathShape, inTangents = [], outTangents = [], is_closed = true
 
