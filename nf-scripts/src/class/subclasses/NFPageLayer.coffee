@@ -275,7 +275,43 @@ class NFPageLayer extends NFLayer
     oldName = @getName()
     refLayer = @duplicate()
     refLayer.$.name = oldName.replace("+", "ref")
-    return refLayer
+    return new NFReferencePageLayer reflayer.$
+
+  ###*
+  Duplicates the page layer and converts to a reference layer. Reference
+  layers can't be seen by Highlight Control Layers. New layer will be
+  immediately above the target layer. Returns new layer.
+  @memberof NFPageLayer
+  @param {Object} model - the data model
+  @param {NFLayer} model.target - the target shape or highlight layer
+  @returns {NFPageLayer} the new reference layer
+  ###
+  createReferenceLayer: (model) ->
+    ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split ''
+
+    oldName = @getName()
+    refLayer = @duplicate()
+    refLayer.$.name = oldName.replace("+", "ref")
+
+    baseName = "#{refLayer.getName()} <#{model.target.getName()}>"
+
+    # Unique naming
+    layersWithName = refLayer.containingComp().searchLayers baseName, yes, "FlightPath"
+    refLayer.$.name = "#{baseName} {#{ALPHABET[layersWithName.count()]}}"
+
+    # Clear position and scale animation markers from transitions
+    positionProp = refLayer.transform("Position")
+    scaleProp = refLayer.transform("Scale")
+
+    positionProp.expression = "" unless newPageLayer?
+    if positionProp.numKeys > 0
+      for idx in [positionProp.numKeys..1]
+        positionProp.removeKey idx
+    if scaleProp.numKeys > 0
+      for idx in [scaleProp.numKeys..1]
+        scaleProp.removeKey idx
+
+    return new NFReferencePageLayer reflayer.$
 
   ###*
   Returns whether or not this layer is a reference layer

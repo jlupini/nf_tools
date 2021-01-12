@@ -1,8 +1,7 @@
-targetLayerName = "25_pg01 [ref] <Green Highlighter> {a}"#'TARGET_LAYER_NAME'
-sourceLayerName = "25_pg01 [+]" #'SOURCE_LAYER_NAME'
-shapeLayerName = "Green Highlighter"#'SHAPE_LAYER_NAME'
-maskExpansion = 26 #MASK_EXPANSION
-# edgePadding = 0#'EDGE_PADDING'
+targetLayerName = 'TARGET_LAYER_NAME'
+sourceLayerName = 'SOURCE_LAYER_NAME'
+shapeLayerName = 'SHAPE_LAYER_NAME'
+maskExpansion = MASK_EXPANSION
 
 targetLayer = thisComp.layer targetLayerName
 sourceLayer = thisComp.layer sourceLayerName
@@ -46,12 +45,12 @@ if targetLayer.inPoint <= time <= targetLayer.outPoint
 
   flightPathShape = []
 
-  if maskPoints.lb[1] + maskExpansion <= shapePoints.lb[1]
+  if maskPoints.lb[1] <= shapePoints.lb[1]
     flightPathShape = [
       maskPoints.lb, maskPoints.lt, maskPoints.rt,
       shapePoints.rt, shapePoints.rb, shapePoints.lb
     ]
-  else if maskPoints.lt[1] - maskExpansion >= shapePoints.lt[1]
+  else if maskPoints.lt[1] >= shapePoints.lt[1]
     flightPathShape = [
       maskPoints.lt, maskPoints.lb, maskPoints.rb,
       shapePoints.rb, shapePoints.rt, shapePoints.lt

@@ -341,12 +341,13 @@ class NFPartComp extends NFComp
 
     SHRINK_DURATION = 1.2
 
-    ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split ''
+    MASK_EXPANSION = 26
 
     cmd =
       FST: "fullscreen-title"
       SHRINK: "shrink-page"
       EXPOSE: "expose"
+      ANCHOR: "anchor"
 
     # Looks if we selected a shape or highlight
     if model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
@@ -379,24 +380,8 @@ class NFPartComp extends NFComp
         #
         unless shouldExpand
           # Duplicate and convert to reference layer
-          refLayer = targetPageLayer.duplicateAsReferenceLayer()
-
-          baseName = "#{refLayer.getName()} <#{model.target.name}>"
-
-          # Unique naming
-          layersWithName = refLayer.containingComp().searchLayers baseName, yes, "Backing"
-          refLayer.$.name = "#{baseName} {#{ALPHABET[layersWithName.count()]}}"
-
-          positionProp = refLayer.transform("Position")
-          scaleProp = refLayer.transform("Scale")
-
-          positionProp.expression = "" unless newPageLayer?
-          if positionProp.numKeys > 0
-            for idx in [positionProp.numKeys..1]
-              positionProp.removeKey idx
-          if scaleProp.numKeys > 0
-            for idx in [scaleProp.numKeys..1]
-              scaleProp.removeKey idx
+          refLayer = targetPageLayer.createReferenceLayer
+            target: target
 
         # Frame up that baby
         choiceRect = target.sourceRect()
@@ -450,27 +435,30 @@ class NFPartComp extends NFComp
         else
           newMask = refLayer.mask().addProperty "Mask"
           newMask.maskShape.setValue NFTools.shapeFromRect(paddedChoiceRect)
-          newMask.maskExpansion.setValue 26
+          newMask.maskExpansion.setValue MASK_EXPANSION
 
-        # # Create a white BG box and attach it to the ref layer
-        # unless shouldExpand
-        #   bgSolid = thisPart.addSolid
-        #     color: [1,1,1]
-        #     name: "Backing for '#{refLayer.$.name}'"
-        #   bgSolid.transform("Opacity").setValue 90
-        #   bgSolid.$.motionBlur = true
-        #   bgSolid.setShy yes
-        #
-        #   newMask = bgSolid.mask().addProperty "Mask"
-        #   newMask.maskShape.expression = NFTools.readExpression "backing-mask-expression",
-        #     TARGET_LAYER_NAME: refLayer.getName()
-        #     EDGE_PADDING: EDGE_PADDING
-        #   #newMask.maskExpansion.setValue 24
-        #   bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
-        #     TARGET_LAYER_NAME: refLayer.getName()
-        #   shadowProp = bgSolid.addDropShadow()
-        #
-        # Move the whole thing to the bottom of the screen
+        # Create the flightpath and attach it to the ref layer
+        unless shouldExpand
+          bgSolid = @addSolid
+            color: [1,1,1]
+            name: "FlightPath -> '#{refLayer.$.name}'"
+          bgSolid.transform("Opacity").setValue 20
+          bgSolid.$.blendingMode = BlendingMode.OVERLAY
+          bgSolid.$.motionBlur = true
+          bgSolid.setShy yes
+
+          newMask = bgSolid.mask().addProperty "Mask"
+          newMask.maskExpansion.setValue MASK_EXPANSION
+          newMask.maskShape.expression = NFTools.readExpression "flightpath-path-expression",
+            TARGET_LAYER_NAME: refLayer.getName()
+            SOURCE_LAYER_NAME: targetPageLayer.getName()
+            SHAPE_LAYER_NAME: target.getName()
+            MASK_EXPANSION: MASK_EXPANSION
+          bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
+            TARGET_LAYER_NAME: refLayer.getName()
+          shadowProp = bgSolid.addDropShadow()
+
+        # # Do some repositioning
         # if shouldExpand
         #   anchorValues = refLayer.getCenterAnchorPointValue(yes, keyOut)
         #   anchorProp = refLayer.transform "Anchor Point"
@@ -492,7 +480,7 @@ class NFPartComp extends NFComp
         # else
         #   refPosition = positionProp.value
         #   positionProp.setValue [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]
-        #
+
         # Add the HCL
         group = targetPageLayer.getPaperLayerGroup()
         return alert "No group and null found for the target page layer (#{targetPageLayer.getName()}). Try deleting it and adding again before running." unless group?
@@ -518,15 +506,31 @@ class NFPartComp extends NFComp
             startValue: 0
             length: 1
 
+          bgSolid.moveAfter refLayer
+
+        group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false)
+        if model.target.class is "NFHighlightLayer"
+          controlLayer = target.getControlLayer()
+          controlLayer.removeSpotlights()
+
 
     if model.target.class is "NFPageLayer"
       target = @layerWithName model.target.name
+
       if model.command is cmd.SHRINK
         target.animateProperties
           time: @getTime()
           duration: SHRINK_DURATION
           properties: [target.transform('Position'), target.transform('Scale')]
           values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
+
+    if model.target.class is "NFReferencePageLayer"
+      refLayer = @layerWithName model.target.name
+      if model.command is cmd.ANCHOR
+        alert "anchor: #{refLayer.referencedSourceLayer().getName()}"
+
+        # Now identify the highlight
+
 
     if model.target.class is "NFPageComp"
       target = new NFPageComp aeq.getComp(model.target.name)

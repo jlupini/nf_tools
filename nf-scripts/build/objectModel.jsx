@@ -969,6 +969,10 @@ NFLayer = (function(superClass) {
     return NFShapeLayer.isShapeLayer(this.$);
   };
 
+  NFLayer.prototype.isReferencePageLayer = function() {
+    return NFReferencePageLayer.isReferencePageLayer(this.$);
+  };
+
 
   /**
   Returns a new layer of a specialized type for the contents of this layer
@@ -977,7 +981,9 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.getSpecializedLayer = function() {
-    if (this.isPageLayer()) {
+    if (this.isReferencePageLayer()) {
+      return new NFReferencePageLayer(this.$);
+    } else if (this.isPageLayer()) {
       return new NFPageLayer(this.$);
     } else if (this.isHighlightLayer()) {
       return new NFHighlightLayer(this.$);
@@ -5464,7 +5470,45 @@ NFPageLayer = (function(superClass) {
     oldName = this.getName();
     refLayer = this.duplicate();
     refLayer.$.name = oldName.replace("+", "ref");
-    return refLayer;
+    return new NFReferencePageLayer(reflayer.$);
+  };
+
+
+  /**
+  Duplicates the page layer and converts to a reference layer. Reference
+  layers can't be seen by Highlight Control Layers. New layer will be
+  immediately above the target layer. Returns new layer.
+  @memberof NFPageLayer
+  @param {Object} model - the data model
+  @param {NFLayer} model.target - the target shape or highlight layer
+  @returns {NFPageLayer} the new reference layer
+   */
+
+  NFPageLayer.prototype.createReferenceLayer = function(model) {
+    var ALPHABET, baseName, i, idx, j, layersWithName, oldName, positionProp, ref, ref1, refLayer, scaleProp;
+    ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    oldName = this.getName();
+    refLayer = this.duplicate();
+    refLayer.$.name = oldName.replace("+", "ref");
+    baseName = (refLayer.getName()) + " <" + (model.target.getName()) + ">";
+    layersWithName = refLayer.containingComp().searchLayers(baseName, true, "FlightPath");
+    refLayer.$.name = baseName + " {" + ALPHABET[layersWithName.count()] + "}";
+    positionProp = refLayer.transform("Position");
+    scaleProp = refLayer.transform("Scale");
+    if (typeof newPageLayer === "undefined" || newPageLayer === null) {
+      positionProp.expression = "";
+    }
+    if (positionProp.numKeys > 0) {
+      for (idx = i = ref = positionProp.numKeys; ref <= 1 ? i <= 1 : i >= 1; idx = ref <= 1 ? ++i : --i) {
+        positionProp.removeKey(idx);
+      }
+    }
+    if (scaleProp.numKeys > 0) {
+      for (idx = j = ref1 = scaleProp.numKeys; ref1 <= 1 ? j <= 1 : j >= 1; idx = ref1 <= 1 ? ++j : --j) {
+        scaleProp.removeKey(idx);
+      }
+    }
+    return new NFReferencePageLayer(reflayer.$);
   };
 
 
@@ -6892,7 +6936,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var ALPHABET, BOTTOM_PADDING, EDGE_PADDING, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, SHRINK_DURATION, activeHighlight, activeHighlightRect, baseName, choiceRect, cmd, currTime, group, highlightThickness, i, idx, j, layerAbove, layersForPage, layersWithName, mask, matchedLayers, newMask, newPageLayer, newPosition, newScale, paddedChoiceRect, pageComp, positionProp, ref, ref1, ref2, ref3, ref4, refLayer, scaleProp, shouldExpand, startTime, target, targetPageLayer;
+    var BOTTOM_PADDING, EDGE_PADDING, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, SHRINK_DURATION, activeHighlight, activeHighlightRect, bgSolid, choiceRect, cmd, controlLayer, currTime, group, highlightThickness, layerAbove, layersForPage, mask, matchedLayers, newMask, newPageLayer, newPosition, newScale, paddedChoiceRect, pageComp, positionProp, ref, ref1, ref2, refLayer, scaleProp, shadowProp, shouldExpand, startTime, target, targetPageLayer;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
@@ -6900,11 +6944,12 @@ NFPartComp = (function(superClass) {
     PAGE_LARGE_POSITION = [5, 761];
     PAGE_SMALL_POSITION = [552, 32];
     SHRINK_DURATION = 1.2;
-    ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    MASK_EXPANSION = 26;
     cmd = {
       FST: "fullscreen-title",
       SHRINK: "shrink-page",
-      EXPOSE: "expose"
+      EXPOSE: "expose",
+      ANCHOR: "anchor"
     };
     if (model.target["class"] === "NFShapeLayer" || model.target["class"] === "NFHighlightLayer") {
       pageComp = new NFPageComp(aeq.getComp(model.target.containingComp.name));
@@ -6943,25 +6988,9 @@ NFPartComp = (function(superClass) {
         }
         shouldExpand = false;
         if (!shouldExpand) {
-          refLayer = targetPageLayer.duplicateAsReferenceLayer();
-          baseName = (refLayer.getName()) + " <" + model.target.name + ">";
-          layersWithName = refLayer.containingComp().searchLayers(baseName, true, "Backing");
-          refLayer.$.name = baseName + " {" + ALPHABET[layersWithName.count()] + "}";
-          positionProp = refLayer.transform("Position");
-          scaleProp = refLayer.transform("Scale");
-          if (typeof newPageLayer === "undefined" || newPageLayer === null) {
-            positionProp.expression = "";
-          }
-          if (positionProp.numKeys > 0) {
-            for (idx = i = ref = positionProp.numKeys; ref <= 1 ? i <= 1 : i >= 1; idx = ref <= 1 ? ++i : --i) {
-              positionProp.removeKey(idx);
-            }
-          }
-          if (scaleProp.numKeys > 0) {
-            for (idx = j = ref1 = scaleProp.numKeys; ref1 <= 1 ? j <= 1 : j >= 1; idx = ref1 <= 1 ? ++j : --j) {
-              scaleProp.removeKey(idx);
-            }
-          }
+          refLayer = targetPageLayer.createReferenceLayer({
+            target: target
+          });
         }
         choiceRect = target.sourceRect();
         if (shouldExpand) {
@@ -6999,8 +7028,8 @@ NFPartComp = (function(superClass) {
         } else {
           positionProp.setValue(newPosition);
         }
-        if ((ref2 = refLayer.effect('Drop Shadow')) != null) {
-          ref2.enabled = true;
+        if ((ref = refLayer.effect('Drop Shadow')) != null) {
+          ref.enabled = true;
         }
         highlightThickness = model.target["class"] === "NFHighlightLayer" ? target.highlighterEffect().property("Thickness").value : 0;
         paddedChoiceRect = {
@@ -7018,7 +7047,29 @@ NFPartComp = (function(superClass) {
         } else {
           newMask = refLayer.mask().addProperty("Mask");
           newMask.maskShape.setValue(NFTools.shapeFromRect(paddedChoiceRect));
-          newMask.maskExpansion.setValue(26);
+          newMask.maskExpansion.setValue(MASK_EXPANSION);
+        }
+        if (!shouldExpand) {
+          bgSolid = this.addSolid({
+            color: [1, 1, 1],
+            name: "FlightPath -> '" + refLayer.$.name + "'"
+          });
+          bgSolid.transform("Opacity").setValue(20);
+          bgSolid.$.blendingMode = BlendingMode.OVERLAY;
+          bgSolid.$.motionBlur = true;
+          bgSolid.setShy(true);
+          newMask = bgSolid.mask().addProperty("Mask");
+          newMask.maskExpansion.setValue(MASK_EXPANSION);
+          newMask.maskShape.expression = NFTools.readExpression("flightpath-path-expression", {
+            TARGET_LAYER_NAME: refLayer.getName(),
+            SOURCE_LAYER_NAME: targetPageLayer.getName(),
+            SHAPE_LAYER_NAME: target.getName(),
+            MASK_EXPANSION: MASK_EXPANSION
+          });
+          bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression", {
+            TARGET_LAYER_NAME: refLayer.getName()
+          });
+          shadowProp = bgSolid.addDropShadow();
         }
         group = targetPageLayer.getPaperLayerGroup();
         if (group == null) {
@@ -7028,7 +7079,7 @@ NFPartComp = (function(superClass) {
           group.assignControlLayer(target, null, false);
         }
         if (typeof newPageLayer === "undefined" || newPageLayer === null) {
-          layerAbove = (ref3 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref3 : targetPageLayer.getPaperLayerGroup().paperParent;
+          layerAbove = (ref1 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref1 : targetPageLayer.getPaperLayerGroup().paperParent;
           refLayer.moveAfter(layerAbove);
           if (!shouldExpand) {
             refLayer.$.inPoint = this.getTime();
@@ -7049,6 +7100,12 @@ NFPartComp = (function(superClass) {
             startValue: 0,
             length: 1
           });
+          bgSolid.moveAfter(refLayer);
+        }
+        group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false);
+        if (model.target["class"] === "NFHighlightLayer") {
+          controlLayer = target.getControlLayer();
+          controlLayer.removeSpotlights();
         }
       }
     }
@@ -7063,6 +7120,12 @@ NFPartComp = (function(superClass) {
         });
       }
     }
+    if (model.target["class"] === "NFReferencePageLayer") {
+      refLayer = this.layerWithName(model.target.name);
+      if (model.command === cmd.ANCHOR) {
+        alert("anchor: " + (refLayer.referencedSourceLayer().getName()));
+      }
+    }
     if (model.target["class"] === "NFPageComp") {
       target = new NFPageComp(aeq.getComp(model.target.name));
       if (targetPageLayer == null) {
@@ -7074,8 +7137,8 @@ NFPartComp = (function(superClass) {
         group = newPageLayer.getPaperLayerGroup();
         newPageLayer.transform('Scale').setValue([PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]);
         newPageLayer.transform('Position').setValue(PAGE_LARGE_POSITION);
-        if ((ref4 = newPageLayer.effect('Drop Shadow')) != null) {
-          ref4.enabled = false;
+        if ((ref2 = newPageLayer.effect('Drop Shadow')) != null) {
+          ref2.enabled = false;
         }
         return targetPageLayer = newPageLayer;
       }
@@ -7787,5 +7850,100 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
     opacityProp = spotlightLayer.property("Transform").property("Opacity");
     opacityProp.expression = "comp(\"" + spotlightCompName + "\") .layer(\"" + spotlightLayerName + "\") .enabled * 100";
     return spotlightLayer;
+  }
+});
+
+
+/**
+Creates a new NFReferencePageLayer from a given AVLayer
+@class NFReferencePageLayer
+@classdesc Subclass of {@link NFPageLayer} for a reference page layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFPageLayer
+@throws Will throw an error if not given an AVLayer with a source (aka a comp layer)
+ */
+var NFReferencePageLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+NFReferencePageLayer = (function(superClass) {
+  extend(NFReferencePageLayer, superClass);
+
+  function NFReferencePageLayer(layer) {
+    NFPageLayer.call(this, layer);
+    this;
+  }
+
+  NFReferencePageLayer.prototype.toString = function() {
+    return "NFReferencePageLayer: '" + this.$.name + "'";
+  };
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFReferencePageLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFReferencePageLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFPageLayer.prototype.simplify.call(this);
+    obj["class"] = "NFReferencePageLayer";
+    return obj;
+  };
+
+
+  /**
+  returns the pagelayer being referenced at the given (default current) time
+  @memberof NFReferencePageLayer
+  @returns {NFPageLayer} the referenced page layer or null
+   */
+
+  NFReferencePageLayer.prototype.referencedPageLayer = function(time) {
+    var searchString, targetPageLayer, targetPageLayers;
+    time = time != null ? time : this.containingComp().getTime();
+    searchString = this.getPageBaseName();
+    targetPageLayers = this.containingComp().layersWithName(searchString);
+    targetPageLayer = null;
+    targetPageLayers.forEach((function(_this) {
+      return function(layer) {
+        if (layer.isActiveAtTime(time)) {
+          return targetPageLayer = layer;
+        }
+      };
+    })(this));
+    return targetPageLayer;
+  };
+
+
+  /**
+  returns the source layer being this ref layer shows at the given (default current) time
+  @memberof NFReferencePageLayer
+  @returns {NFLayer} the source layer or null
+   */
+
+  NFReferencePageLayer.prototype.referencedSourceLayer = function() {
+    var re, searchString, targetPageLayer;
+    re = /\<(.*?)\>/;
+    searchString = re.exec(this.getName())[1];
+    targetPageLayer = this.getPageComp().layerWithName(searchString);
+    return targetPageLayer;
+  };
+
+  return NFReferencePageLayer;
+
+})(NFPageLayer);
+
+NFReferencePageLayer = Object.assign(NFReferencePageLayer, {
+
+  /**
+  Returns true if the given AVLayer is a Reference Page Layer
+  @memberof NFReferencePageLayer
+  @param {AVLayer} theLayer - the layer to test
+  @returns {boolean} if the given layer is a page layer
+   */
+  isReferencePageLayer: function(theLayer) {
+    return NFLayer.isCompLayer(theLayer) && theLayer.source.name.indexOf("NFPage") >= 0 && theLayer.name.indexOf('[ref]') >= 0;
   }
 });

@@ -1,12 +1,12 @@
 var exposeMask, flightPathShape, highlighterEffect, inTangents, is_closed, maskExpansion, maskPointSource, maskPoints, ori, outTangents, points, shapeHeight, shapeLayer, shapeLayerName, shapeOffset, shapePoints, shapeRect, sourceComp, sourceLayer, sourceLayerName, targetLayer, targetLayerName, thickness, vShapeAdj;
 
-targetLayerName = "25_pg01 [ref] <Green Highlighter> {a}";
+targetLayerName = 'TARGET_LAYER_NAME';
 
-sourceLayerName = "25_pg01 [+]";
+sourceLayerName = 'SOURCE_LAYER_NAME';
 
-shapeLayerName = "Green Highlighter";
+shapeLayerName = 'SHAPE_LAYER_NAME';
 
-maskExpansion = 26;
+maskExpansion = MASK_EXPANSION;
 
 targetLayer = thisComp.layer(targetLayerName);
 
@@ -48,9 +48,9 @@ if ((targetLayer.inPoint <= time && time <= targetLayer.outPoint)) {
     lb: targetLayer.toComp(maskPointSource[3])
   };
   flightPathShape = [];
-  if (maskPoints.lb[1] + maskExpansion <= shapePoints.lb[1]) {
+  if (maskPoints.lb[1] <= shapePoints.lb[1]) {
     flightPathShape = [maskPoints.lb, maskPoints.lt, maskPoints.rt, shapePoints.rt, shapePoints.rb, shapePoints.lb];
-  } else if (maskPoints.lt[1] - maskExpansion >= shapePoints.lt[1]) {
+  } else if (maskPoints.lt[1] >= shapePoints.lt[1]) {
     flightPathShape = [maskPoints.lt, maskPoints.lb, maskPoints.rb, shapePoints.rb, shapePoints.rt, shapePoints.lt];
   } else {
     flightPathShape = [maskPoints.rb, maskPoints.lb, maskPoints.lt, maskPoints.rt, shapePoints.rt, shapePoints.rb];

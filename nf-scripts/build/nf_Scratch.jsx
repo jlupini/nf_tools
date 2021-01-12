@@ -6,7 +6,7 @@ app.beginUndoGroup('Run Scratch Script');
 
 partComp = NFProject.activeComp();
 
-str = '{"target":{"class":"NFHighlightLayer","name":"Green Highlighter","index":2,"isActiveNow":false,"inPoint":14.7147147147147,"outPoint":37.0704037370704,"containingComp":{"class":"NFPageComp","name":"25_pg01 NFPage","id":2597,"numLayers":5,"pageNumber":"01","pdfNumber":"25"}},"command":"expose"}';
+str = '{"target":{"class":"NFReferencePageLayer","name":"25_pg01 [ref] <Green Highlighter> {a}","index":4,"isActiveNow":true,"inPoint":7.64097430764097,"outPoint":599.966633299967,"containingComp":{"class":"NFPartComp","name":"Part 1","id":3601,"numLayers":11}},"command":"anchor"}';
 
 partComp.runLayoutCommand(JSON.parse(str));
 
