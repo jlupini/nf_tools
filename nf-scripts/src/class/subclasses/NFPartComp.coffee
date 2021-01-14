@@ -340,6 +340,7 @@ class NFPartComp extends NFComp
     PAGE_SMALL_POSITION = [552, 32]
 
     SHRINK_DURATION = 1.2
+    REF_ANIMATION_DURATION = 1
 
     MASK_EXPANSION = 26
 
@@ -348,6 +349,7 @@ class NFPartComp extends NFComp
       SHRINK: "shrink-page"
       EXPOSE: "expose"
       ANCHOR: "anchor"
+      END_ELEMENT: "end-element"
 
     # Looks if we selected a shape or highlight
     if model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
@@ -376,110 +378,11 @@ class NFPartComp extends NFComp
 
         # FIXME: Add expand logic here
         shouldExpand = no
-        # alert "found layer: #{target.toString()} in comp: #{pageComp.toString()}!"
-        #
         unless shouldExpand
           # Duplicate and convert to reference layer
           refLayer = targetPageLayer.createReferenceLayer
             target: target
-
-        # Frame up that baby
-        choiceRect = target.sourceRect()
-        if shouldExpand
-          # activeRefComp = new NFPageComp refLayer.$.source
-          activeHighlight = pageComp.layerWithName refTargetName
-          activeHighlightRect = activeHighlight.sourceRect()
-          choiceRect = choiceRect.combineWith activeHighlightRect
-        @setTime(currTime) unless @getTime() is currTime
-
-        scaleProp = refLayer.transform("Scale")
-        newScale = refLayer.getAbsoluteScaleToFrameUp
-          rect: refLayer.relativeRect choiceRect
-          fillPercentage: 75
-          maxScale: 100
-
-        if shouldExpand
-          scaleProp.setValuesAtTimes [keyIn, keyOut], [scaleProp.valueAtTime(currTime, yes), [newScale, newScale]]
-          scaleProp.easyEaseKeyTimes
-            keyTimes: [keyIn, keyOut]
-        else
-          scaleProp.setValue [newScale, newScale]
-
-        positionProp = refLayer.transform("Position")
-        newPosition = refLayer.getAbsolutePositionToFrameUp
-          rect: refLayer.relativeRect choiceRect
-          preventFalloff: no
-
-        if shouldExpand
-          positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(currTime, yes), newPosition]
-          positionProp.easyEaseKeyTimes
-            keyTimes: [keyIn, keyOut]
-        else
-          positionProp.setValue newPosition
-
-        refLayer.effect('Drop Shadow')?.enabled = yes
-
-
-        # Make a mask over the text
-        highlightThickness = if model.target.class is "NFHighlightLayer" then target.highlighterEffect().property("Thickness").value else 0
-        paddedChoiceRect =
-          left: choiceRect.left
-          top: choiceRect.top - (highlightThickness/2)
-          width: choiceRect.width
-          height: choiceRect.height + highlightThickness
-        if shouldExpand
-          mask = refLayer.mask().property(1)
-          mask.maskShape.setValuesAtTimes [keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, yes), NFTools.shapeFromRect(paddedChoiceRect)]
-          mask.maskShape.easyEaseKeyTimes
-            keyTimes: [keyIn, keyOut]
-        else
-          newMask = refLayer.mask().addProperty "Mask"
-          newMask.maskShape.setValue NFTools.shapeFromRect(paddedChoiceRect)
-          newMask.maskExpansion.setValue MASK_EXPANSION
-
-        # Create the flightpath and attach it to the ref layer
-        unless shouldExpand
-          bgSolid = @addSolid
-            color: [1,1,1]
-            name: "FlightPath -> '#{refLayer.$.name}'"
-          bgSolid.transform("Opacity").setValue 20
-          bgSolid.$.blendingMode = BlendingMode.OVERLAY
-          bgSolid.$.motionBlur = true
-          bgSolid.setShy yes
-
-          newMask = bgSolid.mask().addProperty "Mask"
-          newMask.maskExpansion.setValue MASK_EXPANSION
-          newMask.maskShape.expression = NFTools.readExpression "flightpath-path-expression",
-            TARGET_LAYER_NAME: refLayer.getName()
-            SOURCE_LAYER_NAME: targetPageLayer.getName()
-            SHAPE_LAYER_NAME: target.getName()
-            MASK_EXPANSION: MASK_EXPANSION
-          bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
-            TARGET_LAYER_NAME: refLayer.getName()
-          shadowProp = bgSolid.addDropShadow()
-
-        # # Do some repositioning
-        # if shouldExpand
-        #   anchorValues = refLayer.getCenterAnchorPointValue(yes, keyOut)
-        #   anchorProp = refLayer.transform "Anchor Point"
-        #   anchorProp.setValuesAtTimes [keyIn, keyOut], [anchorProp.valueAtTime(keyIn, yes), anchorValues[1]]
-        #   anchorProp.easyEaseKeyTimes
-        #     keyTimes: [keyIn, keyOut]
-        #   relRect = refLayer.relativeRect paddedChoiceRect, keyOut
-        # else
-        #   relRect = refLayer.relativeRect paddedChoiceRect
-        # boxBottom = relRect.top + relRect.height + (EDGE_PADDING / 4)
-        # compBottom = thisPart.$.height
-        # delta = compBottom - boxBottom
-        #
-        # if shouldExpand
-        #   refPosition = positionProp.valueAtTime keyOut, yes
-        #   positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(keyIn, yes), [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]]
-        #   positionProp.easyEaseKeyTimes
-        #     keyTimes: [keyIn, keyOut]
-        # else
-        #   refPosition = positionProp.value
-        #   positionProp.setValue [refPosition[0], refPosition[1] + delta - BOTTOM_PADDING]
+            maskExpansion: MASK_EXPANSION
 
         # Add the HCL
         group = targetPageLayer.getPaperLayerGroup()
@@ -494,21 +397,13 @@ class NFPartComp extends NFComp
         # Animate In
         unless shouldExpand
           refLayer.centerAnchorPoint()
-          refLayer.removeNFMarkers()
-          refLayer.addInOutMarkersForProperty
-            property: refLayer.transform "Scale"
-            startEquation: EasingEquation.quart.out
-            startValue: [0, 0, 0]
-            length: 1
-          refLayer.addInOutMarkersForProperty
-            property: refLayer.transform "Opacity"
-            startEquation: EasingEquation.quart.out
-            startValue: 0
-            length: 1
+          refLayer.animateIn REF_ANIMATION_DURATION
 
-          bgSolid.moveAfter refLayer
+        flightPath = refLayer.flightPath()
+        flightPath.$.locked = no
+        group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, refLayer.flightPath()]), false)
+        flightPath.$.locked = yes
 
-        group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, bgSolid]), false)
         if model.target.class is "NFHighlightLayer"
           controlLayer = target.getControlLayer()
           controlLayer.removeSpotlights()
@@ -524,12 +419,38 @@ class NFPartComp extends NFComp
           properties: [target.transform('Position'), target.transform('Scale')]
           values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
 
+      if model.command is cmd.END_ELEMENT
+        time = @getTime()
+        if target.$.outPoint >= time
+          target.$.outPoint = time
+          target.slideOut()
+
     if model.target.class is "NFReferencePageLayer"
       refLayer = @layerWithName model.target.name
-      if model.command is cmd.ANCHOR
-        alert "anchor: #{refLayer.referencedSourceLayer().getName()}"
 
-        # Now identify the highlight
+      if model.command is cmd.ANCHOR
+        sourceLayer = refLayer.referencedSourceLayer()
+        pageLayer = refLayer.referencedPageLayer()
+        sourceRect = new Rect pageLayer.sourceRectForLayer(sourceLayer)
+
+        refLayer.panBehindTo sourceRect.centerPoint()
+
+      if model.command is cmd.END_ELEMENT
+        time = @getTime()
+        layersToTrim = refLayer.getChildren().add refLayer
+
+        # Find and add the control layer
+        highlightName = refLayer.referencedSourceLayer()
+        pdfNumber = refLayer.getPDFNumber()
+        controlLayers = partComp.searchLayers NFHighlightControlLayer.nameForPDFNumberAndHighlight pdfNumber, highlightName
+        unless controlLayers.count() is 0
+          controlLayers.forEach (cLayer) =>
+            layersToTrim.add cLayer
+
+        layersToTrim.forEach (layer) =>
+          layer.$.outPoint = time
+
+        refLayer.animateOut REF_ANIMATION_DURATION
 
 
     if model.target.class is "NFPageComp"

@@ -35,7 +35,7 @@ class NFReferencePageLayer extends NFPageLayer
 
     # Find the target page for this ref page
     searchString = @getPageBaseName()
-    targetPageLayers = @containingComp().layersWithName searchString
+    targetPageLayers = @containingComp().searchLayers searchString
     targetPageLayer = null
     targetPageLayers.forEach (layer) =>
       targetPageLayer = layer if layer.isActiveAtTime time
@@ -56,7 +56,55 @@ class NFReferencePageLayer extends NFPageLayer
 
     return targetPageLayer
 
+  ###*
+  Sets the marker-based animation to show the layer
+  @memberof NFReferencePageLayer
+  @returns {NFReferencePageLayer} self
+  ###
+  animateIn: (duration = 1) ->
+    @addInOutMarkersForProperty
+      property: @transform "Scale"
+      startEquation: EasingEquation.quart.out
+      startValue: [0, 0, 0]
+      length: duration
+    @addInOutMarkersForProperty
+      property: @transform "Opacity"
+      startEquation: EasingEquation.quart.out
+      startValue: 0
+      length: duration
 
+    @
+
+  ###*
+  Sets the marker-based animation to hide the layer
+  @memberof NFReferencePageLayer
+  @returns {NFReferencePageLayer} self
+  ###
+  animateOut: (duration = 1) ->
+    @addInOutMarkersForProperty
+      property: @transform "Scale"
+      endEquation: EasingEquation.quart.in
+      endValue: [0, 0, 0]
+      length: duration
+    @addInOutMarkersForProperty
+      property: @transform "Opacity"
+      endEquation: EasingEquation.quart.in
+      endValue: 0
+      length: duration
+
+    @
+
+  ###*
+  Returns the flightpath layer for this layer
+  @memberof NFReferencePageLayer
+  @returns {NFLayer} the flightpath layer
+  ###
+  flightPath: ->
+    fpLayer = null
+    matchLayers = @containingComp().searchLayers @getName()
+    matchLayers.forEach (layer) =>
+      fpLayer = layer if layer.getName().indexOf "FlightPath" >= 0
+    return fpLayer
 
 # Class Methods
 NFReferencePageLayer = Object.assign NFReferencePageLayer,

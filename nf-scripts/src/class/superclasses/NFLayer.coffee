@@ -746,6 +746,7 @@ class NFLayer extends NFObject
       width: bottomRightPoint[0] - topLeftPoint[0]
       height: bottomRightPoint[1] - topLeftPoint[1]
 
+
   ###*
   Returns a rect object in this layer's containing comp that matches
   a given rect in this layer
@@ -867,6 +868,33 @@ class NFLayer extends NFObject
 
     positionProp.setValue targetValues[0]
     anchorProp.setValue targetValues[1]
+
+    @setParent parent
+    @
+
+  ###*
+  Moves the anchor point of a layer to a given point without changing
+  the layer's position in the comp.
+  @memberof NFLayer
+  @param {float[]} the point to move the anchor point to, in the COMP space
+  @returns {NFLayer} self
+  ###
+  panBehindTo: (newPoint) ->
+    parent = @getParent()
+    @setParent null
+
+    anchorProp = @transform "Anchor Point"
+    positionProp = @transform "Position"
+    scaleProp = @transform "Scale"
+
+    # Get the point in the layer space...
+    relAnchorPoint = @relativePoint anchorProp.value
+
+    pDeltaX = (newPoint[0] - relAnchorPoint[0]) / (scaleProp.value[0]/100)
+    pDeltaY = (newPoint[1] - relAnchorPoint[1]) / (scaleProp.value[1]/100)
+
+    positionProp.setValue [positionProp.value[0] + pDeltaX, positionProp.value[1] + pDeltaY]
+    anchorProp.setValue [anchorProp.value[0] + pDeltaX, anchorProp.value[1] + pDeltaY]
 
     @setParent parent
     @

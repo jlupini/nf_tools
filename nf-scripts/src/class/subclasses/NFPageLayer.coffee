@@ -247,10 +247,25 @@ class NFPageLayer extends NFLayer
   ###
   sourceRectForHighlight: (highlight, targetTime = null) ->
     throw new Error "Can't get source rect for this highlight since it's not in the layer" unless @containsHighlight highlight
+    @sourceRectForLayer highlight
+
+  ###*
+  Returns the source rect of a given layer relative to this layer's
+  parent comp.
+  @memberof NFPageLayer
+  @param {NFLayer} layer - the layer
+  @param {float} [targetTime=Current Time] - the optional time of the containing comp to
+  check at. Default is the current time of the containingComp.
+  @returns {Object} the rect object with .left, .width, .hight, .top and
+  .padding values
+  @throws Throw error if layer is not in page comp
+  ###
+  sourceRectForLayer: (layer, targetTime = null) ->
+    throw new Error "Can't get source rect for this layer since it's not in the page" unless layer.containingComp().is @getPageComp()
     currentTime = @containingComp().getTime()
-    highlightRect = highlight.sourceRect()
+    layerRect = layer.sourceRect()
     @containingComp().setTime currentTime
-    @relativeRect highlightRect, targetTime
+    @relativeRect layerRect, targetTime
 
   ###*
   Returns whether a given highlight is in this layer
@@ -284,10 +299,12 @@ class NFPageLayer extends NFLayer
   @memberof NFPageLayer
   @param {Object} model - the data model
   @param {NFLayer} model.target - the target shape or highlight layer
+  @param {NFLayer} model.maskExpansion - the expansion on the mask
   @returns {NFPageLayer} the new reference layer
   ###
   createReferenceLayer: (model) ->
     ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split ''
+    currTime = @containingComp().getTime()
 
     oldName = @getName()
     refLayer = @duplicate()
@@ -311,7 +328,89 @@ class NFPageLayer extends NFLayer
       for idx in [scaleProp.numKeys..1]
         scaleProp.removeKey idx
 
-    return new NFReferencePageLayer reflayer.$
+    refLayer.removeNFMarkers()
+
+    # Positioning and Framing and Masking
+
+    # Frame up that baby
+    choiceRect = model.target.sourceRect()
+    # if shouldExpand
+    #   # activeRefComp = new NFPageComp refLayer.$.source
+    #   activeHighlight = pageComp.layerWithName refTargetName
+    #   activeHighlightRect = activeHighlight.sourceRect()
+    #   choiceRect = choiceRect.combineWith activeHighlightRect
+    @containingComp().setTime(currTime) unless @containingComp().getTime() is currTime
+
+    scaleProp = refLayer.transform("Scale")
+    newScale = refLayer.getAbsoluteScaleToFrameUp
+      rect: refLayer.relativeRect choiceRect
+      fillPercentage: 75
+      maxScale: 100
+
+    # if shouldExpand
+    #   scaleProp.setValuesAtTimes [keyIn, keyOut], [scaleProp.valueAtTime(currTime, yes), [newScale, newScale]]
+    #   scaleProp.easyEaseKeyTimes
+    #     keyTimes: [keyIn, keyOut]
+    # else
+    scaleProp.setValue [newScale, newScale]
+
+    positionProp = refLayer.transform("Position")
+    newPosition = refLayer.getAbsolutePositionToFrameUp
+      rect: refLayer.relativeRect choiceRect
+      preventFalloff: no
+
+    # if shouldExpand
+    #   positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(currTime, yes), newPosition]
+    #   positionProp.easyEaseKeyTimes
+    #     keyTimes: [keyIn, keyOut]
+    # else
+    positionProp.setValue newPosition
+
+
+    # Make a mask over the text
+    highlightThickness = if model.target instanceof NFHighlightLayer then model.target.highlighterEffect().property("Thickness").value else 0
+    paddedChoiceRect =
+      left: choiceRect.left
+      top: choiceRect.top - (highlightThickness/2)
+      width: choiceRect.width
+      height: choiceRect.height + highlightThickness
+    # if shouldExpand
+    #   mask = refLayer.mask().property(1)
+    #   mask.maskShape.setValuesAtTimes [keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, yes), NFTools.shapeFromRect(paddedChoiceRect)]
+    #   mask.maskShape.easyEaseKeyTimes
+    #     keyTimes: [keyIn, keyOut]
+    # else
+    newMask = refLayer.mask().addProperty "Mask"
+    newMask.maskShape.setValue NFTools.shapeFromRect(paddedChoiceRect)
+    newMask.maskExpansion.setValue model.maskExpansion
+
+    # Create the flightpath and attach it to the ref layer
+    # unless shouldExpand
+    bgSolid = @containingComp().addSolid
+      color: [1,1,1]
+      name: "FlightPath -> '#{refLayer.$.name}'"
+    bgSolid.transform("Opacity").setValue 20
+    bgSolid.moveAfter refLayer
+    bgSolid.$.blendingMode = BlendingMode.OVERLAY
+    bgSolid.$.motionBlur = true
+    bgSolid.$.locked = yes
+    bgSolid.setShy yes
+
+    newMask = bgSolid.mask().addProperty "Mask"
+    newMask.maskExpansion.setValue model.maskExpansion
+    newMask.maskShape.expression = NFTools.readExpression "flightpath-path-expression",
+      TARGET_LAYER_NAME: refLayer.getName()
+      SOURCE_LAYER_NAME: @getName()
+      SHAPE_LAYER_NAME: model.target.getName()
+      MASK_EXPANSION: model.maskExpansion
+    bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
+      TARGET_LAYER_NAME: refLayer.getName()
+    shadowProp = bgSolid.addDropShadow()
+
+    refLayer.effect('Drop Shadow')?.enabled = yes
+    refLayer.setParent @
+
+    return new NFReferencePageLayer refLayer.$
 
   ###*
   Returns whether or not this layer is a reference layer
