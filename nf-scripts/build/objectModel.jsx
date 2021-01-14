@@ -7071,6 +7071,9 @@ NFPartComp = (function(superClass) {
           }
         };
       })(this));
+      if (target == null) {
+        throw new Error("No target shape or highlight found!");
+      }
       if (model.command === cmd.EXPOSE) {
         if (!(model.target["class"] === "NFShapeLayer" || model.target["class"] === "NFHighlightLayer")) {
           throw new Error("Wrong target type!");

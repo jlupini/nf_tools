@@ -360,6 +360,7 @@ class NFPartComp extends NFComp
       target = null
       matchedLayers.forEach (layer) =>
         target = layer if layer.index() is model.target.index
+      throw new Error "No target shape or highlight found!" unless target?
 
       if model.command is cmd.EXPOSE
         throw new Error "Wrong target type!" unless model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
