@@ -341,6 +341,7 @@ class NFPartComp extends NFComp
 
     SHRINK_DURATION = 1.2
     REF_ANIMATION_DURATION = 1
+    EXPAND_DURATION = 1
 
     MASK_EXPANSION = 26
 
@@ -348,6 +349,7 @@ class NFPartComp extends NFComp
       FST: "fullscreen-title"
       SHRINK: "shrink-page"
       EXPOSE: "expose"
+      EXPAND: "expand"
       ANCHOR: "anchor"
       END_ELEMENT: "end-element"
 
@@ -362,43 +364,72 @@ class NFPartComp extends NFComp
         target = layer if layer.index() is model.target.index
       throw new Error "No target shape or highlight found!" unless target?
 
+      currTime = @getTime()
+
+      # Let's get the target page layer first
+      layersForPage = @layersForPage pageComp
+      startTime = null
+      targetPageLayer = null
+      unless layersForPage.isEmpty()
+        layersForPage.forEach (layer) =>
+          startTime = layer.$.startTime
+          targetPageLayer = layer if layer.isActive()
+      throw new Error "No target page layer found" unless targetPageLayer?
+
+      if model.command is cmd.EXPAND
+        bgSolid = null
+        # First, make sure we actually wanna do this. Is there an active ref that this expands the highlight of?
+        refLayers = @searchLayers("[ref]")
+        unless refLayers.isEmpty()
+          activeRefs = new NFLayerCollection()
+          refLayers.forEach (ref) =>
+            if ref.isActive()
+              if ref.getName().indexOf("FlightPath") < 0
+                activeRefs.add ref
+              else
+                bgSolid = ref
+          if activeRefs.count() isnt 1
+            throw new Error "Can only animate an expand if there's just one matching active ref"
+          else
+            refLayer = activeRefs.get(0)
+            # refTargetName = refLayer.referencedSourceLayer().getName()
+            # if target.getName().indexOf(refTargetName) >= 0
+            #   keyIn = currTime - 0.5
+            #   keyOut = currTime + 0.5
+
+        refLayer.expandTo
+          layer: target
+          duration: EXPAND_DURATION
+
+        group = targetPageLayer.getPaperLayerGroup()
+        return alert "No group and null found for the target page layer (#{targetPageLayer.getName()}). Try deleting it and adding again before running." unless group?
+        group.assignControlLayer(target, null, no)
+
+        layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
+        refLayer.moveAfter layerAbove
+
+        controlLayer = target.getControlLayer()
+        controlLayer.removeSpotlights()
+
       if model.command is cmd.EXPOSE
-        throw new Error "Wrong target type!" unless model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
 
-        currTime = @getTime()
-
-        # Let's get the target page layer first
-        layersForPage = @layersForPage pageComp
-        startTime = null
-        targetPageLayer = null
-        unless layersForPage.isEmpty()
-          layersForPage.forEach (layer) =>
-            startTime = layer.$.startTime
-            targetPageLayer = layer if layer.isActive()
-        throw new Error "No target page layer found" unless targetPageLayer?
-
-        # FIXME: Add expand logic here
-        shouldExpand = no
-        unless shouldExpand
-          # Duplicate and convert to reference layer
-          refLayer = targetPageLayer.createReferenceLayer
-            target: target
-            maskExpansion: MASK_EXPANSION
+        # Duplicate and convert to reference layer
+        refLayer = targetPageLayer.createReferenceLayer
+          target: target
+          maskExpansion: MASK_EXPANSION
 
         # Add the HCL
         group = targetPageLayer.getPaperLayerGroup()
         return alert "No group and null found for the target page layer (#{targetPageLayer.getName()}). Try deleting it and adding again before running." unless group?
         group.assignControlLayer(target, null, no) if model.target.class is "NFHighlightLayer"
-        unless newPageLayer?
-          layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
-          refLayer.moveAfter layerAbove
-          unless shouldExpand
-            refLayer.$.inPoint = @getTime()
+
+        layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
+        refLayer.moveAfter layerAbove
+        refLayer.$.inPoint = @getTime()
 
         # Animate In
-        unless shouldExpand
-          refLayer.centerAnchorPoint()
-          refLayer.animateIn REF_ANIMATION_DURATION
+        refLayer.centerAnchorPoint()
+        refLayer.animateIn REF_ANIMATION_DURATION
 
         flightPath = refLayer.flightPath()
         flightPath.$.locked = no

@@ -6770,16 +6770,16 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.animateTo = function(model) {
-    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, isTitlePage, isUsedInPartAboveCurrentLayer, latestKeyTime, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer, trimTime;
+    var activePDF, activePageLayer, alreadyInThisPart, containingPartComps, group, isTitlePage, isUsedInPartAboveCurrentLayer, latestKeyTime, layersForPage, pageTurnDuration, posProp, preAnimationTime, prevGroup, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, targetGroup, targetPDF, targetPage, targetPageLayer, titlePage, titlePageLayer, trimTime;
     model = {
       highlight: model.highlight,
       page: model.page,
       time: model.time,
-      animationDuration: (ref = model.animationDuration) != null ? ref : 3,
-      pageTurnDuration: (ref1 = model.pageTurnDuration) != null ? ref1 : 2,
-      maxPageScale: (ref2 = model.maxPageScale) != null ? ref2 : 115,
-      skipTitle: (ref3 = model.skipTitle) != null ? ref3 : false,
-      fillPercentage: (ref4 = model.fillPercentage) != null ? ref4 : 85
+      animationDuration: (ref1 = model.animationDuration) != null ? ref1 : 3,
+      pageTurnDuration: (ref2 = model.pageTurnDuration) != null ? ref2 : 2,
+      maxPageScale: (ref3 = model.maxPageScale) != null ? ref3 : 115,
+      skipTitle: (ref4 = model.skipTitle) != null ? ref4 : false,
+      fillPercentage: (ref5 = model.fillPercentage) != null ? ref5 : 85
     };
     if (!((model.highlight != null) || (model.page != null))) {
       throw new Error("No highlight or page to animate to");
@@ -6799,7 +6799,7 @@ NFPartComp = (function(superClass) {
       targetPDF = model.highlight.getPDF();
     }
     containingPartComps = targetPDF.containingPartComps();
-    targetPage = (ref5 = model.page) != null ? ref5 : model.highlight.getPageComp();
+    targetPage = (ref6 = model.page) != null ? ref6 : model.highlight.getPageComp();
     preAnimationTime = this.getTime();
     if (model.time != null) {
       this.setTime(model.time);
@@ -6893,12 +6893,12 @@ NFPartComp = (function(superClass) {
           }
         }
       }
-      if ((ref6 = this.activePDF()) != null ? ref6.is(targetPDF) : void 0) {
+      if ((ref7 = this.activePDF()) != null ? ref7.is(targetPDF) : void 0) {
         activePageLayer = this.activePage();
         group = new NFPaperLayerGroup(activePageLayer.getPaperParentLayer());
         if (targetPage.is(activePageLayer.getPageComp())) {
           group.moveTo({
-            highlight: (ref7 = model.highlight) != null ? ref7 : null,
+            highlight: (ref8 = model.highlight) != null ? ref8 : null,
             rect: model.highlight != null ? null : activePageLayer.sourceRectForFullTop(),
             layer: model.highlight != null ? null : activePageLayer,
             duration: model.animationDuration,
@@ -7040,7 +7040,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, cmd, controlLayer, controlLayers, currTime, flightPath, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, ref, ref1, refLayer, shouldExpand, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, ref1, ref2, ref3, refLayer, refLayers, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
@@ -7049,11 +7049,13 @@ NFPartComp = (function(superClass) {
     PAGE_SMALL_POSITION = [552, 32];
     SHRINK_DURATION = 1.2;
     REF_ANIMATION_DURATION = 1;
+    EXPAND_DURATION = 1;
     MASK_EXPANSION = 26;
     cmd = {
       FST: "fullscreen-title",
       SHRINK: "shrink-page",
       EXPOSE: "expose",
+      EXPAND: "expand",
       ANCHOR: "anchor",
       END_ELEMENT: "end-element"
     };
@@ -7074,34 +7076,64 @@ NFPartComp = (function(superClass) {
       if (target == null) {
         throw new Error("No target shape or highlight found!");
       }
-      if (model.command === cmd.EXPOSE) {
-        if (!(model.target["class"] === "NFShapeLayer" || model.target["class"] === "NFHighlightLayer")) {
-          throw new Error("Wrong target type!");
-        }
-        currTime = this.getTime();
-        layersForPage = this.layersForPage(pageComp);
-        startTime = null;
-        targetPageLayer = null;
-        if (!layersForPage.isEmpty()) {
-          layersForPage.forEach((function(_this) {
-            return function(layer) {
-              startTime = layer.$.startTime;
-              if (layer.isActive()) {
-                return targetPageLayer = layer;
+      currTime = this.getTime();
+      layersForPage = this.layersForPage(pageComp);
+      startTime = null;
+      targetPageLayer = null;
+      if (!layersForPage.isEmpty()) {
+        layersForPage.forEach((function(_this) {
+          return function(layer) {
+            startTime = layer.$.startTime;
+            if (layer.isActive()) {
+              return targetPageLayer = layer;
+            }
+          };
+        })(this));
+      }
+      if (targetPageLayer == null) {
+        throw new Error("No target page layer found");
+      }
+      if (model.command === cmd.EXPAND) {
+        bgSolid = null;
+        refLayers = this.searchLayers("[ref]");
+        if (!refLayers.isEmpty()) {
+          activeRefs = new NFLayerCollection();
+          refLayers.forEach((function(_this) {
+            return function(ref) {
+              if (ref.isActive()) {
+                if (ref.getName().indexOf("FlightPath") < 0) {
+                  return activeRefs.add(ref);
+                } else {
+                  return bgSolid = ref;
+                }
               }
             };
           })(this));
+          if (activeRefs.count() !== 1) {
+            throw new Error("Can only animate an expand if there's just one matching active ref");
+          } else {
+            refLayer = activeRefs.get(0);
+          }
         }
-        if (targetPageLayer == null) {
-          throw new Error("No target page layer found");
+        refLayer.expandTo({
+          layer: target,
+          duration: EXPAND_DURATION
+        });
+        group = targetPageLayer.getPaperLayerGroup();
+        if (group == null) {
+          return alert("No group and null found for the target page layer (" + (targetPageLayer.getName()) + "). Try deleting it and adding again before running.");
         }
-        shouldExpand = false;
-        if (!shouldExpand) {
-          refLayer = targetPageLayer.createReferenceLayer({
-            target: target,
-            maskExpansion: MASK_EXPANSION
-          });
-        }
+        group.assignControlLayer(target, null, false);
+        layerAbove = (ref1 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref1 : targetPageLayer.getPaperLayerGroup().paperParent;
+        refLayer.moveAfter(layerAbove);
+        controlLayer = target.getControlLayer();
+        controlLayer.removeSpotlights();
+      }
+      if (model.command === cmd.EXPOSE) {
+        refLayer = targetPageLayer.createReferenceLayer({
+          target: target,
+          maskExpansion: MASK_EXPANSION
+        });
         group = targetPageLayer.getPaperLayerGroup();
         if (group == null) {
           return alert("No group and null found for the target page layer (" + (targetPageLayer.getName()) + "). Try deleting it and adding again before running.");
@@ -7109,17 +7141,11 @@ NFPartComp = (function(superClass) {
         if (model.target["class"] === "NFHighlightLayer") {
           group.assignControlLayer(target, null, false);
         }
-        if (typeof newPageLayer === "undefined" || newPageLayer === null) {
-          layerAbove = (ref = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref : targetPageLayer.getPaperLayerGroup().paperParent;
-          refLayer.moveAfter(layerAbove);
-          if (!shouldExpand) {
-            refLayer.$.inPoint = this.getTime();
-          }
-        }
-        if (!shouldExpand) {
-          refLayer.centerAnchorPoint();
-          refLayer.animateIn(REF_ANIMATION_DURATION);
-        }
+        layerAbove = (ref2 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref2 : targetPageLayer.getPaperLayerGroup().paperParent;
+        refLayer.moveAfter(layerAbove);
+        refLayer.$.inPoint = this.getTime();
+        refLayer.centerAnchorPoint();
+        refLayer.animateIn(REF_ANIMATION_DURATION);
         flightPath = refLayer.flightPath();
         flightPath.$.locked = false;
         group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, refLayer.flightPath()]), false);
@@ -7188,8 +7214,8 @@ NFPartComp = (function(superClass) {
         group = newPageLayer.getPaperLayerGroup();
         newPageLayer.transform('Scale').setValue([PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]);
         newPageLayer.transform('Position').setValue(PAGE_LARGE_POSITION);
-        if ((ref1 = newPageLayer.effect('Drop Shadow')) != null) {
-          ref1.enabled = false;
+        if ((ref3 = newPageLayer.effect('Drop Shadow')) != null) {
+          ref3.enabled = false;
         }
         return targetPageLayer = newPageLayer;
       }
@@ -7220,7 +7246,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.insertPage = function(model) {
-    var group, layersForPage, pageLayer, ref, ref1, ref2;
+    var group, layersForPage, pageLayer, ref1, ref2, ref3;
     this.log("Inserting page: " + model.page.$.name);
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
       throw new Error("No page given to insert...");
@@ -7228,9 +7254,9 @@ NFPartComp = (function(superClass) {
     if (!((model.above != null) || (model.below != null) || (model.at != null))) {
       model.at = 0;
     }
-    model.time = (ref = model.time) != null ? ref : this.getTime();
-    model.pageTurn = (ref1 = model.pageTurn) != null ? ref1 : NFPageLayer.PAGETURN_NONE;
-    model.continuous = (ref2 = model.continuous) != null ? ref2 : false;
+    model.time = (ref1 = model.time) != null ? ref1 : this.getTime();
+    model.pageTurn = (ref2 = model.pageTurn) != null ? ref2 : NFPageLayer.PAGETURN_NONE;
+    model.continuous = (ref3 = model.continuous) != null ? ref3 : false;
     pageLayer = this.insertComp({
       comp: model.page,
       above: model.above,
@@ -7280,9 +7306,9 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.addPlaceholder = function(model) {
-    var activeGroup, activePDF, placeholder, ref, ref1;
-    model.time = (ref = model.time) != null ? ref : this.getTime();
-    model.duration = (ref1 = model.duration) != null ? ref1 : this.$.duration - model.time;
+    var activeGroup, activePDF, placeholder, ref1, ref2;
+    model.time = (ref1 = model.time) != null ? ref1 : this.getTime();
+    model.duration = (ref2 = model.duration) != null ? ref2 : this.$.duration - model.time;
     activePDF = this.activePDF(model.time);
     if (activePDF != null) {
       activeGroup = this.groupFromPDF(activePDF);
@@ -7334,12 +7360,12 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.addGaussy = function(model) {
-    var activeGaussy, activeGroup, activePDF, belowTarget, children, gaussy, placeholder, ref, ref1;
+    var activeGaussy, activeGroup, activePDF, belowTarget, children, gaussy, placeholder, ref1, ref2;
     if (model == null) {
       model = {};
     }
-    model.time = (ref = model.time) != null ? ref : this.getTime();
-    model.duration = (ref1 = model.duration) != null ? ref1 : this.$.duration - model.time;
+    model.time = (ref1 = model.time) != null ? ref1 : this.getTime();
+    model.duration = (ref2 = model.duration) != null ? ref2 : this.$.duration - model.time;
     activePDF = this.activePDF(model.time);
     if (activePDF != null) {
       activeGroup = this.groupFromPDF(activePDF);
@@ -8053,6 +8079,51 @@ NFReferencePageLayer = (function(superClass) {
       };
     })(this));
     return fpLayer;
+  };
+
+
+  /**
+  Expands the ref layer to show another given highlight layer
+  @memberof NFReferencePageLayer
+  @param {Object} model
+  @param {NFHighlightLayer} model.layer
+  @returns {NFReferencePageLayer} self
+   */
+
+  NFReferencePageLayer.prototype.expandTo = function(model) {
+    var activeHighlightRect, currTime, expandedRect, highlightThickness, keyIn, keyOut, mask, newScale, paddedExpandedRect, scaleProp, target;
+    target = model.layer;
+    activeHighlightRect = this.referencedSourceLayer().sourceRect();
+    expandedRect = target.sourceRect().combineWith(activeHighlightRect);
+    currTime = this.containingComp().getTime();
+    if (this.containingComp().getTime() !== currTime) {
+      this.containingComp().setTime(currTime);
+    }
+    keyIn = currTime - model.duration / 2;
+    keyOut = currTime + model.duration / 2;
+    scaleProp = this.transform("Scale");
+    newScale = this.getAbsoluteScaleToFrameUp({
+      rect: this.relativeRect(expandedRect),
+      fillPercentage: 75,
+      maxScale: 100
+    });
+    scaleProp.setValuesAtTimes([keyIn, keyOut], [scaleProp.valueAtTime(currTime, true), [newScale, newScale]]);
+    scaleProp.easyEaseKeyTimes({
+      keyTimes: [keyIn, keyOut]
+    });
+    highlightThickness = target.highlighterEffect().property("Thickness").value;
+    paddedExpandedRect = {
+      left: expandedRect.left,
+      top: expandedRect.top - (highlightThickness / 2),
+      width: expandedRect.width,
+      height: expandedRect.height + highlightThickness
+    };
+    mask = this.mask().property(1);
+    mask.maskShape.setValuesAtTimes([keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, true), NFTools.shapeFromRect(paddedExpandedRect)]);
+    mask.maskShape.easyEaseKeyTimes({
+      keyTimes: [keyIn, keyOut]
+    });
+    return this;
   };
 
   return NFReferencePageLayer;

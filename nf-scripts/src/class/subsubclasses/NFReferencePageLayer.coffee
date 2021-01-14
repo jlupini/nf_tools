@@ -106,6 +106,50 @@ class NFReferencePageLayer extends NFPageLayer
       fpLayer = layer if layer.getName().indexOf "FlightPath" >= 0
     return fpLayer
 
+  ###*
+  Expands the ref layer to show another given highlight layer
+  @memberof NFReferencePageLayer
+  @param {Object} model
+  @param {NFHighlightLayer} model.layer
+  @returns {NFReferencePageLayer} self
+  ###
+  expandTo: (model) ->
+    target = model.layer
+
+    # Frame up that baby
+    activeHighlightRect = @referencedSourceLayer().sourceRect()
+    expandedRect = target.sourceRect().combineWith activeHighlightRect
+
+    currTime = @containingComp().getTime()
+    @containingComp().setTime(currTime) unless @containingComp().getTime() is currTime
+    keyIn = currTime - model.duration/2
+    keyOut = currTime + model.duration/2
+
+    scaleProp = @transform("Scale")
+    newScale = @getAbsoluteScaleToFrameUp
+      rect: @relativeRect expandedRect
+      fillPercentage: 75
+      maxScale: 100
+
+    scaleProp.setValuesAtTimes [keyIn, keyOut], [scaleProp.valueAtTime(currTime, yes), [newScale, newScale]]
+    scaleProp.easyEaseKeyTimes
+      keyTimes: [keyIn, keyOut]
+
+    # Make a mask over the text
+    highlightThickness = target.highlighterEffect().property("Thickness").value
+    paddedExpandedRect =
+      left: expandedRect.left
+      top: expandedRect.top - (highlightThickness/2)
+      width: expandedRect.width
+      height: expandedRect.height + highlightThickness
+
+    mask = @mask().property(1)
+    mask.maskShape.setValuesAtTimes [keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, yes), NFTools.shapeFromRect(paddedExpandedRect)]
+    mask.maskShape.easyEaseKeyTimes
+      keyTimes: [keyIn, keyOut]
+
+    @
+
 # Class Methods
 NFReferencePageLayer = Object.assign NFReferencePageLayer,
 

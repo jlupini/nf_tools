@@ -334,11 +334,6 @@ class NFPageLayer extends NFLayer
 
     # Frame up that baby
     choiceRect = model.target.sourceRect()
-    # if shouldExpand
-    #   # activeRefComp = new NFPageComp refLayer.$.source
-    #   activeHighlight = pageComp.layerWithName refTargetName
-    #   activeHighlightRect = activeHighlight.sourceRect()
-    #   choiceRect = choiceRect.combineWith activeHighlightRect
     @containingComp().setTime(currTime) unless @containingComp().getTime() is currTime
 
     scaleProp = refLayer.transform("Scale")
@@ -347,11 +342,6 @@ class NFPageLayer extends NFLayer
       fillPercentage: 75
       maxScale: 100
 
-    # if shouldExpand
-    #   scaleProp.setValuesAtTimes [keyIn, keyOut], [scaleProp.valueAtTime(currTime, yes), [newScale, newScale]]
-    #   scaleProp.easyEaseKeyTimes
-    #     keyTimes: [keyIn, keyOut]
-    # else
     scaleProp.setValue [newScale, newScale]
 
     positionProp = refLayer.transform("Position")
@@ -359,13 +349,7 @@ class NFPageLayer extends NFLayer
       rect: refLayer.relativeRect choiceRect
       preventFalloff: no
 
-    # if shouldExpand
-    #   positionProp.setValuesAtTimes [keyIn, keyOut], [positionProp.valueAtTime(currTime, yes), newPosition]
-    #   positionProp.easyEaseKeyTimes
-    #     keyTimes: [keyIn, keyOut]
-    # else
     positionProp.setValue newPosition
-
 
     # Make a mask over the text
     highlightThickness = if model.target instanceof NFHighlightLayer then model.target.highlighterEffect().property("Thickness").value else 0
@@ -374,18 +358,12 @@ class NFPageLayer extends NFLayer
       top: choiceRect.top - (highlightThickness/2)
       width: choiceRect.width
       height: choiceRect.height + highlightThickness
-    # if shouldExpand
-    #   mask = refLayer.mask().property(1)
-    #   mask.maskShape.setValuesAtTimes [keyIn, keyOut], [mask.maskShape.valueAtTime(currTime, yes), NFTools.shapeFromRect(paddedChoiceRect)]
-    #   mask.maskShape.easyEaseKeyTimes
-    #     keyTimes: [keyIn, keyOut]
-    # else
+
     newMask = refLayer.mask().addProperty "Mask"
     newMask.maskShape.setValue NFTools.shapeFromRect(paddedChoiceRect)
     newMask.maskExpansion.setValue model.maskExpansion
 
     # Create the flightpath and attach it to the ref layer
-    # unless shouldExpand
     bgSolid = @containingComp().addSolid
       color: [1,1,1]
       name: "FlightPath -> '#{refLayer.$.name}'"
