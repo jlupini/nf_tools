@@ -1,12 +1,10 @@
-var exposeMask, flightPathShape, highlighterEffect, inTangents, is_closed, maskExpansion, maskPointSource, maskPoints, ori, outTangents, points, shapeHeight, shapeLayer, shapeLayerName, shapeOffset, shapePoints, shapeRect, sourceComp, sourceLayer, sourceLayerName, targetLayer, targetLayerName, thickness, vShapeAdj;
+var error, error1, exposeMask, flightPathShape, highlighterEffect, inTangents, is_closed, maskExpansion, maskPointSource, maskPoints, ori, outTangents, points, shapeHeight, shapeLayer, shapeLayerName, shapeOffset, shapePoints, shapeRect, sourceComp, sourceLayer, sourceLayerName, targetLayer, targetLayerName, thickness, vShapeAdj;
 
 targetLayerName = 'TARGET_LAYER_NAME';
 
 sourceLayerName = 'SOURCE_LAYER_NAME';
 
 shapeLayerName = 'SHAPE_LAYER_NAME';
-
-maskExpansion = MASK_EXPANSION;
 
 targetLayer = thisComp.layer(targetLayerName);
 
@@ -16,7 +14,14 @@ sourceComp = sourceLayer.source;
 
 shapeLayer = sourceComp.layer(shapeLayerName);
 
-highlighterEffect = shapeLayer.effect('AV_Highlighter');
+maskExpansion = thisLayer.mask('Mask 1').maskExpansion.value;
+
+try {
+  highlighterEffect = shapeLayer.effect('AV_Highlighter');
+} catch (error1) {
+  error = error1;
+  highlighterEffect = null;
+}
 
 if ((targetLayer.inPoint <= time && time <= targetLayer.outPoint)) {
   vShapeAdj = 0;

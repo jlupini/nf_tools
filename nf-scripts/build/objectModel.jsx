@@ -1886,17 +1886,18 @@ NFLayer = (function(superClass) {
    */
 
   NFLayer.prototype.panBehindTo = function(newPoint) {
-    var anchorProp, pDeltaX, pDeltaY, parent, positionProp, relAnchorPoint, scaleProp;
+    var anchorProp, pDeltaX, pDeltaY, parent, positionProp, relAnchorPoint, scaleFactor, scaleProp;
     parent = this.getParent();
     this.setParent(null);
     anchorProp = this.transform("Anchor Point");
     positionProp = this.transform("Position");
     scaleProp = this.transform("Scale");
     relAnchorPoint = this.relativePoint(anchorProp.value);
-    pDeltaX = (newPoint[0] - relAnchorPoint[0]) / (scaleProp.value[0] / 100);
-    pDeltaY = (newPoint[1] - relAnchorPoint[1]) / (scaleProp.value[1] / 100);
+    pDeltaX = newPoint[0] - relAnchorPoint[0];
+    pDeltaY = newPoint[1] - relAnchorPoint[1];
+    scaleFactor = scaleProp.value[0] / 100;
     positionProp.setValue([positionProp.value[0] + pDeltaX, positionProp.value[1] + pDeltaY]);
-    anchorProp.setValue([anchorProp.value[0] + pDeltaX, anchorProp.value[1] + pDeltaY]);
+    anchorProp.setValue([anchorProp.value[0] + pDeltaX / scaleFactor, anchorProp.value[1] + pDeltaY / scaleFactor]);
     this.setParent(parent);
     return this;
   };
@@ -3725,48 +3726,71 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
   @param {NFPDF} thePDF - the PDF to make the comp for
   @returns {NFComp} the new comp
    */
-  newCitationComp: function(name, citationString) {
+  newCitationComp: function(name, citationString, style) {
     var bgBlur, bgBrightness, bgMask, bgSolid, citeComp, citeFolder, fontSize, maskPath, maskShape, sourceRectBgMask, sourceRectText, textBoxSizeX, textBoxSizeY, textLayer, textLayer_TextDocument, textLayer_TextProp;
+    if (style == null) {
+      style = '2020';
+    }
     NFTools.log("Creating new citation comp for PDF: " + name, "NFCitationLayer");
     citeFolder = NFCitationLayer.folder();
     citeComp = citeFolder.items.addComp(name, 1920, 1080, 1, 600, 30);
-    bgSolid = citeComp.layers.addSolid([0, 0, 0], 'colorCorrect', citeComp.width, citeComp.height, 1);
-    bgSolid.adjustmentLayer = true;
-    bgSolid.name = 'Background Blur';
-    bgBlur = bgSolid.property('Effects').addProperty('ADBE Gaussian Blur 2');
-    bgBlur.property('Blurriness').setValue(35);
-    bgBrightness = bgSolid.property('Effects').addProperty('ADBE Brightness & Contrast 2');
-    bgBrightness.property('Brightness').setValue(-148);
-    bgBrightness.property("Use Legacy (supports HDR)").setValue(1);
-    fontSize = 37;
-    textLayer = citeComp.layers.addBoxText([(fontSize + 20) * citationString.length, fontSize + 20], citationString);
-    textLayer_TextProp = textLayer.property('ADBE Text Properties').property('ADBE Text Document');
-    textLayer_TextDocument = textLayer_TextProp.value;
-    textLayer_TextDocument.resetCharStyle();
-    textLayer_TextDocument.fillColor = [1, 1, 1];
-    textLayer_TextDocument.strokeWidth = 0;
-    textLayer_TextDocument.font = "Proxima Nova";
-    textLayer_TextDocument.justification = ParagraphJustification.RIGHT_JUSTIFY;
-    textLayer_TextDocument.fontSize = fontSize;
-    textLayer_TextDocument.applyFill = true;
-    textLayer_TextDocument.applyStroke = false;
-    textLayer_TextProp.setValue(textLayer_TextDocument);
-    textLayer.boxText = true;
-    sourceRectText = textLayer.sourceRectAtTime(0, false);
-    textLayer.anchorPoint.setValue([sourceRectText.left + sourceRectText.width, sourceRectText.top]);
-    textBoxSizeX = textLayer_TextDocument.boxTextSize[0];
-    textBoxSizeY = textLayer_TextDocument.boxTextSize[1];
-    maskShape = new Shape;
-    maskShape.vertices = [[0, sourceRectText.height + 20], [0, 0], [sourceRectText.width + 25, 0], [sourceRectText.width + 25, sourceRectText.height + 20]];
-    maskShape.closed = true;
-    bgMask = bgSolid.property('Masks').addProperty('Mask');
-    maskPath = bgMask.property('Mask Path');
-    maskPath.setValue(maskShape);
-    sourceRectBgMask = bgSolid.sourceRectAtTime(0, false);
-    bgSolid.anchorPoint.setValue([sourceRectText.width + 25, 0]);
-    bgSolid.position.setValue([citeComp.width, 20, 0]);
-    textLayer.position.setValue([citeComp.width - 10, 30, 0]);
-    textLayer.moveBefore(bgSolid);
+    if (style === '2020') {
+      fontSize = 37;
+      textLayer = citeComp.layers.addBoxText([1920, fontSize + 20], citationString);
+      textLayer_TextProp = textLayer.property('ADBE Text Properties').property('ADBE Text Document');
+      textLayer_TextDocument = textLayer_TextProp.value;
+      textLayer_TextDocument.resetCharStyle();
+      textLayer_TextDocument.fillColor = [1, 1, 1];
+      textLayer_TextDocument.strokeWidth = 0;
+      textLayer_TextDocument.font = "Open Sans";
+      textLayer_TextDocument.justification = ParagraphJustification.RIGHT_JUSTIFY;
+      textLayer_TextDocument.fontSize = fontSize;
+      textLayer_TextDocument.applyFill = true;
+      textLayer_TextDocument.applyStroke = false;
+      textLayer_TextProp.setValue(textLayer_TextDocument);
+      textLayer.boxText = true;
+      sourceRectText = textLayer.sourceRectAtTime(0, false);
+      textLayer.anchorPoint.setValue([sourceRectText.left + sourceRectText.width, sourceRectText.top]);
+      textLayer.position.setValue([citeComp.width - 20, 45, 0]);
+    } else {
+      bgSolid = citeComp.layers.addSolid([0, 0, 0], 'colorCorrect', citeComp.width, citeComp.height, 1);
+      bgSolid.adjustmentLayer = true;
+      bgSolid.name = 'Background Blur';
+      bgBlur = bgSolid.property('Effects').addProperty('ADBE Gaussian Blur 2');
+      bgBlur.property('Blurriness').setValue(35);
+      bgBrightness = bgSolid.property('Effects').addProperty('ADBE Brightness & Contrast 2');
+      bgBrightness.property('Brightness').setValue(-148);
+      bgBrightness.property("Use Legacy (supports HDR)").setValue(1);
+      fontSize = 37;
+      textLayer = citeComp.layers.addBoxText([(fontSize + 20) * citationString.length, fontSize + 20], citationString);
+      textLayer_TextProp = textLayer.property('ADBE Text Properties').property('ADBE Text Document');
+      textLayer_TextDocument = textLayer_TextProp.value;
+      textLayer_TextDocument.resetCharStyle();
+      textLayer_TextDocument.fillColor = [1, 1, 1];
+      textLayer_TextDocument.strokeWidth = 0;
+      textLayer_TextDocument.font = "Proxima Nova";
+      textLayer_TextDocument.justification = ParagraphJustification.RIGHT_JUSTIFY;
+      textLayer_TextDocument.fontSize = fontSize;
+      textLayer_TextDocument.applyFill = true;
+      textLayer_TextDocument.applyStroke = false;
+      textLayer_TextProp.setValue(textLayer_TextDocument);
+      textLayer.boxText = true;
+      sourceRectText = textLayer.sourceRectAtTime(0, false);
+      textLayer.anchorPoint.setValue([sourceRectText.left + sourceRectText.width, sourceRectText.top]);
+      textBoxSizeX = textLayer_TextDocument.boxTextSize[0];
+      textBoxSizeY = textLayer_TextDocument.boxTextSize[1];
+      maskShape = new Shape;
+      maskShape.vertices = [[0, sourceRectText.height + 20], [0, 0], [sourceRectText.width + 25, 0], [sourceRectText.width + 25, sourceRectText.height + 20]];
+      maskShape.closed = true;
+      bgMask = bgSolid.property('Masks').addProperty('Mask');
+      maskPath = bgMask.property('Mask Path');
+      maskPath.setValue(maskShape);
+      sourceRectBgMask = bgSolid.sourceRectAtTime(0, false);
+      bgSolid.anchorPoint.setValue([sourceRectText.width + 25, 0]);
+      bgSolid.position.setValue([citeComp.width, 20, 0]);
+      textLayer.position.setValue([citeComp.width - 10, 30, 0]);
+      textLayer.moveBefore(bgSolid);
+    }
     return new NFComp(citeComp);
   },
 
@@ -5597,12 +5621,13 @@ NFPageLayer = (function(superClass) {
     bgSolid.$.locked = true;
     bgSolid.setShy(true);
     newMask = bgSolid.mask().addProperty("Mask");
-    newMask.maskExpansion.setValue(model.maskExpansion);
+    newMask.maskExpansion.expression = NFTools.readExpression("flightpath-expansion-expression", {
+      REF_LAYER_NAME: refLayer.getName()
+    });
     newMask.maskShape.expression = NFTools.readExpression("flightpath-path-expression", {
       TARGET_LAYER_NAME: refLayer.getName(),
       SOURCE_LAYER_NAME: this.getName(),
-      SHAPE_LAYER_NAME: model.target.getName(),
-      MASK_EXPANSION: model.maskExpansion
+      SHAPE_LAYER_NAME: model.target.getName()
     });
     bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression", {
       TARGET_LAYER_NAME: refLayer.getName()
@@ -7154,6 +7179,9 @@ NFPartComp = (function(superClass) {
           controlLayer = target.getControlLayer();
           controlLayer.removeSpotlights();
         }
+        if (model.target["class"] === "NFShapeLayer") {
+          target.transform("Opacity").setValue(0);
+        }
       }
     }
     if (model.target["class"] === "NFPageLayer") {
@@ -7217,7 +7245,8 @@ NFPartComp = (function(superClass) {
         if ((ref3 = newPageLayer.effect('Drop Shadow')) != null) {
           ref3.enabled = false;
         }
-        return targetPageLayer = newPageLayer;
+        targetPageLayer = newPageLayer;
+        return group.getCitationLayer().show();
       }
     }
   };

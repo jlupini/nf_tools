@@ -392,10 +392,6 @@ class NFPartComp extends NFComp
             throw new Error "Can only animate an expand if there's just one matching active ref"
           else
             refLayer = activeRefs.get(0)
-            # refTargetName = refLayer.referencedSourceLayer().getName()
-            # if target.getName().indexOf(refTargetName) >= 0
-            #   keyIn = currTime - 0.5
-            #   keyOut = currTime + 0.5
 
         refLayer.expandTo
           layer: target
@@ -439,6 +435,9 @@ class NFPartComp extends NFComp
         if model.target.class is "NFHighlightLayer"
           controlLayer = target.getControlLayer()
           controlLayer.removeSpotlights()
+
+        if model.target.class is "NFShapeLayer"
+          target.transform("Opacity").setValue 0
 
 
     if model.target.class is "NFPageLayer"
@@ -496,14 +495,13 @@ class NFPartComp extends NFComp
           page: target
           continuous: yes
           animate: model.command is cmd.FST
-        # if startTime?
-        #   newPageLayer.$.startTime = startTime
-        #   newPageLayer.$.inPoint = currTime
         group = newPageLayer.getPaperLayerGroup()
         newPageLayer.transform('Scale').setValue [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
         newPageLayer.transform('Position').setValue PAGE_LARGE_POSITION
         newPageLayer.effect('Drop Shadow')?.enabled = no
         targetPageLayer = newPageLayer
+
+        group.getCitationLayer().show()
 
 
 

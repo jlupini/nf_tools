@@ -1,14 +1,18 @@
 targetLayerName = 'TARGET_LAYER_NAME'
 sourceLayerName = 'SOURCE_LAYER_NAME'
 shapeLayerName = 'SHAPE_LAYER_NAME'
-maskExpansion = MASK_EXPANSION
 
 targetLayer = thisComp.layer targetLayerName
 sourceLayer = thisComp.layer sourceLayerName
 sourceComp = sourceLayer.source
 shapeLayer = sourceComp.layer shapeLayerName
+maskExpansion = thisLayer.mask('Mask 1').maskExpansion.value
 
-highlighterEffect = shapeLayer.effect('AV_Highlighter')
+try
+  highlighterEffect = shapeLayer.effect('AV_Highlighter')
+catch error
+  highlighterEffect = null
+
 
 if targetLayer.inPoint <= time <= targetLayer.outPoint
 

@@ -167,7 +167,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
   @param {NFPDF} thePDF - the PDF to make the comp for
   @returns {NFComp} the new comp
   ###
-  newCitationComp: (name, citationString) ->
+  newCitationComp: (name, citationString, style = '2020') ->
     NFTools.log "Creating new citation comp for PDF: #{name}", "NFCitationLayer"
 
     citeFolder = NFCitationLayer.folder()
@@ -175,59 +175,80 @@ NFCitationLayer = Object.assign NFCitationLayer,
 
     # Note: we're working with raw layers and comps and stuff here
 
-    # Create background layer and add effects
-    bgSolid = citeComp.layers.addSolid [0,0,0], 'colorCorrect', citeComp.width, citeComp.height, 1
-    bgSolid.adjustmentLayer = true
-    bgSolid.name = 'Background Blur'
-    bgBlur = bgSolid.property('Effects').addProperty('ADBE Gaussian Blur 2')
-    bgBlur.property('Blurriness').setValue 35
-    bgBrightness = bgSolid.property('Effects').addProperty('ADBE Brightness & Contrast 2')
-    bgBrightness.property('Brightness').setValue -148
-    bgBrightness.property("Use Legacy (supports HDR)").setValue 1
+    if style is '2020'
+      # Create and format text layer
+      fontSize = 37
+      textLayer = citeComp.layers.addBoxText [1920, fontSize + 20], citationString
+      textLayer_TextProp = textLayer.property('ADBE Text Properties').property('ADBE Text Document')
+      textLayer_TextDocument = textLayer_TextProp.value
+      textLayer_TextDocument.resetCharStyle()
+      textLayer_TextDocument.fillColor = [1,1,1]
+      textLayer_TextDocument.strokeWidth = 0
+      textLayer_TextDocument.font = "Open Sans"
+      textLayer_TextDocument.justification = ParagraphJustification.RIGHT_JUSTIFY
+      textLayer_TextDocument.fontSize = fontSize
+      textLayer_TextDocument.applyFill = true
+      textLayer_TextDocument.applyStroke = false
+      textLayer_TextProp.setValue textLayer_TextDocument
+      textLayer.boxText = true
 
-    # Create and format text layer
-    fontSize = 37
-    textLayer = citeComp.layers.addBoxText [(fontSize + 20) * citationString.length, fontSize + 20], citationString
-    textLayer_TextProp = textLayer.property('ADBE Text Properties').property('ADBE Text Document')
-    textLayer_TextDocument = textLayer_TextProp.value
-    textLayer_TextDocument.resetCharStyle()
-    textLayer_TextDocument.fillColor = [1,1,1]
-    textLayer_TextDocument.strokeWidth = 0
-    textLayer_TextDocument.font = "Proxima Nova"
-    textLayer_TextDocument.justification = ParagraphJustification.RIGHT_JUSTIFY
-    textLayer_TextDocument.fontSize = fontSize
-    textLayer_TextDocument.applyFill = true
-    textLayer_TextDocument.applyStroke = false
-    textLayer_TextProp.setValue textLayer_TextDocument
-    textLayer.boxText = true
+      sourceRectText = textLayer.sourceRectAtTime(0, false)
+      textLayer.anchorPoint.setValue [sourceRectText.left + sourceRectText.width, sourceRectText.top]
+      textLayer.position.setValue [citeComp.width - 20,45,0]
+    else
+      # Create background layer and add effects
+      bgSolid = citeComp.layers.addSolid [0,0,0], 'colorCorrect', citeComp.width, citeComp.height, 1
+      bgSolid.adjustmentLayer = true
+      bgSolid.name = 'Background Blur'
+      bgBlur = bgSolid.property('Effects').addProperty('ADBE Gaussian Blur 2')
+      bgBlur.property('Blurriness').setValue 35
+      bgBrightness = bgSolid.property('Effects').addProperty('ADBE Brightness & Contrast 2')
+      bgBrightness.property('Brightness').setValue -148
+      bgBrightness.property("Use Legacy (supports HDR)").setValue 1
 
-    # Position text layer
-    sourceRectText = textLayer.sourceRectAtTime(0, false)
-    textLayer.anchorPoint.setValue [sourceRectText.left + sourceRectText.width, sourceRectText.top]
-    textBoxSizeX = textLayer_TextDocument.boxTextSize[0]
-    textBoxSizeY = textLayer_TextDocument.boxTextSize[1]
+      # Create and format text layer
+      fontSize = 37
+      textLayer = citeComp.layers.addBoxText [(fontSize + 20) * citationString.length, fontSize + 20], citationString
+      textLayer_TextProp = textLayer.property('ADBE Text Properties').property('ADBE Text Document')
+      textLayer_TextDocument = textLayer_TextProp.value
+      textLayer_TextDocument.resetCharStyle()
+      textLayer_TextDocument.fillColor = [1,1,1]
+      textLayer_TextDocument.strokeWidth = 0
+      textLayer_TextDocument.font = "Proxima Nova"
+      textLayer_TextDocument.justification = ParagraphJustification.RIGHT_JUSTIFY
+      textLayer_TextDocument.fontSize = fontSize
+      textLayer_TextDocument.applyFill = true
+      textLayer_TextDocument.applyStroke = false
+      textLayer_TextProp.setValue textLayer_TextDocument
+      textLayer.boxText = true
 
-    # Create mask and position
-    maskShape = new Shape
-    maskShape.vertices = [
-      [0,sourceRectText.height + 20]
-      [0,0]
-      [sourceRectText.width + 25,0]
-      [sourceRectText.width + 25,sourceRectText.height + 20]
-    ]
-    maskShape.closed = true
-    bgMask = bgSolid.property('Masks').addProperty('Mask')
-    maskPath = bgMask.property('Mask Path')
-    maskPath.setValue maskShape
+      # Position text layer
+      sourceRectText = textLayer.sourceRectAtTime(0, false)
+      textLayer.anchorPoint.setValue [sourceRectText.left + sourceRectText.width, sourceRectText.top]
+      textBoxSizeX = textLayer_TextDocument.boxTextSize[0]
+      textBoxSizeY = textLayer_TextDocument.boxTextSize[1]
 
-    # Final Positions
-    sourceRectBgMask = bgSolid.sourceRectAtTime(0, false)
-    bgSolid.anchorPoint.setValue [sourceRectText.width + 25,0]
-    bgSolid.position.setValue [citeComp.width,20,0]
-    textLayer.position.setValue [citeComp.width - 10,30,0]
+      # Create mask and position
+      maskShape = new Shape
+      maskShape.vertices = [
+        [0,sourceRectText.height + 20]
+        [0,0]
+        [sourceRectText.width + 25,0]
+        [sourceRectText.width + 25,sourceRectText.height + 20]
+      ]
+      maskShape.closed = true
+      bgMask = bgSolid.property('Masks').addProperty('Mask')
+      maskPath = bgMask.property('Mask Path')
+      maskPath.setValue maskShape
 
-    # Order Layers Correctly
-    textLayer.moveBefore bgSolid
+      # Final Positions
+      sourceRectBgMask = bgSolid.sourceRectAtTime(0, false)
+      bgSolid.anchorPoint.setValue [sourceRectText.width + 25,0]
+      bgSolid.position.setValue [citeComp.width,20,0]
+      textLayer.position.setValue [citeComp.width - 10,30,0]
+
+      # Order Layers Correctly
+      textLayer.moveBefore bgSolid
 
     return new NFComp citeComp
 

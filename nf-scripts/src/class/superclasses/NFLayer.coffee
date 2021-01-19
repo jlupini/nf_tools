@@ -890,11 +890,12 @@ class NFLayer extends NFObject
     # Get the point in the layer space...
     relAnchorPoint = @relativePoint anchorProp.value
 
-    pDeltaX = (newPoint[0] - relAnchorPoint[0]) / (scaleProp.value[0]/100)
-    pDeltaY = (newPoint[1] - relAnchorPoint[1]) / (scaleProp.value[1]/100)
+    pDeltaX = newPoint[0] - relAnchorPoint[0]
+    pDeltaY = newPoint[1] - relAnchorPoint[1]
+    scaleFactor =  scaleProp.value[0] / 100
 
     positionProp.setValue [positionProp.value[0] + pDeltaX, positionProp.value[1] + pDeltaY]
-    anchorProp.setValue [anchorProp.value[0] + pDeltaX, anchorProp.value[1] + pDeltaY]
+    anchorProp.setValue [anchorProp.value[0] + pDeltaX / scaleFactor, anchorProp.value[1] + pDeltaY / scaleFactor]
 
     @setParent parent
     @

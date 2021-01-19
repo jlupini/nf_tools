@@ -375,12 +375,12 @@ class NFPageLayer extends NFLayer
     bgSolid.setShy yes
 
     newMask = bgSolid.mask().addProperty "Mask"
-    newMask.maskExpansion.setValue model.maskExpansion
+    newMask.maskExpansion.expression = NFTools.readExpression "flightpath-expansion-expression",
+      REF_LAYER_NAME: refLayer.getName()
     newMask.maskShape.expression = NFTools.readExpression "flightpath-path-expression",
       TARGET_LAYER_NAME: refLayer.getName()
       SOURCE_LAYER_NAME: @getName()
       SHAPE_LAYER_NAME: model.target.getName()
-      MASK_EXPANSION: model.maskExpansion
     bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
       TARGET_LAYER_NAME: refLayer.getName()
     shadowProp = bgSolid.addDropShadow()
