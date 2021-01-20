@@ -309,6 +309,7 @@ class NFPageLayer extends NFLayer
     oldName = @getName()
     refLayer = @duplicate()
     refLayer.$.name = oldName.replace("+", "ref")
+    refLayer.$.label = 11
 
     baseName = "#{refLayer.getName()} <#{model.target.getName()}>"
 
@@ -371,7 +372,8 @@ class NFPageLayer extends NFLayer
     bgSolid.moveAfter refLayer
     bgSolid.$.blendingMode = BlendingMode.OVERLAY
     bgSolid.$.motionBlur = true
-    bgSolid.$.locked = yes
+    bgSolid.$.label = 6
+    # bgSolid.$.locked = yes
     bgSolid.setShy yes
 
     newMask = bgSolid.mask().addProperty "Mask"
@@ -426,7 +428,8 @@ class NFPageLayer extends NFLayer
           internalEndTime = theInstance.internalEndTime()
           latestInternalEndTime = internalEndTime if internalEndTime > latestInternalEndTime
 
-    @beginAt latestInternalEndTime + @containingComp().$.frameDuration
+    if latestInternalEndTime isnt 0
+      @beginAt latestInternalEndTime
     @
 
   ###*

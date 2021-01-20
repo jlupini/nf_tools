@@ -432,9 +432,9 @@ class NFPartComp extends NFComp
         refLayer.animateIn REF_ANIMATION_DURATION
 
         flightPath = refLayer.flightPath()
-        flightPath.$.locked = no
+        # flightPath.$.locked = no
         group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, refLayer.flightPath()]), false)
-        flightPath.$.locked = yes
+        # flightPath.$.locked = yes
 
         if model.target.class is "NFHighlightLayer"
           controlLayer = target.getControlLayer()
@@ -530,7 +530,6 @@ class NFPartComp extends NFComp
                 matchedActiveLayer.$.outPoint = @getTime()
                 matchedActiveLayer.fadeOut()
 
-
           newPageLayer = @insertPage
             page: target
             continuous: yes
@@ -586,6 +585,7 @@ class NFPartComp extends NFComp
       below: model.below
       at: model.at
       time: model.time
+    pageLayer.$.label = 4
 
     unless model.init is no
       pageLayer.initTransforms().init()

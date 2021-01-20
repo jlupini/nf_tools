@@ -278,6 +278,7 @@ NFCitationLayer = Object.assign NFCitationLayer,
       below: group.paperParent
       time: group.paperParent.$.inPoint
     citeLayer.$.collapseTransformation = yes
+    citeLayer.$.label = 12
     if group.getPages().isEmpty()
       citeLayer.$.startTime = group.containingComp().getTime()
     else

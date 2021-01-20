@@ -235,6 +235,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
       width: 10
       height: 10
     controlLayer.$.enabled = no
+    controlLayer.$.label = 2
 
     citationLayer = model.group.getCitationLayer()
     existingControlLayers = model.group.getControlLayers()

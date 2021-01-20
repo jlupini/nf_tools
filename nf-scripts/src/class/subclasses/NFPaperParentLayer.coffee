@@ -11,6 +11,7 @@ class NFPaperParentLayer extends NFLayer
   constructor: (layer) ->
     NFLayer.call(this, layer)
     throw new Error "Can only create a NFPaperParentLayer from a solid layer" unless @$.isSolid()
+    @$.label = 13
     @
   # MARK: Instance Methods
   toString: ->

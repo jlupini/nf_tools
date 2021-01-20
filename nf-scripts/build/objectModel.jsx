@@ -3841,6 +3841,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
       time: group.paperParent.$.inPoint
     });
     citeLayer.$.collapseTransformation = true;
+    citeLayer.$.label = 12;
     if (group.getPages().isEmpty()) {
       citeLayer.$.startTime = group.containingComp().getTime();
     } else {
@@ -4365,6 +4366,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
       height: 10
     });
     controlLayer.$.enabled = false;
+    controlLayer.$.label = 2;
     citationLayer = model.group.getCitationLayer();
     existingControlLayers = model.group.getControlLayers();
     if (!existingControlLayers.isEmpty()) {
@@ -5585,6 +5587,7 @@ NFPageLayer = (function(superClass) {
     oldName = this.getName();
     refLayer = this.duplicate();
     refLayer.$.name = oldName.replace("+", "ref");
+    refLayer.$.label = 11;
     baseName = (refLayer.getName()) + " <" + (model.target.getName()) + ">";
     layersWithName = refLayer.containingComp().searchLayers(baseName, true, "FlightPath");
     refLayer.$.name = baseName + " {" + ALPHABET[layersWithName.count()] + "}";
@@ -5639,7 +5642,7 @@ NFPageLayer = (function(superClass) {
     bgSolid.moveAfter(refLayer);
     bgSolid.$.blendingMode = BlendingMode.OVERLAY;
     bgSolid.$.motionBlur = true;
-    bgSolid.$.locked = true;
+    bgSolid.$.label = 6;
     bgSolid.setShy(true);
     newMask = bgSolid.mask().addProperty("Mask");
     newMask.maskExpansion.expression = NFTools.readExpression("flightpath-expansion-expression", {
@@ -5711,7 +5714,9 @@ NFPageLayer = (function(superClass) {
         };
       })(this));
     }
-    this.beginAt(latestInternalEndTime + this.containingComp().$.frameDuration);
+    if (latestInternalEndTime !== 0) {
+      this.beginAt(latestInternalEndTime);
+    }
     return this;
   };
 
@@ -6689,6 +6694,7 @@ NFPaperParentLayer = (function(superClass) {
     if (!this.$.isSolid()) {
       throw new Error("Can only create a NFPaperParentLayer from a solid layer");
     }
+    this.$.label = 13;
     this;
   }
 
@@ -7197,9 +7203,7 @@ NFPartComp = (function(superClass) {
         refLayer.centerAnchorPoint();
         refLayer.animateIn(REF_ANIMATION_DURATION);
         flightPath = refLayer.flightPath();
-        flightPath.$.locked = false;
         group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, refLayer.flightPath()]), false);
-        flightPath.$.locked = true;
         if (model.target["class"] === "NFHighlightLayer") {
           controlLayer = target.getControlLayer();
           controlLayer.removeSpotlights();
@@ -7378,6 +7382,7 @@ NFPartComp = (function(superClass) {
       at: model.at,
       time: model.time
     });
+    pageLayer.$.label = 4;
     if (model.init !== false) {
       pageLayer.initTransforms().init();
       group = new NFPaperLayerGroup(pageLayer.assignPaperParentLayer());
