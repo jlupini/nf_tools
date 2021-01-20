@@ -7086,7 +7086,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
@@ -7097,6 +7097,7 @@ NFPartComp = (function(superClass) {
     GROW_DURATION = 1.2;
     REF_ANIMATION_DURATION = 1;
     EXPAND_DURATION = 1;
+    FADE_IN_DURATION = 0.7;
     MASK_EXPANSION = 26;
     cmd = {
       FST: "fullscreen-title",
@@ -7105,7 +7106,8 @@ NFPartComp = (function(superClass) {
       EXPOSE: "expose",
       EXPAND: "expand",
       ANCHOR: "anchor",
-      END_ELEMENT: "end-element"
+      END_ELEMENT: "end-element",
+      SWITCH_PAGE: "switch-to-page"
     };
     if (model.target["class"] === "NFShapeLayer" || model.target["class"] === "NFHighlightLayer") {
       pageComp = new NFPageComp(aeq.getComp(model.target.containingComp.name));
@@ -7264,26 +7266,38 @@ NFPartComp = (function(superClass) {
     }
     if (model.target["class"] === "NFPageComp") {
       target = new NFPageComp(aeq.getComp(model.target.name));
-      if (model.command === cmd.FST || model.command === cmd.ADD_PAGE_SMALL) {
-        newPageLayer = this.insertPage({
-          page: target,
-          continuous: true,
-          animate: true
-        });
-        group = newPageLayer.getPaperLayerGroup();
+      if (model.command === cmd.FST || model.command === cmd.ADD_PAGE_SMALL || model.command === cmd.SWITCH_PAGE) {
         if (model.command === cmd.FST) {
+          shouldAnimate = true;
           scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE];
           posVal = PAGE_LARGE_POSITION;
         } else if (model.command === cmd.ADD_PAGE_SMALL) {
+          shouldAnimate = true;
           scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL];
           posVal = PAGE_SMALL_POSITION;
+        } else if (model.command === cmd.SWITCH_PAGE) {
+          shouldAnimate = false;
+          activePage = this.activePage();
+          scaleVal = activePage.transform('Scale').value;
+          posVal = activePage.transform('Position').value;
         }
+        newPageLayer = this.insertPage({
+          page: target,
+          continuous: true,
+          animate: shouldAnimate
+        });
+        group = newPageLayer.getPaperLayerGroup();
         newPageLayer.transform('Scale').setValue(scaleVal);
         newPageLayer.transform('Position').setValue(posVal);
         if ((ref3 = newPageLayer.effect('Drop Shadow')) != null) {
           ref3.enabled = false;
         }
-        group.getCitationLayer().show();
+        if (model.command === cmd.SWITCH_PAGE) {
+          newPageLayer.moveBefore(activePage);
+          newPageLayer.fadeIn(FADE_IN_DURATION);
+        } else if (model.command === cmd.FST || model.command === cmd.ADD_PAGE_SMALL) {
+          group.getCitationLayer().show();
+        }
         return group.gatherLayer(newPageLayer);
       }
     }

@@ -343,6 +343,7 @@ class NFPartComp extends NFComp
     GROW_DURATION = 1.2
     REF_ANIMATION_DURATION = 1
     EXPAND_DURATION = 1
+    FADE_IN_DURATION = 0.7
 
     MASK_EXPANSION = 26
 
@@ -354,6 +355,7 @@ class NFPartComp extends NFComp
       EXPAND: "expand"
       ANCHOR: "anchor"
       END_ELEMENT: "end-element"
+      SWITCH_PAGE: "switch-to-page"
 
     # Looks if we selected a shape or highlight
     if model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
@@ -497,25 +499,38 @@ class NFPartComp extends NFComp
       target = new NFPageComp aeq.getComp(model.target.name)
       #FIXME check if the layer exists first
 
-      if model.command is cmd.FST or model.command is cmd.ADD_PAGE_SMALL
-        newPageLayer = @insertPage
-          page: target
-          continuous: yes
-          animate: yes
-        group = newPageLayer.getPaperLayerGroup()
+      # $.bp()
+      if model.command is cmd.FST or model.command is cmd.ADD_PAGE_SMALL or model.command is cmd.SWITCH_PAGE
 
         if model.command is cmd.FST
+          shouldAnimate = yes
           scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
           posVal = PAGE_LARGE_POSITION
         else if model.command is cmd.ADD_PAGE_SMALL
+          shouldAnimate = yes
           scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]
           posVal = PAGE_SMALL_POSITION
+        else if model.command is cmd.SWITCH_PAGE
+          shouldAnimate = no
+          activePage = @activePage()
+          scaleVal = activePage.transform('Scale').value
+          posVal = activePage.transform('Position').value
 
+        newPageLayer = @insertPage
+          page: target
+          continuous: yes
+          animate: shouldAnimate
+        group = newPageLayer.getPaperLayerGroup()
         newPageLayer.transform('Scale').setValue scaleVal
         newPageLayer.transform('Position').setValue posVal
         newPageLayer.effect('Drop Shadow')?.enabled = no
 
-        group.getCitationLayer().show()
+        if model.command is cmd.SWITCH_PAGE
+          newPageLayer.moveBefore activePage
+          newPageLayer.fadeIn FADE_IN_DURATION
+        else if model.command is cmd.FST or model.command is cmd.ADD_PAGE_SMALL
+          group.getCitationLayer().show()
+
         group.gatherLayer newPageLayer
 
 
