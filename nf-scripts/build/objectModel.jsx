@@ -7086,7 +7086,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedActiveLayer, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
@@ -7266,39 +7266,72 @@ NFPartComp = (function(superClass) {
     }
     if (model.target["class"] === "NFPageComp") {
       target = new NFPageComp(aeq.getComp(model.target.name));
-      if (model.command === cmd.FST || model.command === cmd.ADD_PAGE_SMALL || model.command === cmd.SWITCH_PAGE) {
-        if (model.command === cmd.FST) {
-          shouldAnimate = true;
-          scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE];
-          posVal = PAGE_LARGE_POSITION;
-        } else if (model.command === cmd.ADD_PAGE_SMALL) {
-          shouldAnimate = true;
-          scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL];
-          posVal = PAGE_SMALL_POSITION;
-        } else if (model.command === cmd.SWITCH_PAGE) {
-          shouldAnimate = false;
-          activePage = this.activePage();
-          scaleVal = activePage.transform('Scale').value;
-          posVal = activePage.transform('Position').value;
-        }
-        newPageLayer = this.insertPage({
-          page: target,
-          continuous: true,
-          animate: shouldAnimate
-        });
-        group = newPageLayer.getPaperLayerGroup();
-        newPageLayer.transform('Scale').setValue(scaleVal);
-        newPageLayer.transform('Position').setValue(posVal);
-        if ((ref3 = newPageLayer.effect('Drop Shadow')) != null) {
-          ref3.enabled = false;
-        }
-        if (model.command === cmd.SWITCH_PAGE) {
-          newPageLayer.moveBefore(activePage);
-          newPageLayer.fadeIn(FADE_IN_DURATION);
-        } else if (model.command === cmd.FST || model.command === cmd.ADD_PAGE_SMALL) {
-          group.getCitationLayer().show();
-        }
-        return group.gatherLayer(newPageLayer);
+      matchedActiveLayer = null;
+      this.activeLayers().forEach((function(_this) {
+        return function(layer) {
+          if (typeof layer.getPageComp === "function" ? layer.getPageComp().is(target) : void 0) {
+            return matchedActiveLayer = layer;
+          }
+        };
+      })(this));
+      switch (model.command) {
+        case cmd.FST:
+        case cmd.ADD_PAGE_SMALL:
+        case cmd.SWITCH_PAGE:
+          switch (model.command) {
+            case cmd.FST:
+              if (matchedActiveLayer != null) {
+                throw new Error("can't run this command on a layer that's already active at the time at line: " + $.line + " in file " + $.fileName);
+              }
+              shouldAnimate = true;
+              scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE];
+              posVal = PAGE_LARGE_POSITION;
+              break;
+            case cmd.ADD_PAGE_SMALL:
+              if (matchedActiveLayer != null) {
+                throw new Error("can't run this command on a layer that's already active at the time");
+              }
+              shouldAnimate = true;
+              scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL];
+              posVal = PAGE_SMALL_POSITION;
+              break;
+            case cmd.SWITCH_PAGE:
+              shouldAnimate = false;
+              activePage = this.activePage();
+              if (activePage == null) {
+                throw new Error("can't run SWITCH_PAGE without an already active page at this time");
+              }
+              scaleVal = activePage.transform('Scale').value;
+              posVal = activePage.transform('Position').value;
+              if (matchedActiveLayer != null) {
+                if (matchedActiveLayer.is(activePage)) {
+                  throw new Error("can't run SWITCH_PAGE because the target page is the active page");
+                }
+                matchedActiveLayer.$.outPoint = this.getTime();
+                matchedActiveLayer.fadeOut();
+              }
+          }
+          newPageLayer = this.insertPage({
+            page: target,
+            continuous: true,
+            animate: shouldAnimate
+          });
+          group = newPageLayer.getPaperLayerGroup();
+          newPageLayer.transform('Scale').setValue(scaleVal);
+          newPageLayer.transform('Position').setValue(posVal);
+          if ((ref3 = newPageLayer.effect('Drop Shadow')) != null) {
+            ref3.enabled = false;
+          }
+          switch (model.command) {
+            case cmd.SWITCH_PAGE:
+              newPageLayer.moveBefore(activePage);
+              newPageLayer.fadeIn(FADE_IN_DURATION);
+              break;
+            case cmd.FST:
+            case cmd.ADD_PAGE_SMALL:
+              group.getCitationLayer().show();
+          }
+          return group.gatherLayer(newPageLayer);
       }
     }
   };
@@ -7366,9 +7399,7 @@ NFPartComp = (function(superClass) {
       pageLayer.makeContinuous();
     }
     layersForPage = this.layersForPage(model.page);
-    if (!(layersForPage.count() < 2)) {
-      layersForPage.differentiate();
-    }
+    layersForPage.differentiate();
     return pageLayer;
   };
 
@@ -7620,7 +7651,7 @@ NFPartComp = (function(superClass) {
   /**
   Gets the active NFPageLayer at a time (or current time by default). In this
   case, that means the topmost Page Layer that is not folded back, invisible,
-  disabled, pre-start or post-end.
+  disabled, pre-start or post-end. Does not check ref layers
   @memberof NFPartComp
   @param {float} [time] - the time to check at, or the current time by default
   @returns {NFPageLayer | null} The active page layer or null if none
@@ -7636,8 +7667,8 @@ NFPartComp = (function(superClass) {
     activeLayers = this.activeLayers(time);
     while (!activeLayers.isEmpty()) {
       topLayer = activeLayers.getTopmostLayer();
-      if (topLayer instanceof NFPageLayer) {
-        if (topLayer.pageTurnStatus(time) !== NFPageLayer.PAGETURN_FLIPPED_UP && topLayer.property("Transform").property("Opacity").value === 100) {
+      if (topLayer instanceof NFPageLayer && !(topLayer instanceof NFReferencePageLayer)) {
+        if (topLayer.pageTurnStatus(time) !== NFPageLayer.PAGETURN_FLIPPED_UP && topLayer.property("Transform").property("Opacity").value !== 0) {
           activePage = topLayer;
           break;
         }

@@ -498,40 +498,56 @@ class NFPartComp extends NFComp
     if model.target.class is "NFPageComp"
       target = new NFPageComp aeq.getComp(model.target.name)
       #FIXME check if the layer exists first
+      matchedActiveLayer = null
+      @activeLayers().forEach (layer) =>
+        matchedActiveLayer = layer if layer.getPageComp?().is target
 
-      # $.bp()
-      if model.command is cmd.FST or model.command is cmd.ADD_PAGE_SMALL or model.command is cmd.SWITCH_PAGE
+      switch model.command
+        when cmd.FST, cmd.ADD_PAGE_SMALL, cmd.SWITCH_PAGE
 
-        if model.command is cmd.FST
-          shouldAnimate = yes
-          scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
-          posVal = PAGE_LARGE_POSITION
-        else if model.command is cmd.ADD_PAGE_SMALL
-          shouldAnimate = yes
-          scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]
-          posVal = PAGE_SMALL_POSITION
-        else if model.command is cmd.SWITCH_PAGE
-          shouldAnimate = no
-          activePage = @activePage()
-          scaleVal = activePage.transform('Scale').value
-          posVal = activePage.transform('Position').value
+          switch model.command
+            when cmd.FST
+              throw new Error "can't run this command on a layer that's already active at the time at line: #{$.line} in file #{$.fileName}" if matchedActiveLayer?
+              shouldAnimate = yes
+              scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
+              posVal = PAGE_LARGE_POSITION
+            when cmd.ADD_PAGE_SMALL
+              throw new Error "can't run this command on a layer that's already active at the time" if matchedActiveLayer?
+              shouldAnimate = yes
+              scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]
+              posVal = PAGE_SMALL_POSITION
+            when cmd.SWITCH_PAGE
+              shouldAnimate = no
+              activePage = @activePage()
+              unless activePage?
+                throw new Error "can't run SWITCH_PAGE without an already active page at this time"
+              scaleVal = activePage.transform('Scale').value
+              posVal = activePage.transform('Position').value
 
-        newPageLayer = @insertPage
-          page: target
-          continuous: yes
-          animate: shouldAnimate
-        group = newPageLayer.getPaperLayerGroup()
-        newPageLayer.transform('Scale').setValue scaleVal
-        newPageLayer.transform('Position').setValue posVal
-        newPageLayer.effect('Drop Shadow')?.enabled = no
+              # If there was an active matched layer (probably underneath a visible one), then we should nuke it
+              if matchedActiveLayer?
+                throw new Error "can't run SWITCH_PAGE because the target page is the active page" if matchedActiveLayer.is activePage
+                matchedActiveLayer.$.outPoint = @getTime()
+                matchedActiveLayer.fadeOut()
 
-        if model.command is cmd.SWITCH_PAGE
-          newPageLayer.moveBefore activePage
-          newPageLayer.fadeIn FADE_IN_DURATION
-        else if model.command is cmd.FST or model.command is cmd.ADD_PAGE_SMALL
-          group.getCitationLayer().show()
 
-        group.gatherLayer newPageLayer
+          newPageLayer = @insertPage
+            page: target
+            continuous: yes
+            animate: shouldAnimate
+          group = newPageLayer.getPaperLayerGroup()
+          newPageLayer.transform('Scale').setValue scaleVal
+          newPageLayer.transform('Position').setValue posVal
+          newPageLayer.effect('Drop Shadow')?.enabled = no
+
+          switch model.command
+            when cmd.SWITCH_PAGE
+              newPageLayer.moveBefore activePage
+              newPageLayer.fadeIn FADE_IN_DURATION
+            when cmd.FST, cmd.ADD_PAGE_SMALL
+              group.getCitationLayer().show()
+
+          group.gatherLayer newPageLayer
 
 
 
@@ -592,7 +608,7 @@ class NFPartComp extends NFComp
     pageLayer.makeContinuous() if model.continuous
 
     layersForPage = @layersForPage model.page
-    layersForPage.differentiate() unless layersForPage.count() < 2
+    layersForPage.differentiate()
 
     return pageLayer
 
@@ -794,7 +810,7 @@ class NFPartComp extends NFComp
   ###*
   Gets the active NFPageLayer at a time (or current time by default). In this
   case, that means the topmost Page Layer that is not folded back, invisible,
-  disabled, pre-start or post-end.
+  disabled, pre-start or post-end. Does not check ref layers
   @memberof NFPartComp
   @param {float} [time] - the time to check at, or the current time by default
   @returns {NFPageLayer | null} The active page layer or null if none
@@ -809,8 +825,8 @@ class NFPartComp extends NFComp
     activeLayers = @activeLayers time
     until activeLayers.isEmpty()
       topLayer = activeLayers.getTopmostLayer()
-      if topLayer instanceof NFPageLayer
-        if topLayer.pageTurnStatus(time) isnt NFPageLayer.PAGETURN_FLIPPED_UP and topLayer.property("Transform").property("Opacity").value is 100
+      if topLayer instanceof NFPageLayer and not (topLayer instanceof NFReferencePageLayer)
+        if topLayer.pageTurnStatus(time) isnt NFPageLayer.PAGETURN_FLIPPED_UP and topLayer.property("Transform").property("Opacity").value isnt 0
           activePage = topLayer
           break
 
