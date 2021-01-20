@@ -386,7 +386,7 @@ class NFPageLayer extends NFLayer
     shadowProp = bgSolid.addDropShadow()
 
     refLayer.effect('Drop Shadow')?.enabled = yes
-    refLayer.setParent @
+    refLayer.setParent @getParent()
 
     return new NFReferencePageLayer refLayer.$
 

@@ -340,6 +340,7 @@ class NFPartComp extends NFComp
     PAGE_SMALL_POSITION = [552, 32]
 
     SHRINK_DURATION = 1.2
+    GROW_DURATION = 1.2
     REF_ANIMATION_DURATION = 1
     EXPAND_DURATION = 1
 
@@ -347,6 +348,7 @@ class NFPartComp extends NFComp
 
     cmd =
       FST: "fullscreen-title"
+      ADD_PAGE_SMALL: "add-small"
       SHRINK: "shrink-page"
       EXPOSE: "expose"
       EXPAND: "expand"
@@ -443,6 +445,13 @@ class NFPartComp extends NFComp
     if model.target.class is "NFPageLayer"
       target = @layerWithName model.target.name
 
+      if model.command is cmd.FST
+        target.animateProperties
+          time: @getTime()
+          duration: GROW_DURATION
+          properties: [target.transform('Position'), target.transform('Scale')]
+          values: [PAGE_LARGE_POSITION, [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]]
+
       if model.command is cmd.SHRINK
         target.animateProperties
           time: @getTime()
@@ -473,7 +482,7 @@ class NFPartComp extends NFComp
         # Find and add the control layer
         highlightName = refLayer.referencedSourceLayer()
         pdfNumber = refLayer.getPDFNumber()
-        controlLayers = partComp.searchLayers NFHighlightControlLayer.nameForPDFNumberAndHighlight pdfNumber, highlightName
+        controlLayers = @searchLayers NFHighlightControlLayer.nameForPDFNumberAndHighlight pdfNumber, highlightName
         unless controlLayers.count() is 0
           controlLayers.forEach (cLayer) =>
             layersToTrim.add cLayer
@@ -488,20 +497,26 @@ class NFPartComp extends NFComp
       target = new NFPageComp aeq.getComp(model.target.name)
       #FIXME check if the layer exists first
 
-      #FIXME: we don't currently define targetpagelayer
-      if not targetPageLayer?
-        # Insert the page
+      if model.command is cmd.FST or model.command is cmd.ADD_PAGE_SMALL
         newPageLayer = @insertPage
           page: target
           continuous: yes
-          animate: model.command is cmd.FST
+          animate: yes
         group = newPageLayer.getPaperLayerGroup()
-        newPageLayer.transform('Scale').setValue [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
-        newPageLayer.transform('Position').setValue PAGE_LARGE_POSITION
+
+        if model.command is cmd.FST
+          scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
+          posVal = PAGE_LARGE_POSITION
+        else if model.command is cmd.ADD_PAGE_SMALL
+          scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]
+          posVal = PAGE_SMALL_POSITION
+
+        newPageLayer.transform('Scale').setValue scaleVal
+        newPageLayer.transform('Position').setValue posVal
         newPageLayer.effect('Drop Shadow')?.enabled = no
-        targetPageLayer = newPageLayer
 
         group.getCitationLayer().show()
+        group.gatherLayer newPageLayer
 
 
 

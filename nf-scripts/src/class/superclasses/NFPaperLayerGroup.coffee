@@ -446,6 +446,17 @@ class NFPaperLayerGroup extends NFObject
 
     @
 
+  ###*
+  A shortcut to run @gatherLayers on a single NFLayer without needing to create
+  an NFLayerCollection
+  @memberof NFPaperLayerGroup
+  @param {NFLayer} layerToGather - the layer to gather up
+  @param {boolean} [shouldParent=true] - whether or not to parent the new layer
+  to the paper parent
+  @returns {NFPaperLayerGroup} self
+  ###
+  gatherLayer: (layerToGather, shouldParent = yes) ->
+    @gatherLayers new NFLayerCollection([layerToGather])
 
   ###*
   Moves the given layers into the group and parents if indicated. Layers below
@@ -458,6 +469,7 @@ class NFPaperLayerGroup extends NFObject
   @returns {NFPaperLayerGroup} self
   ###
   gatherLayers: (layersToGather, shouldParent = yes) ->
+    throw new Error "param 'layersToGather' must be of type NFLayerCollection" unless layersToGather instanceof NFLayerCollection
     @log "Gathering layers: #{layersToGather.toString()}"
     childLayers = @getChildren()
 
