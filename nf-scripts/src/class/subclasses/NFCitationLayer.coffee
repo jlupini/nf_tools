@@ -279,6 +279,11 @@ NFCitationLayer = Object.assign NFCitationLayer,
       time: group.paperParent.$.inPoint
     citeLayer.$.collapseTransformation = yes
     citeLayer.$.label = 12
+
+    invertProp = citeLayer.property('Effects').addProperty('ADBE Invert')
+    invertProp.property("Blend With Original").expression = NFTools.readExpression "citation-invert-expression",
+      INVERT_DURATION: 0.5
+
     if group.getPages().isEmpty()
       citeLayer.$.startTime = group.containingComp().getTime()
     else

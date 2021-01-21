@@ -3822,7 +3822,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
   @returns {NFCitationLayer} the new citation layer
    */
   newCitationLayer: function(group) {
-    var citationComp, citeLayer, compName, sourceExpression, thePDF;
+    var citationComp, citeLayer, compName, invertProp, sourceExpression, thePDF;
     if (!(group instanceof NFPaperLayerGroup)) {
       throw new Error("Missing group");
     }
@@ -3842,6 +3842,11 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     });
     citeLayer.$.collapseTransformation = true;
     citeLayer.$.label = 12;
+    invertProp = citeLayer.property('Effects').addProperty('ADBE Invert');
+    invertProp.property("Blend With Original").expression = NFTools.readExpression("citation-invert-expression", {
+      INVERT_DURATION: 0.5,
+      INVERT_MAX: 80
+    });
     if (group.getPages().isEmpty()) {
       citeLayer.$.startTime = group.containingComp().getTime();
     } else {
