@@ -425,7 +425,7 @@ class NFPartComp extends NFComp
 
         layerAbove = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer() ? targetPageLayer.getPaperLayerGroup().paperParent
         refLayer.moveAfter layerAbove
-        refLayer.$.inPoint = @getTime()
+        refLayer.startAt @getTime()
 
         # Animate In
         refLayer.centerAnchorPoint()
@@ -467,6 +467,12 @@ class NFPartComp extends NFComp
           target.$.outPoint = time
           target.slideOut()
 
+          # Let's also grab any flightpath layers
+          flightPaths = new NFLayerCollection()
+          @activeLayers().forEach (layer) =>
+            if layer.getName().indexOf "FlightPath" >= 0 and layer.$.outPoint >= time
+              layer.$.outPoint = time
+
     if model.target.class is "NFReferencePageLayer"
       refLayer = @layerWithName model.target.name
 
@@ -485,12 +491,16 @@ class NFPartComp extends NFComp
         highlightName = refLayer.referencedSourceLayer()
         pdfNumber = refLayer.getPDFNumber()
         controlLayers = @searchLayers NFHighlightControlLayer.nameForPDFNumberAndHighlight pdfNumber, highlightName
+        # FIXME: find the expands here
         unless controlLayers.count() is 0
           controlLayers.forEach (cLayer) =>
             layersToTrim.add cLayer
 
         layersToTrim.forEach (layer) =>
           layer.$.outPoint = time
+
+        flightPath = refLayer.flightPath()
+        flightPath.$.outPoint = time if flightPath.$.outPoint > time
 
         refLayer.animateOut REF_ANIMATION_DURATION
 
@@ -529,6 +539,13 @@ class NFPartComp extends NFComp
                 throw new Error "can't run SWITCH_PAGE because the target page is the active page" if matchedActiveLayer.is activePage
                 matchedActiveLayer.$.outPoint = @getTime()
                 matchedActiveLayer.fadeOut()
+
+              # Let's also grab any flightpath layers
+              flightPaths = new NFLayerCollection()
+              time = @getTime()
+              @activeLayers().forEach (layer) =>
+                if layer.getName().indexOf("FlightPath") >= 0 and layer.$.outPoint >= time + FADE_IN_DURATION
+                  layer.$.outPoint = time + FADE_IN_DURATION
 
           newPageLayer = @insertPage
             page: target

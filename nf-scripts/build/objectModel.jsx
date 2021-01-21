@@ -5188,6 +5188,8 @@ NFPageLayer = (function(superClass) {
     var obj;
     obj = NFLayer.prototype.simplify.call(this);
     obj["class"] = "NFPageLayer";
+    obj.pageNumber = this.getPageNumber();
+    obj.pdfNumber = this.getPDFNumber();
     return obj;
   };
 
@@ -5643,7 +5645,6 @@ NFPageLayer = (function(superClass) {
     bgSolid.$.blendingMode = BlendingMode.OVERLAY;
     bgSolid.$.motionBlur = true;
     bgSolid.$.label = 6;
-    bgSolid.setShy(true);
     newMask = bgSolid.mask().addProperty("Mask");
     newMask.maskExpansion.expression = NFTools.readExpression("flightpath-expansion-expression", {
       REF_LAYER_NAME: refLayer.getName()
@@ -5653,8 +5654,9 @@ NFPageLayer = (function(superClass) {
       SOURCE_LAYER_NAME: this.getName(),
       SHAPE_LAYER_NAME: model.target.getName()
     });
-    bgSolid.transform("Opacity").expression = NFTools.readExpression("backing-opacity-expression", {
-      TARGET_LAYER_NAME: refLayer.getName()
+    bgSolid.transform("Opacity").expression = NFTools.readExpression("flightpath-opacity-expression", {
+      REF_LAYER_NAME: refLayer.getName(),
+      OPACITY_DURATION: 1
     });
     shadowProp = bgSolid.addDropShadow();
     if ((ref2 = refLayer.effect('Drop Shadow')) != null) {
@@ -5773,6 +5775,7 @@ NFPageLayer = (function(superClass) {
       }
     } else {
       nullLayer = this.nullify([1, 0, 0.7]);
+      nullLayer.$.label = 13;
       paperParentLayer = new NFPaperParentLayer(nullLayer).setName(NFPaperParentLayer.getPaperParentNameForObject(this));
     }
     return paperParentLayer;
@@ -6694,7 +6697,6 @@ NFPaperParentLayer = (function(superClass) {
     if (!this.$.isSolid()) {
       throw new Error("Can only create a NFPaperParentLayer from a solid layer");
     }
-    this.$.label = 13;
     this;
   }
 
@@ -7092,7 +7094,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedActiveLayer, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedActiveLayer, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
@@ -7199,7 +7201,7 @@ NFPartComp = (function(superClass) {
         }
         layerAbove = (ref2 = targetPageLayer.getPaperLayerGroup().getControlLayers().getBottommostLayer()) != null ? ref2 : targetPageLayer.getPaperLayerGroup().paperParent;
         refLayer.moveAfter(layerAbove);
-        refLayer.$.inPoint = this.getTime();
+        refLayer.startAt(this.getTime());
         refLayer.centerAnchorPoint();
         refLayer.animateIn(REF_ANIMATION_DURATION);
         flightPath = refLayer.flightPath();
@@ -7236,6 +7238,14 @@ NFPartComp = (function(superClass) {
         if (target.$.outPoint >= time) {
           target.$.outPoint = time;
           target.slideOut();
+          flightPaths = new NFLayerCollection();
+          this.activeLayers().forEach((function(_this) {
+            return function(layer) {
+              if (layer.getName().indexOf("FlightPath" >= 0 && layer.$.outPoint >= time)) {
+                return layer.$.outPoint = time;
+              }
+            };
+          })(this));
         }
       }
     }
@@ -7265,6 +7275,10 @@ NFPartComp = (function(superClass) {
             return layer.$.outPoint = time;
           };
         })(this));
+        flightPath = refLayer.flightPath();
+        if (flightPath.$.outPoint > time) {
+          flightPath.$.outPoint = time;
+        }
         refLayer.animateOut(REF_ANIMATION_DURATION);
       }
     }
@@ -7314,6 +7328,15 @@ NFPartComp = (function(superClass) {
                 matchedActiveLayer.$.outPoint = this.getTime();
                 matchedActiveLayer.fadeOut();
               }
+              flightPaths = new NFLayerCollection();
+              time = this.getTime();
+              this.activeLayers().forEach((function(_this) {
+                return function(layer) {
+                  if (layer.getName().indexOf("FlightPath") >= 0 && layer.$.outPoint >= time + FADE_IN_DURATION) {
+                    return layer.$.outPoint = time + FADE_IN_DURATION;
+                  }
+                };
+              })(this));
           }
           newPageLayer = this.insertPage({
             page: target,
@@ -8196,6 +8219,22 @@ NFReferencePageLayer = (function(superClass) {
       };
     })(this));
     return fpLayer;
+  };
+
+
+  /**
+  sets the inPoint for this layer and the flightpath layer
+  @memberof NFReferencePageLayer
+  @param {float} time
+  @returns {NFReferencePageLayer} self
+   */
+
+  NFReferencePageLayer.prototype.startAt = function(time) {
+    if (time == null) {
+      time = this.containingComp.getTime();
+    }
+    this.$.inPoint = time;
+    return this.flightPath().$.inPoint = time;
   };
 
 

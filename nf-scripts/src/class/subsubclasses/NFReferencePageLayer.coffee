@@ -107,6 +107,19 @@ class NFReferencePageLayer extends NFPageLayer
     return fpLayer
 
   ###*
+  sets the inPoint for this layer and the flightpath layer
+  @memberof NFReferencePageLayer
+  @param {float} time
+  @returns {NFReferencePageLayer} self
+  ###
+  startAt: (time) ->
+    time = @containingComp.getTime() unless time?
+
+    @$.inPoint = time
+    @flightPath().$.inPoint = time
+
+
+  ###*
   Expands the ref layer to show another given highlight layer
   @memberof NFReferencePageLayer
   @param {Object} model

@@ -25,6 +25,8 @@ class NFPageLayer extends NFLayer
   simplify: ->
     obj = NFLayer.prototype.simplify.call @
     obj.class = "NFPageLayer"
+    obj.pageNumber = @getPageNumber()
+    obj.pdfNumber = @getPDFNumber()
     return obj
 
   ###*
@@ -373,8 +375,6 @@ class NFPageLayer extends NFLayer
     bgSolid.$.blendingMode = BlendingMode.OVERLAY
     bgSolid.$.motionBlur = true
     bgSolid.$.label = 6
-    # bgSolid.$.locked = yes
-    bgSolid.setShy yes
 
     newMask = bgSolid.mask().addProperty "Mask"
     newMask.maskExpansion.expression = NFTools.readExpression "flightpath-expansion-expression",
@@ -383,8 +383,9 @@ class NFPageLayer extends NFLayer
       TARGET_LAYER_NAME: refLayer.getName()
       SOURCE_LAYER_NAME: @getName()
       SHAPE_LAYER_NAME: model.target.getName()
-    bgSolid.transform("Opacity").expression = NFTools.readExpression "backing-opacity-expression",
-      TARGET_LAYER_NAME: refLayer.getName()
+    bgSolid.transform("Opacity").expression = NFTools.readExpression "flightpath-opacity-expression",
+      REF_LAYER_NAME: refLayer.getName()
+      OPACITY_DURATION: 1
     shadowProp = bgSolid.addDropShadow()
 
     refLayer.effect('Drop Shadow')?.enabled = yes
@@ -473,6 +474,7 @@ class NFPageLayer extends NFLayer
         paperLayerGroup.gatherLayers @
     else
       nullLayer = @nullify [1, 0, 0.7]
+      nullLayer.$.label = 13
       paperParentLayer = new NFPaperParentLayer(nullLayer).setName(NFPaperParentLayer.getPaperParentNameForObject(@))
 
     return paperParentLayer
