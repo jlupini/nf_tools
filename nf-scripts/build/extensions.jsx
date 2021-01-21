@@ -365,6 +365,119 @@ TextLayer.prototype.isAVLayer = function() {
 
 
 /**
+Returns an object for use by the CEP panel with info about the comp
+@memberof CompItem
+@function simpleReflection
+@returns {Object} the simple reflection object
+ */
+
+CompItem.prototype.simpleReflection = function() {
+  var obj;
+  obj = {
+    "class": "NFComp",
+    name: this.name,
+    id: this.id,
+    numLayers: this.numLayers
+  };
+  if (this.name.indexOf("NFPage") >= 0) {
+    obj["class"] = "NFPageComp";
+    obj.pageNumber = this.getPageNumber();
+    obj.pdfNumber = this.getPDFNumber();
+  } else if (this.name.indexOf("Part") >= 0) {
+    obj["class"] = "NFPartComp";
+  }
+  return obj;
+};
+
+
+/**
+Returns the page number for a pagecomp, assuming that's what this is
+@memberof CompItem
+@function getPageNumber
+@returns {String} the page number
+ */
+
+CompItem.prototype.getPageNumber = function() {
+  var endIdx, searchIndex;
+  searchIndex = this.name.indexOf("pg");
+  endIdx = this.name.indexOf(" NFPage");
+  if (searchIndex > 0) {
+    return this.name.substring(searchIndex + 2, endIdx);
+  } else {
+    return null;
+  }
+};
+
+
+/**
+Returns the page number for a pagecomp, assuming that's what this is
+@memberof CompItem
+@function getPDFNumber
+@returns {String} the page number
+ */
+
+CompItem.prototype.getPDFNumber = function() {
+  var endIdx;
+  endIdx = this.name.indexOf("_");
+  if (endIdx > 0) {
+    return this.name.substr(0, endIdx);
+  } else {
+    return null;
+  }
+};
+
+
+/**
+Returns an object for use by the CEP panel with info about the layer
+@memberof Layer
+@function simpleReflection
+@returns {Object} the simple reflection object
+ */
+
+Layer.prototype.simpleReflection = function() {
+  var obj, ref, ref1;
+  obj = {
+    "class": "NFLayer",
+    name: this.name,
+    index: this.index,
+    inPoint: this.inPoint,
+    outPoint: this.outPoint,
+    containingComp: this.containingComp.simpleReflection()
+  };
+  if (((ref = this.source) != null ? ref.name.indexOf("NFPage") : void 0) >= 0) {
+    if (this.name.indexOf('[ref]') >= 0) {
+      obj["class"] = "NFReferencePageLayer";
+    } else {
+      obj["class"] = "NFPageLayer";
+      obj.pageNumber = this.source.getPageNumber();
+      obj.pdfNumber = this.source.getPDFNumber();
+    }
+  } else if (this instanceof ShapeLayer && this.Effects.numProperties > 0 && ((ref1 = this.Effects.property(1)) != null ? ref1.matchName : void 0) === "AV_Highlighter") {
+    obj["class"] = "NFHighlightLayer";
+  } else if (this.isSolid()) {
+    if (this.name.indexOf('PDF') >= 0) {
+      obj["class"] = "NFPaperParentLayer";
+    } else if (this.name.indexOf("Highlight Control") >= 0) {
+      obj["class"] = "NFHighlightControlLayer";
+    }
+  } else if (this.name.indexOf("Citation") >= 0) {
+    obj["class"] = "NFCitationLayer";
+  } else if (this.name.indexOf("Gaussy") >= 0) {
+    obj["class"] = "NFGaussyLayer";
+  } else if (this instanceof ShapeLayer) {
+    if (this.name.indexOf("Emphasis") >= 0) {
+      obj["class"] = "NFEmphasisLayer";
+    } else {
+      obj["class"] = "NFShapeLayer";
+    }
+  }
+  return obj;
+};
+
+AVLayer.prototype.simpleReflection = ShapeLayer.prototype.simpleReflection = TextLayer.prototype.simpleReflection = Layer.prototype.simpleReflection;
+
+
+/**
 Returns the index of the marker with the given comment
 @memberof Layer
 @function indexOfMarker

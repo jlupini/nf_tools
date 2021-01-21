@@ -277,6 +277,98 @@ LightLayer::isAVLayer = ->
 TextLayer::isAVLayer = ->
   yes
 
+
+###*
+Returns an object for use by the CEP panel with info about the comp
+@memberof CompItem
+@function simpleReflection
+@returns {Object} the simple reflection object
+###
+CompItem::simpleReflection = ->
+  obj =
+    class: "NFComp"
+    name: @name
+    id: @id
+    numLayers: @numLayers
+
+  if @name.indexOf("NFPage") >= 0
+    obj.class = "NFPageComp"
+    obj.pageNumber = @getPageNumber()
+    obj.pdfNumber = @getPDFNumber()
+  else if @name.indexOf("Part") >= 0
+    obj.class = "NFPartComp"
+
+  return obj
+
+###*
+Returns the page number for a pagecomp, assuming that's what this is
+@memberof CompItem
+@function getPageNumber
+@returns {String} the page number
+###
+CompItem::getPageNumber = ->
+  searchIndex = @name.indexOf "pg"
+  endIdx = @name.indexOf " NFPage"
+  if searchIndex > 0
+    return @name.substring(searchIndex + 2, endIdx)
+  else return null
+
+###*
+Returns the page number for a pagecomp, assuming that's what this is
+@memberof CompItem
+@function getPDFNumber
+@returns {String} the page number
+###
+CompItem::getPDFNumber = ->
+  endIdx = @name.indexOf("_")
+  if endIdx > 0
+    return @name.substr(0, endIdx)
+  else
+    return null
+
+###*
+Returns an object for use by the CEP panel with info about the layer
+@memberof Layer
+@function simpleReflection
+@returns {Object} the simple reflection object
+###
+Layer::simpleReflection = ->
+  obj =
+    class: "NFLayer"
+    name: @name
+    index: @index
+    # isActiveNow: @isActiveAtTime()
+    inPoint: @inPoint
+    outPoint: @outPoint
+    containingComp: @containingComp.simpleReflection()
+
+  if @source?.name.indexOf("NFPage") >= 0
+    if @name.indexOf('[ref]') >= 0
+      obj.class = "NFReferencePageLayer"
+    else
+      obj.class = "NFPageLayer"
+      obj.pageNumber = @source.getPageNumber()
+      obj.pdfNumber = @source.getPDFNumber()
+  else if @ instanceof ShapeLayer and @Effects.numProperties > 0 and @Effects.property(1)?.matchName is "AV_Highlighter"
+    obj.class = "NFHighlightLayer"
+  else if @isSolid()
+    if @name.indexOf('PDF') >= 0
+      obj.class = "NFPaperParentLayer"
+    else if @name.indexOf("Highlight Control") >= 0
+      obj.class = "NFHighlightControlLayer"
+  else if @name.indexOf("Citation") >= 0
+    obj.class = "NFCitationLayer"
+  else if @name.indexOf("Gaussy") >= 0
+    obj.class = "NFGaussyLayer"
+  else if @ instanceof ShapeLayer
+    if @name.indexOf("Emphasis") >= 0
+      obj.class = "NFEmphasisLayer"
+    else
+      obj.class = "NFShapeLayer"
+
+  return obj
+AVLayer::simpleReflection = ShapeLayer::simpleReflection = TextLayer::simpleReflection = Layer::simpleReflection
+
 ###*
 Returns the index of the marker with the given comment
 @memberof Layer
