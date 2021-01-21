@@ -130,11 +130,11 @@ class NFReferencePageLayer extends NFPageLayer
     target = model.layer
 
     # Frame up that baby
+    currTime = @containingComp().getTime()
     activeHighlightRect = @referencedSourceLayer().sourceRect()
     expandedRect = target.sourceRect().combineWith activeHighlightRect
-
-    currTime = @containingComp().getTime()
     @containingComp().setTime(currTime) unless @containingComp().getTime() is currTime
+
     keyIn = currTime - model.duration/2
     keyOut = currTime + model.duration/2
 

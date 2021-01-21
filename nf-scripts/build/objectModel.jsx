@@ -7238,7 +7238,7 @@ NFPartComp = (function(superClass) {
         }
         layersToTrim.forEach((function(_this) {
           return function(layer) {
-            return layer.$.outPoint = time;
+            return layer.$.outPoint = Math.min(time, layer.$.outPoint);
           };
         })(this));
         flightPath = refLayer.flightPath();
@@ -7288,7 +7288,6 @@ NFPartComp = (function(superClass) {
         case cmd.FST:
         case cmd.ADD_PAGE_SMALL:
         case cmd.SWITCH_PAGE:
-          debugger;
           switch (model.command) {
             case cmd.FST:
               shouldAnimate = true;
@@ -7397,6 +7396,9 @@ NFPartComp = (function(superClass) {
     if ((model.frameUp != null) && (model.frameUp.highlight != null)) {
       pageLayer.frameUpHighlight(model.frameUp);
     }
+    if (model.continuous) {
+      pageLayer.makeContinuous();
+    }
     if (model.animate === true) {
       pageLayer.slideIn();
     }
@@ -7404,9 +7406,6 @@ NFPartComp = (function(superClass) {
       pageLayer.setupPageTurnEffect(model.pageTurn);
     } else if (model.pageTurn !== NFPageLayer.PAGETURN_NONE) {
       throw new Error("Invalid pageturn type to insert page with");
-    }
-    if (model.continuous) {
-      pageLayer.makeContinuous();
     }
     layersForPage = this.layersForPage(model.page);
     layersForPage.differentiate();
@@ -8231,9 +8230,9 @@ NFReferencePageLayer = (function(superClass) {
   NFReferencePageLayer.prototype.expandTo = function(model) {
     var activeHighlightRect, currTime, expandedRect, highlightThickness, keyIn, keyOut, mask, newScale, paddedExpandedRect, scaleProp, target;
     target = model.layer;
+    currTime = this.containingComp().getTime();
     activeHighlightRect = this.referencedSourceLayer().sourceRect();
     expandedRect = target.sourceRect().combineWith(activeHighlightRect);
-    currTime = this.containingComp().getTime();
     if (this.containingComp().getTime() !== currTime) {
       this.containingComp().setTime(currTime);
     }

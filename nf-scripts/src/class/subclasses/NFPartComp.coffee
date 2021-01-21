@@ -468,7 +468,7 @@ class NFPartComp extends NFComp
             layersToTrim.add cLayer
 
         layersToTrim.forEach (layer) =>
-          layer.$.outPoint = time
+          layer.$.outPoint = Math.min time, layer.$.outPoint
 
         flightPath = refLayer.flightPath()
         flightPath.$.outPoint = time if flightPath.$.outPoint > time
@@ -510,7 +510,6 @@ class NFPartComp extends NFComp
 
       switch model.command
         when cmd.FST, cmd.ADD_PAGE_SMALL, cmd.SWITCH_PAGE
-          debugger
 
           switch model.command
             when cmd.FST
@@ -607,6 +606,9 @@ class NFPartComp extends NFComp
     if model.frameUp? and model.frameUp.highlight?
       pageLayer.frameUpHighlight model.frameUp
 
+    if model.continuous
+      pageLayer.makeContinuous()
+
     if model.animate is yes
       pageLayer.slideIn()
 
@@ -615,7 +617,6 @@ class NFPartComp extends NFComp
     else if model.pageTurn isnt NFPageLayer.PAGETURN_NONE
       throw new Error "Invalid pageturn type to insert page with"
 
-    pageLayer.makeContinuous() if model.continuous
 
     layersForPage = @layersForPage model.page
     layersForPage.differentiate()
