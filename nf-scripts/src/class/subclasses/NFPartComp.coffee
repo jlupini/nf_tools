@@ -444,35 +444,6 @@ class NFPartComp extends NFComp
           target.transform("Opacity").setValue 0
 
 
-    if model.target.class is "NFPageLayer"
-      target = @layerWithName model.target.name
-
-      if model.command is cmd.FST
-        target.animateProperties
-          time: @getTime()
-          duration: GROW_DURATION
-          properties: [target.transform('Position'), target.transform('Scale')]
-          values: [PAGE_LARGE_POSITION, [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]]
-
-      if model.command is cmd.SHRINK
-        target.animateProperties
-          time: @getTime()
-          duration: SHRINK_DURATION
-          properties: [target.transform('Position'), target.transform('Scale')]
-          values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
-
-      if model.command is cmd.END_ELEMENT
-        time = @getTime()
-        if target.$.outPoint >= time
-          target.$.outPoint = time
-          target.slideOut()
-
-          # Let's also grab any flightpath layers
-          flightPaths = new NFLayerCollection()
-          @activeLayers().forEach (layer) =>
-            if layer.getName().indexOf "FlightPath" >= 0 and layer.$.outPoint >= time
-              layer.$.outPoint = time
-
     if model.target.class is "NFReferencePageLayer"
       refLayer = @layerWithName model.target.name
 
@@ -504,25 +475,49 @@ class NFPartComp extends NFComp
 
         refLayer.animateOut REF_ANIMATION_DURATION
 
+    if model.target.class is "NFPageLayer"
+      target = @layerWithName model.target.name
+
+      if model.command is cmd.FST
+        target.animateProperties
+          time: @getTime()
+          duration: GROW_DURATION
+          properties: [target.transform('Position'), target.transform('Scale')]
+          values: [PAGE_LARGE_POSITION, [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]]
+
+      if model.command is cmd.SHRINK
+        target.animateProperties
+          time: @getTime()
+          duration: SHRINK_DURATION
+          properties: [target.transform('Position'), target.transform('Scale')]
+          values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
+
+      if model.command is cmd.END_ELEMENT
+        time = @getTime()
+        if target.$.outPoint >= time
+          target.$.outPoint = time
+          target.slideOut()
+
+          # Let's also grab any flightpath layers
+          flightPaths = new NFLayerCollection()
+          @activeLayers().forEach (layer) =>
+            if layer.getName().includes("FlightPath") and layer.$.outPoint >= time
+              layer.$.outPoint = time
+
 
     if model.target.class is "NFPageComp"
       target = new NFPageComp aeq.getComp(model.target.name)
-      #FIXME check if the layer exists first
-      matchedActiveLayer = null
-      @activeLayers().forEach (layer) =>
-        matchedActiveLayer = layer if layer.getPageComp?().is target
 
       switch model.command
         when cmd.FST, cmd.ADD_PAGE_SMALL, cmd.SWITCH_PAGE
+          debugger
 
           switch model.command
             when cmd.FST
-              throw new Error "can't run this command on a layer that's already active at the time at line: #{$.line} in file #{$.fileName}" if matchedActiveLayer?
               shouldAnimate = yes
               scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
               posVal = PAGE_LARGE_POSITION
             when cmd.ADD_PAGE_SMALL
-              throw new Error "can't run this command on a layer that's already active at the time" if matchedActiveLayer?
               shouldAnimate = yes
               scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]
               posVal = PAGE_SMALL_POSITION
@@ -534,17 +529,15 @@ class NFPartComp extends NFComp
               scaleVal = activePage.transform('Scale').value
               posVal = activePage.transform('Position').value
 
-              # If there was an active matched layer (probably underneath a visible one), then we should nuke it
-              if matchedActiveLayer?
-                throw new Error "can't run SWITCH_PAGE because the target page is the active page" if matchedActiveLayer.is activePage
-                matchedActiveLayer.$.outPoint = @getTime()
-                matchedActiveLayer.fadeOut()
-
-              # Let's also grab any flightpath layers
-              flightPaths = new NFLayerCollection()
               time = @getTime()
+              # fade out the ActivePage
+              activePage.$.outPoint = time + FADE_IN_DURATION * 2
+              activePage.fadeOut FADE_IN_DURATION
+
+              # Let's also fade any flightpath layers
+              flightPaths = new NFLayerCollection()
               @activeLayers().forEach (layer) =>
-                if layer.getName().indexOf("FlightPath") >= 0 and layer.$.outPoint >= time + FADE_IN_DURATION
+                if layer.getName().includes("FlightPath") and layer.$.outPoint >= time + FADE_IN_DURATION
                   layer.$.outPoint = time + FADE_IN_DURATION
 
           newPageLayer = @insertPage

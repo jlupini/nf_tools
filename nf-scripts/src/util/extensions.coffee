@@ -65,6 +65,19 @@ String::stripQuotes = ->
   return @
 
 ###*
+checks if a string includes another string
+@function includes
+@memberof String
+@returns {boolean} the result
+###
+String::includes = (search, start) ->
+  if search instanceof RegExp
+    throw TypeError('first argument must not be a RegExp')
+  if start == undefined
+    start = 0
+  @indexOf(search, start) != -1
+
+###*
 Converts a string in csv format to an array
 @function splitCSV
 @memberof String

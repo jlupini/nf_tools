@@ -85,6 +85,24 @@ String.prototype.stripQuotes = function() {
 
 
 /**
+checks if a string includes another string
+@function includes
+@memberof String
+@returns {boolean} the result
+ */
+
+String.prototype.includes = function(search, start) {
+  if (search instanceof RegExp) {
+    throw TypeError('first argument must not be a RegExp');
+  }
+  if (start === void 0) {
+    start = 0;
+  }
+  return this.indexOf(search, start) !== -1;
+};
+
+
+/**
 Converts a string in csv format to an array
 @function splitCSV
 @memberof String

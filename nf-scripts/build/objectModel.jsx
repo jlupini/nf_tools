@@ -7094,7 +7094,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedActiveLayer, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
@@ -7215,40 +7215,6 @@ NFPartComp = (function(superClass) {
         }
       }
     }
-    if (model.target["class"] === "NFPageLayer") {
-      target = this.layerWithName(model.target.name);
-      if (model.command === cmd.FST) {
-        target.animateProperties({
-          time: this.getTime(),
-          duration: GROW_DURATION,
-          properties: [target.transform('Position'), target.transform('Scale')],
-          values: [PAGE_LARGE_POSITION, [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]]
-        });
-      }
-      if (model.command === cmd.SHRINK) {
-        target.animateProperties({
-          time: this.getTime(),
-          duration: SHRINK_DURATION,
-          properties: [target.transform('Position'), target.transform('Scale')],
-          values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
-        });
-      }
-      if (model.command === cmd.END_ELEMENT) {
-        time = this.getTime();
-        if (target.$.outPoint >= time) {
-          target.$.outPoint = time;
-          target.slideOut();
-          flightPaths = new NFLayerCollection();
-          this.activeLayers().forEach((function(_this) {
-            return function(layer) {
-              if (layer.getName().indexOf("FlightPath" >= 0 && layer.$.outPoint >= time)) {
-                return layer.$.outPoint = time;
-              }
-            };
-          })(this));
-        }
-      }
-    }
     if (model.target["class"] === "NFReferencePageLayer") {
       refLayer = this.layerWithName(model.target.name);
       if (model.command === cmd.ANCHOR) {
@@ -7282,33 +7248,54 @@ NFPartComp = (function(superClass) {
         refLayer.animateOut(REF_ANIMATION_DURATION);
       }
     }
+    if (model.target["class"] === "NFPageLayer") {
+      target = this.layerWithName(model.target.name);
+      if (model.command === cmd.FST) {
+        target.animateProperties({
+          time: this.getTime(),
+          duration: GROW_DURATION,
+          properties: [target.transform('Position'), target.transform('Scale')],
+          values: [PAGE_LARGE_POSITION, [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]]
+        });
+      }
+      if (model.command === cmd.SHRINK) {
+        target.animateProperties({
+          time: this.getTime(),
+          duration: SHRINK_DURATION,
+          properties: [target.transform('Position'), target.transform('Scale')],
+          values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
+        });
+      }
+      if (model.command === cmd.END_ELEMENT) {
+        time = this.getTime();
+        if (target.$.outPoint >= time) {
+          target.$.outPoint = time;
+          target.slideOut();
+          flightPaths = new NFLayerCollection();
+          this.activeLayers().forEach((function(_this) {
+            return function(layer) {
+              if (layer.getName().includes("FlightPath") && layer.$.outPoint >= time) {
+                return layer.$.outPoint = time;
+              }
+            };
+          })(this));
+        }
+      }
+    }
     if (model.target["class"] === "NFPageComp") {
       target = new NFPageComp(aeq.getComp(model.target.name));
-      matchedActiveLayer = null;
-      this.activeLayers().forEach((function(_this) {
-        return function(layer) {
-          if (typeof layer.getPageComp === "function" ? layer.getPageComp().is(target) : void 0) {
-            return matchedActiveLayer = layer;
-          }
-        };
-      })(this));
       switch (model.command) {
         case cmd.FST:
         case cmd.ADD_PAGE_SMALL:
         case cmd.SWITCH_PAGE:
+          debugger;
           switch (model.command) {
             case cmd.FST:
-              if (matchedActiveLayer != null) {
-                throw new Error("can't run this command on a layer that's already active at the time at line: " + $.line + " in file " + $.fileName);
-              }
               shouldAnimate = true;
               scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE];
               posVal = PAGE_LARGE_POSITION;
               break;
             case cmd.ADD_PAGE_SMALL:
-              if (matchedActiveLayer != null) {
-                throw new Error("can't run this command on a layer that's already active at the time");
-              }
               shouldAnimate = true;
               scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL];
               posVal = PAGE_SMALL_POSITION;
@@ -7321,18 +7308,13 @@ NFPartComp = (function(superClass) {
               }
               scaleVal = activePage.transform('Scale').value;
               posVal = activePage.transform('Position').value;
-              if (matchedActiveLayer != null) {
-                if (matchedActiveLayer.is(activePage)) {
-                  throw new Error("can't run SWITCH_PAGE because the target page is the active page");
-                }
-                matchedActiveLayer.$.outPoint = this.getTime();
-                matchedActiveLayer.fadeOut();
-              }
-              flightPaths = new NFLayerCollection();
               time = this.getTime();
+              activePage.$.outPoint = time + FADE_IN_DURATION * 2;
+              activePage.fadeOut(FADE_IN_DURATION);
+              flightPaths = new NFLayerCollection();
               this.activeLayers().forEach((function(_this) {
                 return function(layer) {
-                  if (layer.getName().indexOf("FlightPath") >= 0 && layer.$.outPoint >= time + FADE_IN_DURATION) {
+                  if (layer.getName().includes("FlightPath") && layer.$.outPoint >= time + FADE_IN_DURATION) {
                     return layer.$.outPoint = time + FADE_IN_DURATION;
                   }
                 };
