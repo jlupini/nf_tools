@@ -339,6 +339,9 @@ class NFPartComp extends NFComp
     PAGE_LARGE_POSITION = [5, 761]
     PAGE_SMALL_POSITION = [552, 32]
 
+    FST_WIDTH = 85
+    FST_TOP = 18
+
     SHRINK_DURATION = 1.2
     GROW_DURATION = 1.2
     REF_ANIMATION_DURATION = 1
@@ -479,18 +482,26 @@ class NFPartComp extends NFComp
       target = @layerWithName model.target.name
 
       if model.command is cmd.FST
-        target.animateProperties
+        target.animateToConstraints
           time: @getTime()
           duration: GROW_DURATION
-          properties: [target.transform('Position'), target.transform('Scale')]
-          values: [PAGE_LARGE_POSITION, [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]]
+          width: FST_WIDTH
+          top: FST_TOP
+          centerX: yes
 
       if model.command is cmd.SHRINK
-        target.animateProperties
+        target.animateToConstraints
           time: @getTime()
           duration: SHRINK_DURATION
-          properties: [target.transform('Position'), target.transform('Scale')]
-          values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
+          width: 34
+          right: 4.5
+          top: 11.5
+        # target.animateProperties
+        #   onParent: yes
+        #   time: @getTime()
+        #   duration: SHRINK_DURATION
+        #   properties: [target.transform('Position'), target.transform('Scale')]
+        #   values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
 
       if model.command is cmd.END_ELEMENT
         time = @getTime()

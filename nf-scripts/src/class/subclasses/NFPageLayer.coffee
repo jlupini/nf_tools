@@ -489,6 +489,42 @@ class NFPageLayer extends NFLayer
     return new NFPaperLayerGroup paperParentLayer if paperParentLayer?
     return null
 
+  ###*
+  Animates a set of properties on the layer
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model=null] data model
+  @param {boolean} model.onParent - if the animation should occur on the paper parent layer
+  @param {float} model.time
+  @param {float} model.duration
+  @param {Array} model.properties
+  @param {Array} model.values
+  ###
+  animateProperties: (model) ->
+
+    if model.onParent is no
+      NFLayer::call(this, model)
+    else
+      @
+
+    # model =
+    #   time: x
+    #   duration: x
+    #   properties: []
+    #   values: []
+    #
+    # for property, i in model.properties
+    #   beginValue = property.valueAtTime model.time, false
+    #   endValue = model.values[i]
+    #
+    #   keyframeTimes = [model.time, model.time + model.duration]
+    #   keyframeValues = [beginValue, endValue]
+    #
+    #   property.setValuesAtTimes keyframeTimes, keyframeValues
+    #
+    #   property.easyEaseKeyTimes
+    #     keyTimes: keyframeTimes
+
 
   ###*
   Slides in or out the pageLayer using markers. #slideIn and #slideOut both
@@ -833,6 +869,154 @@ class NFPageLayer extends NFLayer
       adjustedScaleFactor = scaleFactor
 
     adjustedScaleFactor
+
+  ###*
+  Moves the paper parent layer so the page layer matches the given constraints
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} model - The options
+  @param {float} [model.time=The current time] - The time to frame up at
+  @param {float} [model.duration=1] - the duration
+  @param {float} [model.width=85] - Percentage of the comp width the
+  page should take up
+  @param {float} [model.height=null] - Percentage of the comp height the
+  page should take up
+  @param {float} [model.top=null] - percentage from the top of the screen the page should be
+  @param {float} [model.right=null] - percentage from the right of the screen the page should be
+  @param {float} [model.left=null] - percentage from the left of the screen the page should be
+  @param {float} [model.bottom=null] - percentage from the bottom of the screen the page should be
+  ###
+  animateToConstraints: (model) ->
+
+    # Move the time to the target time and unparent
+    originalTime = @containingComp().getTime()
+    model.time = model.time ? originalTime
+    @containingComp().setTime model.time
+
+    paperParent = @getPaperParentLayer()
+    posProp = paperParent.transform('Position')
+    scaleProp = paperParent.transform('Scale')
+
+    scaleFactor = @getScaleFactorForConstraints model
+    newScale = scaleProp.valueAtTime(model.time, false) * scaleFactor
+    paperParent.animateProperties
+      time: model.time
+      duration: model.duration
+      properties: [scaleProp]
+      values: [newScale]
+
+    # Need to manually set this because we need to specify it's AFTER the duration time
+    positionDelta = @getPositionDeltaForConstraints
+      time: model.time + model.duration
+      top: model.top
+      left: model.left
+      right: model.right
+      bottom: model.bottom
+      centerX: model.centerX
+      centerY: model.centerY
+    oldPos = posProp.valueAtTime(model.time, false)
+    newPos = [oldPos[0] + positionDelta[0], oldPos[1] + positionDelta[1]]
+    paperParent.animateProperties
+      time: model.time
+      duration: model.duration
+      properties: [posProp]
+      values: [newPos]
+
+    @containingComp().setTime(originalTime)
+
+    @
+
+  ###*
+  Returns the multiplier, or scale factor required to match the given
+  constraints in this layer's Containing comp. Basically, multiplying the scale
+  of this layer by the result of this number will result in a size where the
+  constraints can be bet after adjusting position.
+  @memberof NFPageLayer
+  @returns {float} the scale factor
+  @param {Object} model - the options
+  @param {float} [model.time=The current time] - The time to calculate at
+  @param {float} [model.width=85] - Percentage of the comp width the
+  page should take up
+  @param {float} [model.height=null] - Percentage of the comp height the
+  page should take up
+  ###
+  getScaleFactorForConstraints: (model) ->
+    throw new Error "can't use both height and width constraints at the same time!" if model.width? and model.height?
+    model =
+      time: model.time ? @containingComp().getTime()
+      width: model.width ? 85
+      height: model.height
+
+    currTime = @containingComp().getTime()
+    pageRect = @sourceRect()
+    @containingComp().setTime currTime
+
+    if model.width?
+      compWidth = @containingComp().$.width
+      targetRectWidth = model.width / 100 * compWidth
+      scaleFactor = targetRectWidth / pageRect.width
+    else if model.height?
+      compHeight = @containingComp().$.height
+      targetRectHeight = model.height / 100 * compHeight
+      scaleFactor = targetRectHeight / pageRect.height
+
+    return scaleFactor
+
+
+  ###*
+  Returns a length-2 array with x and y 'nudge' values to make the page
+  be centered in frame *at the current scale of the layer*.
+  @memberof NFPageLayer
+  @returns {float[]} the x and y nudge values
+  @param {Object} model - The options
+  @param {float} [model.time=The current time] - The time to calculate at
+  @param {float} [model.top=null] - percentage from the top of the screen the page should be
+  @param {float} [model.right=null] - percentage from the right of the screen the page should be
+  @param {float} [model.left=null] - percentage from the left of the screen the page should be
+  @param {float} [model.bottom=null] - percentage from the bottom of the screen the page should be
+  @param {booean} [model.centerX=no] - if the page should be horizontally centered
+  @param {booean} [model.centerY=no] - if the page should be vertically centered
+  ###
+  getPositionDeltaForConstraints: (model) ->
+    # Make sure either a rect or highlight is given
+    unless model.top? or model.bottom? or model.left? or model.right?
+      throw new Error "Must use at least one constraint"
+    if (model.top? and model.bottom?) or (model.left? and model.right?)
+      throw new Error "Cannot use top/bottom or left/right constraints at same time"
+
+    partComp = @containingComp()
+
+    currTime = partComp.getTime()
+    partComp.setTime model.time
+    pageRect = @sourceRect()
+    partComp.setTime currTime
+
+    rectCenterPoint = pageRect.centerPoint()
+    compCenterPoint = partComp.centerPoint()
+
+    deltaX = 0
+    deltaY = 0
+    if model.top?
+      pxFromTop = model.top * partComp.$.height / 100
+      deltaY = pxFromTop - pageRect.top
+    else if model.bottom?
+      pxFromBottomTarget = model.bottom * partComp.$.height / 100
+      pxFromBottomCurrent = partComp.$.height - (pageRect.top + pageRect.height)
+      deltaY = pxFromBottomCurrent - pxFromBottomTarget
+    else if model.centerY
+      deltaY = compCenterPoint[1] - rectCenterPoint[1]
+    if model.left?
+      pxFromLeft = model.left * partComp.$.width / 100
+      deltaX = pxFromLeft - pageRect.left
+    if model.right?
+      pxFromRightTarget = model.right * partComp.$.width / 100
+      pxFromRightCurrent = partComp.$.width - (pageRect.left + pageRect.width)
+      deltaX = pxFromRightCurrent - pxFromRightTarget
+    else if model.centerX
+      deltaX = compCenterPoint[0] - rectCenterPoint[0]
+
+    delta = [deltaX, deltaY]
+    return delta
 
   ###*
   Returns a length-2 array with absolute x and y values to make the given

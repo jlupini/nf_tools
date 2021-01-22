@@ -3844,8 +3844,7 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
     citeLayer.$.label = 12;
     invertProp = citeLayer.property('Effects').addProperty('ADBE Invert');
     invertProp.property("Blend With Original").expression = NFTools.readExpression("citation-invert-expression", {
-      INVERT_DURATION: 0.5,
-      INVERT_MAX: 80
+      INVERT_DURATION: 0.5
     });
     if (group.getPages().isEmpty()) {
       citeLayer.$.startTime = group.containingComp().getTime();
@@ -5804,6 +5803,27 @@ NFPageLayer = (function(superClass) {
 
 
   /**
+  Animates a set of properties on the layer
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} [model=null] data model
+  @param {boolean} model.onParent - if the animation should occur on the paper parent layer
+  @param {float} model.time
+  @param {float} model.duration
+  @param {Array} model.properties
+  @param {Array} model.values
+   */
+
+  NFPageLayer.prototype.animateProperties = function(model) {
+    if (model.onParent === false) {
+      return NFLayer.prototype.call(this, model);
+    } else {
+      return this;
+    }
+  };
+
+
+  /**
   Slides in or out the pageLayer using markers. #slideIn and #slideOut both
   call this method
   @memberof NFPageLayer
@@ -6206,6 +6226,160 @@ NFPageLayer = (function(superClass) {
       adjustedScaleFactor = scaleFactor;
     }
     return adjustedScaleFactor;
+  };
+
+
+  /**
+  Moves the paper parent layer so the page layer matches the given constraints
+  @memberof NFPageLayer
+  @returns {NFPageLayer} self
+  @param {Object} model - The options
+  @param {float} [model.time=The current time] - The time to frame up at
+  @param {float} [model.duration=1] - the duration
+  @param {float} [model.width=85] - Percentage of the comp width the
+  page should take up
+  @param {float} [model.height=null] - Percentage of the comp height the
+  page should take up
+  @param {float} [model.top=null] - percentage from the top of the screen the page should be
+  @param {float} [model.right=null] - percentage from the right of the screen the page should be
+  @param {float} [model.left=null] - percentage from the left of the screen the page should be
+  @param {float} [model.bottom=null] - percentage from the bottom of the screen the page should be
+   */
+
+  NFPageLayer.prototype.animateToConstraints = function(model) {
+    var newPos, newScale, oldPos, originalTime, paperParent, posProp, positionDelta, ref, scaleFactor, scaleProp;
+    originalTime = this.containingComp().getTime();
+    model.time = (ref = model.time) != null ? ref : originalTime;
+    this.containingComp().setTime(model.time);
+    paperParent = this.getPaperParentLayer();
+    posProp = paperParent.transform('Position');
+    scaleProp = paperParent.transform('Scale');
+    scaleFactor = this.getScaleFactorForConstraints(model);
+    newScale = scaleProp.valueAtTime(model.time, false) * scaleFactor;
+    paperParent.animateProperties({
+      time: model.time,
+      duration: model.duration,
+      properties: [scaleProp],
+      values: [newScale]
+    });
+    positionDelta = this.getPositionDeltaForConstraints({
+      time: model.time + model.duration,
+      top: model.top,
+      left: model.left,
+      right: model.right,
+      bottom: model.bottom,
+      centerX: model.centerX,
+      centerY: model.centerY
+    });
+    oldPos = posProp.valueAtTime(model.time, false);
+    newPos = [oldPos[0] + positionDelta[0], oldPos[1] + positionDelta[1]];
+    paperParent.animateProperties({
+      time: model.time,
+      duration: model.duration,
+      properties: [posProp],
+      values: [newPos]
+    });
+    this.containingComp().setTime(originalTime);
+    return this;
+  };
+
+
+  /**
+  Returns the multiplier, or scale factor required to match the given
+  constraints in this layer's Containing comp. Basically, multiplying the scale
+  of this layer by the result of this number will result in a size where the
+  constraints can be bet after adjusting position.
+  @memberof NFPageLayer
+  @returns {float} the scale factor
+  @param {Object} model - the options
+  @param {float} [model.time=The current time] - The time to calculate at
+  @param {float} [model.width=85] - Percentage of the comp width the
+  page should take up
+  @param {float} [model.height=null] - Percentage of the comp height the
+  page should take up
+   */
+
+  NFPageLayer.prototype.getScaleFactorForConstraints = function(model) {
+    var compHeight, compWidth, currTime, pageRect, ref, ref1, scaleFactor, targetRectHeight, targetRectWidth;
+    if ((model.width != null) && (model.height != null)) {
+      throw new Error("can't use both height and width constraints at the same time!");
+    }
+    model = {
+      time: (ref = model.time) != null ? ref : this.containingComp().getTime(),
+      width: (ref1 = model.width) != null ? ref1 : 85,
+      height: model.height
+    };
+    currTime = this.containingComp().getTime();
+    pageRect = this.sourceRect();
+    this.containingComp().setTime(currTime);
+    if (model.width != null) {
+      compWidth = this.containingComp().$.width;
+      targetRectWidth = model.width / 100 * compWidth;
+      scaleFactor = targetRectWidth / pageRect.width;
+    } else if (model.height != null) {
+      compHeight = this.containingComp().$.height;
+      targetRectHeight = model.height / 100 * compHeight;
+      scaleFactor = targetRectHeight / pageRect.height;
+    }
+    return scaleFactor;
+  };
+
+
+  /**
+  Returns a length-2 array with x and y 'nudge' values to make the page
+  be centered in frame *at the current scale of the layer*.
+  @memberof NFPageLayer
+  @returns {float[]} the x and y nudge values
+  @param {Object} model - The options
+  @param {float} [model.time=The current time] - The time to calculate at
+  @param {float} [model.top=null] - percentage from the top of the screen the page should be
+  @param {float} [model.right=null] - percentage from the right of the screen the page should be
+  @param {float} [model.left=null] - percentage from the left of the screen the page should be
+  @param {float} [model.bottom=null] - percentage from the bottom of the screen the page should be
+  @param {booean} [model.centerX=no] - if the page should be horizontally centered
+  @param {booean} [model.centerY=no] - if the page should be vertically centered
+   */
+
+  NFPageLayer.prototype.getPositionDeltaForConstraints = function(model) {
+    var compCenterPoint, currTime, delta, deltaX, deltaY, pageRect, partComp, pxFromBottomCurrent, pxFromBottomTarget, pxFromLeft, pxFromRightCurrent, pxFromRightTarget, pxFromTop, rectCenterPoint;
+    if (!((model.top != null) || (model.bottom != null) || (model.left != null) || (model.right != null))) {
+      throw new Error("Must use at least one constraint");
+    }
+    if (((model.top != null) && (model.bottom != null)) || ((model.left != null) && (model.right != null))) {
+      throw new Error("Cannot use top/bottom or left/right constraints at same time");
+    }
+    partComp = this.containingComp();
+    currTime = partComp.getTime();
+    partComp.setTime(model.time);
+    pageRect = this.sourceRect();
+    partComp.setTime(currTime);
+    rectCenterPoint = pageRect.centerPoint();
+    compCenterPoint = partComp.centerPoint();
+    deltaX = 0;
+    deltaY = 0;
+    if (model.top != null) {
+      pxFromTop = model.top * partComp.$.height / 100;
+      deltaY = pxFromTop - pageRect.top;
+    } else if (model.bottom != null) {
+      pxFromBottomTarget = model.bottom * partComp.$.height / 100;
+      pxFromBottomCurrent = partComp.$.height - (pageRect.top + pageRect.height);
+      deltaY = pxFromBottomCurrent - pxFromBottomTarget;
+    } else if (model.centerY) {
+      deltaY = compCenterPoint[1] - rectCenterPoint[1];
+    }
+    if (model.left != null) {
+      pxFromLeft = model.left * partComp.$.width / 100;
+      deltaX = pxFromLeft - pageRect.left;
+    }
+    if (model.right != null) {
+      pxFromRightTarget = model.right * partComp.$.width / 100;
+      pxFromRightCurrent = partComp.$.width - (pageRect.left + pageRect.width);
+      deltaX = pxFromRightCurrent - pxFromRightTarget;
+    } else if (model.centerX) {
+      deltaX = compCenterPoint[0] - rectCenterPoint[0];
+    }
+    delta = [deltaX, deltaY];
+    return delta;
   };
 
 
@@ -7099,13 +7273,15 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 44;
     PAGE_SCALE_SMALL = 17;
     PAGE_LARGE_POSITION = [5, 761];
     PAGE_SMALL_POSITION = [552, 32];
+    FST_WIDTH = 85;
+    FST_TOP = 18;
     SHRINK_DURATION = 1.2;
     GROW_DURATION = 1.2;
     REF_ANIMATION_DURATION = 1;
@@ -7256,19 +7432,21 @@ NFPartComp = (function(superClass) {
     if (model.target["class"] === "NFPageLayer") {
       target = this.layerWithName(model.target.name);
       if (model.command === cmd.FST) {
-        target.animateProperties({
+        target.animateToConstraints({
           time: this.getTime(),
           duration: GROW_DURATION,
-          properties: [target.transform('Position'), target.transform('Scale')],
-          values: [PAGE_LARGE_POSITION, [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]]
+          width: FST_WIDTH,
+          top: FST_TOP,
+          centerX: true
         });
       }
       if (model.command === cmd.SHRINK) {
-        target.animateProperties({
+        target.animateToConstraints({
           time: this.getTime(),
           duration: SHRINK_DURATION,
-          properties: [target.transform('Position'), target.transform('Scale')],
-          values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
+          width: 34,
+          right: 4.5,
+          top: 11.5
         });
       }
       if (model.command === cmd.END_ELEMENT) {
