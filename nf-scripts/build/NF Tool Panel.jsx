@@ -30,6 +30,29 @@ toolRegistry = {
       precomposePDFs: {
         name: "Precompose PDFs",
         callbackScript: "nf_Precompose PDF Pages.jsx"
+      },
+      removePageBackings: {
+        name: "Remove Page Backings",
+        callback: function() {
+          var bgSolid, i, item, j, precompFolder, ref, ref1, results;
+          precompFolder = NFProject.findItem("PDF Precomps");
+          if ((precompFolder != null ? precompFolder.typeName : void 0) !== "Folder") {
+            throw new Error("Couldn't get the PDF Precomp folder");
+          }
+          results = [];
+          for (i = j = 1, ref = precompFolder.numItems; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+            item = new NFPageComp(precompFolder.item(i));
+            if ((ref1 = item.layerWithName("Paper BG")) != null) {
+              ref1.remove();
+            }
+            bgSolid = item.addSolid({
+              color: [1, 1, 1],
+              name: "BG White Solid"
+            });
+            results.push(bgSolid.moveAfter(item.allLayers().getBottommostLayer()));
+          }
+          return results;
+        }
       }
     }
   },

@@ -19,7 +19,7 @@ setupMainComp = ->
   mainComp.hideShyLayers = yes
   footageLayer = mainComp.layers.add footageFile
   footageLayer.name = footageLayerName
-  footageLayer.property('Transform').property("Scale").setValue [50, 50]
+  footageLayer.property('Transform').property("Scale").setValue [50, 50] if footageLayer.hasVideo
 
   # Get number of markers on layer
   markerStream = footageLayer.property('Marker')

@@ -3885,72 +3885,6 @@ NFCitationLayer = Object.assign(NFCitationLayer, {
 
 
 /**
-Creates a new NFEmphasisLayer from a given AVLayer
-@class NFEmphasisLayer
-@classdesc Subclass of {@link NFLayer} for an emphasis layer
-@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
-@property {AVLayer} layer - the wrapped AVLayer
-@extends NFLayer
- */
-var NFEmphasisLayer,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-NFEmphasisLayer = (function(superClass) {
-  extend(NFEmphasisLayer, superClass);
-
-  function NFEmphasisLayer(layer) {
-    NFLayer.call(this, layer);
-    this;
-  }
-
-  NFEmphasisLayer.prototype.toString = function() {
-    return "NFEmphasisLayer: '" + this.$.name + "'";
-  };
-
-
-  /**
-  Provides an object to be easily converted to JSON for the CEP Panel
-  @memberof NFEmphasisLayer
-  @returns {Object} the CEP Panel object
-   */
-
-  NFEmphasisLayer.prototype.simplify = function() {
-    var obj;
-    obj = NFLayer.prototype.simplify.call(this);
-    obj["class"] = "NFEmphasisLayer";
-    return obj;
-  };
-
-  return NFEmphasisLayer;
-
-})(NFShapeLayer);
-
-NFEmphasisLayer = Object.assign(NFEmphasisLayer, {
-
-  /**
-  Returns the name to use for an emphasis layer on the given layer
-  @memberof NFEmphasisLayer
-  @param {NFLayer} the layer to check for
-  @returns {String} the name
-   */
-  nameForLayer: function(theLayer) {
-    return (theLayer.getName()) + " - Emphasis";
-  },
-
-  /**
-  Returns whether or not the given AVLayer is a valid Emphasis Layer
-  @memberof NFEmphasisLayer
-  @param {AVLayer} the layer to check
-  @returns {boolean} whether the AV layer is a valid emphasis layer
-   */
-  isEmphasisLayer: function(theLayer) {
-    return theLayer.name.indexOf("Emphasis") >= 0 && theLayer instanceof ShapeLayer;
-  }
-});
-
-
-/**
 Creates a new NFGaussyLayer from a given AVLayer
 @class NFGaussyLayer
 @classdesc Subclass of {@link NFLayer} for a gaussy layer
@@ -8231,6 +8165,72 @@ NFSpotlightLayer = Object.assign(NFSpotlightLayer, {
     opacityProp = spotlightLayer.property("Transform").property("Opacity");
     opacityProp.expression = "comp(\"" + spotlightCompName + "\") .layer(\"" + spotlightLayerName + "\") .enabled * 100";
     return spotlightLayer;
+  }
+});
+
+
+/**
+Creates a new NFEmphasisLayer from a given AVLayer
+@class NFEmphasisLayer
+@classdesc Subclass of {@link NFLayer} for an emphasis layer
+@param {AVLayer | NFLayer} layer - the target AVLayer or NFLayer
+@property {AVLayer} layer - the wrapped AVLayer
+@extends NFLayer
+ */
+var NFEmphasisLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+NFEmphasisLayer = (function(superClass) {
+  extend(NFEmphasisLayer, superClass);
+
+  function NFEmphasisLayer(layer) {
+    NFLayer.call(this, layer);
+    this;
+  }
+
+  NFEmphasisLayer.prototype.toString = function() {
+    return "NFEmphasisLayer: '" + this.$.name + "'";
+  };
+
+
+  /**
+  Provides an object to be easily converted to JSON for the CEP Panel
+  @memberof NFEmphasisLayer
+  @returns {Object} the CEP Panel object
+   */
+
+  NFEmphasisLayer.prototype.simplify = function() {
+    var obj;
+    obj = NFLayer.prototype.simplify.call(this);
+    obj["class"] = "NFEmphasisLayer";
+    return obj;
+  };
+
+  return NFEmphasisLayer;
+
+})(NFShapeLayer);
+
+NFEmphasisLayer = Object.assign(NFEmphasisLayer, {
+
+  /**
+  Returns the name to use for an emphasis layer on the given layer
+  @memberof NFEmphasisLayer
+  @param {NFLayer} the layer to check for
+  @returns {String} the name
+   */
+  nameForLayer: function(theLayer) {
+    return (theLayer.getName()) + " - Emphasis";
+  },
+
+  /**
+  Returns whether or not the given AVLayer is a valid Emphasis Layer
+  @memberof NFEmphasisLayer
+  @param {AVLayer} the layer to check
+  @returns {boolean} whether the AV layer is a valid emphasis layer
+   */
+  isEmphasisLayer: function(theLayer) {
+    return theLayer.name.indexOf("Emphasis") >= 0 && theLayer instanceof ShapeLayer;
   }
 });
 
