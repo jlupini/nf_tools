@@ -510,6 +510,23 @@ toolRegistry = {
             };
           })(this));
         }
+      },
+      insertWebsiteComp: {
+        name: "Insert Website Comp",
+        description: "Creates a website comp with the currently selected item in the project panel",
+        callback: function() {
+          var activeComp, assetsFolder, browserImage, selection, webComp, webCompsFolder;
+          activeComp = NFProject.activeComp();
+          selection = app.project.selection;
+          browserImage = NFProject.findItem("safari-browser-v01.ai");
+          webCompsFolder = NFProject.findItem("Website Comps");
+          if (!webCompsFolder) {
+            assetsFolder = NFProject.findItem("Assets");
+            webCompsFolder = assetsFolder.items.addFolder("Website Comps");
+          }
+          webComp = webCompsFolder.items.addComp(name, 1920, 1080, 1, 600, 30);
+          return webComp.layers.add(browserImage);
+        }
       }
     }
   },

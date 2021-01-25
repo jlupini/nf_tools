@@ -1923,7 +1923,7 @@ NFLayerCollection = (function(superClass) {
   NFLayerCollection.prototype.add = function(newLayer) {
     var layerToAdd;
     if (newLayer instanceof NFLayer) {
-      if (!this.containsLayer(layerToAdd)) {
+      if (!this.containsLayer(newLayer)) {
         this.layers.push(newLayer);
       }
     } else if (typeof newLayer.isAVLayer === "function" ? newLayer.isAVLayer() : void 0) {

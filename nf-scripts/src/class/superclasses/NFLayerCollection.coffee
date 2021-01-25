@@ -53,7 +53,7 @@ class NFLayerCollection extends NFObject
   ###
   add: (newLayer) ->
     if newLayer instanceof NFLayer
-      @layers.push newLayer unless @containsLayer layerToAdd
+      @layers.push newLayer unless @containsLayer newLayer
     else if newLayer.isAVLayer?()
       layerToAdd = NFLayer.getSpecializedLayerFromAVLayer(newLayer)
       @layers.push layerToAdd unless @containsLayer layerToAdd

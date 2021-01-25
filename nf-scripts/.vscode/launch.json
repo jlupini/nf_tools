@@ -18,6 +18,8 @@
             "program": "${file}",
             // "trace": true,
             "targetSpecifier": "aftereffects-17.0",
+            // "dontBreakOnErrors": false,
+            // "debugLevel": 2,
             "engineName": "main"
         },
         {

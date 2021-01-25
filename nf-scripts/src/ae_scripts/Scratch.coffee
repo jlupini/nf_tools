@@ -2,12 +2,29 @@ $.evalFile File($.fileName).path + "/runtimeLibraries.jsx"
 
 app.beginUndoGroup 'Run Scratch Script'
 
-testLayer = NFProject.activeComp().selectedLayers().get(0)
+activeComp = NFProject.activeComp()
+selectedLayer = activeComp.selectedLayers()
+if selectedLayer.count() is 1
+  selectedLayer = selectedLayer.get(0)
 
-# Apply the Animation Preset
-path = Folder(File($.fileName).parent.parent.fsName).fsName + '/lib/NF Greenscreen Preset.ffx'
-gsPreset = File path
-testLayer.$.applyPreset gsPreset
+  selection = app.project.selection
+  browserImage = NFProject.findItem "safari-browser-v01.ai"
+
+  webCompsFolder = NFProject.findItem "Website Comps"
+  unless webCompsFolder
+    assetsFolder = NFProject.findItem "Assets"
+    webCompsFolder = assetsFolder.items.addFolder "Website Comps"
+
+  webComp = webCompsFolder.items.addComp("Browser - #{selectedLayer.getName()}", 1920, 1080, 1, 600, 30)
+
+  browserLayer = new NFLayer webComp.layers.add(browserImage)
+  browserLayer.transform("Scale").setValue [417.4, 417.4]
+  browserLayer.transform("Anchor Point").setValue [0, 0]
+  browserLayer.transform("Position").setValue [0, 0]
+  browserLayer.$.collapseTransformation = true
+
+  footageLayer = new NFLayer webComp.layers.add(selectedLayer.$.source)
+else alert "wrong number of layers selected" 
 
 
 app.endUndoGroup()
