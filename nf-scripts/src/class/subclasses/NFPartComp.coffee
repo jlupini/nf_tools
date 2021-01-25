@@ -496,12 +496,6 @@ class NFPartComp extends NFComp
           width: 34
           right: 4.5
           top: 11.5
-        # target.animateProperties
-        #   onParent: yes
-        #   time: @getTime()
-        #   duration: SHRINK_DURATION
-        #   properties: [target.transform('Position'), target.transform('Scale')]
-        #   values: [PAGE_SMALL_POSITION, [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]]
 
       if model.command is cmd.END_ELEMENT
         time = @getTime()
