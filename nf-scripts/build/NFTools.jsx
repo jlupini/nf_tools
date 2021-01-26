@@ -113,7 +113,7 @@ NFTools = {
   @memberof NFTools
   @param {String} filename - the path to the file as a string. No leading
   slashes are necessary
-  @returns {null} null
+  @returns {null}
    */
   evalFile: function(filename) {
     $.evalFile(File($.fileName).path + "/" + filename);
