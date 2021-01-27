@@ -1,4 +1,4 @@
-var extra, i, layerName, nextTopmostLayer, numLayers, ref, theLayer, topmostLayer;
+var i, layerName, nextTopmostLayer, numLayers, pdfNum, ref, theLayer, topmostLayer;
 
 numLayers = thisComp.numLayers;
 
@@ -6,7 +6,9 @@ topmostLayer = null;
 
 nextTopmostLayer = null;
 
-extra = 0;
+pdfNum = function(layer) {
+  return layer.name.substr(0, layer.name.indexOf('_'));
+};
 
 i = 1;
 
@@ -18,11 +20,14 @@ while (i <= numLayers) {
       if (topmostLayer == null) {
         topmostLayer = theLayer;
       } else if (theLayer.index < topmostLayer.index) {
-        extra++;
-        nextTopmostLayer = topmostLayer;
+        if (pdfNum(theLayer) !== pdfNum(topmostLayer)) {
+          nextTopmostLayer = topmostLayer;
+        }
         topmostLayer = theLayer;
       } else if (theLayer.index < (nextTopmostLayer != null ? nextTopmostLayer.index : void 0) || (nextTopmostLayer == null)) {
-        nextTopmostLayer = theLayer;
+        if (pdfNum(theLayer) !== pdfNum(topmostLayer)) {
+          nextTopmostLayer = theLayer;
+        }
       }
     }
   } catch (undefined) {}
@@ -31,7 +36,7 @@ while (i <= numLayers) {
 
 if (topmostLayer != null) {
   if (nextTopmostLayer != null) {
-    topmostLayer.name + "&" + nextTopmostLayer.name;
+    topmostLayer.name + ";" + nextTopmostLayer.name;
   } else {
     "" + topmostLayer.name;
   }

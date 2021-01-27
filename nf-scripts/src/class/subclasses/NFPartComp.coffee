@@ -601,6 +601,30 @@ class NFPartComp extends NFComp
       time: model.time
     pageLayer.$.label = 4
 
+    # Add the ghost page trackers if necessary
+    ghostPageLayerName = "Ghost Pages"
+    ghostPageDataLayerName = "ghost-page-data"
+    unless @layerWithName(ghostPageLayerName)?
+      ghostPageLayer = @addSolid
+        color: [1,1,1]
+        name: ghostPageLayerName
+      ghostPageLayer.moveBefore @greenscreenLayer()
+      ghostPageLayer.addSlider("Page Offset", 100)
+      ghostPageLayer.addSlider("Page Opacity", 60)
+
+      for i in [1..4]
+        # Setup the mask
+        newMask = ghostPageLayer.mask().addProperty "Mask"
+        newMask.maskShape.expression = NFTools.readExpression "ghost-pages-mask-path-expression"
+        newMask.maskOpacity.expression = NFTools.readExpression "ghost-pages-mask-opacity-expression"
+    unless @layerWithName(ghostPageDataLayerName)?
+      dataLayer = @addTextLayer
+        at: @allLayers().count()-1
+        time: 0
+      dataLayer.property("Text").property("Source Text").expression = NFTools.readExpression "ghost-pages-data-expression"
+      dataLayer.$.enabled = no
+      dataLayer.$.name = ghostPageDataLayerName
+
     unless model.init is no
       pageLayer.initTransforms().init()
       group = new NFPaperLayerGroup pageLayer.assignPaperParentLayer()

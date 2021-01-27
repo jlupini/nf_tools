@@ -1,16 +1,27 @@
-var inTangents, is_closed, offsetValue, ori, outTangents, points, shapePoints, shapeRect, targetLayer;
+var calculatedOffset, inTangents, is_closed, layerString, layerStringArr, maskNumber, offsetValue, ori, outTangents, paperNumber, points, shapePoints, shapeRect, sheetNumber, targetLayer;
 
-offsetValue = 100;
+maskNumber = thisProperty.propertyGroup(1).propertyIndex - 1;
 
-targetLayer = topmostLayer;
+paperNumber = Math.floor(maskNumber / 2);
 
-if ((targetLayer.inPoint <= time && time <= targetLayer.outPoint)) {
+sheetNumber = maskNumber % 2;
+
+offsetValue = thisLayer.effect("Page Offset")("Slider").value;
+
+calculatedOffset = offsetValue * (sheetNumber + 1);
+
+layerString = thisComp.layer("ghost-page-data").text.sourceText.valueAtTime(time);
+
+layerStringArr = layerString.split(";");
+
+if (layerString !== "" && paperNumber <= layerStringArr.length - 1) {
+  targetLayer = thisComp.layer(layerStringArr[paperNumber]);
   shapeRect = targetLayer.sourceRectAtTime(time);
   shapePoints = {
-    lt: targetLayer.toComp([shapeRect.left + offsetValue, shapeRect.top + offsetValue]),
-    lb: targetLayer.toComp([shapeRect.left + offsetValue, shapeRect.top + shapeRect.height + offsetValue]),
-    rt: targetLayer.toComp([shapeRect.left + shapeRect.width + offsetValue, shapeRect.top + offsetValue]),
-    rb: targetLayer.toComp([shapeRect.left + shapeRect.width + offsetValue, shapeRect.top + shapeRect.height + offsetValue])
+    lt: targetLayer.toComp([shapeRect.left + calculatedOffset, shapeRect.top + calculatedOffset]),
+    lb: targetLayer.toComp([shapeRect.left + calculatedOffset, shapeRect.top + shapeRect.height + calculatedOffset]),
+    rt: targetLayer.toComp([shapeRect.left + shapeRect.width + calculatedOffset, shapeRect.top + calculatedOffset]),
+    rb: targetLayer.toComp([shapeRect.left + shapeRect.width + calculatedOffset, shapeRect.top + shapeRect.height + calculatedOffset])
   };
   createPath(points = [shapePoints.lt, shapePoints.rt, shapePoints.rb, shapePoints.lb], inTangents = [], outTangents = [], is_closed = true);
 } else {

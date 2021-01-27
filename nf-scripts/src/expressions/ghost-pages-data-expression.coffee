@@ -1,7 +1,8 @@
 numLayers = thisComp.numLayers
 topmostLayer = null
 nextTopmostLayer = null
-extra = 0
+pdfNum = (layer) ->
+  return layer.name.substr(0, layer.name.indexOf('_'))
 i = 1
 while i <= numLayers
   theLayer = thisComp.layer(i)
@@ -11,16 +12,15 @@ while i <= numLayers
       if not topmostLayer?
         topmostLayer = theLayer
       else if theLayer.index < topmostLayer.index
-        extra++
-        nextTopmostLayer = topmostLayer
+        nextTopmostLayer = topmostLayer unless pdfNum(theLayer) is pdfNum(topmostLayer)
         topmostLayer = theLayer
       else if theLayer.index < nextTopmostLayer?.index or not nextTopmostLayer?
-        nextTopmostLayer = theLayer
+        nextTopmostLayer = theLayer unless pdfNum(theLayer) is pdfNum(topmostLayer)
   i++
 
 if topmostLayer?
   if nextTopmostLayer?
-    "#{topmostLayer.name}&#{nextTopmostLayer.name}"
+    "#{topmostLayer.name};#{nextTopmostLayer.name}"
   else
     "#{topmostLayer.name}"
 else

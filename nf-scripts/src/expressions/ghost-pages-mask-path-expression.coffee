@@ -1,20 +1,21 @@
-# targetLayerName = 'TARGET_LAYER_NAME'
-# offsetValue = OFFSET_VALUE
+maskNumber = thisProperty.propertyGroup(1).propertyIndex - 1
+paperNumber = Math.floor(maskNumber / 2)
+sheetNumber = maskNumber % 2
 
-offsetValue = 100
+offsetValue = thisLayer.effect("Page Offset")("Slider").value
+calculatedOffset = offsetValue * (sheetNumber + 1)
+layerString = thisComp.layer("ghost-page-data").text.sourceText.valueAtTime time
+layerStringArr = layerString.split ";"
 
-
-
-targetLayer = topmostLayer
-
-if targetLayer.inPoint <= time <= targetLayer.outPoint
+if layerString isnt "" and paperNumber <= layerStringArr.length - 1
+  targetLayer = thisComp.layer layerStringArr[paperNumber]
 
   shapeRect = targetLayer.sourceRectAtTime(time)
   shapePoints =
-    lt: targetLayer.toComp([shapeRect.left + offsetValue, shapeRect.top + offsetValue])
-    lb: targetLayer.toComp([shapeRect.left + offsetValue, shapeRect.top + shapeRect.height + offsetValue])
-    rt: targetLayer.toComp([shapeRect.left + shapeRect.width + offsetValue, shapeRect.top + offsetValue])
-    rb: targetLayer.toComp([shapeRect.left + shapeRect.width + offsetValue, shapeRect.top + shapeRect.height + offsetValue])
+    lt: targetLayer.toComp([shapeRect.left + calculatedOffset, shapeRect.top + calculatedOffset])
+    lb: targetLayer.toComp([shapeRect.left + calculatedOffset, shapeRect.top + shapeRect.height + calculatedOffset])
+    rt: targetLayer.toComp([shapeRect.left + shapeRect.width + calculatedOffset, shapeRect.top + calculatedOffset])
+    rb: targetLayer.toComp([shapeRect.left + shapeRect.width + calculatedOffset, shapeRect.top + shapeRect.height + calculatedOffset])
 
   createPath points = [shapePoints.lt, shapePoints.rt, shapePoints.rb, shapePoints.lb], inTangents = [], outTangents = [], is_closed = true
 
