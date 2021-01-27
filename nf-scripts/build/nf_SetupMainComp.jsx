@@ -22,7 +22,9 @@ setupMainComp = function() {
   mainComp.hideShyLayers = true;
   footageLayer = mainComp.layers.add(footageFile);
   footageLayer.name = footageLayerName;
-  footageLayer.property('Transform').property("Scale").setValue([50, 50]);
+  if (footageLayer.hasVideo) {
+    footageLayer.property('Transform').property("Scale").setValue([50, 50]);
+  }
   markerStream = footageLayer.property('Marker');
   markerCount = markerStream.numKeys;
   bgLayer = mainComp.layers.addSolid([1, 1, 1], 'Background', 1920, 1080, 1);

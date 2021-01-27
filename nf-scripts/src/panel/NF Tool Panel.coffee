@@ -29,6 +29,20 @@ toolRegistry =
         name: "Precompose PDFs"
         callbackScript: "nf_Precompose PDF Pages.jsx"
 
+      removePageBackings:
+        name: "Remove Page Backings"
+        callback: ->
+          precompFolder = NFProject.findItem "PDF Precomps"
+          unless precompFolder?.typeName is "Folder"
+            throw new Error "Couldn't get the PDF Precomp folder"
+          for i in [1..precompFolder.numItems]
+            item = new NFPageComp precompFolder.item(i)
+            item.layerWithName("Paper BG")?.remove()
+            bgSolid = item.addSolid
+              color: [1,1,1]
+              name: "BG White Solid"
+            bgSolid.moveAfter item.allLayers().getBottommostLayer()
+
   layout:
 
     name: "Layout"

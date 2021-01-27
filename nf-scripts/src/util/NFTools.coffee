@@ -114,6 +114,18 @@ NFTools =
     return null
 
   ###*
+  Runs $.evalFile on a given file, starting in the same directory as the NFTools
+  file.
+  @memberof NFTools
+  @param {String} filename - the path to the file as a string. No leading
+  slashes are necessary
+  @returns {null}
+  ###
+  evalFile: (filename) ->
+    $.evalFile(File($.fileName).path + "/" + filename)
+    return null
+
+  ###*
   Opens a file with a given path, and lets you work with the file using a
   callback function. File will be created if it does not already exist.
   @memberof NFTools
