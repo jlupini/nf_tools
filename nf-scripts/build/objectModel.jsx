@@ -7210,11 +7210,11 @@ NFPartComp = (function(superClass) {
     var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
-    PAGE_SCALE_LARGE = 44;
+    PAGE_SCALE_LARGE = 40;
     PAGE_SCALE_SMALL = 17;
     PAGE_LARGE_POSITION = [5, 761];
     PAGE_SMALL_POSITION = [552, 32];
-    FST_WIDTH = 85;
+    FST_WIDTH = 80;
     FST_TOP = 18;
     SHRINK_DURATION = 1.2;
     GROW_DURATION = 1.2;
