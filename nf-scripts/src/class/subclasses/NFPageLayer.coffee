@@ -374,6 +374,7 @@ class NFPageLayer extends NFLayer
     bgSolid.moveAfter refLayer
     bgSolid.$.blendingMode = BlendingMode.OVERLAY
     bgSolid.$.motionBlur = true
+    bgSolid.$.shy = yes
     bgSolid.$.label = 6
 
     newMask = bgSolid.mask().addProperty "Mask"

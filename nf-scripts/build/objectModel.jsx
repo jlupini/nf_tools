@@ -5582,6 +5582,7 @@ NFPageLayer = (function(superClass) {
     bgSolid.moveAfter(refLayer);
     bgSolid.$.blendingMode = BlendingMode.OVERLAY;
     bgSolid.$.motionBlur = true;
+    bgSolid.$.shy = true;
     bgSolid.$.label = 6;
     newMask = bgSolid.mask().addProperty("Mask");
     newMask.maskExpansion.expression = NFTools.readExpression("flightpath-expansion-expression", {
