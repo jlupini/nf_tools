@@ -7338,6 +7338,7 @@ NFPartComp = (function(superClass) {
         pageLayer = refLayer.referencedPageLayer();
         sourceRect = new Rect(pageLayer.sourceRectForLayer(sourceLayer));
         refLayer.panBehindTo(sourceRect.centerPoint());
+        refLayer.$.label = 8;
       }
       if (model.command === cmd.END_ELEMENT) {
         time = this.getTime();

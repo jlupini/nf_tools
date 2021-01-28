@@ -456,6 +456,7 @@ class NFPartComp extends NFComp
         sourceRect = new Rect pageLayer.sourceRectForLayer(sourceLayer)
 
         refLayer.panBehindTo sourceRect.centerPoint()
+        refLayer.$.label = 8
 
       if model.command is cmd.END_ELEMENT
         time = @getTime()
