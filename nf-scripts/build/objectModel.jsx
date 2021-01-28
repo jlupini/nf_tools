@@ -7485,7 +7485,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.insertPage = function(model) {
-    var group, layersForPage, pageLayer, ref1, ref2, ref3;
+    var dataLayer, ghostPageDataLayerName, ghostPageLayer, ghostPageLayerName, group, i, j, layersForPage, newMask, pageLayer, ref1, ref2, ref3;
     this.log("Inserting page: " + model.page.$.name);
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
       throw new Error("No page given to insert...");
@@ -7504,6 +7504,31 @@ NFPartComp = (function(superClass) {
       time: model.time
     });
     pageLayer.$.label = 4;
+    ghostPageLayerName = "Ghost Pages";
+    ghostPageDataLayerName = "ghost-page-data";
+    if (this.layerWithName(ghostPageLayerName) == null) {
+      ghostPageLayer = this.addSolid({
+        color: [1, 1, 1],
+        name: ghostPageLayerName
+      });
+      ghostPageLayer.moveBefore(this.greenscreenLayer());
+      ghostPageLayer.addSlider("Page Offset", 100);
+      ghostPageLayer.addSlider("Page Opacity", 60);
+      for (i = j = 1; j <= 4; i = ++j) {
+        newMask = ghostPageLayer.mask().addProperty("Mask");
+        newMask.maskShape.expression = NFTools.readExpression("ghost-pages-mask-path-expression");
+        newMask.maskOpacity.expression = NFTools.readExpression("ghost-pages-mask-opacity-expression");
+      }
+    }
+    if (this.layerWithName(ghostPageDataLayerName) == null) {
+      dataLayer = this.addTextLayer({
+        at: this.allLayers().count() - 1,
+        time: 0
+      });
+      dataLayer.property("Text").property("Source Text").expression = NFTools.readExpression("ghost-pages-data-expression");
+      dataLayer.$.enabled = false;
+      dataLayer.$.name = ghostPageDataLayerName;
+    }
     if (model.init !== false) {
       pageLayer.initTransforms().init();
       group = new NFPaperLayerGroup(pageLayer.assignPaperParentLayer());
