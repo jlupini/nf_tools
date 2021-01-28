@@ -336,8 +336,8 @@ class NFPartComp extends NFComp
 
     PAGE_SCALE_LARGE = 40
     PAGE_SCALE_SMALL = 17
-    PAGE_LARGE_POSITION = [5, 761]
-    PAGE_SMALL_POSITION = [552, 32]
+    PAGE_LARGE_POSITION = [960, 1228.2]
+    PAGE_SMALL_POSITION = [1507, 567]
 
     FST_WIDTH = 80
     FST_TOP = 18
@@ -549,8 +549,11 @@ class NFPartComp extends NFComp
             continuous: yes
             animate: shouldAnimate
           group = newPageLayer.getPaperLayerGroup()
+          pageParent = newPageLayer.getParent()
+          newPageLayer.setParent()
           newPageLayer.transform('Scale').setValue scaleVal
           newPageLayer.transform('Position').setValue posVal
+          newPageLayer.setParent(pageParent)
           newPageLayer.effect('Drop Shadow')?.enabled = no
 
           switch model.command
