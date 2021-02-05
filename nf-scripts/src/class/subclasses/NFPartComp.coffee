@@ -531,8 +531,12 @@ class NFPartComp extends NFComp
               activePage = @activePage()
               unless activePage?
                 throw new Error "can't run SWITCH_PAGE without an already active page at this time"
+              
+              pageParent = activePage.getParent()
+              activePage.setParent()
               scaleVal = activePage.transform('Scale').value
               posVal = activePage.transform('Position').value
+              activePage.setParent pageParent
 
               time = @getTime()
               # fade out the ActivePage

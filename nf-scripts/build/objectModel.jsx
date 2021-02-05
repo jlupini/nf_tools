@@ -7424,8 +7424,11 @@ NFPartComp = (function(superClass) {
               if (activePage == null) {
                 throw new Error("can't run SWITCH_PAGE without an already active page at this time");
               }
+              pageParent = activePage.getParent();
+              activePage.setParent();
               scaleVal = activePage.transform('Scale').value;
               posVal = activePage.transform('Position').value;
+              activePage.setParent(pageParent);
               time = this.getTime();
               activePage.$.outPoint = time + FADE_IN_DURATION * 2;
               activePage.fadeOut(FADE_IN_DURATION);

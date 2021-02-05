@@ -24,7 +24,6 @@ for item in app.project.selection
     theFile = new File(startFolder.fsName + '/../../Slides/02.\ V1/' + filename)
 
     if theFile.exists
-      # alert "file #{theFile.name} exists!"
       # rename the old comp temporarily
       comp.$.name += oldFlag
       comp.$.parentFolder = oldSlideFolder
