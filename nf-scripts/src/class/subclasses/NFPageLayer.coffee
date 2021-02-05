@@ -302,6 +302,8 @@ class NFPageLayer extends NFLayer
   @param {Object} model - the data model
   @param {NFLayer} model.target - the target shape or highlight layer
   @param {NFLayer} model.maskExpansion - the expansion on the mask
+  @param {float} model.fillPercentage - the width percentage target for the new ref layer
+  @param {float} model.maxScale - the max scale for the new ref layer
   @returns {NFPageLayer} the new reference layer
   ###
   createReferenceLayer: (model) ->
@@ -342,8 +344,8 @@ class NFPageLayer extends NFLayer
     scaleProp = refLayer.transform("Scale")
     newScale = refLayer.getAbsoluteScaleToFrameUp
       rect: refLayer.relativeRect choiceRect
-      fillPercentage: 75
-      maxScale: 100
+      fillPercentage: model.fillPercentage
+      maxScale: model.maxScale
 
     scaleProp.setValue [newScale, newScale]
 

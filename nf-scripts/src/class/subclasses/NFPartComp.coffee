@@ -350,6 +350,9 @@ class NFPartComp extends NFComp
 
     MASK_EXPANSION = 26
 
+    EXPOSE_MAX_SCALE = 100
+    EXPOSE_FILL_PERCENTAGE = 90
+
     cmd =
       FST: "fullscreen-title"
       ADD_PAGE_SMALL: "add-small"
@@ -420,6 +423,8 @@ class NFPartComp extends NFComp
         refLayer = targetPageLayer.createReferenceLayer
           target: target
           maskExpansion: MASK_EXPANSION
+          fillPercentage: EXPOSE_FILL_PERCENTAGE
+          maxScale: EXPOSE_MAX_SCALE
 
         # Add the HCL
         group = targetPageLayer.getPaperLayerGroup()

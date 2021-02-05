@@ -5517,6 +5517,8 @@ NFPageLayer = (function(superClass) {
   @param {Object} model - the data model
   @param {NFLayer} model.target - the target shape or highlight layer
   @param {NFLayer} model.maskExpansion - the expansion on the mask
+  @param {float} model.fillPercentage - the width percentage target for the new ref layer
+  @param {float} model.maxScale - the max scale for the new ref layer
   @returns {NFPageLayer} the new reference layer
    */
 
@@ -5554,8 +5556,8 @@ NFPageLayer = (function(superClass) {
     scaleProp = refLayer.transform("Scale");
     newScale = refLayer.getAbsoluteScaleToFrameUp({
       rect: refLayer.relativeRect(choiceRect),
-      fillPercentage: 75,
-      maxScale: 100
+      fillPercentage: model.fillPercentage,
+      maxScale: model.maxScale
     });
     scaleProp.setValue([newScale, newScale]);
     positionProp = refLayer.transform("Position");
@@ -7208,7 +7210,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, EXPOSE_FILL_PERCENTAGE, EXPOSE_MAX_SCALE, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 40;
@@ -7223,6 +7225,8 @@ NFPartComp = (function(superClass) {
     EXPAND_DURATION = 1;
     FADE_IN_DURATION = 0.7;
     MASK_EXPANSION = 26;
+    EXPOSE_MAX_SCALE = 100;
+    EXPOSE_FILL_PERCENTAGE = 90;
     cmd = {
       FST: "fullscreen-title",
       ADD_PAGE_SMALL: "add-small",
@@ -7306,7 +7310,9 @@ NFPartComp = (function(superClass) {
       if (model.command === cmd.EXPOSE) {
         refLayer = targetPageLayer.createReferenceLayer({
           target: target,
-          maskExpansion: MASK_EXPANSION
+          maskExpansion: MASK_EXPANSION,
+          fillPercentage: EXPOSE_FILL_PERCENTAGE,
+          maxScale: EXPOSE_MAX_SCALE
         });
         group = targetPageLayer.getPaperLayerGroup();
         if (group == null) {
