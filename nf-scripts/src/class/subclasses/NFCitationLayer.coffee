@@ -24,6 +24,35 @@ class NFCitationLayer extends NFLayer
     return obj
 
   ###*
+  Ends an active citation visibility marker at the given time
+  @memberof NFCitationLayer
+  @param {float} [time=currTime] - the time to end the marker
+  @returns {NFCitationLayer} self
+  ###
+  hide: (time) ->
+    time = time or @containingComp().getTime()
+
+    markers = @markers()
+    citationMarkers = []
+    if markers.numKeys > 0
+      for idx in [1..markers.numKeys]
+        thisMarker = markers.keyValue idx
+        thisTime = markers.keyTime idx
+        thisEndTime = thisTime + thisMarker.duration
+        if thisMarker.comment is "Citation"
+          if thisTime <= time < thisEndTime
+            # We're trying to start inside an existing marker
+            # So just end it here
+            newDuration = time - thisTime
+            markers.removeKey idx
+            @addMarker
+              time: thisTime
+              comment: "Citation"
+              duration: newDuration
+            return @
+
+
+  ###*
   Adds a citation visible marker at the given time
   @memberof NFCitationLayer
   @param {float} [time=currTime] - the time to add the marker

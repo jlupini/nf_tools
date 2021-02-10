@@ -3586,6 +3586,40 @@ NFCitationLayer = (function(superClass) {
 
 
   /**
+  Ends an active citation visibility marker at the given time
+  @memberof NFCitationLayer
+  @param {float} [time=currTime] - the time to end the marker
+  @returns {NFCitationLayer} self
+   */
+
+  NFCitationLayer.prototype.hide = function(time) {
+    var citationMarkers, i, idx, markers, newDuration, ref, thisEndTime, thisMarker, thisTime;
+    time = time || this.containingComp().getTime();
+    markers = this.markers();
+    citationMarkers = [];
+    if (markers.numKeys > 0) {
+      for (idx = i = 1, ref = markers.numKeys; 1 <= ref ? i <= ref : i >= ref; idx = 1 <= ref ? ++i : --i) {
+        thisMarker = markers.keyValue(idx);
+        thisTime = markers.keyTime(idx);
+        thisEndTime = thisTime + thisMarker.duration;
+        if (thisMarker.comment === "Citation") {
+          if ((thisTime <= time && time < thisEndTime)) {
+            newDuration = time - thisTime;
+            markers.removeKey(idx);
+            this.addMarker({
+              time: thisTime,
+              comment: "Citation",
+              duration: newDuration
+            });
+            return this;
+          }
+        }
+      }
+    }
+  };
+
+
+  /**
   Adds a citation visible marker at the given time
   @memberof NFCitationLayer
   @param {float} [time=currTime] - the time to add the marker
@@ -7404,6 +7438,7 @@ NFPartComp = (function(superClass) {
               }
             };
           })(this));
+          target.getPaperLayerGroup().getCitationLayer().hide(time);
         }
       }
     }
@@ -7413,6 +7448,7 @@ NFPartComp = (function(superClass) {
         case cmd.FST:
         case cmd.ADD_PAGE_SMALL:
         case cmd.SWITCH_PAGE:
+          time = this.getTime();
           switch (model.command) {
             case cmd.FST:
               shouldAnimate = true;
@@ -7435,7 +7471,6 @@ NFPartComp = (function(superClass) {
               scaleVal = activePage.transform('Scale').value;
               posVal = activePage.transform('Position').value;
               activePage.setParent(pageParent);
-              time = this.getTime();
               activePage.$.outPoint = time + FADE_IN_DURATION * 2;
               activePage.fadeOut(FADE_IN_DURATION);
               flightPaths = new NFLayerCollection();
@@ -7468,7 +7503,7 @@ NFPartComp = (function(superClass) {
               break;
             case cmd.FST:
             case cmd.ADD_PAGE_SMALL:
-              group.getCitationLayer().show();
+              group.getCitationLayer().show(time, this.$.duration - time);
           }
           return group.gatherLayer(newPageLayer);
       }

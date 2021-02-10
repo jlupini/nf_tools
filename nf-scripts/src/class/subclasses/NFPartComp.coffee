@@ -515,12 +515,17 @@ class NFPartComp extends NFComp
             if layer.getName().includes("FlightPath") and layer.$.outPoint >= time
               layer.$.outPoint = time
 
+          # Citation layer...
+          target.getPaperLayerGroup().getCitationLayer().hide time
+
 
     if model.target.class is "NFPageComp"
       target = new NFPageComp aeq.getComp(model.target.name)
 
       switch model.command
         when cmd.FST, cmd.ADD_PAGE_SMALL, cmd.SWITCH_PAGE
+
+          time = @getTime()
 
           switch model.command
             when cmd.FST
@@ -536,14 +541,13 @@ class NFPartComp extends NFComp
               activePage = @activePage()
               unless activePage?
                 throw new Error "can't run SWITCH_PAGE without an already active page at this time"
-              
+
               pageParent = activePage.getParent()
               activePage.setParent()
               scaleVal = activePage.transform('Scale').value
               posVal = activePage.transform('Position').value
               activePage.setParent pageParent
 
-              time = @getTime()
               # fade out the ActivePage
               activePage.$.outPoint = time + FADE_IN_DURATION * 2
               activePage.fadeOut FADE_IN_DURATION
@@ -571,7 +575,7 @@ class NFPartComp extends NFComp
               newPageLayer.moveBefore activePage
               newPageLayer.fadeIn FADE_IN_DURATION
             when cmd.FST, cmd.ADD_PAGE_SMALL
-              group.getCitationLayer().show()
+              group.getCitationLayer().show time, @$.duration - time
 
           group.gatherLayer newPageLayer
 
