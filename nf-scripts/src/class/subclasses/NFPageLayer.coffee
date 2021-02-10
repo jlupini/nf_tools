@@ -538,11 +538,13 @@ class NFPageLayer extends NFLayer
   @param {enum} [model.fromEdge=NFComp.AUTO] - The direction to slide in from.
   Default if page is centered is the right.
   @param {boolean} [model.in=yes] - If page should slide in. No means out
+  @param {float} [model.length=2] - duration of the slide
   ###
   slide: (model) ->
     model ?= []
     model.fromEdge ?= NFComp.AUTO
     model.in ?= yes
+    model.length ?= 2
 
     if model.in
       @log "Sliding in at time: #{@getCompTime()}"
@@ -592,6 +594,7 @@ class NFPageLayer extends NFLayer
       endValue = [xVal, yVal, zVal]
 
     @addInOutMarkersForProperty
+      length: model.length
       property: positionProperty
       startEquation: startEquation
       startValue: startValue

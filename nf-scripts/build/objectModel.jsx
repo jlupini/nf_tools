@@ -5803,6 +5803,7 @@ NFPageLayer = (function(superClass) {
   @param {enum} [model.fromEdge=NFComp.AUTO] - The direction to slide in from.
   Default if page is centered is the right.
   @param {boolean} [model.in=yes] - If page should slide in. No means out
+  @param {float} [model.length=2] - duration of the slide
    */
 
   NFPageLayer.prototype.slide = function(model) {
@@ -5815,6 +5816,9 @@ NFPageLayer = (function(superClass) {
     }
     if (model["in"] == null) {
       model["in"] = true;
+    }
+    if (model.length == null) {
+      model.length = 2;
     }
     if (model["in"]) {
       this.log("Sliding in at time: " + (this.getCompTime()));
@@ -5878,6 +5882,7 @@ NFPageLayer = (function(superClass) {
       endValue = [xVal, yVal, zVal];
     }
     this.addInOutMarkersForProperty({
+      length: model.length,
       property: positionProperty,
       startEquation: startEquation,
       startValue: startValue,
@@ -7244,7 +7249,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, EXPOSE_FILL_PERCENTAGE, EXPOSE_MAX_SCALE, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, EXPOSE_FILL_PERCENTAGE, EXPOSE_MAX_SCALE, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, SLIDE_IN_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 40;
@@ -7258,6 +7263,7 @@ NFPartComp = (function(superClass) {
     REF_ANIMATION_DURATION = 1;
     EXPAND_DURATION = 1;
     FADE_IN_DURATION = 0.7;
+    SLIDE_IN_DURATION = 2;
     MASK_EXPANSION = 26;
     EXPOSE_MAX_SCALE = 100;
     EXPOSE_FILL_PERCENTAGE = 90;
@@ -7340,6 +7346,7 @@ NFPartComp = (function(superClass) {
         refLayer.moveAfter(layerAbove);
         controlLayer = target.getControlLayer();
         controlLayer.removeSpotlights();
+        this.setTime(currTime + EXPAND_DURATION);
       }
       if (model.command === cmd.EXPOSE) {
         refLayer = targetPageLayer.createReferenceLayer({
@@ -7369,6 +7376,7 @@ NFPartComp = (function(superClass) {
         if (model.target["class"] === "NFShapeLayer") {
           target.transform("Opacity").setValue(0);
         }
+        this.setTime(currTime + REF_ANIMATION_DURATION);
       }
     }
     if (model.target["class"] === "NFReferencePageLayer") {
@@ -7407,26 +7415,28 @@ NFPartComp = (function(superClass) {
     }
     if (model.target["class"] === "NFPageLayer") {
       target = this.layerWithName(model.target.name);
+      time = this.getTime();
       if (model.command === cmd.FST) {
         target.animateToConstraints({
-          time: this.getTime(),
+          time: time,
           duration: GROW_DURATION,
           width: FST_WIDTH,
           top: FST_TOP,
           centerX: true
         });
+        this.setTime(time + GROW_DURATION);
       }
       if (model.command === cmd.SHRINK) {
         target.animateToConstraints({
-          time: this.getTime(),
+          time: time,
           duration: SHRINK_DURATION,
           width: 34,
           right: 4.5,
           top: 11.5
         });
+        this.setTime(time + SHRINK_DURATION);
       }
       if (model.command === cmd.END_ELEMENT) {
-        time = this.getTime();
         if (target.$.outPoint >= time) {
           target.$.outPoint = time;
           target.slideOut();
@@ -7485,7 +7495,8 @@ NFPartComp = (function(superClass) {
           newPageLayer = this.insertPage({
             page: target,
             continuous: true,
-            animate: shouldAnimate
+            animate: shouldAnimate,
+            animationDuration: SLIDE_IN_DURATION
           });
           group = newPageLayer.getPaperLayerGroup();
           pageParent = newPageLayer.getParent();
@@ -7500,10 +7511,12 @@ NFPartComp = (function(superClass) {
             case cmd.SWITCH_PAGE:
               newPageLayer.moveBefore(activePage);
               newPageLayer.fadeIn(FADE_IN_DURATION);
+              this.setTime(time + FADE_IN_DURATION);
               break;
             case cmd.FST:
             case cmd.ADD_PAGE_SMALL:
               group.getCitationLayer().show(time, this.$.duration - time);
+              this.setTime(time + SLIDE_IN_DURATION);
           }
           return group.gatherLayer(newPageLayer);
       }
@@ -7525,6 +7538,7 @@ NFPartComp = (function(superClass) {
   @param {int} [model.at=0] - the index to insert the page at. Can use only
   one of .above, .below or .at
   @param {boolean} [model.animate=no] whether to animate the page in
+  @param {float} [model.animationDuration=1] animation duration if animate is yes
   @param {float} [model.time=Current Time] The time to insert at
   @param {Enum} [model.pageTurn=PAGETURN_NONE] the pageTurn of the page
   @param {boolean} [model.continuous=no] whether to start the page at the
@@ -7534,7 +7548,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.insertPage = function(model) {
-    var dataLayer, ghostPageDataLayerName, ghostPageLayer, ghostPageLayerName, group, i, j, layersForPage, newMask, pageLayer, ref1, ref2, ref3;
+    var dataLayer, ghostPageDataLayerName, ghostPageLayer, ghostPageLayerName, group, i, j, layersForPage, newMask, pageLayer, ref1, ref2, ref3, ref4;
     this.log("Inserting page: " + model.page.$.name);
     if (!((model.page != null) && model.page instanceof NFPageComp)) {
       throw new Error("No page given to insert...");
@@ -7545,6 +7559,7 @@ NFPartComp = (function(superClass) {
     model.time = (ref1 = model.time) != null ? ref1 : this.getTime();
     model.pageTurn = (ref2 = model.pageTurn) != null ? ref2 : NFPageLayer.PAGETURN_NONE;
     model.continuous = (ref3 = model.continuous) != null ? ref3 : false;
+    model.animationDuration = (ref4 = model.animationDuration) != null ? ref4 : 2;
     pageLayer = this.insertComp({
       comp: model.page,
       above: model.above,
@@ -7591,7 +7606,9 @@ NFPartComp = (function(superClass) {
       pageLayer.makeContinuous();
     }
     if (model.animate === true) {
-      pageLayer.slideIn();
+      pageLayer.slideIn({
+        length: model.animationDuration
+      });
     }
     if (model.pageTurn === NFPageLayer.PAGETURN_FLIPPED_UP || model.pageTurn === NFPageLayer.PAGETURN_FLIPPED_DOWN) {
       pageLayer.setupPageTurnEffect(model.pageTurn);

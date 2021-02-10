@@ -347,6 +347,7 @@ class NFPartComp extends NFComp
     REF_ANIMATION_DURATION = 1
     EXPAND_DURATION = 1
     FADE_IN_DURATION = 0.7
+    SLIDE_IN_DURATION = 2
 
     MASK_EXPANSION = 26
 
@@ -417,6 +418,8 @@ class NFPartComp extends NFComp
         controlLayer = target.getControlLayer()
         controlLayer.removeSpotlights()
 
+        @setTime currTime + EXPAND_DURATION
+
       if model.command is cmd.EXPOSE
 
         # Duplicate and convert to reference layer
@@ -450,6 +453,8 @@ class NFPartComp extends NFComp
 
         if model.target.class is "NFShapeLayer"
           target.transform("Opacity").setValue 0
+
+        @setTime currTime + REF_ANIMATION_DURATION
 
 
     if model.target.class is "NFReferencePageLayer"
@@ -486,25 +491,27 @@ class NFPartComp extends NFComp
 
     if model.target.class is "NFPageLayer"
       target = @layerWithName model.target.name
+      time = @getTime()
 
       if model.command is cmd.FST
         target.animateToConstraints
-          time: @getTime()
+          time: time
           duration: GROW_DURATION
           width: FST_WIDTH
           top: FST_TOP
           centerX: yes
+        @setTime time + GROW_DURATION
 
       if model.command is cmd.SHRINK
         target.animateToConstraints
-          time: @getTime()
+          time: time
           duration: SHRINK_DURATION
           width: 34
           right: 4.5
           top: 11.5
+        @setTime time + SHRINK_DURATION
 
       if model.command is cmd.END_ELEMENT
-        time = @getTime()
         if target.$.outPoint >= time
           target.$.outPoint = time
           target.slideOut()
@@ -562,6 +569,7 @@ class NFPartComp extends NFComp
             page: target
             continuous: yes
             animate: shouldAnimate
+            animationDuration: SLIDE_IN_DURATION
           group = newPageLayer.getPaperLayerGroup()
           pageParent = newPageLayer.getParent()
           newPageLayer.setParent()
@@ -574,8 +582,10 @@ class NFPartComp extends NFComp
             when cmd.SWITCH_PAGE
               newPageLayer.moveBefore activePage
               newPageLayer.fadeIn FADE_IN_DURATION
+              @setTime time + FADE_IN_DURATION
             when cmd.FST, cmd.ADD_PAGE_SMALL
               group.getCitationLayer().show time, @$.duration - time
+              @setTime time + SLIDE_IN_DURATION
 
           group.gatherLayer newPageLayer
 
@@ -595,6 +605,7 @@ class NFPartComp extends NFComp
   @param {int} [model.at=0] - the index to insert the page at. Can use only
   one of .above, .below or .at
   @param {boolean} [model.animate=no] whether to animate the page in
+  @param {float} [model.animationDuration=1] animation duration if animate is yes
   @param {float} [model.time=Current Time] The time to insert at
   @param {Enum} [model.pageTurn=PAGETURN_NONE] the pageTurn of the page
   @param {boolean} [model.continuous=no] whether to start the page at the
@@ -610,6 +621,7 @@ class NFPartComp extends NFComp
     model.time = model.time ? @getTime()
     model.pageTurn = model.pageTurn ? NFPageLayer.PAGETURN_NONE
     model.continuous = model.continuous ? no
+    model.animationDuration = model.animationDuration ? 2
     pageLayer = @insertComp
       comp: model.page
       above: model.above
@@ -656,7 +668,8 @@ class NFPartComp extends NFComp
       pageLayer.makeContinuous()
 
     if model.animate is yes
-      pageLayer.slideIn()
+      pageLayer.slideIn
+        length: model.animationDuration
 
     if model.pageTurn is NFPageLayer.PAGETURN_FLIPPED_UP or model.pageTurn is NFPageLayer.PAGETURN_FLIPPED_DOWN
       pageLayer.setupPageTurnEffect model.pageTurn
