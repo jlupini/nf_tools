@@ -7319,16 +7319,16 @@ NFPartComp = (function(superClass) {
           refLayers.forEach((function(_this) {
             return function(ref) {
               if (ref.isActive()) {
-                if (ref.getName().indexOf("FlightPath") < 0) {
-                  return activeRefs.add(ref);
-                } else {
+                if (ref.getName().includes("FlightPath")) {
                   return bgSolid = ref;
+                } else if (!(ref.$ instanceof ShapeLayer)) {
+                  return activeRefs.add(ref);
                 }
               }
             };
           })(this));
           if (activeRefs.count() !== 1) {
-            throw new Error("Can only animate an expand if there's just one matching active ref");
+            throw new Error("Can only animate an expand if there's just one matching active ref. This is likely because the playhead is not over the ref layer, or there are multiple layers active at this time that have the same (or very similar names) to the ref layer.");
           } else {
             refLayer = activeRefs.get(0);
           }

@@ -395,12 +395,16 @@ class NFPartComp extends NFComp
           activeRefs = new NFLayerCollection()
           refLayers.forEach (ref) =>
             if ref.isActive()
-              if ref.getName().indexOf("FlightPath") < 0
-                activeRefs.add ref
-              else
+              if ref.getName().includes "FlightPath"
                 bgSolid = ref
+              else unless (ref.$ instanceof ShapeLayer)
+                activeRefs.add ref
           if activeRefs.count() isnt 1
-            throw new Error "Can only animate an expand if there's just one matching active ref"
+            throw new Error "Can only animate an expand if there's just one
+                             matching active ref. This is likely because the
+                             playhead is not over the ref layer, or there are
+                             multiple layers active at this time that have the
+                             same (or very similar names) to the ref layer."
           else
             refLayer = activeRefs.get(0)
 
