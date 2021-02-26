@@ -1,7 +1,15 @@
-var duration, m, progress;
+var duration, m, prevKey, progress, timeToEndOfPrevKey, timeToNearestKey;
 
 if (thisLayer.marker.numKeys > 0) {
   m = thisLayer.marker.nearestKey(time);
+  if (time < m.time && m.index !== 1) {
+    prevKey = thisLayer.marker.key(m.index - 1);
+    timeToNearestKey = m.time - time;
+    timeToEndOfPrevKey = time - (prevKey.time + prevKey.duration);
+    if (timeToEndOfPrevKey < timeToNearestKey) {
+      m = prevKey;
+    }
+  }
   duration = 1.0;
   if (m.duration / 2 < duration) {
     duration = m.duration / 2;
