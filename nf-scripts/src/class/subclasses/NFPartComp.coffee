@@ -363,6 +363,7 @@ class NFPartComp extends NFComp
       ANCHOR: "anchor"
       END_ELEMENT: "end-element"
       SWITCH_PAGE: "switch-to-page"
+      BUBBLE: "bubble"
 
     # Looks if we selected a shape or highlight
     if model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
@@ -460,6 +461,13 @@ class NFPartComp extends NFComp
 
         @setTime currTime + REF_ANIMATION_DURATION
 
+      if model.command is cmd.BUBBLE
+        group = targetPageLayer.getPaperLayerGroup()
+        group.assignControlLayer target, currTime, no
+
+        if model.target.class is "NFHighlightLayer"
+          controlLayer = target.getControlLayer()
+          controlLayer.removeSpotlights()
 
     if model.target.class is "NFReferencePageLayer"
       refLayer = @layerWithName model.target.name

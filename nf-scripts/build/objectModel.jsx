@@ -7275,7 +7275,8 @@ NFPartComp = (function(superClass) {
       EXPAND: "expand",
       ANCHOR: "anchor",
       END_ELEMENT: "end-element",
-      SWITCH_PAGE: "switch-to-page"
+      SWITCH_PAGE: "switch-to-page",
+      BUBBLE: "bubble"
     };
     if (model.target["class"] === "NFShapeLayer" || model.target["class"] === "NFHighlightLayer") {
       pageComp = new NFPageComp(aeq.getComp(model.target.containingComp.name));
@@ -7377,6 +7378,14 @@ NFPartComp = (function(superClass) {
           target.transform("Opacity").setValue(0);
         }
         this.setTime(currTime + REF_ANIMATION_DURATION);
+      }
+      if (model.command === cmd.BUBBLE) {
+        group = targetPageLayer.getPaperLayerGroup();
+        group.assignControlLayer(target, currTime, false);
+        if (model.target["class"] === "NFHighlightLayer") {
+          controlLayer = target.getControlLayer();
+          controlLayer.removeSpotlights();
+        }
       }
     }
     if (model.target["class"] === "NFReferencePageLayer") {
