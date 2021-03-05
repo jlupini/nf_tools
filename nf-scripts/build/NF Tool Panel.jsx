@@ -353,7 +353,7 @@ toolRegistry = {
       updateCitations: {
         name: "Update Citations",
         callback: function() {
-          var blurLayer, citeComps, comp, item, j, len, maskShape, newCiteText, pdfNum, results, sourceRect, suffix, textLayer;
+          var citeComps, comp, item, j, len, maskShape, newCiteText, pdfNum, results, sourceRect, suffix, textLayer;
           suffix = " - Citation";
           citeComps = NFProject.searchItems(suffix);
           results = [];
@@ -366,15 +366,11 @@ toolRegistry = {
                 writeLn("pdf num '" + pdfNum + "'");
                 newCiteText = NFCitationLayer.fetchCitation(pdfNum);
                 textLayer = comp.allLayers().getTopmostLayer();
-                blurLayer = comp.allLayers().getBottommostLayer();
                 textLayer.property("Text").property("Source Text").setValue(newCiteText);
                 sourceRect = textLayer.sourceRect();
                 maskShape = new Shape;
                 maskShape.vertices = [[sourceRect.left - 20, sourceRect.maxY() + 9], [sourceRect.left - 20, sourceRect.top - 11], [sourceRect.maxX() + 25, sourceRect.top - 11], [sourceRect.maxX() + 25, sourceRect.maxY() + 9]];
-                maskShape.closed = true;
-                blurLayer.transform("Position").setValue([960, 540]);
-                blurLayer.transform("Anchor Point").setValue([960, 540]);
-                results.push(blurLayer.mask("Mask 1").maskPath.setValue(maskShape));
+                results.push(maskShape.closed = true);
               } else {
                 results.push(void 0);
               }
