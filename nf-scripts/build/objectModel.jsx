@@ -2944,6 +2944,7 @@ NFPaperLayerGroup = (function(superClass) {
     members = this.paperParent.getChildren(true);
     members.add(this.getControlLayers());
     members.add(this.getCitationLayer());
+    members.add(this.getFlightPaths());
     return members;
   };
 
@@ -2998,6 +2999,50 @@ NFPaperLayerGroup = (function(superClass) {
       };
     })(this));
     return controlChildren;
+  };
+
+
+  /**
+  Gets all the NFReferencePageLayers in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the ref layers
+   */
+
+  NFPaperLayerGroup.prototype.getRefLayers = function() {
+    var allChildren, refChildren;
+    allChildren = this.getChildren();
+    refChildren = new NFLayerCollection();
+    allChildren.forEach((function(_this) {
+      return function(layer) {
+        if (layer instanceof NFReferencePageLayer) {
+          return refChildren.add(layer);
+        }
+      };
+    })(this));
+    return refChildren;
+  };
+
+
+  /**
+  Gets all the FlightPaths in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the flightpath layers
+   */
+
+  NFPaperLayerGroup.prototype.getFlightPaths = function() {
+    var allRefs, flightPaths;
+    allRefs = this.getRefLayers();
+    flightPaths = new NFLayerCollection();
+    allRefs.forEach((function(_this) {
+      return function(layer) {
+        var matchedFlightPath;
+        matchedFlightPath = _this.containingComp().layerWithName("FlightPath -> '" + layer.$.name + "'");
+        if (matchedFlightPath != null) {
+          return flightPaths.add(matchedFlightPath);
+        }
+      };
+    })(this));
+    return flightPaths;
   };
 
 
@@ -3497,7 +3542,7 @@ NFPaperLayerGroup = (function(superClass) {
    */
 
   NFPaperLayerGroup.prototype.gatherLayers = function(layersToGather, shouldParent) {
-    var bottomLayer, childLayers, citationLayer, controlLayers, layerAbove, layersAboveGroup, layersBelowGroup, topLayer;
+    var bottomLayer, childLayers, frozenLayers, layerAbove, layersAboveGroup, layersBelowGroup, topLayer;
     if (shouldParent == null) {
       shouldParent = true;
     }
@@ -3519,13 +3564,8 @@ NFPaperLayerGroup = (function(superClass) {
       };
     })(this));
     while (layersAboveGroup.count() > 0) {
-      controlLayers = this.getControlLayers();
-      citationLayer = this.getCitationLayer();
-      if (controlLayers.isEmpty()) {
-        layerAbove = citationLayer != null ? citationLayer : this.paperParent;
-      } else {
-        layerAbove = controlLayers.getBottommostLayer();
-      }
+      frozenLayers = this.getControlLayers().add(this.getFlightPaths().add(this.getRefLayers().add(this.getCitationLayer())));
+      layerAbove = frozenLayers.getBottommostLayer();
       bottomLayer = layersAboveGroup.getBottommostLayer();
       bottomLayer.moveAfter(layerAbove);
       layersAboveGroup.remove(bottomLayer);
@@ -7524,6 +7564,17 @@ NFPartComp = (function(superClass) {
               break;
             case cmd.FST:
             case cmd.ADD_PAGE_SMALL:
+              activeRefs = this.activeRefs();
+              if (activeRefs.count() > 0) {
+                activeRefs.forEach((function(_this) {
+                  return function(ref) {
+                    if (ref.getPDFNumber() !== group.getPDFNumber()) {
+                      ref.moveBefore(pageParent);
+                      return ref.flightPath().moveAfter(ref);
+                    }
+                  };
+                })(this));
+              }
               group.getCitationLayer().show(time, this.$.duration - time);
               this.setTime(time + SLIDE_IN_DURATION);
           }
@@ -7905,6 +7956,36 @@ NFPartComp = (function(superClass) {
       this.setTime(originalTime);
     }
     return activePage;
+  };
+
+
+  /**
+  Gets any active refs at the current time
+  @memberof NFPartComp
+  @param {float} [time] - the time to check at, or the current time by default
+  @returns {NFPageLayerCollection} The active refs
+   */
+
+  NFPartComp.prototype.activeRefs = function(time) {
+    var activeRefs, originalTime;
+    if (time != null) {
+      originalTime = this.getTime();
+      this.setTime(time);
+    } else {
+      time = this.getTime();
+    }
+    activeRefs = new NFPageLayerCollection();
+    this.allLayers().forEach((function(_this) {
+      return function(layer) {
+        if (layer instanceof NFReferencePageLayer && (layer.$.inPoint < time && time < layer.$.outPoint)) {
+          return activeRefs.add(layer);
+        }
+      };
+    })(this));
+    if (originalTime != null) {
+      this.setTime(originalTime);
+    }
+    return activeRefs;
   };
 
 

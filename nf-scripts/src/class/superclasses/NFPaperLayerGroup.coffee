@@ -32,6 +32,7 @@ class NFPaperLayerGroup extends NFObject
     members = @paperParent.getChildren(yes)
     members.add @getControlLayers()
     members.add @getCitationLayer()
+    members.add @getFlightPaths()
 
     return members
 
@@ -68,6 +69,31 @@ class NFPaperLayerGroup extends NFObject
     allChildren.forEach (layer) =>
       controlChildren.add layer if layer instanceof NFHighlightControlLayer
     return controlChildren
+
+  ###*
+  Gets all the NFReferencePageLayers in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the ref layers
+  ###
+  getRefLayers: ->
+    allChildren = @getChildren()
+    refChildren = new NFLayerCollection()
+    allChildren.forEach (layer) =>
+      refChildren.add layer if layer instanceof NFReferencePageLayer
+    return refChildren
+
+  ###*
+  Gets all the FlightPaths in the group
+  @memberof NFPaperLayerGroup
+  @returns {NFLayerCollection} the flightpath layers
+  ###
+  getFlightPaths: ->
+    allRefs = @getRefLayers()
+    flightPaths = new NFLayerCollection()
+    allRefs.forEach (layer) =>
+      matchedFlightPath = @containingComp().layerWithName("FlightPath -> '#{layer.$.name}'")
+      flightPaths.add matchedFlightPath if matchedFlightPath?
+    return flightPaths
 
   ###*
   Returns whether a given highlight is in one of the group's layers
@@ -481,14 +507,10 @@ class NFPaperLayerGroup extends NFObject
 
     # For the layers in this collection above the group
     while layersAboveGroup.count() > 0
-      controlLayers = @getControlLayers()
-      citationLayer = @getCitationLayer()
-      if controlLayers.isEmpty()
-        layerAbove = citationLayer ? @paperParent
-      else
-        layerAbove = controlLayers.getBottommostLayer()
+      frozenLayers = @getControlLayers().add @getFlightPaths().add @getRefLayers().add @getCitationLayer()
+      layerAbove = frozenLayers.getBottommostLayer()
 
-      # starting with the bottommost and working up, move each one just below the lowest control layer
+      # starting with the bottommost and working up, move each one just below the lowest control/ref/flightpath/citation layer
       bottomLayer = layersAboveGroup.getBottommostLayer()
       bottomLayer.moveAfter layerAbove
       layersAboveGroup.remove bottomLayer

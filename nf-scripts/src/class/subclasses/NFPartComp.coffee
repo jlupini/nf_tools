@@ -596,6 +596,17 @@ class NFPartComp extends NFComp
               newPageLayer.fadeIn FADE_IN_DURATION
               @setTime time + FADE_IN_DURATION
             when cmd.FST, cmd.ADD_PAGE_SMALL
+              # Check if we've just obscured a visible ref layer
+              activeRefs = @activeRefs()
+              if activeRefs.count() > 0
+                # layersToRise = new NFLayerCollection
+                activeRefs.forEach (ref) =>
+                  # layersToRise.add ref
+                  # layersToRise.add ref.flightPath()
+                  if ref.getPDFNumber() isnt group.getPDFNumber()
+                    ref.moveBefore pageParent
+                    ref.flightPath().moveAfter ref
+
               group.getCitationLayer().show time, @$.duration - time
               @setTime time + SLIDE_IN_DURATION
 
@@ -916,6 +927,27 @@ class NFPartComp extends NFComp
 
     @setTime originalTime if originalTime?
     return activePage
+
+  ###*
+  Gets any active refs at the current time
+  @memberof NFPartComp
+  @param {float} [time] - the time to check at, or the current time by default
+  @returns {NFPageLayerCollection} The active refs
+  ###
+  activeRefs: (time) ->
+    # Set the current time to the test time, but we'll need to set it back later.
+    if time?
+      originalTime = @getTime()
+      @setTime(time)
+    else time = @getTime()
+
+    activeRefs = new NFPageLayerCollection()
+    @allLayers().forEach (layer) =>
+      if layer instanceof NFReferencePageLayer and layer.$.inPoint < time < layer.$.outPoint
+        activeRefs.add layer
+
+    @setTime originalTime if originalTime?
+    return activeRefs
 
 
   ###*
