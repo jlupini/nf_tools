@@ -252,7 +252,7 @@ NFHighlightControlLayer = Object.assign NFHighlightControlLayer,
 
     effects = controlLayer.effects()
 
-    unless model.highlight.isBubbled()
+    unless model.highlight.isBubbled() and not model.highlight.isBroken()
       # Add the highlighter effect
       highlighterEffect = effects.addProperty "AV_Highlighter"
       highlighterEffect.name = model.highlight.$.name

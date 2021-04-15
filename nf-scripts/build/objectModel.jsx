@@ -4392,7 +4392,7 @@ NFHighlightControlLayer = Object.assign(NFHighlightControlLayer, {
     controlLayer.$.endTime = controlLayer.$.startTime + 5;
     controlLayer.setParent(model.group.paperParent);
     effects = controlLayer.effects();
-    if (!model.highlight.isBubbled()) {
+    if (!(model.highlight.isBubbled() && !model.highlight.isBroken())) {
       highlighterEffect = effects.addProperty("AV_Highlighter");
       highlighterEffect.name = model.highlight.$.name;
       controlEffect = effects.addProperty("AV_Highlight_Control");
@@ -7350,7 +7350,7 @@ NFPartComp = (function(superClass) {
         })(this));
       }
       if (targetPageLayer == null) {
-        throw new Error("No target page layer found");
+        throw new Error("No target page layer found - Confirm that there's an active page at this time that contains the highlight or shape layer you're trying to show. This error can sometimes happen when there are two highlights with the same name in a PDF and you're trying to show the wrong one.");
       }
       if (model.command === cmd.EXPAND) {
         bgSolid = null;

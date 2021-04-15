@@ -386,7 +386,12 @@ class NFPartComp extends NFComp
         layersForPage.forEach (layer) =>
           startTime = layer.$.startTime
           targetPageLayer = layer if layer.isActive()
-      throw new Error "No target page layer found" unless targetPageLayer?
+      throw new Error "No target page layer found - Confirm that there's an
+                       active page at this time that contains the highlight or
+                       shape layer you're trying to show. This error can
+                       sometimes happen when there are two highlights with the
+                       same name in a PDF and you're trying to show the wrong
+                       one." unless targetPageLayer?
 
       if model.command is cmd.EXPAND
         bgSolid = null
