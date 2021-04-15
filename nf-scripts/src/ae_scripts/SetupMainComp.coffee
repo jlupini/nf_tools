@@ -98,7 +98,6 @@ setupMainComp = ->
       newCompLayer.inPoint = prevTime - 3
       newCompLayer.outPoint = currentTime + 10
 
-    newCompLayer.audioEnabled = no
     newComp.bgColor = [1,1,1]
     newCompLayer.moveToBeginning()
     prevTime = currentTime
