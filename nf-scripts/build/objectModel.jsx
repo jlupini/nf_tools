@@ -7563,7 +7563,7 @@ NFPartComp = (function(superClass) {
       throw new Error("No page given to insert...");
     }
     if (!((model.above != null) || (model.below != null) || (model.at != null))) {
-      model.at = 0;
+      model.at = 1;
     }
     model.time = (ref1 = model.time) != null ? ref1 : this.getTime();
     model.pageTurn = (ref2 = model.pageTurn) != null ? ref2 : NFPageLayer.PAGETURN_NONE;

@@ -53,11 +53,11 @@ setupMainComp = ->
     precomposedFootageLayer = newComp.layers[1]
 
     # Apply the Animation Preset. NOTE: because of an AE bug, a layer has to be selected to apply a preset. Hence the hack
-    path = Folder(File($.fileName).parent.parent.fsName).fsName + '/lib/NF Greenscreen Preset.ffx'
-    gsPreset = File path
-    precomposedFootageLayer.selected = yes
-    precomposedFootageLayer.applyPreset gsPreset
-    precomposedFootageLayer.selected = no
+    # path = Folder(File($.fileName).parent.parent.fsName).fsName + '/lib/NF Greenscreen Preset.ffx'
+    # gsPreset = File path
+    # precomposedFootageLayer.selected = yes
+    # precomposedFootageLayer.applyPreset gsPreset
+    # precomposedFootageLayer.selected = no
 
     backdropLayer = newComp.layers.add backdropFile
     dotOverlayLayer = newComp.layers.add dotOverlayFile
@@ -65,8 +65,30 @@ setupMainComp = ->
     dotOverlayLayer.name = "Dot Overlay"
     dotOverlayLayer.blendingMode = BlendingMode.SCREEN
 
+    logoLayer = backdropLayer.duplicate()
+    logoLayer.name = "NF Logo"
+
     dotOverlayLayer.moveAfter precomposedFootageLayer
     backdropLayer.moveAfter dotOverlayLayer
+    logoLayer.moveBefore precomposedFootageLayer
+
+    # Logo Stuff
+    newComp.openInViewer()
+    backdropLayer.selected = dotOverlayLayer.selected = precomposedFootageLayer.selected = no
+    logoLayer.selected = yes
+    app.executeCommand 3799 # "Convert to Layered Comp"
+    app.executeCommand 4027 # "Freeze On Last Frame"
+    logoLayer.selected = no
+
+    logoLayer.collapseTransformation = yes
+    logoLayer.transform.opacity.setValue 50
+    logoFill = logoLayer.effect.addProperty("ADBE Fill")
+    logoColor = logoFill.property("Color")
+    logoColor.setValue [0.285,0.75,0.75,1]
+
+    logoComp = logoLayer.source
+    logoComp.layer("Layer 6").enabled = no
+    logoComp.layer("Layer 5").collapseTransformation = yes
 
     newComps.push newComp
     newComp.parentFolder = partsFolder
@@ -81,12 +103,18 @@ setupMainComp = ->
     newCompLayer.moveToBeginning()
     prevTime = currentTime
 
+    logoLayer.selected = yes
+    app.executeCommand 2771
+    logoLayer.selected = no
+
   fadeLayer = mainComp.layers.addSolid([1,1,1], 'Fade In/Out', 1920, 1080, 1)
   fadeOpacity = fadeLayer.property('Transform').property('Opacity')
   fadeOpacity.setValuesAtTimes [0, 1, mainComp.duration - 2.5, mainComp.duration], [100, 0, 0, 100]
   fadeLayer.moveToBeginning()
 
   footageLayer.remove()
+
+  # mainComp.openInViewer()
 
 app.beginUndoGroup 'Setup Main Comp'
 

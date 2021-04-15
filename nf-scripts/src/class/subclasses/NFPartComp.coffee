@@ -629,7 +629,7 @@ class NFPartComp extends NFComp
     @log "Inserting page: #{model.page.$.name}"
     throw new Error "No page given to insert..." unless model.page? and model.page instanceof NFPageComp
 
-    model.at = 0 unless model.above? or model.below? or model.at?
+    model.at = 1 unless model.above? or model.below? or model.at?
     model.time = model.time ? @getTime()
     model.pageTurn = model.pageTurn ? NFPageLayer.PAGETURN_NONE
     model.continuous = model.continuous ? no
