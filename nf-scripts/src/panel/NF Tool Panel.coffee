@@ -332,8 +332,9 @@ toolRegistry =
                 writeLn "pdf num '#{pdfNum}'"
                 newCiteText = NFCitationLayer.fetchCitation pdfNum
 
-                textLayer = comp.allLayers().getTopmostLayer()
-                # blurLayer = comp.allLayers().getBottommostLayer()
+                textLayer = null
+                comp.allLayers().forEach (layer) =>
+                  textLayer = layer if layer.$ instanceof TextLayer
 
                 textLayer.property("Text").property("Source Text").setValue newCiteText
 
@@ -348,9 +349,6 @@ toolRegistry =
                 ]
                 maskShape.closed = true
 
-                # blurLayer.transform("Position").setValue [960, 540]
-                # blurLayer.transform("Anchor Point").setValue [960, 540]
-                # blurLayer.mask("Mask 1").maskPath.setValue maskShape
 
       addGaussyLayer:
         name: "Add Gaussy"

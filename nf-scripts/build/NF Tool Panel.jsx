@@ -365,7 +365,14 @@ toolRegistry = {
               if (!isNaN(parseInt(pdfNum))) {
                 writeLn("pdf num '" + pdfNum + "'");
                 newCiteText = NFCitationLayer.fetchCitation(pdfNum);
-                textLayer = comp.allLayers().getTopmostLayer();
+                textLayer = null;
+                comp.allLayers().forEach((function(_this) {
+                  return function(layer) {
+                    if (layer.$ instanceof TextLayer) {
+                      return textLayer = layer;
+                    }
+                  };
+                })(this));
                 textLayer.property("Text").property("Source Text").setValue(newCiteText);
                 sourceRect = textLayer.sourceRect();
                 maskShape = new Shape;
