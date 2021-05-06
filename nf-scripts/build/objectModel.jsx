@@ -5597,7 +5597,7 @@ NFPageLayer = (function(superClass) {
    */
 
   NFPageLayer.prototype.createReferenceLayer = function(model) {
-    var ALPHABET, baseName, bgSolid, choiceRect, currTime, highlightThickness, i, idx, j, layersWithName, newMask, newPosition, newScale, oldName, paddedChoiceRect, positionProp, ref, ref1, ref2, refLayer, scaleProp, shadowProp;
+    var ALPHABET, baseName, bgSolid, choiceRect, currTime, expOffset, highlightThickness, i, idx, j, layersWithName, newMask, newPosition, newScale, oldName, paddedChoiceRect, positionProp, ref, ref1, ref2, refLayer, scaleProp, shadowProp;
     ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
     currTime = this.containingComp().getTime();
     oldName = this.getName();
@@ -5674,6 +5674,9 @@ NFPageLayer = (function(superClass) {
       OPACITY_DURATION: 1
     });
     shadowProp = bgSolid.addDropShadow();
+    expOffset = bgSolid.effects().addProperty('ADBE Slider Control');
+    expOffset.name = "Expand Transition Timing Offset";
+    expOffset.property("Slider").setValue(-0.5);
     if ((ref2 = refLayer.effect('Drop Shadow')) != null) {
       ref2.enabled = true;
     }
@@ -7289,7 +7292,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, EXPOSE_FILL_PERCENTAGE, EXPOSE_MAX_SCALE, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, SLIDE_IN_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, EXPOSE_FILL_PERCENTAGE, EXPOSE_MAX_SCALE, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, SLIDE_IN_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, expandLayerControl, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     EDGE_PADDING = 80;
     BOTTOM_PADDING = 150;
     PAGE_SCALE_LARGE = 40;
@@ -7387,6 +7390,9 @@ NFPartComp = (function(superClass) {
         refLayer.moveAfter(layerAbove);
         controlLayer = target.getControlLayer();
         controlLayer.removeSpotlights();
+        expandLayerControl = bgSolid.effects().addProperty("ADBE Layer Control");
+        expandLayerControl.name = "Expand Tracker";
+        expandLayerControl.property("Layer").setValue(controlLayer.index());
         this.setTime(currTime + EXPAND_DURATION);
       }
       if (model.command === cmd.EXPOSE) {

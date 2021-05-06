@@ -428,6 +428,10 @@ class NFPartComp extends NFComp
         controlLayer = target.getControlLayer()
         controlLayer.removeSpotlights()
 
+        expandLayerControl = bgSolid.effects().addProperty("ADBE Layer Control")
+        expandLayerControl.name = "Expand Tracker"
+        expandLayerControl.property("Layer").setValue controlLayer.index()
+
         @setTime currTime + EXPAND_DURATION
 
       if model.command is cmd.EXPOSE

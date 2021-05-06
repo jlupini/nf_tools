@@ -390,6 +390,9 @@ class NFPageLayer extends NFLayer
       REF_LAYER_NAME: refLayer.getName()
       OPACITY_DURATION: 1
     shadowProp = bgSolid.addDropShadow()
+    expOffset = bgSolid.effects().addProperty('ADBE Slider Control')
+    expOffset.name = "Expand Transition Timing Offset"
+    expOffset.property("Slider").setValue -0.5
 
     refLayer.effect('Drop Shadow')?.enabled = yes
     refLayer.setParent @getParent()
