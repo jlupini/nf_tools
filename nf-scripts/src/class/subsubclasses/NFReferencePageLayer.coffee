@@ -38,7 +38,7 @@ class NFReferencePageLayer extends NFPageLayer
     targetPageLayers = @containingComp().searchLayers searchString
     targetPageLayer = null
     targetPageLayers.forEach (layer) =>
-      targetPageLayer = layer if layer.isActiveAtTime time
+      targetPageLayer = layer if layer.isActiveAtTime(time) and not layer.is(@flightPath())
 
     return targetPageLayer
 

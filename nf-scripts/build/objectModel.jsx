@@ -8476,7 +8476,7 @@ NFReferencePageLayer = (function(superClass) {
     targetPageLayer = null;
     targetPageLayers.forEach((function(_this) {
       return function(layer) {
-        if (layer.isActiveAtTime(time)) {
+        if (layer.isActiveAtTime(time) && !layer.is(_this.flightPath())) {
           return targetPageLayer = layer;
         }
       };
