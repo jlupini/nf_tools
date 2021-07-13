@@ -331,28 +331,6 @@ class NFPartComp extends NFComp
   @param {Object} model - the parameters
   ###
   runLayoutCommand: (model) ->
-    EDGE_PADDING = 80
-    BOTTOM_PADDING = 150
-
-    PAGE_SCALE_LARGE = 40
-    PAGE_SCALE_SMALL = 17
-    PAGE_LARGE_POSITION = [960, 1228.2]
-    PAGE_SMALL_POSITION = [1507, 567]
-
-    FST_WIDTH = 80
-    FST_TOP = 18
-
-    SHRINK_DURATION = 1.2
-    GROW_DURATION = 1.2
-    REF_ANIMATION_DURATION = 1
-    EXPAND_DURATION = 1
-    FADE_IN_DURATION = 0.7
-    SLIDE_IN_DURATION = 2
-
-    MASK_EXPANSION = 26
-
-    EXPOSE_MAX_SCALE = 100
-    EXPOSE_FILL_PERCENTAGE = 90
 
     cmd =
       FST: "fullscreen-title"
@@ -416,7 +394,7 @@ class NFPartComp extends NFComp
 
         refLayer.expandTo
           layer: target
-          duration: EXPAND_DURATION
+          duration: model.settings.duration.expandTransition
 
         group = targetPageLayer.getPaperLayerGroup()
         return alert "No group and null found for the target page layer (#{targetPageLayer.getName()}). Try deleting it and adding again before running." unless group?
@@ -432,16 +410,16 @@ class NFPartComp extends NFComp
         expandLayerControl.name = "Expand Tracker"
         expandLayerControl.property("Layer").setValue controlLayer.index()
 
-        @setTime currTime + EXPAND_DURATION
+        @setTime currTime + model.settings.duration.expandTransition
 
       if model.command is cmd.EXPOSE
 
         # Duplicate and convert to reference layer
         refLayer = targetPageLayer.createReferenceLayer
           target: target
-          maskExpansion: MASK_EXPANSION
-          fillPercentage: EXPOSE_FILL_PERCENTAGE
-          maxScale: EXPOSE_MAX_SCALE
+          maskExpansion: model.settings.maskExpansion
+          fillPercentage: model.settings.expose.fillPercentage
+          maxScale: model.settings.expose.maxScale
 
         # Add the HCL
         group = targetPageLayer.getPaperLayerGroup()
@@ -454,7 +432,7 @@ class NFPartComp extends NFComp
 
         # Animate In
         refLayer.centerAnchorPoint()
-        refLayer.animateIn REF_ANIMATION_DURATION
+        refLayer.animateIn model.settings.durations.refTransition
 
         flightPath = refLayer.flightPath()
         # flightPath.$.locked = no
@@ -468,7 +446,7 @@ class NFPartComp extends NFComp
         if model.target.class is "NFShapeLayer"
           target.transform("Opacity").setValue 0
 
-        @setTime currTime + REF_ANIMATION_DURATION
+        @setTime currTime + model.settings.durations.refTransition
 
       if model.command is cmd.BUBBLE
         group = targetPageLayer.getPaperLayerGroup()
@@ -508,7 +486,7 @@ class NFPartComp extends NFComp
         flightPath = refLayer.flightPath()
         flightPath.$.outPoint = time if flightPath.$.outPoint > time
 
-        refLayer.animateOut REF_ANIMATION_DURATION
+        refLayer.animateOut model.settings.durations.refTransition
 
     if model.target.class is "NFPageLayer"
       target = @layerWithName model.target.name
@@ -517,20 +495,20 @@ class NFPartComp extends NFComp
       if model.command is cmd.FST
         target.animateToConstraints
           time: time
-          duration: GROW_DURATION
-          width: FST_WIDTH
-          top: FST_TOP
+          duration: model.settings.durations.pageGrow
+          width: model.settings.constraints.fst.width
+          top: model.settings.constraints.fst.top
           centerX: yes
-        @setTime time + GROW_DURATION
+        @setTime time + model.settings.durations.pageGrow
 
       if model.command is cmd.SHRINK
         target.animateToConstraints
           time: time
-          duration: SHRINK_DURATION
+          duration: model.settings.durations.pageShrink
           width: 34
           right: 4.5
           top: 11.5
-        @setTime time + SHRINK_DURATION
+        @setTime time + model.settings.durations.pageShrink
 
       if model.command is cmd.END_ELEMENT
         if target.$.outPoint >= time
@@ -558,12 +536,12 @@ class NFPartComp extends NFComp
           switch model.command
             when cmd.FST
               shouldAnimate = yes
-              scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE]
-              posVal = PAGE_LARGE_POSITION
+              scaleVal = [model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large]
+              posVal = model.settings.transforms.page.position.large
             when cmd.ADD_PAGE_SMALL
               shouldAnimate = yes
-              scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL]
-              posVal = PAGE_SMALL_POSITION
+              scaleVal = [model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small]
+              posVal = model.settings.transforms.page.position.small
             when cmd.SWITCH_PAGE
               shouldAnimate = no
               activePage = @activePage()
@@ -577,20 +555,20 @@ class NFPartComp extends NFComp
               activePage.setParent pageParent
 
               # fade out the ActivePage
-              activePage.$.outPoint = time + FADE_IN_DURATION * 2
-              activePage.fadeOut FADE_IN_DURATION
+              activePage.$.outPoint = time + model.settings.durations.fadeIn * 2
+              activePage.fadeOut model.settings.durations.fadeIn
 
               # Let's also fade any flightpath layers
               flightPaths = new NFLayerCollection()
               @activeLayers().forEach (layer) =>
-                if layer.getName().includes("FlightPath") and layer.$.outPoint >= time + FADE_IN_DURATION
-                  layer.$.outPoint = time + FADE_IN_DURATION
+                if layer.getName().includes("FlightPath") and layer.$.outPoint >= time + model.settings.durations.fadeIn
+                  layer.$.outPoint = time + model.settings.durations.fadeIn
 
           newPageLayer = @insertPage
             page: target
             continuous: yes
             animate: shouldAnimate
-            animationDuration: SLIDE_IN_DURATION
+            animationDuration: model.settings.durations.slideIn
           group = newPageLayer.getPaperLayerGroup()
           pageParent = newPageLayer.getParent()
           newPageLayer.setParent()
@@ -602,8 +580,8 @@ class NFPartComp extends NFComp
           switch model.command
             when cmd.SWITCH_PAGE
               newPageLayer.moveBefore activePage
-              newPageLayer.fadeIn FADE_IN_DURATION
-              @setTime time + FADE_IN_DURATION
+              newPageLayer.fadeIn model.settings.durations.fadeIn
+              @setTime time + model.settings.durations.fadeIn
             when cmd.FST, cmd.ADD_PAGE_SMALL
               # Check if we've just obscured a visible ref layer
               activeRefs = @activeRefs()
@@ -617,7 +595,7 @@ class NFPartComp extends NFComp
                     ref.flightPath().moveAfter ref
 
               group.getCitationLayer().show time, @$.duration - time
-              @setTime time + SLIDE_IN_DURATION
+              @setTime time + model.settings.durations.slideIn
 
           group.gatherLayer newPageLayer
 

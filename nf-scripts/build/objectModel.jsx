@@ -5948,7 +5948,8 @@ NFPageLayer = (function(superClass) {
   NFPageLayer.prototype.slideIn = function(model) {
     return this.slide({
       "in": true,
-      fromEdge: model != null ? model.fromEdge : void 0
+      fromEdge: model != null ? model.fromEdge : void 0,
+      length: model != null ? model.length : void 0
     });
   };
 
@@ -5965,7 +5966,8 @@ NFPageLayer = (function(superClass) {
   NFPageLayer.prototype.slideOut = function(model) {
     return this.slide({
       "in": false,
-      fromEdge: model != null ? model.toEdge : void 0
+      fromEdge: model != null ? model.toEdge : void 0,
+      length: model != null ? model.length : void 0
     });
   };
 
@@ -7292,24 +7294,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var BOTTOM_PADDING, EDGE_PADDING, EXPAND_DURATION, EXPOSE_FILL_PERCENTAGE, EXPOSE_MAX_SCALE, FADE_IN_DURATION, FST_TOP, FST_WIDTH, GROW_DURATION, MASK_EXPANSION, PAGE_LARGE_POSITION, PAGE_SCALE_LARGE, PAGE_SCALE_SMALL, PAGE_SMALL_POSITION, REF_ANIMATION_DURATION, SHRINK_DURATION, SLIDE_IN_DURATION, activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, expandLayerControl, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
-    EDGE_PADDING = 80;
-    BOTTOM_PADDING = 150;
-    PAGE_SCALE_LARGE = 40;
-    PAGE_SCALE_SMALL = 17;
-    PAGE_LARGE_POSITION = [960, 1228.2];
-    PAGE_SMALL_POSITION = [1507, 567];
-    FST_WIDTH = 80;
-    FST_TOP = 18;
-    SHRINK_DURATION = 1.2;
-    GROW_DURATION = 1.2;
-    REF_ANIMATION_DURATION = 1;
-    EXPAND_DURATION = 1;
-    FADE_IN_DURATION = 0.7;
-    SLIDE_IN_DURATION = 2;
-    MASK_EXPANSION = 26;
-    EXPOSE_MAX_SCALE = 100;
-    EXPOSE_FILL_PERCENTAGE = 90;
+    var activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, expandLayerControl, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
     cmd = {
       FST: "fullscreen-title",
       ADD_PAGE_SMALL: "add-small",
@@ -7379,7 +7364,7 @@ NFPartComp = (function(superClass) {
         }
         refLayer.expandTo({
           layer: target,
-          duration: EXPAND_DURATION
+          duration: model.settings.duration.expandTransition
         });
         group = targetPageLayer.getPaperLayerGroup();
         if (group == null) {
@@ -7393,14 +7378,14 @@ NFPartComp = (function(superClass) {
         expandLayerControl = bgSolid.effects().addProperty("ADBE Layer Control");
         expandLayerControl.name = "Expand Tracker";
         expandLayerControl.property("Layer").setValue(controlLayer.index());
-        this.setTime(currTime + EXPAND_DURATION);
+        this.setTime(currTime + model.settings.duration.expandTransition);
       }
       if (model.command === cmd.EXPOSE) {
         refLayer = targetPageLayer.createReferenceLayer({
           target: target,
-          maskExpansion: MASK_EXPANSION,
-          fillPercentage: EXPOSE_FILL_PERCENTAGE,
-          maxScale: EXPOSE_MAX_SCALE
+          maskExpansion: model.settings.maskExpansion,
+          fillPercentage: model.settings.expose.fillPercentage,
+          maxScale: model.settings.expose.maxScale
         });
         group = targetPageLayer.getPaperLayerGroup();
         if (group == null) {
@@ -7413,7 +7398,7 @@ NFPartComp = (function(superClass) {
         refLayer.moveAfter(layerAbove);
         refLayer.startAt(this.getTime());
         refLayer.centerAnchorPoint();
-        refLayer.animateIn(REF_ANIMATION_DURATION);
+        refLayer.animateIn(model.settings.durations.refTransition);
         flightPath = refLayer.flightPath();
         group.gatherLayers(new NFLayerCollection([targetPageLayer, refLayer, refLayer.flightPath()]), false);
         if (model.target["class"] === "NFHighlightLayer") {
@@ -7423,7 +7408,7 @@ NFPartComp = (function(superClass) {
         if (model.target["class"] === "NFShapeLayer") {
           target.transform("Opacity").setValue(0);
         }
-        this.setTime(currTime + REF_ANIMATION_DURATION);
+        this.setTime(currTime + model.settings.durations.refTransition);
       }
       if (model.command === cmd.BUBBLE) {
         group = targetPageLayer.getPaperLayerGroup();
@@ -7465,7 +7450,7 @@ NFPartComp = (function(superClass) {
         if (flightPath.$.outPoint > time) {
           flightPath.$.outPoint = time;
         }
-        refLayer.animateOut(REF_ANIMATION_DURATION);
+        refLayer.animateOut(model.settings.durations.refTransition);
       }
     }
     if (model.target["class"] === "NFPageLayer") {
@@ -7474,22 +7459,22 @@ NFPartComp = (function(superClass) {
       if (model.command === cmd.FST) {
         target.animateToConstraints({
           time: time,
-          duration: GROW_DURATION,
-          width: FST_WIDTH,
-          top: FST_TOP,
+          duration: model.settings.durations.pageGrow,
+          width: model.settings.constraints.fst.width,
+          top: model.settings.constraints.fst.top,
           centerX: true
         });
-        this.setTime(time + GROW_DURATION);
+        this.setTime(time + model.settings.durations.pageGrow);
       }
       if (model.command === cmd.SHRINK) {
         target.animateToConstraints({
           time: time,
-          duration: SHRINK_DURATION,
+          duration: model.settings.durations.pageShrink,
           width: 34,
           right: 4.5,
           top: 11.5
         });
-        this.setTime(time + SHRINK_DURATION);
+        this.setTime(time + model.settings.durations.pageShrink);
       }
       if (model.command === cmd.END_ELEMENT) {
         if (target.$.outPoint >= time) {
@@ -7517,13 +7502,13 @@ NFPartComp = (function(superClass) {
           switch (model.command) {
             case cmd.FST:
               shouldAnimate = true;
-              scaleVal = [PAGE_SCALE_LARGE, PAGE_SCALE_LARGE, PAGE_SCALE_LARGE];
-              posVal = PAGE_LARGE_POSITION;
+              scaleVal = [model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large];
+              posVal = model.settings.transforms.page.position.large;
               break;
             case cmd.ADD_PAGE_SMALL:
               shouldAnimate = true;
-              scaleVal = [PAGE_SCALE_SMALL, PAGE_SCALE_SMALL, PAGE_SCALE_SMALL];
-              posVal = PAGE_SMALL_POSITION;
+              scaleVal = [model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small];
+              posVal = model.settings.transforms.page.position.small;
               break;
             case cmd.SWITCH_PAGE:
               shouldAnimate = false;
@@ -7536,13 +7521,13 @@ NFPartComp = (function(superClass) {
               scaleVal = activePage.transform('Scale').value;
               posVal = activePage.transform('Position').value;
               activePage.setParent(pageParent);
-              activePage.$.outPoint = time + FADE_IN_DURATION * 2;
-              activePage.fadeOut(FADE_IN_DURATION);
+              activePage.$.outPoint = time + model.settings.durations.fadeIn * 2;
+              activePage.fadeOut(model.settings.durations.fadeIn);
               flightPaths = new NFLayerCollection();
               this.activeLayers().forEach((function(_this) {
                 return function(layer) {
-                  if (layer.getName().includes("FlightPath") && layer.$.outPoint >= time + FADE_IN_DURATION) {
-                    return layer.$.outPoint = time + FADE_IN_DURATION;
+                  if (layer.getName().includes("FlightPath") && layer.$.outPoint >= time + model.settings.durations.fadeIn) {
+                    return layer.$.outPoint = time + model.settings.durations.fadeIn;
                   }
                 };
               })(this));
@@ -7551,7 +7536,7 @@ NFPartComp = (function(superClass) {
             page: target,
             continuous: true,
             animate: shouldAnimate,
-            animationDuration: SLIDE_IN_DURATION
+            animationDuration: model.settings.durations.slideIn
           });
           group = newPageLayer.getPaperLayerGroup();
           pageParent = newPageLayer.getParent();
@@ -7565,8 +7550,8 @@ NFPartComp = (function(superClass) {
           switch (model.command) {
             case cmd.SWITCH_PAGE:
               newPageLayer.moveBefore(activePage);
-              newPageLayer.fadeIn(FADE_IN_DURATION);
-              this.setTime(time + FADE_IN_DURATION);
+              newPageLayer.fadeIn(model.settings.durations.fadeIn);
+              this.setTime(time + model.settings.durations.fadeIn);
               break;
             case cmd.FST:
             case cmd.ADD_PAGE_SMALL:
@@ -7582,7 +7567,7 @@ NFPartComp = (function(superClass) {
                 })(this));
               }
               group.getCitationLayer().show(time, this.$.duration - time);
-              this.setTime(time + SLIDE_IN_DURATION);
+              this.setTime(time + model.settings.durations.slideIn);
           }
           return group.gatherLayer(newPageLayer);
       }

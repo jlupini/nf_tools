@@ -617,6 +617,7 @@ class NFPageLayer extends NFLayer
     @slide
       in: yes
       fromEdge: model?.fromEdge
+      length: model?.length
 
   ###*
   Slides out the pageLayer using markers.
@@ -630,6 +631,7 @@ class NFPageLayer extends NFLayer
     @slide
       in: no
       fromEdge: model?.toEdge
+      length: model?.length
 
   ###*
   Adds the pageturn effect, motion blur effect and drop shadow to the layer in
