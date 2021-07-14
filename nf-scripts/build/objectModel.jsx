@@ -7294,7 +7294,7 @@ NFPartComp = (function(superClass) {
    */
 
   NFPartComp.prototype.runLayoutCommand = function(model) {
-    var activePage, activeRefs, bgSolid, cmd, controlLayer, controlLayers, currTime, expandLayerControl, flightPath, flightPaths, group, highlightName, layerAbove, layersForPage, layersToTrim, matchedLayers, newPageLayer, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, refLayer, refLayers, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, time;
+    var activePage, activeRefs, allTargets, bgSolid, classTypes, cmd, controlLayer, controlLayers, currTime, expandLayerControl, flightPath, flightPaths, group, highlightName, j, k, l, layerAbove, layersForPage, layersToTrim, len, len1, len2, matchedLayers, mixedClass, multipleTargets, newPageLayer, offset, pageComp, pageLayer, pageParent, pdfNumber, posVal, ref1, ref2, ref3, ref4, ref5, refLayer, refLayers, results, results1, scaleVal, shouldAnimate, sourceLayer, sourceRect, startTime, target, targetPageLayer, theTarget, time;
     cmd = {
       FST: "fullscreen-title",
       ADD_PAGE_SMALL: "add-small",
@@ -7306,41 +7306,54 @@ NFPartComp = (function(superClass) {
       SWITCH_PAGE: "switch-to-page",
       BUBBLE: "bubble"
     };
-    if (model.target["class"] === "NFShapeLayer" || model.target["class"] === "NFHighlightLayer") {
-      pageComp = new NFPageComp(aeq.getComp(model.target.containingComp.name));
-      matchedLayers = pageComp.layersWithName(model.target.name);
-      if (matchedLayers.isEmpty()) {
-        throw new Error("Can't find layer!");
+    if (model.target instanceof Array) {
+      if (model.target.length === 1) {
+        model.target = model.target[0];
+      } else {
+        multipleTargets = true;
       }
-      target = null;
-      matchedLayers.forEach((function(_this) {
-        return function(layer) {
-          if (layer.index() === model.target.index) {
-            return target = layer;
-          }
-        };
-      })(this));
-      if (target == null) {
-        throw new Error("No target shape or highlight found!");
-      }
-      currTime = this.getTime();
-      layersForPage = this.layersForPage(pageComp);
-      startTime = null;
-      targetPageLayer = null;
-      if (!layersForPage.isEmpty()) {
-        layersForPage.forEach((function(_this) {
+    }
+    switch (model.command) {
+      case cmd.EXPAND:
+        if (multipleTargets) {
+          throw new Error("Can't expand with multiple layers selected");
+        }
+        if (model.target["class"] !== "NFHighlightLayer") {
+          throw new Error("Can only expand a highlight layer");
+        }
+        pageComp = new NFPageComp(aeq.getComp(model.target.containingComp.name));
+        matchedLayers = pageComp.layersWithName(model.target.name);
+        if (matchedLayers.isEmpty()) {
+          throw new Error("Can't find layer!");
+        }
+        target = null;
+        matchedLayers.forEach((function(_this) {
           return function(layer) {
-            startTime = layer.$.startTime;
-            if (layer.isActive()) {
-              return targetPageLayer = layer;
+            if (layer.index() === model.target.index) {
+              return target = layer;
             }
           };
         })(this));
-      }
-      if (targetPageLayer == null) {
-        throw new Error("No target page layer found - Confirm that there's an active page at this time that contains the highlight or shape layer you're trying to show. This error can sometimes happen when there are two highlights with the same name in a PDF and you're trying to show the wrong one.");
-      }
-      if (model.command === cmd.EXPAND) {
+        if (target == null) {
+          throw new Error("No target shape or highlight found!");
+        }
+        currTime = this.getTime();
+        layersForPage = this.layersForPage(pageComp);
+        startTime = null;
+        targetPageLayer = null;
+        if (!layersForPage.isEmpty()) {
+          layersForPage.forEach((function(_this) {
+            return function(layer) {
+              startTime = layer.$.startTime;
+              if (layer.isActive()) {
+                return targetPageLayer = layer;
+              }
+            };
+          })(this));
+        }
+        if (targetPageLayer == null) {
+          throw new Error("No target page layer found - Confirm that there's an active page at this time that contains the highlight or shape layer you're trying to show. This error can sometimes happen when there are two highlights with the same name in a PDF and you're trying to show the wrong one.");
+        }
         bgSolid = null;
         refLayers = this.searchLayers("[ref]");
         if (!refLayers.isEmpty()) {
@@ -7378,9 +7391,44 @@ NFPartComp = (function(superClass) {
         expandLayerControl = bgSolid.effects().addProperty("ADBE Layer Control");
         expandLayerControl.name = "Expand Tracker";
         expandLayerControl.property("Layer").setValue(controlLayer.index());
-        this.setTime(currTime + model.settings.duration.expandTransition);
-      }
-      if (model.command === cmd.EXPOSE) {
+        return this.setTime(currTime + model.settings.duration.expandTransition);
+      case cmd.EXPOSE:
+        if (multipleTargets) {
+          throw new Error("Can't expose with multiple targets");
+        }
+        pageComp = new NFPageComp(aeq.getComp(model.target.containingComp.name));
+        matchedLayers = pageComp.layersWithName(model.target.name);
+        if (matchedLayers.isEmpty()) {
+          throw new Error("Can't find layer!");
+        }
+        target = null;
+        matchedLayers.forEach((function(_this) {
+          return function(layer) {
+            if (layer.index() === model.target.index) {
+              return target = layer;
+            }
+          };
+        })(this));
+        if (target == null) {
+          throw new Error("No target shape or highlight found!");
+        }
+        currTime = this.getTime();
+        layersForPage = this.layersForPage(pageComp);
+        startTime = null;
+        targetPageLayer = null;
+        if (!layersForPage.isEmpty()) {
+          layersForPage.forEach((function(_this) {
+            return function(layer) {
+              startTime = layer.$.startTime;
+              if (layer.isActive()) {
+                return targetPageLayer = layer;
+              }
+            };
+          })(this));
+        }
+        if (targetPageLayer == null) {
+          throw new Error("No target page layer found - Confirm that there's an active page at this time that contains the highlight or shape layer you're trying to show. This error can sometimes happen when there are two highlights with the same name in a PDF and you're trying to show the wrong one.");
+        }
         refLayer = targetPageLayer.createReferenceLayer({
           target: target,
           maskExpansion: model.settings.maskExpansion,
@@ -7408,65 +7456,147 @@ NFPartComp = (function(superClass) {
         if (model.target["class"] === "NFShapeLayer") {
           target.transform("Opacity").setValue(0);
         }
-        this.setTime(currTime + model.settings.durations.refTransition);
-      }
-      if (model.command === cmd.BUBBLE) {
+        return this.setTime(currTime + model.settings.durations.refTransition);
+      case cmd.BUBBLE:
+        if (multipleTargets) {
+          throw new Error("Can't bubble with multiple targets");
+        }
+        pageComp = new NFPageComp(aeq.getComp(model.target.containingComp.name));
+        matchedLayers = pageComp.layersWithName(model.target.name);
+        if (matchedLayers.isEmpty()) {
+          throw new Error("Can't find layer!");
+        }
+        target = null;
+        matchedLayers.forEach((function(_this) {
+          return function(layer) {
+            if (layer.index() === model.target.index) {
+              return target = layer;
+            }
+          };
+        })(this));
+        if (target == null) {
+          throw new Error("No target shape or highlight found!");
+        }
+        currTime = this.getTime();
+        layersForPage = this.layersForPage(pageComp);
+        startTime = null;
+        targetPageLayer = null;
+        if (!layersForPage.isEmpty()) {
+          layersForPage.forEach((function(_this) {
+            return function(layer) {
+              startTime = layer.$.startTime;
+              if (layer.isActive()) {
+                return targetPageLayer = layer;
+              }
+            };
+          })(this));
+        }
+        if (targetPageLayer == null) {
+          throw new Error("No target page layer found - Confirm that there's an active page at this time that contains the highlight or shape layer you're trying to show. This error can sometimes happen when there are two highlights with the same name in a PDF and you're trying to show the wrong one.");
+        }
         group = targetPageLayer.getPaperLayerGroup();
         group.assignControlLayer(target, currTime, false);
         if (model.target["class"] === "NFHighlightLayer") {
           controlLayer = target.getControlLayer();
-          controlLayer.removeSpotlights();
+          return controlLayer.removeSpotlights();
         }
-      }
-    }
-    if (model.target["class"] === "NFReferencePageLayer") {
-      refLayer = this.layerWithName(model.target.name);
-      if (model.command === cmd.ANCHOR) {
-        sourceLayer = refLayer.referencedSourceLayer();
-        pageLayer = refLayer.referencedPageLayer();
-        sourceRect = new Rect(pageLayer.sourceRectForLayer(sourceLayer));
-        refLayer.panBehindTo(sourceRect.centerPoint());
-        refLayer.$.label = 8;
-      }
-      if (model.command === cmd.END_ELEMENT) {
+        break;
+      case cmd.ANCHOR:
+        allTargets = multipleTargets ? model.target : [model.target];
+        results = [];
+        for (j = 0, len = allTargets.length; j < len; j++) {
+          theTarget = allTargets[j];
+          if (theTarget["class"] !== "NFReferencePageLayer") {
+            throw new Error("Can only reanchor a ref layer");
+          }
+          refLayer = this.layerWithName(theTarget.name);
+          sourceLayer = refLayer.referencedSourceLayer();
+          pageLayer = refLayer.referencedPageLayer();
+          sourceRect = new Rect(pageLayer.sourceRectForLayer(sourceLayer));
+          refLayer.panBehindTo(sourceRect.centerPoint());
+          results.push(refLayer.$.label = 8);
+        }
+        return results;
+        break;
+      case cmd.END_ELEMENT:
+        allTargets = multipleTargets ? model.target : [model.target];
+        offset = 0;
+        mixedClass = false;
+        classTypes = [];
+        for (k = 0, len1 = allTargets.length; k < len1; k++) {
+          theTarget = allTargets[k];
+          if (!(theTarget["class"] === "NFReferencePageLayer" || theTarget["class"] === "NFPageLayer")) {
+            throw new Error("Can only end element on ref and page layers for now");
+          }
+          time = this.getTime();
+          if (classTypes.indexOf(theTarget["class"]) < 0) {
+            classTypes.push(theTarget["class"]);
+          }
+        }
+        if (classTypes.length > 1) {
+          mixedClass = true;
+          offset = model.settings.durations.multiEndOffset;
+        }
+        results1 = [];
+        for (l = 0, len2 = allTargets.length; l < len2; l++) {
+          theTarget = allTargets[l];
+          target = this.layerWithName(theTarget.name);
+          time = this.getTime();
+          layersToTrim = target.getChildren().add(target);
+          if (theTarget["class"] === "NFReferencePageLayer") {
+            highlightName = target.referencedSourceLayer();
+            pdfNumber = target.getPDFNumber();
+            controlLayers = this.searchLayers(NFHighlightControlLayer.nameForPDFNumberAndHighlight(pdfNumber, highlightName));
+            if (controlLayers.count() !== 0) {
+              controlLayers.forEach((function(_this) {
+                return function(cLayer) {
+                  return layersToTrim.add(cLayer);
+                };
+              })(this));
+            }
+            layersToTrim.forEach((function(_this) {
+              return function(layer) {
+                return layer.$.outPoint = Math.min(time - offset, layer.$.outPoint);
+              };
+            })(this));
+            flightPath = target.flightPath();
+            if (flightPath.$.outPoint > (time - offset)) {
+              flightPath.$.outPoint = time - offset;
+            }
+            target.animateOut(model.settings.durations.refTransition);
+          }
+          if (theTarget["class"] === "NFPageLayer") {
+            results1.push(layersToTrim.forEach((function(_this) {
+              return function(layer) {
+                var flightPaths;
+                layer.$.outPoint = Math.min(time, layer.$.outPoint);
+                layer.slideOut({
+                  length: model.settings.durations.slideOut
+                });
+                flightPaths = new NFLayerCollection();
+                _this.activeLayers().forEach(function(layer) {
+                  if (layer.getName().includes("FlightPath") && layer.$.outPoint >= time) {
+                    return layer.$.outPoint = time;
+                  }
+                });
+                return target.getPaperLayerGroup().getCitationLayer().hide(time);
+              };
+            })(this)));
+          } else {
+            results1.push(void 0);
+          }
+        }
+        return results1;
+        break;
+      case cmd.SHRINK:
+        if (multipleTargets) {
+          throw new Error("can't shrink multiple targets at once");
+        }
+        if (model.target["class"] !== "NFPageLayer") {
+          throw new Error("can only shrink page layers");
+        }
+        target = this.layerWithName(model.target.name);
         time = this.getTime();
-        layersToTrim = refLayer.getChildren().add(refLayer);
-        highlightName = refLayer.referencedSourceLayer();
-        pdfNumber = refLayer.getPDFNumber();
-        controlLayers = this.searchLayers(NFHighlightControlLayer.nameForPDFNumberAndHighlight(pdfNumber, highlightName));
-        if (controlLayers.count() !== 0) {
-          controlLayers.forEach((function(_this) {
-            return function(cLayer) {
-              return layersToTrim.add(cLayer);
-            };
-          })(this));
-        }
-        layersToTrim.forEach((function(_this) {
-          return function(layer) {
-            return layer.$.outPoint = Math.min(time, layer.$.outPoint);
-          };
-        })(this));
-        flightPath = refLayer.flightPath();
-        if (flightPath.$.outPoint > time) {
-          flightPath.$.outPoint = time;
-        }
-        refLayer.animateOut(model.settings.durations.refTransition);
-      }
-    }
-    if (model.target["class"] === "NFPageLayer") {
-      target = this.layerWithName(model.target.name);
-      time = this.getTime();
-      if (model.command === cmd.FST) {
-        target.animateToConstraints({
-          time: time,
-          duration: model.settings.durations.pageGrow,
-          width: model.settings.constraints.fst.width,
-          top: model.settings.constraints.fst.top,
-          centerX: true
-        });
-        this.setTime(time + model.settings.durations.pageGrow);
-      }
-      if (model.command === cmd.SHRINK) {
         target.animateToConstraints({
           time: time,
           duration: model.settings.durations.pageShrink,
@@ -7474,66 +7604,17 @@ NFPartComp = (function(superClass) {
           right: 4.5,
           top: 11.5
         });
-        this.setTime(time + model.settings.durations.pageShrink);
-      }
-      if (model.command === cmd.END_ELEMENT) {
-        if (target.$.outPoint >= time) {
-          target.$.outPoint = time;
-          target.slideOut({
-            length: model.settings.durations.slideOut
-          });
-          flightPaths = new NFLayerCollection();
-          this.activeLayers().forEach((function(_this) {
-            return function(layer) {
-              if (layer.getName().includes("FlightPath") && layer.$.outPoint >= time) {
-                return layer.$.outPoint = time;
-              }
-            };
-          })(this));
-          target.getPaperLayerGroup().getCitationLayer().hide(time);
+        return this.setTime(time + model.settings.durations.pageShrink);
+      case cmd.FST:
+        if (multipleTargets) {
+          throw new Error("can't grow multiple targets at once");
         }
-      }
-    }
-    if (model.target["class"] === "NFPageComp") {
-      target = new NFPageComp(aeq.getComp(model.target.name));
-      switch (model.command) {
-        case cmd.FST:
-        case cmd.ADD_PAGE_SMALL:
-        case cmd.SWITCH_PAGE:
+        if (model.target["class"] === "NFPageComp") {
+          target = new NFPageComp(aeq.getComp(model.target.name));
           time = this.getTime();
-          switch (model.command) {
-            case cmd.FST:
-              shouldAnimate = true;
-              scaleVal = [model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large];
-              posVal = model.settings.transforms.page.position.large;
-              break;
-            case cmd.ADD_PAGE_SMALL:
-              shouldAnimate = true;
-              scaleVal = [model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small];
-              posVal = model.settings.transforms.page.position.small;
-              break;
-            case cmd.SWITCH_PAGE:
-              shouldAnimate = false;
-              activePage = this.activePage();
-              if (activePage == null) {
-                throw new Error("can't run SWITCH_PAGE without an already active page at this time");
-              }
-              pageParent = activePage.getParent();
-              activePage.setParent();
-              scaleVal = activePage.transform('Scale').value;
-              posVal = activePage.transform('Position').value;
-              activePage.setParent(pageParent);
-              activePage.$.outPoint = time + model.settings.durations.fadeIn * 2;
-              activePage.fadeOut(model.settings.durations.fadeIn);
-              flightPaths = new NFLayerCollection();
-              this.activeLayers().forEach((function(_this) {
-                return function(layer) {
-                  if (layer.getName().includes("FlightPath") && layer.$.outPoint >= time + model.settings.durations.fadeIn) {
-                    return layer.$.outPoint = time + model.settings.durations.fadeIn;
-                  }
-                };
-              })(this));
-          }
+          shouldAnimate = true;
+          scaleVal = [model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large];
+          posVal = model.settings.transforms.page.position.large;
           newPageLayer = this.insertPage({
             page: target,
             continuous: true,
@@ -7549,30 +7630,117 @@ NFPartComp = (function(superClass) {
           if ((ref3 = newPageLayer.effect('Drop Shadow')) != null) {
             ref3.enabled = false;
           }
-          switch (model.command) {
-            case cmd.SWITCH_PAGE:
-              newPageLayer.moveBefore(activePage);
-              newPageLayer.fadeIn(model.settings.durations.fadeIn);
-              this.setTime(time + model.settings.durations.fadeIn);
-              break;
-            case cmd.FST:
-            case cmd.ADD_PAGE_SMALL:
-              activeRefs = this.activeRefs();
-              if (activeRefs.count() > 0) {
-                activeRefs.forEach((function(_this) {
-                  return function(ref) {
-                    if (ref.getPDFNumber() !== group.getPDFNumber()) {
-                      ref.moveBefore(pageParent);
-                      return ref.flightPath().moveAfter(ref);
-                    }
-                  };
-                })(this));
-              }
-              group.getCitationLayer().show(time, this.$.duration - time);
-              this.setTime(time + model.settings.durations.slideIn);
+          activeRefs = this.activeRefs();
+          if (activeRefs.count() > 0) {
+            activeRefs.forEach((function(_this) {
+              return function(ref) {
+                if (ref.getPDFNumber() !== group.getPDFNumber()) {
+                  ref.moveBefore(pageParent);
+                  return ref.flightPath().moveAfter(ref);
+                }
+              };
+            })(this));
           }
+          group.getCitationLayer().show(time, this.$.duration - time);
+          this.setTime(time + model.settings.durations.slideIn);
           return group.gatherLayer(newPageLayer);
-      }
+        } else if (model.target["class"] === "NFPageLayer") {
+          target = this.layerWithName(model.target.name);
+          time = this.getTime();
+          target.animateToConstraints({
+            time: time,
+            duration: model.settings.durations.pageGrow,
+            width: model.settings.constraints.fst.width,
+            top: model.settings.constraints.fst.top,
+            centerX: true
+          });
+          return this.setTime(time + model.settings.durations.pageGrow);
+        } else {
+          throw new Error("can only run FST on page comp or page layer");
+        }
+        break;
+      case cmd.ADD_PAGE_SMALL:
+        if (model.target["class"] !== "NFPageComp") {
+          throw new Error("target isn't a pagecomp");
+        }
+        target = new NFPageComp(aeq.getComp(model.target.name));
+        time = this.getTime();
+        shouldAnimate = true;
+        scaleVal = [model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small];
+        posVal = model.settings.transforms.page.position.small;
+        newPageLayer = this.insertPage({
+          page: target,
+          continuous: true,
+          animate: shouldAnimate,
+          animationDuration: model.settings.durations.slideIn
+        });
+        group = newPageLayer.getPaperLayerGroup();
+        pageParent = newPageLayer.getParent();
+        newPageLayer.setParent();
+        newPageLayer.transform('Scale').setValue(scaleVal);
+        newPageLayer.transform('Position').setValue(posVal);
+        newPageLayer.setParent(pageParent);
+        if ((ref4 = newPageLayer.effect('Drop Shadow')) != null) {
+          ref4.enabled = false;
+        }
+        activeRefs = this.activeRefs();
+        if (activeRefs.count() > 0) {
+          activeRefs.forEach((function(_this) {
+            return function(ref) {
+              if (ref.getPDFNumber() !== group.getPDFNumber()) {
+                ref.moveBefore(pageParent);
+                return ref.flightPath().moveAfter(ref);
+              }
+            };
+          })(this));
+        }
+        group.getCitationLayer().show(time, this.$.duration - time);
+        this.setTime(time + model.settings.durations.slideIn);
+        return group.gatherLayer(newPageLayer);
+      case cmd.SWITCH_PAGE:
+        if (model.target["class"] !== "NFPageComp") {
+          throw new Error("target isn't a pagecomp");
+        }
+        target = new NFPageComp(aeq.getComp(model.target.name));
+        time = this.getTime();
+        shouldAnimate = false;
+        activePage = this.activePage();
+        if (activePage == null) {
+          throw new Error("can't run SWITCH_PAGE without an already active page at this time");
+        }
+        pageParent = activePage.getParent();
+        activePage.setParent();
+        scaleVal = activePage.transform('Scale').value;
+        posVal = activePage.transform('Position').value;
+        activePage.setParent(pageParent);
+        activePage.$.outPoint = time + model.settings.durations.fadeIn * 2;
+        activePage.fadeOut(model.settings.durations.fadeIn);
+        flightPaths = new NFLayerCollection();
+        this.activeLayers().forEach((function(_this) {
+          return function(layer) {
+            if (layer.getName().includes("FlightPath") && layer.$.outPoint >= time + model.settings.durations.fadeIn) {
+              return layer.$.outPoint = time + model.settings.durations.fadeIn;
+            }
+          };
+        })(this));
+        newPageLayer = this.insertPage({
+          page: target,
+          continuous: true,
+          animate: shouldAnimate,
+          animationDuration: model.settings.durations.slideIn
+        });
+        group = newPageLayer.getPaperLayerGroup();
+        pageParent = newPageLayer.getParent();
+        newPageLayer.setParent();
+        newPageLayer.transform('Scale').setValue(scaleVal);
+        newPageLayer.transform('Position').setValue(posVal);
+        newPageLayer.setParent(pageParent);
+        if ((ref5 = newPageLayer.effect('Drop Shadow')) != null) {
+          ref5.enabled = false;
+        }
+        newPageLayer.moveBefore(activePage);
+        newPageLayer.fadeIn(model.settings.durations.fadeIn);
+        return this.setTime(time + model.settings.durations.fadeIn);
     }
   };
 

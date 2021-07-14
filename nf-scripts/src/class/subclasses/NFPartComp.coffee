@@ -343,35 +343,44 @@ class NFPartComp extends NFComp
       SWITCH_PAGE: "switch-to-page"
       BUBBLE: "bubble"
 
-    # Looks if we selected a shape or highlight
-    if model.target.class is "NFShapeLayer" or model.target.class is "NFHighlightLayer"
+    if model.target instanceof Array
+      if model.target.length is 1
+        model.target = model.target[0]
+      else
+        multipleTargets = yes
 
-      pageComp = new NFPageComp aeq.getComp(model.target.containingComp.name)
-      matchedLayers = pageComp.layersWithName model.target.name
-      throw new Error "Can't find layer!" if matchedLayers.isEmpty()
-      target = null
-      matchedLayers.forEach (layer) =>
-        target = layer if layer.index() is model.target.index
-      throw new Error "No target shape or highlight found!" unless target?
+    # Rewriting this block to check command first
+    switch model.command
+      when cmd.EXPAND
+        # Can only expand a single highlight layer
+        throw new Error "Can't expand with multiple layers selected" if multipleTargets
+        throw new Error "Can only expand a highlight layer" if model.target.class isnt "NFHighlightLayer"
 
-      currTime = @getTime()
+        pageComp = new NFPageComp aeq.getComp(model.target.containingComp.name)
+        matchedLayers = pageComp.layersWithName model.target.name
+        throw new Error "Can't find layer!" if matchedLayers.isEmpty()
+        target = null
+        matchedLayers.forEach (layer) =>
+          target = layer if layer.index() is model.target.index
+        throw new Error "No target shape or highlight found!" unless target?
 
-      # Let's get the target page layer first
-      layersForPage = @layersForPage pageComp
-      startTime = null
-      targetPageLayer = null
-      unless layersForPage.isEmpty()
-        layersForPage.forEach (layer) =>
-          startTime = layer.$.startTime
-          targetPageLayer = layer if layer.isActive()
-      throw new Error "No target page layer found - Confirm that there's an
-                       active page at this time that contains the highlight or
-                       shape layer you're trying to show. This error can
-                       sometimes happen when there are two highlights with the
-                       same name in a PDF and you're trying to show the wrong
-                       one." unless targetPageLayer?
+        currTime = @getTime()
 
-      if model.command is cmd.EXPAND
+        # Let's get the target page layer first
+        layersForPage = @layersForPage pageComp
+        startTime = null
+        targetPageLayer = null
+        unless layersForPage.isEmpty()
+          layersForPage.forEach (layer) =>
+            startTime = layer.$.startTime
+            targetPageLayer = layer if layer.isActive()
+        throw new Error "No target page layer found - Confirm that there's an
+                         active page at this time that contains the highlight or
+                         shape layer you're trying to show. This error can
+                         sometimes happen when there are two highlights with the
+                         same name in a PDF and you're trying to show the wrong
+                         one." unless targetPageLayer?
+
         bgSolid = null
         # First, make sure we actually wanna do this. Is there an active ref that this expands the highlight of?
         refLayers = @searchLayers("[ref]")
@@ -412,7 +421,34 @@ class NFPartComp extends NFComp
 
         @setTime currTime + model.settings.duration.expandTransition
 
-      if model.command is cmd.EXPOSE
+      when cmd.EXPOSE
+        # Can only expand a single highlight layer
+        throw new Error "Can't expose with multiple targets" if multipleTargets
+
+        pageComp = new NFPageComp aeq.getComp(model.target.containingComp.name)
+        matchedLayers = pageComp.layersWithName model.target.name
+        throw new Error "Can't find layer!" if matchedLayers.isEmpty()
+        target = null
+        matchedLayers.forEach (layer) =>
+          target = layer if layer.index() is model.target.index
+        throw new Error "No target shape or highlight found!" unless target?
+
+        currTime = @getTime()
+
+        # Let's get the target page layer first
+        layersForPage = @layersForPage pageComp
+        startTime = null
+        targetPageLayer = null
+        unless layersForPage.isEmpty()
+          layersForPage.forEach (layer) =>
+            startTime = layer.$.startTime
+            targetPageLayer = layer if layer.isActive()
+        throw new Error "No target page layer found - Confirm that there's an
+                         active page at this time that contains the highlight or
+                         shape layer you're trying to show. This error can
+                         sometimes happen when there are two highlights with the
+                         same name in a PDF and you're trying to show the wrong
+                         one." unless targetPageLayer?
 
         # Duplicate and convert to reference layer
         refLayer = targetPageLayer.createReferenceLayer
@@ -448,7 +484,35 @@ class NFPartComp extends NFComp
 
         @setTime currTime + model.settings.durations.refTransition
 
-      if model.command is cmd.BUBBLE
+      when cmd.BUBBLE
+        # Can only expand a single highlight layer
+        throw new Error "Can't bubble with multiple targets" if multipleTargets
+
+        pageComp = new NFPageComp aeq.getComp(model.target.containingComp.name)
+        matchedLayers = pageComp.layersWithName model.target.name
+        throw new Error "Can't find layer!" if matchedLayers.isEmpty()
+        target = null
+        matchedLayers.forEach (layer) =>
+          target = layer if layer.index() is model.target.index
+        throw new Error "No target shape or highlight found!" unless target?
+
+        currTime = @getTime()
+
+        # Let's get the target page layer first
+        layersForPage = @layersForPage pageComp
+        startTime = null
+        targetPageLayer = null
+        unless layersForPage.isEmpty()
+          layersForPage.forEach (layer) =>
+            startTime = layer.$.startTime
+            targetPageLayer = layer if layer.isActive()
+        throw new Error "No target page layer found - Confirm that there's an
+                         active page at this time that contains the highlight or
+                         shape layer you're trying to show. This error can
+                         sometimes happen when there are two highlights with the
+                         same name in a PDF and you're trying to show the wrong
+                         one." unless targetPageLayer?
+
         group = targetPageLayer.getPaperLayerGroup()
         group.assignControlLayer target, currTime, no
 
@@ -456,52 +520,81 @@ class NFPartComp extends NFComp
           controlLayer = target.getControlLayer()
           controlLayer.removeSpotlights()
 
-    if model.target.class is "NFReferencePageLayer"
-      refLayer = @layerWithName model.target.name
+      when cmd.ANCHOR
+        allTargets = if multipleTargets then model.target else [model.target]
 
-      if model.command is cmd.ANCHOR
-        sourceLayer = refLayer.referencedSourceLayer()
-        pageLayer = refLayer.referencedPageLayer()
-        sourceRect = new Rect pageLayer.sourceRectForLayer(sourceLayer)
+        for theTarget in allTargets
+          throw new Error "Can only reanchor a ref layer" if theTarget.class isnt "NFReferencePageLayer"
+          refLayer = @layerWithName theTarget.name
 
-        refLayer.panBehindTo sourceRect.centerPoint()
-        refLayer.$.label = 8
+          sourceLayer = refLayer.referencedSourceLayer()
+          pageLayer = refLayer.referencedPageLayer()
+          sourceRect = new Rect pageLayer.sourceRectForLayer(sourceLayer)
 
-      if model.command is cmd.END_ELEMENT
+          refLayer.panBehindTo sourceRect.centerPoint()
+          refLayer.$.label = 8
+
+
+      when cmd.END_ELEMENT
+        allTargets = if multipleTargets then model.target else [model.target]
+        offset = 0
+        mixedClass = no
+
+        # Check if we should do a 'smart out' where the refs leave just before the page
+        classTypes = []
+        for theTarget in allTargets
+          throw new Error "Can only end element on ref and page layers for now" unless theTarget.class is "NFReferencePageLayer" or theTarget.class is "NFPageLayer"
+          time = @getTime()
+          classTypes.push(theTarget.class) if classTypes.indexOf(theTarget.class) < 0
+        if classTypes.length > 1
+          mixedClass = yes
+          offset = model.settings.durations.multiEndOffset
+
+        for theTarget in allTargets
+          target = @layerWithName theTarget.name
+          time = @getTime()
+          layersToTrim = target.getChildren().add target
+
+          if theTarget.class is "NFReferencePageLayer"
+            # Find and add the control layer
+            highlightName = target.referencedSourceLayer()
+            pdfNumber = target.getPDFNumber()
+            controlLayers = @searchLayers NFHighlightControlLayer.nameForPDFNumberAndHighlight pdfNumber, highlightName
+            # FIXME: find the expands here
+            unless controlLayers.count() is 0
+              controlLayers.forEach (cLayer) =>
+                layersToTrim.add cLayer
+
+            layersToTrim.forEach (layer) =>
+              layer.$.outPoint = Math.min((time - offset), layer.$.outPoint)
+
+            flightPath = target.flightPath()
+            flightPath.$.outPoint = (time - offset) if flightPath.$.outPoint > (time - offset)
+
+            target.animateOut model.settings.durations.refTransition
+
+          if theTarget.class is "NFPageLayer"
+
+            layersToTrim.forEach (layer) =>
+              layer.$.outPoint = Math.min time, layer.$.outPoint
+              layer.slideOut
+                length: model.settings.durations.slideOut
+
+              # Let's also grab any flightpath layers
+              flightPaths = new NFLayerCollection()
+              @activeLayers().forEach (layer) =>
+                if layer.getName().includes("FlightPath") and layer.$.outPoint >= time
+                  layer.$.outPoint = time
+
+              # Citation layer...
+              target.getPaperLayerGroup().getCitationLayer().hide time
+
+      when cmd.SHRINK
+        throw new Error "can't shrink multiple targets at once" if multipleTargets
+        throw new Error "can only shrink page layers" if model.target.class isnt "NFPageLayer"
+        target = @layerWithName model.target.name
         time = @getTime()
-        layersToTrim = refLayer.getChildren().add refLayer
 
-        # Find and add the control layer
-        highlightName = refLayer.referencedSourceLayer()
-        pdfNumber = refLayer.getPDFNumber()
-        controlLayers = @searchLayers NFHighlightControlLayer.nameForPDFNumberAndHighlight pdfNumber, highlightName
-        # FIXME: find the expands here
-        unless controlLayers.count() is 0
-          controlLayers.forEach (cLayer) =>
-            layersToTrim.add cLayer
-
-        layersToTrim.forEach (layer) =>
-          layer.$.outPoint = Math.min time, layer.$.outPoint
-
-        flightPath = refLayer.flightPath()
-        flightPath.$.outPoint = time if flightPath.$.outPoint > time
-
-        refLayer.animateOut model.settings.durations.refTransition
-
-    if model.target.class is "NFPageLayer"
-      target = @layerWithName model.target.name
-      time = @getTime()
-
-      if model.command is cmd.FST
-        target.animateToConstraints
-          time: time
-          duration: model.settings.durations.pageGrow
-          width: model.settings.constraints.fst.width
-          top: model.settings.constraints.fst.top
-          centerX: yes
-        @setTime time + model.settings.durations.pageGrow
-
-      if model.command is cmd.SHRINK
         target.animateToConstraints
           time: time
           duration: model.settings.durations.pageShrink
@@ -510,60 +603,16 @@ class NFPartComp extends NFComp
           top: 11.5
         @setTime time + model.settings.durations.pageShrink
 
-      if model.command is cmd.END_ELEMENT
-        if target.$.outPoint >= time
-          target.$.outPoint = time
-          target.slideOut
-            length: model.settings.durations.slideOut
+      when cmd.FST
+        throw new Error "can't grow multiple targets at once" if multipleTargets
 
-          # Let's also grab any flightpath layers
-          flightPaths = new NFLayerCollection()
-          @activeLayers().forEach (layer) =>
-            if layer.getName().includes("FlightPath") and layer.$.outPoint >= time
-              layer.$.outPoint = time
-
-          # Citation layer...
-          target.getPaperLayerGroup().getCitationLayer().hide time
-
-
-    if model.target.class is "NFPageComp"
-      target = new NFPageComp aeq.getComp(model.target.name)
-
-      switch model.command
-        when cmd.FST, cmd.ADD_PAGE_SMALL, cmd.SWITCH_PAGE
-
+        if model.target.class is "NFPageComp"
+          target = new NFPageComp aeq.getComp(model.target.name)
           time = @getTime()
 
-          switch model.command
-            when cmd.FST
-              shouldAnimate = yes
-              scaleVal = [model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large]
-              posVal = model.settings.transforms.page.position.large
-            when cmd.ADD_PAGE_SMALL
-              shouldAnimate = yes
-              scaleVal = [model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small]
-              posVal = model.settings.transforms.page.position.small
-            when cmd.SWITCH_PAGE
-              shouldAnimate = no
-              activePage = @activePage()
-              unless activePage?
-                throw new Error "can't run SWITCH_PAGE without an already active page at this time"
-
-              pageParent = activePage.getParent()
-              activePage.setParent()
-              scaleVal = activePage.transform('Scale').value
-              posVal = activePage.transform('Position').value
-              activePage.setParent pageParent
-
-              # fade out the ActivePage
-              activePage.$.outPoint = time + model.settings.durations.fadeIn * 2
-              activePage.fadeOut model.settings.durations.fadeIn
-
-              # Let's also fade any flightpath layers
-              flightPaths = new NFLayerCollection()
-              @activeLayers().forEach (layer) =>
-                if layer.getName().includes("FlightPath") and layer.$.outPoint >= time + model.settings.durations.fadeIn
-                  layer.$.outPoint = time + model.settings.durations.fadeIn
+          shouldAnimate = yes
+          scaleVal = [model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large, model.settings.transforms.page.scale.large]
+          posVal = model.settings.transforms.page.position.large
 
           newPageLayer = @insertPage
             page: target
@@ -578,28 +627,114 @@ class NFPartComp extends NFComp
           newPageLayer.setParent(pageParent)
           newPageLayer.effect('Drop Shadow')?.enabled = no
 
-          switch model.command
-            when cmd.SWITCH_PAGE
-              newPageLayer.moveBefore activePage
-              newPageLayer.fadeIn model.settings.durations.fadeIn
-              @setTime time + model.settings.durations.fadeIn
-            when cmd.FST, cmd.ADD_PAGE_SMALL
-              # Check if we've just obscured a visible ref layer
-              activeRefs = @activeRefs()
-              if activeRefs.count() > 0
-                # layersToRise = new NFLayerCollection
-                activeRefs.forEach (ref) =>
-                  # layersToRise.add ref
-                  # layersToRise.add ref.flightPath()
-                  if ref.getPDFNumber() isnt group.getPDFNumber()
-                    ref.moveBefore pageParent
-                    ref.flightPath().moveAfter ref
+          # Check if we've just obscured a visible ref layer
+          activeRefs = @activeRefs()
+          if activeRefs.count() > 0
+            # layersToRise = new NFLayerCollection
+            activeRefs.forEach (ref) =>
+              # layersToRise.add ref
+              # layersToRise.add ref.flightPath()
+              if ref.getPDFNumber() isnt group.getPDFNumber()
+                ref.moveBefore pageParent
+                ref.flightPath().moveAfter ref
 
-              group.getCitationLayer().show time, @$.duration - time
-              @setTime time + model.settings.durations.slideIn
+          group.getCitationLayer().show time, @$.duration - time
+          @setTime time + model.settings.durations.slideIn
 
           group.gatherLayer newPageLayer
 
+        else if model.target.class is "NFPageLayer"
+          target = @layerWithName model.target.name
+          time = @getTime()
+
+          target.animateToConstraints
+            time: time
+            duration: model.settings.durations.pageGrow
+            width: model.settings.constraints.fst.width
+            top: model.settings.constraints.fst.top
+            centerX: yes
+          @setTime time + model.settings.durations.pageGrow
+        else throw new Error "can only run FST on page comp or page layer"
+
+      when cmd.ADD_PAGE_SMALL
+        throw new Error "target isn't a pagecomp" unless model.target.class is "NFPageComp"
+        target = new NFPageComp aeq.getComp(model.target.name)
+        time = @getTime()
+
+        shouldAnimate = yes
+        scaleVal = [model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small, model.settings.transforms.page.scale.small]
+        posVal = model.settings.transforms.page.position.small
+
+        newPageLayer = @insertPage
+          page: target
+          continuous: yes
+          animate: shouldAnimate
+          animationDuration: model.settings.durations.slideIn
+        group = newPageLayer.getPaperLayerGroup()
+        pageParent = newPageLayer.getParent()
+        newPageLayer.setParent()
+        newPageLayer.transform('Scale').setValue scaleVal
+        newPageLayer.transform('Position').setValue posVal
+        newPageLayer.setParent(pageParent)
+        newPageLayer.effect('Drop Shadow')?.enabled = no
+
+        # Check if we've just obscured a visible ref layer
+        activeRefs = @activeRefs()
+        if activeRefs.count() > 0
+          # layersToRise = new NFLayerCollection
+          activeRefs.forEach (ref) =>
+            # layersToRise.add ref
+            # layersToRise.add ref.flightPath()
+            if ref.getPDFNumber() isnt group.getPDFNumber()
+              ref.moveBefore pageParent
+              ref.flightPath().moveAfter ref
+
+        group.getCitationLayer().show time, @$.duration - time
+        @setTime time + model.settings.durations.slideIn
+        group.gatherLayer newPageLayer
+
+      when cmd.SWITCH_PAGE
+        throw new Error "target isn't a pagecomp" unless model.target.class is "NFPageComp"
+        target = new NFPageComp aeq.getComp(model.target.name)
+        time = @getTime()
+
+        shouldAnimate = no
+        activePage = @activePage()
+        unless activePage?
+          throw new Error "can't run SWITCH_PAGE without an already active page at this time"
+
+        pageParent = activePage.getParent()
+        activePage.setParent()
+        scaleVal = activePage.transform('Scale').value
+        posVal = activePage.transform('Position').value
+        activePage.setParent pageParent
+
+        # fade out the ActivePage
+        activePage.$.outPoint = time + model.settings.durations.fadeIn * 2
+        activePage.fadeOut model.settings.durations.fadeIn
+
+        # Let's also fade any flightpath layers
+        flightPaths = new NFLayerCollection()
+        @activeLayers().forEach (layer) =>
+          if layer.getName().includes("FlightPath") and layer.$.outPoint >= time + model.settings.durations.fadeIn
+            layer.$.outPoint = time + model.settings.durations.fadeIn
+
+        newPageLayer = @insertPage
+          page: target
+          continuous: yes
+          animate: shouldAnimate
+          animationDuration: model.settings.durations.slideIn
+        group = newPageLayer.getPaperLayerGroup()
+        pageParent = newPageLayer.getParent()
+        newPageLayer.setParent()
+        newPageLayer.transform('Scale').setValue scaleVal
+        newPageLayer.transform('Position').setValue posVal
+        newPageLayer.setParent(pageParent)
+        newPageLayer.effect('Drop Shadow')?.enabled = no
+
+        newPageLayer.moveBefore activePage
+        newPageLayer.fadeIn model.settings.durations.fadeIn
+        @setTime time + model.settings.durations.fadeIn
 
 
   ###*
