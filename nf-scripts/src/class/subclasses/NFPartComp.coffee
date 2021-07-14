@@ -513,7 +513,8 @@ class NFPartComp extends NFComp
       if model.command is cmd.END_ELEMENT
         if target.$.outPoint >= time
           target.$.outPoint = time
-          target.slideOut()
+          target.slideOut
+            length: model.settings.durations.slideOut
 
           # Let's also grab any flightpath layers
           flightPaths = new NFLayerCollection()

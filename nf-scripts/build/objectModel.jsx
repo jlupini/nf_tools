@@ -7479,7 +7479,9 @@ NFPartComp = (function(superClass) {
       if (model.command === cmd.END_ELEMENT) {
         if (target.$.outPoint >= time) {
           target.$.outPoint = time;
-          target.slideOut();
+          target.slideOut({
+            length: model.settings.durations.slideOut
+          });
           flightPaths = new NFLayerCollection();
           this.activeLayers().forEach((function(_this) {
             return function(layer) {
